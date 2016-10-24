@@ -61,9 +61,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-#if DEBUG
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToUnitTests)]
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToIntegrationTests)]
-[assembly: InternalsVisibleTo(InternalsVisibleTo.ToPerformanceTests)
+[assembly: InternalsVisibleTo(InternalsVisibleTo.ToPerformanceTests)]
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToDynamicProxyGenAssembly2)]
-#endif
