@@ -1,4 +1,5 @@
-﻿
+﻿extensions: .cs
+
 /*
 MIT License
 
@@ -22,17 +23,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
-using System;
-using System.Reflection;
-
-namespace SafeOrbit.Tests
-{
-    public interface IStubFactory
-    {
-        void RegisterAll(Assembly assembly);
-        TStub Provide<TStub>();
-        void Register(Type type, IStubProvider stubProvider);
-        void Register<T>(IStubProvider<T> stubProvider);
-    }
-}

@@ -1,5 +1,4 @@
-﻿
-namespace SafeOrbit.Random.TinHat.Crypto.Prng
+﻿namespace SafeOrbit.Random.TinHat.Crypto.Prng
 {
     /**
          * Random generation based on the digest with counter. Calling AddSeedMaterial will

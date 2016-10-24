@@ -1,5 +1,4 @@
-﻿
-namespace SafeOrbit.Memory
+﻿namespace SafeOrbit.Memory
 {
     /// <summary>
     ///     Protection levels for <see cref="ISafeContainer" /> instances.
