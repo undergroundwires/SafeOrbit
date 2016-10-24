@@ -7,5 +7,5 @@ set nuget=%local%nuget.exe
 
 cd %sourceDir%
 
-%nuget% pack SafeOrbit.csproj -Prop Configuration=Release
+%nuget% pack SafeOrbit.csproj -Symbols -Prop Configuration=Release
  pause
