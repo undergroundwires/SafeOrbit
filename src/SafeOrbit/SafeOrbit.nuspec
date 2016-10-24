@@ -1,20 +1,22 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Package</id>
-    <version>1.0.0</version>
-    <authors>User</authors>
-    <owners>User</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Package description</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/undergroundwires/SafeOrbit/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/undergroundwires/SafeOrbit</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/icon.png</iconUrl>
+	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial nuget release.</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>Tag1 Tag2</tags>
-    <dependencies>
-      <dependency id="SampleDependency" version="1.0" />
-    </dependencies>
+    <tags>.net security c# encryption hash safestring memory protection injection detection</tags>
   </metadata>
+  <files>
+    <file src="..\..\README.md" />
+	<file src="..\..\LICENSE" />
+  </files>
 </package>
