@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FFD400AB-FE87-4CB0-9426-83B7609F9CFA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SafeOrbit</RootNamespace>
+    <AssemblyName>SafeOrbit</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Exceptions\Base\ISerializationContext.cs" />
+    <Compile Include="Common\Exceptions\Base\ISerializationPropertyInfo.cs" />
+    <Compile Include="Common\Exceptions\Base\SafeOrbitException.cs" />
+    <Compile Include="Common\Exceptions\Base\SerializableExceptionBase.cs" />
+    <Compile Include="Common\Converters\IConverter.cs" />
+    <Compile Include="Common\Converters\IntToBytesConverter.cs" />
+    <Compile Include="Common\Exceptions\Base\SerializationPropertyInfo.cs" />
+    <Compile Include="Common\Exceptions\DataLengthException.cs" />
+    <Compile Include="Common\Exceptions\KeySizeException.cs" />
+    <Compile Include="Common\Exceptions\ReadOnlyAccessForbiddenException.cs" />
+    <Compile Include="Common\Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Common\Utilities\AsyncHelper.cs" />
+    <Compile Include="Encryption\Blowfish\Algorithm\BlowfishEcb.cs" />
+    <Compile Include="Encryption\Blowfish\Algorithm\BlowfishCbc.cs" />
+    <Compile Include="Encryption\Blowfish\BlowfishInternal.cs" />
+    <Compile Include="Encryption\Blowfish\BlowfishCipherMode.cs" />
+    <Compile Include="Encryption\EncryptorBase.cs" />
+    <Compile Include="Encryption\ICipherMode.cs" />
+    <Compile Include="Encryption\IEncryptor.cs" />
+    <Compile Include="Common\Exceptions\Base\SerializationContext.cs" />
+    <Compile Include="Common\Exceptions\UnexpectedEnumValueException.cs" />
+    <Compile Include="Common\Defaults.cs" />
+    <Compile Include="Hash\ISafeHasher.cs" />
+    <Compile Include="Hash\Sha512Hasher.cs" />
+    <Compile Include="Library\LibraryManagement.cs" />
+    <Compile Include="Encryption\Aes\AesEncryptor.cs" />
+    <Compile Include="Encryption\Blowfish\BlowfishEncryptor.cs" />
+    <Compile Include="Encryption\IFastEncryptor.cs" />
+    <Compile Include="Encryption\ISafeEncryptor.cs" />
+    <Compile Include="Encryption\Aes\Kdf\IKeyDerivationFunction.cs" />
+    <Compile Include="Encryption\Aes\Kdf\Pbkdf2KeyDeriver.cs" />
+    <Compile Include="Common\Extensions\ByteArrayExtensions.cs" />
+    <Compile Include="Library\FactoryBootstrapper.cs" />
+    <Compile Include="Common\Interfaces\IDeepCloneable.cs" />
+    <Compile Include="Common\Interfaces\IFactory.cs" />
+    <Compile Include="Common\Interfaces\IShallowCloneable.cs" />
+    <Compile Include="Library\StartEarly\Tasks\SafeByteFactoryStartEarlyTask.cs" />
+    <Compile Include="Library\StartEarly\StartEarlyTaskBase.cs" />
+    <Compile Include="Library\StartEarly\IStartEarlyTask.cs" />
+    <Compile Include="Library\StartEarly\Tasks\StartFillingEntropyPoolsStartEarlyTask.cs" />
+    <Compile Include="Memory\Injection\Alert\Alerters\DebugFailAlerter.cs" />
+    <Compile Include="Memory\Injection\Alert\Alerters\DebugWriteAlerter.cs" />
+    <Compile Include="Memory\Injection\Alert\Alerters\RaiseEventAlerter.cs" />
+    <Compile Include="Memory\Injection\Alert\Alerters\ThrowExceptionAlerter.cs" />
+    <Compile Include="Memory\Injection\Alert\Alerters\IAlerter.cs" />
+    <Compile Include="Memory\Injection\Alert\IAlerts.cs" />
+    <Compile Include="Memory\Injection\Alert\IInjectionAlerter.cs" />
+    <Compile Include="Memory\Injection\Alert\Message\IInjectionMessage.cs" />
+    <Compile Include="Memory\Injection\Alert\InjectionAlerter.cs" />
+    <Compile Include="Memory\Injection\Alert\Message\InjectionMessage.cs" />
+    <Compile Include="Memory\Injection\InjectionAlertChannel.cs" />
+    <Compile Include="Memory\Injection\InjectionType.cs" />
+    <Compile Include="Memory\Common\ProtectionLevelSwitch\IProtectionLevelSwitchingContext.cs" />
+    <Compile Include="Memory\Common\ProtectionLevelSwitch\IProtectionLevelSwitchProvider.cs" />
+    <Compile Include="Memory\Common\ProtectionLevelSwitch\ProtectionLevelSwitchingContext.cs" />
+    <Compile Include="Memory\Common\ProtectionLevelSwitch\ProtectionLevelSwitchProviderBase.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\BinaryPropertyDeserializer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\BinaryPropertySerializer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\Binary\IBinaryReader.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\Binary\IBinaryWriter.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\BurstBinaryReader.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\BurstBinaryWriter.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\Deserializing\IPropertyDeserializer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\PropertyCache.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\PropertyProvider.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\Serializing\IPropertySerializer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\Serializing\ITypeNameConverter.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\Serializing\PropertySerializer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\SizeOptimizedBinaryReader.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\SizeOptimizedBinaryWriter.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Advanced\TypeNameConverter.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\BinarySerializationMode.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\AdvancedSerializerBinarySettings.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Binary\BinaryReaderTools.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Binary\BinaryWriterTools.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Binary\Elements.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Binary\IndexGenerator.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\ArrayAnalyzer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\CreatingInstanceException.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\DefaultInitializer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\DeserializingException.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\CollectionProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\ComplexProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\DictionaryProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\DimensionInfo.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\KeyValueItem.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\MultiDimensionalArrayItem.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\MultiDimensionalArrayProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\NullProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\Property.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\PropertyArt.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\PropertyCollection.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\ReferenceInfo.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\ReferenceTargetProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\SimpleProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Property\SingleDimensionalArrayProperty.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\SerializerSettings.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\AdvancedSerializerSettings.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\SimpleValueParsingException.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Core\Tools.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Deserializing\ObjectFactory.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Serializing\PropertyFactory.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Serializing\PropertyTypeInfo.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Serializing\TypeInfo.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\Serializing\TypeInfoCollection.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\SharpSerializer.cs" />
+    <Compile Include="Memory\Common\Serializer\SharpSerializer\BinarySettings.cs" />
+    <Compile Include="Memory\Injection\ObjectIdGenerator\IObjectIdGenerator.cs" />
+    <Compile Include="Memory\Injection\ObjectIdGenerator\InstanceIdGenerator.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\Factory\ISafeByteFactory.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\Collection\ISafeByteCollection.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\ISafeByte.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\SafeByte.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\Factory\MemoryCachedSafeByteFactory.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\Collection\EncryptedSafeByteCollection.cs" />
+    <Compile Include="Memory\SafeBytes\SafeBytes.cs" />
+    <Compile Include="Memory\SafeContainer\InstanceProtectionMode.cs" />
+    <Compile Include="Memory\SafeContainer\SafeContainerProtectionMode.cs" />
+    <Compile Include="Memory\SafeContainer\SafeContainerWrapper.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Providers\Factory\IInstanceProviderFactory.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Providers\Factory\InstanceProviderFactory.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Validation\IInstanceValidator.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Validation\InstanceValidationException.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Validation\InstanceValidator.cs" />
+    <Compile Include="Memory\SafeContainer\ISafeContainer.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\IInstanceRule.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\SafeInstanceProviderBase.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\RuleType.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotImplementIDisposable.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Providers\CustomInstanceProvider.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Providers\SingletonInstanceProvider.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Providers\TransientInstanceProvider.cs" />
+    <Compile Include="Memory\SafeContainer\SafeContainer.cs" />
+    <Compile Include="Memory\SafeContainer\LifeTime.cs" />
+    <Compile Include="Hash\IFastHasher.cs" />
+    <Compile Include="Hash\Murmur32.cs" />
+    <Compile Include="Memory\SafeBytes\ISafeBytes.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\Id\HashedByteIdGenerator.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\Id\IByteIdGenerator.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\DataProtection\IByteArrayProtector.cs" />
+    <Compile Include="Memory\SafeBytes\SafeByte\DataProtection\MemoryProtector.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotDependOnTransientRule.cs" />
+    <Compile Include="Memory\SafeContainer\Instance\IInstanceProvider.cs" />
+    <Compile Include="Common\Reflection\ITypeKeyGenerator.cs" />
+    <Compile Include="Common\Reflection\TypeKeyGenerator.cs" />
+    <Compile Include="Memory\SafeMemoryStream.cs" />
+    <Compile Include="Memory\Injection\InjectionDetector.cs" />
+    <Compile Include="Memory\Injection\IInjectionDetector.cs" />
+    <Compile Include="Memory\Injection\Stamp\IStamp.cs" />
+    <Compile Include="Memory\Injection\Stamp\Stamp.cs" />
+    <Compile Include="Memory\Injection\Stamper\IlCodeStamper.cs" />
+    <Compile Include="Memory\Injection\Stamper\IStamper.cs" />
+    <Compile Include="Memory\Injection\Stamper\StamperBase.cs" />
+    <Compile Include="Memory\Injection\Stamper\StateStamper.cs" />
+    <Compile Include="Memory\Common\Serializer\ISerializer.cs" />
+    <Compile Include="Common\Exceptions\MemoryInjectionException.cs" />
+    <Compile Include="Memory\Common\Serializer\Serializer.cs" />
+    <Compile Include="Memory\SafeObject\SafeObjectFactory.cs" />
+    <Compile Include="Memory\SafeObject\Settings\IInitialSafeObjectSettings.cs" />
+    <Compile Include="Memory\SafeObject\ISafeObject.cs" />
+    <Compile Include="Memory\SafeObject\SafeObjectProtectionMode.cs" />
+    <Compile Include="Memory\SafeObject\SafeObject.cs" />
+    <Compile Include="Memory\SafeObject\Settings\SafeObjectSettings.cs" />
+    <Compile Include="Memory\SafeString\ISafeString.cs" />
+    <Compile Include="Memory\SafeString\ISafeStringToStringMarshaler.cs" />
+    <Compile Include="Memory\SafeString\SafeString.cs" />
+    <Compile Include="Memory\SafeString\SafeStringMarshaler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Random\FastRandom.cs" />
+    <Compile Include="Random\IFastRandom.cs" />
+    <Compile Include="Common\Interfaces\IRandom.cs" />
+    <Compile Include="Random\ISafeRandom.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\GeneralDigest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\MD5Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\RipeMD128Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\RipeMD160Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\RipeMD320Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\Sha1Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\Sha256Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\SHA\LongDigest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\MD4\RipeMD256Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\SHA\Sha512Digest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\TigerDigest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Digests\WhirlpoolDigest.cs" />
+    <Compile Include="Random\TinHat\Crypto\IDigest.cs" />
+    <Compile Include="Random\TinHat\Crypto\Prng\DigestRandomGenerator.cs" />
+    <Compile Include="Random\TinHat\Crypto\Prng\IRandomGenerator.cs" />
+    <Compile Include="Random\TinHat\Crypto\Prng\ThreadedSeedGenerator.cs" />
+    <Compile Include="Random\TinHat\Crypto\Utilities\Pack.cs" />
+    <Compile Include="Random\TinHat\EntropySources\EntropyFileRNG.cs" />
+    <Compile Include="Random\TinHat\EntropySources\SystemRNGCryptoServiceProvider.cs" />
+    <Compile Include="Random\TinHat\EntropySources\ThreadedSeedGeneratorRNG.cs" />
+    <Compile Include="Random\TinHat\EntropySources\ThreadSchedulerRNG.cs" />
+    <Compile Include="Random\TinHat\FastRandomGenerator.cs" />
+    <Compile Include="Random\TinHat\SafeRandomGenerator.cs" />
+    <Compile Include="Random\TinHat\Services\EntropyHasher.cs" />
+    <Compile Include="Random\TinHat\Services\HashAlgorithmWrapper.cs" />
+    <Compile Include="Random\TinHat\Services\IEntropyHasher.cs" />
+    <Compile Include="Random\TinHat\StartEarly.cs" />
+    <Compile Include="Random\TinHat\Xorshift.cs" />
+    <Compile Include="Random\RandomBase.cs" />
+    <Compile Include="Random\SafeRandom.cs" />
+    <Compile Include="Random\Xorshift.cs" />
+    <Compile Include="Common\Text\Encoding.cs" />
+    <Compile Include="Common\Text\ITextService.cs" />
+    <Compile Include="Common\Text\TextService.cs" />
+    <Compile Include="Common\Utilities\Fast.cs" />
+    <Compile Include="Common\Utilities\New.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Random\TinHat\Crypto\License.html" />
+    <Content Include="Random\TinHat\License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Library\Defaults\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

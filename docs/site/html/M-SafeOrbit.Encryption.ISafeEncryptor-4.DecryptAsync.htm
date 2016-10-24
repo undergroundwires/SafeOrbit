@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"[]>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="save" content="history" />
+    <title>DecryptAsync Method </title>
+    <link rel="stylesheet" type="text/css" href="../styles/lightweight.css" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt" />
+    <link rel="stylesheet" type="text/css" href="../styles/lw-code.css" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt" />
+    <script type="text/javascript" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt" src="../scripts/languageSelector.js"> </script>
+    <meta name="container" content="SafeOrbit.Encryption" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt" />
+    <meta name="file" content="M-SafeOrbit.Encryption.ISafeEncryptor-4.DecryptAsync" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt" />
+    <meta name="guid" content="M-SafeOrbit.Encryption.ISafeEncryptor-4.DecryptAsync" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt" />
+    <xml xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+      <MSHelp:Attr Name="AssetID" Value="M:SafeOrbit.Encryption.ISafeEncryptor`4.DecryptAsync(`1,`2,`3)" />
+      <MSHelp:TOCTitle Title="DecryptAsync Method " />
+      <MSHelp:RLTitle Title="ISafeEncryptor(TResult, TInput, TKey, TSalt).DecryptAsync Method  (SafeOrbit.Encryption)" />
+      <MSHelp:Keyword Index="A" Term="M:SafeOrbit.Encryption.ISafeEncryptor`4.DecryptAsync(`1,`2,`3)" />
+      <MSHelp:Keyword Index="A" Term="frlrfSafeOrbitEncryptionISafeEncryptor4ClassDecryptAsyncTopic" />
+      <MSHelp:Keyword Index="K" Term="DecryptAsync method" />
+      <MSHelp:Keyword Index="K" Term="ISafeEncryptor%3CTResult%2C TInput%2C TKey%2C TSalt%3E.DecryptAsync method" />
+      <MSHelp:Keyword Index="K" Term="ISafeEncryptor(Of TResult%2C TInput%2C TKey%2C TSalt).DecryptAsync method" />
+      <MSHelp:Keyword Index="F" Term="SafeOrbit.Encryption.ISafeEncryptor`4.DecryptAsync" />
+      <MSHelp:Attr Name="APIType" Value="Managed" />
+      <MSHelp:Attr Name="APILocation" Value="SafeOrbit.dll" />
+      <MSHelp:Attr Name="APIName" Value="SafeOrbit.Encryption.ISafeEncryptor`4.DecryptAsync" />
+      <MSHelp:Attr Name="DevLang" Value="CSharp" />
+      <MSHelp:Attr Name="DevLang" Value="VB" />
+      <MSHelp:Attr Name="Locale" Value="en-us" />
+      <MSHelp:Attr Name="TopicType" Value="kbSyntax" />
+      <MSHelp:Attr Name="TopicType" Value="apiref" />
+      <MSHelp:Attr Name="Abstract" Value="Decrypts the specified input with the given key and the salt asynchronously." />
+      <MSHelp:Attr Name="AssemblyVersion" Value="" />
+    </xml>
+  </head>
+  <body>
+    <div class="contentPlaceHolder" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+      <div class="content">
+        <div class="topicContainer">
+          <div class="topic">
+            <p class="majorTitle" />
+            <h1 class="title">ISafeEncryptor<span class="languageSpecificText"><span class="cs">&lt;</span><span class="vb">(Of </span><span class="cpp">&lt;</span><span class="nu">(</span><span class="fs">&lt;'</span></span><span class="typeparameter">TResult</span>, <span class="typeparameter">TInput</span>, <span class="typeparameter">TKey</span>, <span class="typeparameter">TSalt</span><span class="languageSpecificText"><span class="cs">&gt;</span><span class="vb">)</span><span class="cpp">&gt;</span><span class="nu">)</span><span class="fs">&gt;</span></span><span class="languageSpecificText"><span class="cs">.</span><span class="vb">.</span><span class="cpp">::</span><span class="nu">.</span><span class="fs">.</span></span>DecryptAsync Method </h1>
+            <div id="mainSection">
+              <div id="mainBody">
+                <div class="summary">
+       Decrypts the specified input with the given key and the salt asynchronously.
+   </div>
+                <p />
+    <b>Namespace:</b> 
+   <a href="N-SafeOrbit.Encryption.htm">SafeOrbit.Encryption</a><br />
+    <b>Assembly:</b>
+   <span sdata="assembly">SafeOrbit</span> (in SafeOrbit.dll)<div class="LW_CollapsibleArea_Container"><div class="LW_CollapsibleArea_TitleDiv"><h2 class="LW_CollapsibleArea_Title">Syntax</h2><div class="LW_CollapsibleArea_HrDiv"><hr class="LW_CollapsibleArea_Hr" /></div></div><a id="syntaxSection"><!----></a><div class="CodeSnippetContainer"><div class="CodeSnippetContainerTabs"><div class="CodeSnippetContainerTabLeft"><!----></div><div class="CodeSnippetContainerTabFirst CSharpTab" id="CSharpTabId" style="background:white;border-bottom-color:white"><a href="javascript:setActiveTab('CodeSnippetContainerCode','CSharpCode','CSharpTabId');" title="C#">C#</a></div><div class="CodeSnippetContainerTab VisualBasicTab" id="VisualBasicTabId"><a href="javascript:setActiveTab('CodeSnippetContainerCode','VisualBasicCode','VisualBasicTabId');" title="Visual Basic">VB</a></div><div class="CodeSnippetContainerTab ManagedCPlusPlusTab" id="ManagedCPlusPlusTabId"><a href="javascript:setActiveTab('CodeSnippetContainerCode','ManagedCPlusPlusCode','ManagedCPlusPlusTabId');" title="Visual C++">C++</a></div><div class="CodeSnippetContainerTabRight"><!----></div></div><div class="CodeSnippetContainerCodeCollection"><div class="CodeSnippetToolBar"><div class="CodeSnippetToolBarText" /></div><div class="CodeSnippetContainerCode CSharpCode"><pre xml:space="preserve" class="libCScode"><span class="nolink">Task</span>&lt;TResult&gt; <span class="identifier">DecryptAsync</span>(
+	TInput <span class="parameter">input</span>,
+	TKey <span class="parameter">key</span>,
+	TSalt <span class="parameter">salt</span>
+)</pre></div><div class="CodeSnippetContainerCode VisualBasicCode"><pre xml:space="preserve" class="libCScode"><span class="keyword">Function</span> <span class="identifier">DecryptAsync</span> ( _
+	<span class="parameter">input</span> <span class="keyword">As</span> TInput, _
+	<span class="parameter">key</span> <span class="keyword">As</span> TKey, _
+	<span class="parameter">salt</span> <span class="keyword">As</span> TSalt _
+) <span class="keyword">As</span> <span class="nolink">Task</span>(<span class="keyword">Of</span> TResult)</pre></div><div class="CodeSnippetContainerCode ManagedCPlusPlusCode"><pre xml:space="preserve" class="libCScode"><span class="nolink">Task</span>&lt;TResult&gt;^ <span class="identifier">DecryptAsync</span>(
+	TInput <span class="parameter">input</span>, 
+	TKey <span class="parameter">key</span>, 
+	TSalt <span class="parameter">salt</span>
+)</pre></div></div></div><div id="parameters"><h4 class="subHeading">Parameters</h4><dl paramName="input"><dt><span class="parameterItalic">input</span></dt><dd>Type: <a href="T-SafeOrbit.Encryption.ISafeEncryptor-4.htm"><span class="typeparam">TInput</span></a><br />The input.</dd></dl><dl paramName="key"><dt><span class="parameterItalic">key</span></dt><dd>Type: <a href="T-SafeOrbit.Encryption.ISafeEncryptor-4.htm"><span class="typeparam">TKey</span></a><br />The key.</dd></dl><dl paramName="salt"><dt><span class="parameterItalic">salt</span></dt><dd>Type: <a href="T-SafeOrbit.Encryption.ISafeEncryptor-4.htm"><span class="typeparam">TSalt</span></a><br />The salt.</dd></dl></div><h4 class="subHeading">Return Value</h4>A <span class="nolink">[Task]</span> for encrypted <span class="nolink">TResult</span></div><div class="LW_CollapsibleArea_Container"><div class="LW_CollapsibleArea_TitleDiv"><h2 class="LW_CollapsibleArea_Title">See Also</h2><div class="LW_CollapsibleArea_HrDiv"><hr class="LW_CollapsibleArea_Hr" /></div></div><a id="seeAlsoSection"><!----></a><div class="seeAlsoStyle"><a href="T-SafeOrbit.Encryption.ISafeEncryptor-4.htm">ISafeEncryptor<span class="languageSpecificText"><span class="cs">&lt;</span><span class="vb">(Of </span><span class="cpp">&lt;</span><span class="nu">(</span><span class="fs">&lt;'</span></span>TResult, TInput, TKey, TSalt<span class="languageSpecificText"><span class="cs">&gt;</span><span class="vb">)</span><span class="cpp">&gt;</span><span class="nu">)</span><span class="fs">&gt;</span></span> Interface</a></div><div class="seeAlsoStyle"><a href="N-SafeOrbit.Encryption.htm">SafeOrbit.Encryption Namespace</a></div><div class="seeAlsoStyle"><a href="M-SafeOrbit.Encryption.ISafeEncryptor-4.Decrypt.htm">ISafeEncryptor<span class="languageSpecificText"><span class="cs">&lt;</span><span class="vb">(Of </span><span class="cpp">&lt;</span><span class="nu">(</span><span class="fs">&lt;'</span></span>TResult, TInput, TKey, TSalt<span class="languageSpecificText"><span class="cs">&gt;</span><span class="vb">)</span><span class="cpp">&gt;</span><span class="nu">)</span><span class="fs">&gt;</span></span><span class="languageSpecificText"><span class="cs">.</span><span class="vb">.</span><span class="cpp">::</span><span class="nu">.</span><span class="fs">.</span></span>Decrypt(TInput, TKey, TSalt)</a></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div id="footer" class="footerContainer">
+          <div class="footerLogoContainer">
+            <div style="margin-top:5px">
+              <span class="customCopyrightFooter" />
+            </div>
+            <div style="margin-top:5px" class="copyrightFooter" />
+            <div> </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
