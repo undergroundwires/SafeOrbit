@@ -24,7 +24,7 @@ Hit the :star: star :star: button
 Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues).
 
 ## License
-[This project is MIT Licensed](.LICENSE).
+[This project is MIT Licensed](LICENSE).
 
 It means that you're free to use **SafeOrbit** freely in any application, copy, and modify its code.
 
