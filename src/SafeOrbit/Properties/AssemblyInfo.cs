@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using SafeOrbit.Library;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -61,8 +62,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 #if DEBUG
-[assembly: InternalsVisibleTo("SafeOrbit.UnitTests")] //TODO: Add public key token
-[assembly: InternalsVisibleTo("SafeOrbit.IntegrationTests")] //TODO: Add public key token
-[assembly: InternalsVisibleTo("SafeOrbit.PerformanceTests")] //TODO: Add public key token
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+[assembly: InternalsVisibleTo(InternalsVisibleTo.ToUnitTests)]
+[assembly: InternalsVisibleTo(InternalsVisibleTo.ToIntegrationTests)]
+[assembly: InternalsVisibleTo(InternalsVisibleTo.ToPerformanceTests)
+[assembly: InternalsVisibleTo(InternalsVisibleTo.ToDynamicProxyGenAssembly2)]
 #endif
