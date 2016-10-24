@@ -1,9 +1,9 @@
-<img align="left" src="https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/icon.png">
 #**SafeOrbit** - Protect your data and detect injections
 
 > It must not be required to be secret, and it must be able to fall into the hands of the enemy without inconvenience.
 > -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
 
+<img align="left" src="https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/icon.png">
 ## SafeOrbit is easy-to-use and strong security toolkit for `.NET` 
 
 While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it also provides a bunch of tools to implement strong and high performance algorithms for [encryption, hashing and random](#others). It can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#).
