@@ -31,11 +31,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Security.UnitTests")]
-[assembly: AssemblyDescription("unit tests for Core")]
+[assembly: AssemblyTitle("SafeOrbit.UnitTests")]
+[assembly: AssemblyDescription("Unit tests project for SafeOrbit")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("undergroundwires")]
-[assembly: AssemblyProduct("Security.UnitTests")]
+[assembly: AssemblyProduct("SafeOrbit")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -58,8 +58,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5")]
-[assembly: AssemblyFileVersion("0.5")]
+[assembly: AssemblyVersion("0.0.5")]
+[assembly: AssemblyFileVersion("0.0.5")]
 
 // Mock
 [assembly: InternalsVisibleTo(InternalsVisible.ToDynamicProxyGenAssembly2)]

@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SafeOrbit")]
-[assembly: AssemblyDescription("bunch of tools for secure coding")]
+[assembly: AssemblyDescription("SafeOrbit is easy-to-use and strong security toolkit for .NET")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("undergroundwires")]
 [assembly: AssemblyProduct("SafeOrbit")]
@@ -58,8 +58,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5")]
-[assembly: AssemblyFileVersion("0.5")]
+[assembly: AssemblyVersion("0.0.5")]
+[assembly: AssemblyFileVersion("0.0.5")]
 
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToUnitTests)]
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToIntegrationTests)]
