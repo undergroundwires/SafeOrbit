@@ -38,7 +38,7 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\..\docs\signature_keys\SafeOrbit.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\docs\signature_keys\SafeOrbit-key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
