@@ -24,7 +24,7 @@ Hit the :star: star :star: button
 Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues).
 
 ## License
-This project is [MIT Licensed](.LICENSE)).
+[This project is MIT Licensed](.LICENSE).
 
 It means that you're free to use **SafeOrbit** freely in any application, copy, and modify its code.
 
@@ -33,7 +33,7 @@ It's much appreciated if you name the library in credits section of your applica
 # Documentation
 
 * [Visit full documentation page](http://safeorb.it)
-* [Check html help file from repository](./doc/Help.chm)
+* [Check html help file from repository](./docs/Help.chm)
 
 ## LibraryManagement
 `LibraryManagement` is a static class where you can [change the security levels](#change-security-settings) and [start the library early](#startearly).
