@@ -3,10 +3,10 @@
 @color 0a
 @cls
 
-set outputSnkName=IntegrationTests-public-key.snk
-set outputTokenName=IntegrationTests-public-key-token.txt
-
-set filePath=..\docs\signature_keys\IntegrationTests-key.snk
+REM Fill the following
+set outputSnkName= REM UnitTests-public-key.snk
+set outputTokenName= REM UnitTests-public-key-token.txt
+set filePath= REM ..\docs\signature_keys\private\UnitTests-key.snk
 
 set sn="C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\sn.exe"
 
