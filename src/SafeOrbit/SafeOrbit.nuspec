@@ -8,12 +8,12 @@
     <owners>$author$</owners>
     <licenseUrl>https://github.com/undergroundwires/SafeOrbit/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/undergroundwires/SafeOrbit</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/icon.png</iconUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Initial nuget release.</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>.net security c# encryption hash safestring memory protection injection detection</tags>
+    <tags>.net security protect safe orbit c# encryption hash safestring memory protection injection detection Asynchronous encryption</tags>
   </metadata>
   <files>
     <file src="..\..\README.md" />
