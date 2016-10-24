@@ -1,5 +1,5 @@
 <img align="left" src="https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/icon.png">
-# **SafeOrbit** - Protect your data and detect injections
+#**SafeOrbit** - Protect your data and detect injections
 
 > It must not be required to be secret, and it must be able to fall into the hands of the enemy without inconvenience.
 > -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
