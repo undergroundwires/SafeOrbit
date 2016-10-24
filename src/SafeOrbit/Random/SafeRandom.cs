@@ -35,14 +35,10 @@ namespace SafeOrbit.Random
     public class SafeRandom : ISafeRandom
     {
         private readonly RandomNumberGenerator _generator;
-        public SafeRandom() : this(new RNGCryptoServiceProvider()) { }
-        internal SafeRandom(RNGCryptoServiceProvider generator   )
+        public SafeRandom() : this(SafeRandomGenerator.StaticInstance) { }
+        internal SafeRandom(RandomNumberGenerator generator)
         {
             _generator = generator;
-        }
-        public void Seed(byte[] seed)
-        {
-            throw new NotImplementedException();
         }
 
         public byte[] GetBytes(int length)
@@ -54,23 +50,62 @@ namespace SafeOrbit.Random
 
         public int GetInt()
         {
-            throw new NotImplementedException();
+            uint scale = uint.MaxValue;
+            //The code then divides scale by the uint.MaxValue.
+            //This produces a value between 0.0 and 1.0, not including 1.0.
+            //(This is why I didn’t want scale to be uint.MaxValue–so the result
+            //of this division would be less than 1.0.) It multiplies this value
+            //by the difference between the maximum and minimum desired values and
+            //adds the result to the minimum value.
+            while (scale == uint.MaxValue)
+            {
+                // Get four random bytes.
+                byte[] fourBytes = this.GetBytes(4);
+                // Convert that into an uint.
+                scale = BitConverter.ToUInt32(fourBytes, 0);
+            }
+            return (int)(scale);
         }
 
         public byte[] GetNonZeroBytes(int length)
         {
-            throw new NotImplementedException();
+            var data = new byte[length];
+            _generator.GetNonZeroBytes(data);
+            return data;
         }
-
 
         public int GetInt(int min, int max)
         {
-            throw new NotImplementedException();
+            if (min == max)
+            {
+                return min;
+            }
+            uint scale = uint.MaxValue;
+            //The code then divides scale by the uint.MaxValue.
+            //This produces a value between 0.0 and 1.0, not including 1.0.
+            //(This is why I didn’t want scale to be uint.MaxValue–so the result
+            //of this division would be less than 1.0.) It multiplies this value
+            //by the difference between the maximum and minimum desired values and
+            //adds the result to the minimum value.
+            while (scale == uint.MaxValue)
+            {
+                // Get four random bytes.
+                byte[] fourBytes = this.GetBytes(4);
+                // Convert that into an uint.
+                scale = BitConverter.ToUInt32(fourBytes, 0);
+            }
+
+            // Add min to the scaled difference between max and min.
+            return (int)(min + ((max) - min) *
+                (scale / (double)uint.MaxValue)); 
         }
 
         public bool GetBool()
         {
-            throw new NotImplementedException();
+            var data = new byte[1];
+            _generator.GetBytes(data);
+            var @byte = data[0];
+            return (@byte & 0x80) != 0;
         }
     }
 }
