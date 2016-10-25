@@ -32,7 +32,7 @@ Feel free to contribute by joining the coding process or opening [issues](https:
 2. Create a branch (`git checkout -b my_safeorbit_branch`)
 3. Commit your changes (`git commit -am "Added cool stuff"`)
 4. Push to the branch (`git push origin my_safeorbit_branch`)
-5. Open a [Pull Request][https://github.com/undergroundwires/SafeOrbit/pulls]
+5. Open a [Pull Request](https://github.com/undergroundwires/SafeOrbit/pulls)
 6. Relax and wait
 
 ### Donate
