@@ -23,24 +23,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Memory
-{
-    /// <summary>
-    ///     Abstracts a class that alerts memory injections.
-    /// </summary>
-    public interface IAlerts
-    {
-        /// <summary>
-        ///     Gets or sets the alert channel.
-        /// </summary>
-        /// <value>The alert channel.</value>
-        InjectionAlertChannel AlertChannel { get; set; }
+using SafeOrbit.Memory;
+using SafeOrbit.Memory.InjectionServices;
 
-        /// <summary>
-        ///     Gets a value indicating whether this instance will alert.
-        /// </summary>
-        /// <value><c>true</c> if this instance will alert; otherwise, <c>false</c>.</value>
-        /// <seealso cref="AlertChannel" />
-        bool CanAlert { get; }
+namespace SafeOrbit
+{
+    internal class Defaults
+    {
+        public const InjectionAlertChannel AlertChannel = InjectionAlertChannel.ThrowException;
+        public const SafeContainerProtectionMode ContainerProtectionMode = SafeContainerProtectionMode.FullProtection;
+        public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
+        public static IInitialSafeObjectSettings SafeObjectSettings => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, AlertChannel);
     }
 }

@@ -9,13 +9,18 @@
       "dependencies": {
         "NETStandard.Library": "1.6.0",
         "System.Runtime.Serialization.Primitives": "4.1.1"
+      },
+      "buildOptions": {
+        "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
       }
     },
     "net46": {
       "buildOptions": {
-        "define": [ "NET46" ]
+        "define": [ "NET46" ],
+        "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
       }
     }
+
   },
   "version": "0.2.0-*"
 }
