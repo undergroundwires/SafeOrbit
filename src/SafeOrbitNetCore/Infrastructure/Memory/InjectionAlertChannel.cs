@@ -1,4 +1,4 @@
-﻿
+
 /*
 MIT License
 
@@ -23,24 +23,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Memory
+using System.Diagnostics;
+using SafeOrbit.Library;
+using SafeOrbit.Memory.InjectionServices.Alerters;
+
+namespace SafeOrbit.Memory.InjectionServices
 {
-    /// <summary>
-    ///     Abstracts a class that alerts memory injections.
-    /// </summary>
-    public interface IAlerts
+    public enum InjectionAlertChannel
     {
         /// <summary>
-        ///     Gets or sets the alert channel.
+        /// Raises the <see cref="LibraryManagement.LibraryInjected"/>
         /// </summary>
-        /// <value>The alert channel.</value>
-        InjectionAlertChannel AlertChannel { get; set; }
-
+        RaiseEvent,
         /// <summary>
-        ///     Gets a value indicating whether this instance will alert.
+        /// Throws an exception.
         /// </summary>
-        /// <value><c>true</c> if this instance will alert; otherwise, <c>false</c>.</value>
-        /// <seealso cref="AlertChannel" />
-        bool CanAlert { get; }
+        ThrowException,
+        /// <summary>
+        /// Fails on debug mode.
+        /// </summary>
+        DebugFail,
+        /// <summary>
+        /// Logs on debug mode.
+        /// </summary>
+        DebugWrite
     }
 }
