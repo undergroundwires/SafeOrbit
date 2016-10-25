@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>0.1</version>
+    <version>0.2</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>https://github.com/undergroundwires/SafeOrbit/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/undergroundwires/SafeOrbit</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/icon.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/icon.png</iconUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Initial nuget release.</releaseNotes>
