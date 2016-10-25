@@ -6,6 +6,8 @@
 <img align="left" src="https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/icon.png">
 ## SafeOrbit is easy-to-use and strong security toolkit for `.NET` 
 
+### The nuget package  [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/)
+
 While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it also provides a bunch of tools to implement strong and high performance algorithms for [encryption, hashing and random](#others). It can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#).
 
 **SafeOrbit** is **easy to use** as it does not require you to have a big knowledge of cryptology to take advantage of higher security.
