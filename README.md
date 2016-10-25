@@ -31,13 +31,11 @@ Feel free to contribute by joining the coding process or opening [issues](https:
 ### Fork it
 
 1. Fork it.
-2. Create a branch (`git checkout -b my_markup`)
-3. Commit your changes (`git commit -am "Added Snarkdown"`)
-4. Push to the branch (`git push origin my_markup`)
+2. Create a branch (`git checkout -b my_safeorbit_branch`)
+3. Commit your changes (`git commit -am "Added cool stuff"`)
+4. Push to the branch (`git push origin my_safeorbit_branch`)
 5. Open a [Pull Request][https://github.com/undergroundwires/SafeOrbit/pulls]
-6. Enjoy a refreshing Diet Coke and wait
-
-
+6. Relax and wait
 
 ## License
 [This project is MIT Licensed](LICENSE).
