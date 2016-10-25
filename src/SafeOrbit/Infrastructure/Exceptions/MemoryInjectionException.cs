@@ -26,6 +26,7 @@ SOFTWARE.
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using SafeOrbit.Exceptions.SerializableException;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.InjectionServices;
 

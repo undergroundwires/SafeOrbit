@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -24,23 +23,27 @@ SOFTWARE.
 */
 
 using System;
+
+#if NET46
+using System.Security.Permissions;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
+#endif
 
-namespace SafeOrbit.Exceptions
+namespace SafeOrbit.Exceptions.SerializableException
 {
     /// <summary>
     ///     An abstract base for serializable classes.
     /// </summary>
     /// <remarks>
-    ///     <p>Derived classes must have <see cref="SerializableAttribute" /></p>
     ///     <p>Override <see cref="ConfigureSerialize" /> method to add different properties to the serialization.</p>
     /// </remarks>
     /// <seealso cref="Exception"/>
-    /// <seealso cref="SerializableAttribute"/>
     /// <seealso cref="ConfigureSerialize"/>
+#if NET46
+/// <seealso cref="SerializableAttribute"/>
     [Serializable]
+#endif
     public abstract class SerializableExceptionBase : Exception
     {
         protected SerializableExceptionBase()
@@ -59,6 +62,8 @@ namespace SafeOrbit.Exceptions
             : base($"InnerException has occured. Check {nameof(InnerException)} property", innerException)
         {
         }
+
+#if NET46
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected SerializableExceptionBase(SerializationInfo info, StreamingContext context) : base(info, context)
         {
@@ -66,6 +71,7 @@ namespace SafeOrbit.Exceptions
             var serializationContext = ConfigureAndGetSerializationContext();
             DeserializeProperties(serializationContext, info);
         }
+#endif
 
         public string ResourceReferenceProperty { get; set; }
 
@@ -73,6 +79,8 @@ namespace SafeOrbit.Exceptions
         {
             serializationContext.Add(() => ResourceReferenceProperty);
         }
+
+#if NET46
 
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -82,7 +90,7 @@ namespace SafeOrbit.Exceptions
             SerializeProperties(serializationContext, info);
             base.GetObjectData(info, context);
         }
-
+#endif
         public override string ToString() => $"Message = {Message}";
 
         private ISerializationContext ConfigureAndGetSerializationContext()
@@ -91,6 +99,8 @@ namespace SafeOrbit.Exceptions
             ConfigureSerialize(serializationContext);
             return serializationContext;
         }
+
+#if NET46
         private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
         {
             var propertiesToSerialize = serializationContext.PropertyInfos;
@@ -114,5 +124,6 @@ namespace SafeOrbit.Exceptions
                 prop.SetValue(this, value);
             }
         }
+#endif
     }
 }
