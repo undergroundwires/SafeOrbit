@@ -25,33 +25,49 @@ SOFTWARE.
 
 using System;
 using System.Runtime.Serialization;
+using SafeOrbit.Exceptions.SerializableException;
+
+#if NET46
 using System.Security.Permissions;
+#endif
 
 namespace SafeOrbit.Exceptions
 {
     /// <summary>
-    /// An exception to throw when an <see cref="Enum"/> is out of range.
+    ///     An abstract class for all of special exceptions that SafeOrbit throws.
     /// </summary>
-    /// <typeparam name="TEnum">Type of the enum</typeparam>
-    /// <seealso cref="SafeOrbitException" />
-    /// <seealso cref="SerializableExceptionBase" />
+    /// <seealso cref="SerializableExceptionBase"/>
+#if NET46
     [Serializable]
-    public class UnexpectedEnumValueException<TEnum> : SafeOrbitException where TEnum: IComparable, IFormattable, IConvertible
+#endif
+    public abstract class SafeOrbitException : SerializableExceptionBase
     {
-        public TEnum Value { get; set; }
-        protected override void ConfigureSerialize(ISerializationContext serializationContext)
-        {
-            serializationContext.Add(() => Value);
-            base.ConfigureSerialize(serializationContext);
-        }
-        public UnexpectedEnumValueException(TEnum value)
-            : base("Value " + value + " of enum " + typeof(TEnum).Name + " is not supported")
-        {
-            Value = value;
-        }
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        private UnexpectedEnumValueException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected SafeOrbitException(string argumentName, string message)
+            : base($"{message} [Argument Name={argumentName}]")
         {
         }
+
+        protected SafeOrbitException(string message) : base(message)
+        {
+        }
+
+        protected SafeOrbitException()
+        {
+        }
+
+        protected SafeOrbitException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected SafeOrbitException(Exception innerException) : base(innerException)
+        {
+        }
+
+#if NET46
+    [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        protected SafeOrbitException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+#endif
     }
 }

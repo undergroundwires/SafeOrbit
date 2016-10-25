@@ -24,38 +24,19 @@ SOFTWARE.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 
-namespace SafeOrbit.Exceptions
+namespace SafeOrbit.Exceptions.SerializableException
 {
-    public class SerializationContext : ISerializationContext
+    public class SerializationPropertyInfo : ISerializationPropertyInfo
     {
-        public ICollection<ISerializationPropertyInfo> PropertyInfos { get; } = new List<ISerializationPropertyInfo>();
-
-        public void Add<T>(Expression<Func<T>> property)
+        public string PropertyName { get; private set; }
+        public Type Type { get; private set; }
+        public object Value { get; private set; }
+        public SerializationPropertyInfo(string propertyName, Type type, object value)
         {
-            var name = GetName(property);
-            var value = property.Compile()();
-
-            PropertyInfos.Add(new SerializationPropertyInfo(
-                value: value,
-                propertyName: name,
-                type: typeof(T)
-                ));
-        }
-
-        private static string GetName<T>(Expression<Func<T>> exp)
-        {
-            var body = exp.Body as MemberExpression;
-
-            if (body == null)
-            {
-                var ubody = (UnaryExpression) exp.Body;
-                body = ubody.Operand as MemberExpression;
-            }
-
-            return body.Member.Name;
+            PropertyName = propertyName;
+            Type = type;
+            Value = value;
         }
     }
 }

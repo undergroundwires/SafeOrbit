@@ -1,0 +1,21 @@
+﻿{
+  "frameworkAssemblies": {
+    "mscorlib": "",
+    "System": ""
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Serialization.Primitives": "4.1.1"
+      }
+    },
+    "net46": {
+      "buildOptions": {
+        "define": [ "NET46" ]
+      }
+    }
+  },
+  "version": "0.2.0-*"
+}

@@ -47,18 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Exceptions\Base\ISerializationContext.cs" />
-    <Compile Include="Common\Exceptions\Base\ISerializationPropertyInfo.cs" />
-    <Compile Include="Common\Exceptions\Base\SafeOrbitException.cs" />
-    <Compile Include="Common\Exceptions\Base\SerializableExceptionBase.cs" />
-    <Compile Include="Common\Converters\IConverter.cs" />
-    <Compile Include="Common\Converters\IntToBytesConverter.cs" />
-    <Compile Include="Common\Exceptions\Base\SerializationPropertyInfo.cs" />
-    <Compile Include="Common\Exceptions\DataLengthException.cs" />
-    <Compile Include="Common\Exceptions\KeySizeException.cs" />
-    <Compile Include="Common\Exceptions\ReadOnlyAccessForbiddenException.cs" />
-    <Compile Include="Common\Extensions\IEnumerableExtensions.cs" />
-    <Compile Include="Common\Utilities\AsyncHelper.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\ISerializationContext.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\ISerializationPropertyInfo.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\SafeOrbitException.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\SerializableExceptionBase.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\SerializationPropertyInfo.cs" />
+    <Compile Include="Infrastructure\Exceptions\DataLengthException.cs" />
+    <Compile Include="Infrastructure\Exceptions\KeySizeException.cs" />
+    <Compile Include="Infrastructure\Exceptions\ReadOnlyAccessForbiddenException.cs" />
+    <Compile Include="Infrastructure\Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Infrastructure\Utilities\AsyncHelper.cs" />
     <Compile Include="Encryption\Blowfish\Algorithm\BlowfishEcb.cs" />
     <Compile Include="Encryption\Blowfish\Algorithm\BlowfishCbc.cs" />
     <Compile Include="Encryption\Blowfish\BlowfishInternal.cs" />
@@ -66,9 +64,9 @@
     <Compile Include="Encryption\EncryptorBase.cs" />
     <Compile Include="Encryption\ICipherMode.cs" />
     <Compile Include="Encryption\IEncryptor.cs" />
-    <Compile Include="Common\Exceptions\Base\SerializationContext.cs" />
-    <Compile Include="Common\Exceptions\UnexpectedEnumValueException.cs" />
-    <Compile Include="Common\Defaults.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\SerializationContext.cs" />
+    <Compile Include="Infrastructure\Exceptions\UnexpectedEnumValueException.cs" />
+    <Compile Include="Infrastructure\Defaults.cs" />
     <Compile Include="Hash\ISafeHasher.cs" />
     <Compile Include="Hash\Sha512Hasher.cs" />
     <Compile Include="Library\InternalsVisibleTo.cs" />
@@ -79,11 +77,11 @@
     <Compile Include="Encryption\ISafeEncryptor.cs" />
     <Compile Include="Encryption\Aes\Kdf\IKeyDerivationFunction.cs" />
     <Compile Include="Encryption\Aes\Kdf\Pbkdf2KeyDeriver.cs" />
-    <Compile Include="Common\Extensions\ByteArrayExtensions.cs" />
+    <Compile Include="Infrastructure\Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Library\FactoryBootstrapper.cs" />
-    <Compile Include="Common\Interfaces\IDeepCloneable.cs" />
-    <Compile Include="Common\Interfaces\IFactory.cs" />
-    <Compile Include="Common\Interfaces\IShallowCloneable.cs" />
+    <Compile Include="Infrastructure\Interfaces\IDeepCloneable.cs" />
+    <Compile Include="Infrastructure\Interfaces\IFactory.cs" />
+    <Compile Include="Infrastructure\Interfaces\IShallowCloneable.cs" />
     <Compile Include="Library\StartEarly\Tasks\SafeByteFactoryStartEarlyTask.cs" />
     <Compile Include="Library\StartEarly\StartEarlyTaskBase.cs" />
     <Compile Include="Library\StartEarly\IStartEarlyTask.cs" />
@@ -191,8 +189,8 @@
     <Compile Include="Memory\SafeBytes\SafeByte\DataProtection\MemoryProtector.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotDependOnTransientRule.cs" />
     <Compile Include="Memory\SafeContainer\Instance\IInstanceProvider.cs" />
-    <Compile Include="Common\Reflection\ITypeKeyGenerator.cs" />
-    <Compile Include="Common\Reflection\TypeKeyGenerator.cs" />
+    <Compile Include="Infrastructure\Reflection\ITypeKeyGenerator.cs" />
+    <Compile Include="Infrastructure\Reflection\TypeKeyGenerator.cs" />
     <Compile Include="Memory\SafeMemoryStream.cs" />
     <Compile Include="Memory\Injection\InjectionDetector.cs" />
     <Compile Include="Memory\Injection\IInjectionDetector.cs" />
@@ -203,7 +201,7 @@
     <Compile Include="Memory\Injection\Stamper\StamperBase.cs" />
     <Compile Include="Memory\Injection\Stamper\StateStamper.cs" />
     <Compile Include="Memory\Common\Serializer\ISerializer.cs" />
-    <Compile Include="Common\Exceptions\MemoryInjectionException.cs" />
+    <Compile Include="Infrastructure\Exceptions\MemoryInjectionException.cs" />
     <Compile Include="Memory\Common\Serializer\Serializer.cs" />
     <Compile Include="Memory\SafeObject\SafeObjectFactory.cs" />
     <Compile Include="Memory\SafeObject\Settings\IInitialSafeObjectSettings.cs" />
@@ -218,7 +216,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Random\FastRandom.cs" />
     <Compile Include="Random\IFastRandom.cs" />
-    <Compile Include="Common\Interfaces\IRandom.cs" />
+    <Compile Include="Infrastructure\Interfaces\IRandom.cs" />
     <Compile Include="Random\ISafeRandom.cs" />
     <Compile Include="Random\TinHat\Crypto\Digests\MD4\GeneralDigest.cs" />
     <Compile Include="Random\TinHat\Crypto\Digests\MD4\MD5Digest.cs" />
@@ -251,11 +249,11 @@
     <Compile Include="Random\RandomBase.cs" />
     <Compile Include="Random\SafeRandom.cs" />
     <Compile Include="Random\Xorshift.cs" />
-    <Compile Include="Common\Text\Encoding.cs" />
-    <Compile Include="Common\Text\ITextService.cs" />
-    <Compile Include="Common\Text\TextService.cs" />
-    <Compile Include="Common\Utilities\Fast.cs" />
-    <Compile Include="Common\Utilities\New.cs" />
+    <Compile Include="Infrastructure\Text\Encoding.cs" />
+    <Compile Include="Infrastructure\Text\ITextService.cs" />
+    <Compile Include="Infrastructure\Text\TextService.cs" />
+    <Compile Include="Infrastructure\Utilities\Fast.cs" />
+    <Compile Include="Infrastructure\Utilities\New.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Random\TinHat\Crypto\License.html" />

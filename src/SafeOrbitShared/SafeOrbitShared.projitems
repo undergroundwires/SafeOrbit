@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>33963365-9a94-4f49-843a-c4a456b472b1</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SafeOrbitShared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Converters\IConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Converters\IntToBytesConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\Base\ISerializationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\Base\ISerializationPropertyInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\Base\SafeOrbitException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\Base\SerializableExceptionBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\Base\SerializationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\Base\SerializationPropertyInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\DataLengthException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\KeySizeException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\MemoryInjectionException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\ReadOnlyAccessForbiddenException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Exceptions\UnexpectedEnumValueException.cs" />
+  </ItemGroup>
+</Project>

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>0.2</version>
+    <version>0.11</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -11,7 +11,7 @@
     <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/icon.png</iconUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial nuget release.</releaseNotes>
+    <releaseNotes>Symbols have been removed from the package</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>.net security protect safe orbit c# encryption hash safestring memory protection injection detection Asynchronous encryption</tags>
   </metadata>

@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace SafeOrbit.Exceptions
+namespace SafeOrbit.Exceptions.SerializableException
 {
     public interface ISerializationContext
     {
