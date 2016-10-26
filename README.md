@@ -12,9 +12,9 @@ While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-s
 
 **SafeOrbit** is **easy to use** as it does not require you to have a big knowledge of cryptology to take advantage of higher security.
 
-**SafeOrbit** is **performance friendly**. Most of the abstractions has a way to disable its protection. Some of them have `Safe` or `Fast` prefixes. `Fast` classes strive for both performance and security, but `Safe` classes focuses the security over performance. **For example** while [SafeEncryptor](#aes-the-ISafeEncrpytor) uses lots of iterations, salts, and IV, [FastEncryptor](#blowfish-the-IFastEncryptor) uses a faster encryption alghoritm without any key deriving function. **Furthermore** some classes and lets you change/disable the security level of the protection dynamically to gain more performance (see : `IProtectionLevelSwitchProvider`).
+**SafeOrbit** is **performance friendly**. Most of the abstractions has a way to disable its protection. Some of them have `Safe` or `Fast` prefixes. `Fast` classes strive for both performance and security, but `Safe` classes focuses the security over performance. **For example** while [SafeEncryptor](#aes-the-ISafeEncrpytor) uses lots of iterations, salts, and IV, [FastEncryptor](#blowfish-the-IFastEncryptor) uses a faster encryption alghoritm without any key deriving function. **Furthermore** some classes and lets you change/disable the security level of the protection dynamically to gain more performance.
 
-**SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (12-10-2016).
+**SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (v0.1).
 
 **SafeOrbit** is still under an **active development**. **``NET Core``** support is planned and will come out soon in the next releases.
 
