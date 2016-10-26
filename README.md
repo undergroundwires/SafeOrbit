@@ -16,8 +16,7 @@ While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-s
 
 **SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (v0.1).
 
-**SafeOrbit** is still under an **active development**
-![Is maintained](https://img.shields.io/maintenance/yes/2016.svg) . **``NET Core``** support is planned and will come out soon in the next releases.
+**SafeOrbit** is still under an **active development**. **``NET Core``** support is planned and will come out soon in the next releases.
 
 ## Want to say thanks? :beer:
 
@@ -26,7 +25,7 @@ Hit the :star: star :star: button
 ## Contribute
 Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues).
 
-### [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Contribute)
+[Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Contribute)
 
 ### Donate
 You can also support the project by buying me a coffee
