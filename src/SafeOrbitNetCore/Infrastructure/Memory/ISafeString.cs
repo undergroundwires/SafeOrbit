@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -24,7 +23,6 @@ SOFTWARE.
 */
 
 using System;
-using SafeOrbit.Interfaces;
 using SafeOrbit.Text;
 
 namespace SafeOrbit.Memory
@@ -33,43 +31,72 @@ namespace SafeOrbit.Memory
         IDeepCloneable<ISafeString>, IShallowCloneable<ISafeString>,
         IDisposable
     {
-        bool IsEmpty { get; }
-        bool IsDisposed { get; }
         /// <summary>
-        /// Gets the number of characters in the current SafeString
-        /// Disposed SafeString returns 0
+        ///     Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
+        bool IsEmpty { get; }
+
+        /// <summary>
+        ///     Gets a value indicating whether this instance is disposed.
+        /// </summary>
+        /// <value><c>true</c> if this instance is disposed; otherwise, <c>false</c>.</value>
+        /// <seealso cref="IDisposable" />
+        bool IsDisposed { get; }
+
+        /// <summary>
+        ///     Gets the number of characters in the current <see cref="ISafeString" />
         /// </summary>
         int Length { get; }
-        ISafeBytes ToSafeBytes();
-        char GetAsChar(int index);
-        ISafeBytes GetAsSafeBytes(int index);
-        void Append(char ch);
+
         /// <summary>
-        /// Append bytes of a single character
+        ///     Appends a character to the end of the current <see cref="ISafeString" />.
+        /// </summary>
+        /// <param name="ch">A character to append to this <see cref="ISafeString" />.</param>
+        void Append(char ch);
+
+        /// <summary>
+        ///     Append bytes of a single character
         /// </summary>
         /// <param name="character">SafeBytes object that contains bytes for one single char</param>
         /// <param name="encoding">Encoding type that bytes are stored. Default = little endian UTF16</param>
         void Append(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian);
+
         void Append(ISafeString safeString);
+
         /// <summary>
-        /// Adds string that's not important for memory leaks. Will be seen in memory.
+        ///     Adds string that's not important for memory leaks. Will be seen in memory.
         /// </summary>
         /// <param name="text">String to append</param>
         void Append(string text);
+
         /// <summary>
-        /// Appends the default line terminator (Environment.NewLine) to the end of the
-        /// current SafeString object
+        ///     Appends the default line terminator (Environment.NewLine) to the end of the
+        ///     current <see cref="ISafeString"/> instance.
         /// </summary>
         void AppendLine();
+
         void Insert(int index, char character);
         void Insert(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian);
+
         /// <param name="startIndex">Position of char to remove</param>
         /// <param name="count">[Optional] Default = 1 single character</param>
         void Remove(int startIndex, int count = 1);
+
         /// <summary>
-        /// Removes all data
+        ///     Deletes the value of the current <see cref="ISafeString" />.
         /// </summary>
         void Clear();
+
+
+        ISafeBytes ToSafeBytes();
+        char GetAsChar(int index);
+        ISafeBytes GetAsSafeBytes(int index);
+
+        /// <summary>
+        ///     Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         int GetHashCode();
     }
 }

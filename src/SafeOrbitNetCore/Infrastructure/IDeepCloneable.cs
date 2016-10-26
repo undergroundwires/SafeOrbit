@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Interfaces
+namespace SafeOrbit
 {
     /// <summary>
     ///     Defines the interface for any object that can be deep cloned.

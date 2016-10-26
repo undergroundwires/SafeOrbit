@@ -8,7 +8,8 @@
       "imports": "dnxcore50",
       "dependencies": {
         "NETStandard.Library": "1.6.0",
-        "System.Runtime.Serialization.Primitives": "4.1.1"
+        "System.Runtime.Serialization.Primitives": "4.1.1",
+        "System.Threading.Tasks": "4.0.11"
       },
       "buildOptions": {
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"

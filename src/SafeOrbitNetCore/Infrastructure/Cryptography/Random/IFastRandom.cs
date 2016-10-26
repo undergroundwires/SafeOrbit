@@ -1,4 +1,4 @@
-
+﻿
 /*
 MIT License
 
@@ -23,27 +23,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Diagnostics;
-using SafeOrbit.Library;
-namespace SafeOrbit.Memory
+using SafeOrbit.Interfaces;
+
+namespace SafeOrbit.Random
 {
-    public enum InjectionAlertChannel
+    public interface IFastRandom : IRandom
     {
-        /// <summary>
-        /// Raises the <see cref="LibraryManagement.LibraryInjected"/>
-        /// </summary>
-        RaiseEvent,
-        /// <summary>
-        /// Throws an exception.
-        /// </summary>
-        ThrowException,
-        /// <summary>
-        /// Fails on debug mode.
-        /// </summary>
-        DebugFail,
-        /// <summary>
-        /// Logs on debug mode.
-        /// </summary>
-        DebugWrite
+        void Reseed(int seed);
     }
 }

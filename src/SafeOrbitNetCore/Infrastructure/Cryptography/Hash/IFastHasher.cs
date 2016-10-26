@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -22,18 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Interfaces
+using System;
+
+namespace SafeOrbit.Hash
 {
     /// <summary>
-    ///     Generic factory for instances of type <see cref="TComponent" />
+    /// An interface for a fast and cryptological hasher
     /// </summary>
-    /// <typeparam name="TComponent">The type of the instance.</typeparam>
-    public interface IFactory<out TComponent>
+    public interface IFastHasher<out TResult, in TSeed>
     {
-        /// <summary>
-        ///     Creates an instance of type <see cref="TComponent" />
-        /// </summary>
-        /// <returns>An instance of type <see cref="TComponent" /></returns>
-        TComponent Create();
+        TResult ComputeFast(byte[] input);
+        TResult ComputeFast(byte[] input, TSeed seed);
+    }
+
+    public interface IFastHasher : IFastHasher<int, uint>
+    {
+        
     }
 }

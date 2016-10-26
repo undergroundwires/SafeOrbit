@@ -26,7 +26,6 @@ SOFTWARE.
 namespace SafeOrbit.Memory
 {
     using System;
-    using SafeOrbit.Interfaces;
     public interface ISafeBytes : IDisposable, IDeepCloneable<ISafeBytes>,
           IEquatable<byte[]>, IEquatable<ISafeBytes>
     {

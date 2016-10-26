@@ -22,38 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Diagnostics;
-
-namespace SafeOrbit.Common.Reflection
+namespace SafeOrbit
 {
     /// <summary>
-    ///     Generates a key/id for each type
+    ///     Generic factory for instances of type <see cref="TComponent" />
     /// </summary>
-    /// <seealso cref="ITypeIdGenerator" />
-    public class TypeIdGenerator : ITypeIdGenerator
+    /// <typeparam name="TComponent">The type of the instance.</typeparam>
+    public interface IFactory<out TComponent>
     {
-        private static readonly Lazy<TypeIdGenerator> StaticInstanceLazy = new Lazy<TypeIdGenerator>();
-
         /// <summary>
-        ///     Gets the static instance.
+        ///     Creates an instance of type <see cref="TComponent" />
         /// </summary>
-        /// <value>The static instance.</value>
-        public static ITypeIdGenerator StaticInstance => StaticInstanceLazy.Value;
-
-        /// <summary>
-        /// Generates a new id for the type.
-        /// </summary>
-        /// <typeparam name="T">The type that the id will be returned for.</typeparam>
-        /// <returns>The id.</returns>
-        public string Generate<T>() => typeof(T).AssemblyQualifiedName;
-
-        /// <summary>
-        /// Generates a new id for the type.
-        /// </summary>
-        /// <param name="type">The type that the id will be returned for.</param>
-        /// <returns>The id.</returns>
-        [DebuggerHidden]
-        public string Generate(Type type) => type.AssemblyQualifiedName;
+        /// <returns>An instance of type <see cref="TComponent" /></returns>
+        TComponent Create();
     }
 }
