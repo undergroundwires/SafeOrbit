@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -26,8 +25,6 @@ SOFTWARE.
 using System;
 using System.IO;
 using System.Linq;
-using SafeOrbit.Interfaces;
-using SafeOrbit.Library;
 using SafeOrbit.Memory;
 
 namespace SafeOrbit.Text
@@ -57,7 +54,7 @@ namespace SafeOrbit.Text
         /// <summary>
         ///     Initializes a new instance of the <see cref="TextService" /> class.
         /// </summary>
-        public TextService() : this(LibraryManagement.Factory.Get<IFactory<ISafeString>>())
+        public TextService() : this(null)
         {
         }
 

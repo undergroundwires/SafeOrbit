@@ -23,43 +23,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using SafeOrbit.Exceptions;
-using SafeOrbit.Memory.Common;
-using SafeOrbit.Memory.InjectionServices;
-
 namespace SafeOrbit.Memory
 {
-    /// <seealso cref="SafeObject{TObject}" />
-    /// <seealso cref="SafeObjectProtectionMode" />
-    public interface ISafeObject<out TObject> :
-        IProtectionLevelSwitchProvider<SafeObjectProtectionMode>,
-        IAlerts,
-        IDisposable
-        where TObject : class
+    /// <summary>
+    ///     Different protection modes for a <see cref="ISafeObject{TObject}" />
+    /// </summary>
+    /// <seealso cref="ISafeObject{TObject}" />
+    public enum SafeObjectProtectionMode
     {
         /// <summary>
-        /// Gets a value indicating whether this instance is modifiable.
+        ///     Provides the maximum security by protecting the object against both state and code injections
         /// </summary>
-        /// <value><c>true</c> if this instance is modifiable; otherwise, <c>false</c>.</value>
-        /// <seealso cref="MakeReadOnly"/>
-        bool IsReadOnly { get; }
+        StateAndCode = 3,
+
         /// <summary>
-        /// Gets the object.
+        ///     Provides protection against only state injections. This option should be selected if the code of the object is
+        ///     designed to change its  code dynamically. The type will be vulnerable to code injections.
         /// </summary>
-        /// <value>The object.</value>
-        TObject Object { get; }
+        JustState = 2,
+
         /// <summary>
-        /// Closes this instance to any kind of changes.
+        ///     Provides protection against only code injections. This option might be good if the object is a stateless class, or
+        ///     the data it's holding is not sensitive.
         /// </summary>
-        /// <seealso cref="IsReadOnly"/>
-        void MakeReadOnly();
+        JustCode = 1,
+
         /// <summary>
-        /// Verifies the last changes on the object.
+        ///     Provides no protection / security.
+        ///     <b>Important : This option is completely un-safe and will disable injection scans.</b>
         /// </summary>
-        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <see cref="TObject"/> is marked as ReadOnly.</exception>
-        /// <seealso cref="IsReadOnly"/>
-        /// <param name="modification">The modification.</param>
-        void ApplyChanges(Action<TObject> modification);
+        NoProtection = 0
     }
 }

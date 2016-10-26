@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -42,7 +41,7 @@ namespace SafeOrbit.Utilities
         {
             if (@delegate == null) throw new ArgumentNullException(nameof(@delegate));
             var partitioner = Partitioner.Create(0, endIndex);
-            var task = Parallel.ForEach(partitioner, range =>
+            Parallel.ForEach(partitioner, range =>
             {
                 for (var i = range.Item1; i < range.Item2; i++)
                     @delegate.Invoke(i);

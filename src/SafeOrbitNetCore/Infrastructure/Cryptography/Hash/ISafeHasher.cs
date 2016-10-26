@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -22,18 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Interfaces
+namespace SafeOrbit.Hash
 {
     /// <summary>
-    ///     Defines the interface for any object that can be shallow cloned.
+    /// An interface for a fast and cryptological hasher
     /// </summary>
-    /// <typeparam name="TCloneable">The typed returned by the clone operation..</typeparam>
-    public interface IShallowCloneable<out TCloneable> where TCloneable : class
+    public interface ISafeHasher<out TResult, in TSeed>
     {
-        /// <summary>
-        ///     Creates a shallow clone of this object.
-        /// </summary>
-        /// <returns>A deep clone of this object.</returns>
-        TCloneable ShallowClone();
+        TResult Compute(byte[] input);
+    }
+
+    public interface ISafeHasher : ISafeHasher<byte[], uint>
+    {
+
     }
 }
