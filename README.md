@@ -264,4 +264,4 @@ On the other hand **Sha512Hasher** is the implementation of `ISafeHasher`.
 
 > What if your OS crypto random has in any way been undermined (for example, by a nefarious government agency, or simple incompetence)?
 
-`SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Random)
+`SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Random).
