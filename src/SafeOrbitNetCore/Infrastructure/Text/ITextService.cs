@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using SafeOrbit.Memory;
+//using SafeOrbit.Memory;
 
 namespace SafeOrbit.Text
 {
@@ -51,7 +51,7 @@ namespace SafeOrbit.Text
         /// <param name="bytes">The byte array containing the sequence of bytes to decode.</param>
         /// <param name="encoding">The encoding of the characters in the given byte array.</param>
         /// <returns><see cref="ISafeString" /> instance containing the decoded representation of a given byte array.</returns>
-        ISafeString GetSafeString(byte[] bytes, Encoding encoding = Encoding.Utf16LittleEndian);
+        //ISafeString GetSafeString(byte[] bytes, Encoding encoding = Encoding.Utf16LittleEndian);
 
         /// <summary>
         ///     Decodes all the bytes in the specified byte array into a set of characters.
