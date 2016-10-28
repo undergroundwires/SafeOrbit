@@ -23,12 +23,10 @@ SOFTWARE.
 */
 
 using System;
-using System.ComponentModel;
 using System.Linq;
 
 namespace SafeOrbit.Extensions
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class ByteArrayExtensions
     {
         /// <summary>

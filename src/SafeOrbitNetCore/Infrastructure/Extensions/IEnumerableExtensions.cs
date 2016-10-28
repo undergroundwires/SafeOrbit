@@ -24,12 +24,10 @@ SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace SafeOrbit.Extensions
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class IEnumerableExtensions
     {
         /// <summary>
