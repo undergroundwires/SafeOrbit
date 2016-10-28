@@ -261,6 +261,5 @@ Encryption algorithms implement `ICryptoTransform` and write a sequence of bytes
 On the other hand **Sha512Hasher** is the implementation of `ISafeHasher`.
 
 ### Random
-For random, combination of different entropy pools are used that includes [`RNGCryptoServiceProvider`](https://msdn.microsoft.com/en-us/library/system.security.cryptography.rngcryptoserviceprovider(v=vs.110).aspx). While **SafeRandom** gets the entropy dynamically, **FastRandom** uses a secure caching strategy.
 
-This implementation is based on [**`tinhat`**](https://github.com/rahvee/tinhat) which is also open source and [MIT-licensed](https://github.com/rahvee/tinhat/blob/master/LICENSE). Keep in my mind that `SafeOrbit` uses a **modified** version of `tinhat`.
+[Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Random)
