@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,16 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using SafeOrbit.Interfaces;
-
-namespace SafeOrbit.Random
+namespace SafeOrbit.Cryptography.Random
 {
     /// <summary>
-    /// Interface IFastRandom
+    ///     Abstracts fast and cryptographically secure random generator.
     /// </summary>
-    /// <seealso cref="IRandom" />
-    public interface IFastRandom : IRandom
+    /// <seealso cref="ICryptoRandom" />
+    public interface IFastRandom : ICryptoRandom
     {
-        void Reseed(int seed);
+
     }
 }

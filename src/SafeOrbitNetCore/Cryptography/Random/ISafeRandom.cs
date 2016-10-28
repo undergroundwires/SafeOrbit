@@ -23,11 +23,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using SafeOrbit.Interfaces;
-
-namespace SafeOrbit.Random
+namespace SafeOrbit.Cryptography.Random
 {
-    public interface ISafeRandom : IRandom
+    /// <summary>
+    ///     Abstracts cryptographically secure random generator.
+    /// </summary>
+    /// <seealso cref="ICryptoRandom" />
+    public interface ISafeRandom : ICryptoRandom
     {
         byte[] GetNonZeroBytes(int length);
     }

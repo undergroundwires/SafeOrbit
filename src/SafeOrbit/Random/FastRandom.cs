@@ -44,8 +44,8 @@ namespace SafeOrbit.Random
     ///  cached. Each sequence can be represented by a single seed value (int) when using <see cref="FastRandom"/>.
     ///  
     /// </summary>
-    /// <seealso cref="SafeOrbit.Random.RandomBase" />
-    /// <seealso cref="SafeOrbit.Random.IFastRandom" />
+    /// <seealso cref="RandomBase" />
+    /// <seealso cref="IFastRandom" />
     public class FastRandom : RandomBase, IFastRandom
     {
         /// <summary>
