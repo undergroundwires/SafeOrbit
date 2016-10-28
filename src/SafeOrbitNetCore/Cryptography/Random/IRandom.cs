@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,24 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Memory
+namespace SafeOrbit.Interfaces
 {
     /// <summary>
-    ///     Abstracts a class that alerts memory injections.
+    ///     Abstracts a random generator.
     /// </summary>
-    public interface IAlerts
+    public interface IRandom
     {
-        /// <summary>
-        ///     Gets or sets the alert channel.
-        /// </summary>
-        /// <value>The alert channel.</value>
-        InjectionAlertChannel AlertChannel { get; set; }
-
-        /// <summary>
-        ///     Gets a value indicating whether this instance will alert.
-        /// </summary>
-        /// <value><c>true</c> if this instance will alert; otherwise, <c>false</c>.</value>
-        /// <seealso cref="AlertChannel" />
-        bool CanAlert { get; }
+        byte[] GetBytes(int length);
+        int GetInt();
+        int GetInt(int min, int max);
+        bool GetBool();
     }
 }
