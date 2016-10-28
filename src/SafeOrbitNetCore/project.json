@@ -1,15 +1,16 @@
 ﻿{
-  "frameworkAssemblies": {
-    "mscorlib": "",
-    "System": ""
-  },
+  //"frameworkAssemblies": {
+  //  "mscorlib": "",
+  //  "System": ""
+  //},
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50",
       "dependencies": {
         "NETStandard.Library": "1.6.0",
         "System.Runtime.Serialization.Primitives": "4.1.1",
-        "System.Threading.Tasks": "4.0.11"
+        "System.Threading.Tasks.Parallel": "4.0.1",
+        "System.Reflection.TypeExtensions": "4.1.0"
       },
       "buildOptions": {
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
@@ -21,7 +22,6 @@
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
       }
     }
-
   },
   "version": "0.2.0-*"
 }
