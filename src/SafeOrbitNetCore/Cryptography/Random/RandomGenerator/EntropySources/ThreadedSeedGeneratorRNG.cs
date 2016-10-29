@@ -46,11 +46,10 @@ namespace SafeOrbit.Random.Tinhat
         /// </summary>
         public static int MaxPoolSize { get; private set; }
 
-        private static object _fifoStreamLock = new object();
-        private static SafeMemoryStream _safeStream = new SafeMemoryStream(zeroize: true);
-        private static Thread _mainThread;
-        private static AutoResetEvent _poolFullAre = new AutoResetEvent(false);
-        private static ThreadedSeedGenerator _myThreadedSeedGenerator = new ThreadedSeedGenerator();
+        private static readonly object FifoStreamLock = new object();
+        private static readonly SafeMemoryStream SafeStream = new SafeMemoryStream();
+        private static readonly AutoResetEvent PoolFullAre = new AutoResetEvent(false);
+        private static readonly ThreadedSeedGenerator MyThreadedSeedGenerator = new ThreadedSeedGenerator();
 
         // Interlocked cannot handle bools.  So using int as if it were bool.
         private const int TrueInt = 1;
@@ -60,9 +59,11 @@ namespace SafeOrbit.Random.Tinhat
         static ThreadedSeedGeneratorRng()
         {
             MaxPoolSize = 4096;
-            _mainThread = new Thread(new ThreadStart(MainThreadLoop));
-            _mainThread.IsBackground = true; // Don't prevent application from dying if it wants to.
-            _mainThread.Start();
+            var mainThread = new Thread(new ThreadStart(MainThreadLoop))
+            {
+                IsBackground = true // Don't prevent application from dying if it wants to.
+            };
+            mainThread.Start();
         }
 
         public ThreadedSeedGeneratorRng()
@@ -74,18 +75,18 @@ namespace SafeOrbit.Random.Tinhat
             try
             {
                 int pos = offset;
-                lock (_fifoStreamLock)
+                lock (FifoStreamLock)
                 {
                     while (pos < count)
                     {
-                        long readCount = _safeStream.Length; // All the available bytes
+                        long readCount = SafeStream.Length; // All the available bytes
                         if (pos + readCount >= count)
                         {
                             readCount = count - pos; // Don't try to read more than we need
                         }
                         if (readCount > 0)
                         {
-                            int bytesRead = _safeStream.Read(buffer, pos, (int) readCount);
+                            int bytesRead = SafeStream.Read(buffer, pos, (int) readCount);
                             pos += bytesRead;
                         }
                         if (pos < count)
@@ -101,15 +102,15 @@ namespace SafeOrbit.Random.Tinhat
             }
             finally
             {
-                _poolFullAre.Set();
+                PoolFullAre.Set();
             }
         }
 
         public static byte[] GetAvailableBytes(int maxLength)
         {
-            lock (_fifoStreamLock)
+            lock (FifoStreamLock)
             {
-                long availBytesCount = _safeStream.Length;
+                long availBytesCount = SafeStream.Length;
                 byte[] allBytes;
                 if (availBytesCount > maxLength)
                 {
@@ -134,7 +135,7 @@ namespace SafeOrbit.Random.Tinhat
                 throw new CryptographicException("Failed to return requested number of bytes");
             }
         }
-
+#if !NETCORE
         public override void GetNonZeroBytes(byte[] data)
         {
             int offset = 0;
@@ -155,7 +156,7 @@ namespace SafeOrbit.Random.Tinhat
                 }
             }
         }
-
+#endif
         /// <summary>
         /// When overridden in a derived class, releases the unmanaged resources used by the <see cref="T:System.Security.Cryptography.RandomNumberGenerator" /> and optionally releases the managed resources.
         /// </summary>
@@ -166,7 +167,7 @@ namespace SafeOrbit.Random.Tinhat
             {
                 return;
             }
-            _poolFullAre.Set();
+            PoolFullAre.Set();
             /*
              * TODO We need to think about the architecture here, such that we don't have problems disposing static things.
              * 
@@ -189,7 +190,7 @@ namespace SafeOrbit.Random.Tinhat
                 while (true)
                     // The only time we ever quit is on the terminate signal ... interrupt signal ... whatever.  OS kills my thread.
                 {
-                    if (_safeStream.Length < MaxPoolSize)
+                    if (SafeStream.Length < MaxPoolSize)
                     {
                         var newBytes = new byte[byteCount];
                         // By my measurements, estimated entropy returned by ThreadedSeedGenerator is approx 0.6 or 0.7 bits per bit
@@ -197,18 +198,18 @@ namespace SafeOrbit.Random.Tinhat
                         // down to 0.125, and just generate 8x as much data as you need. And mix it.
                         for (int i = 0; i < 8; i++)
                         {
-                            byte[] maskBytes = _myThreadedSeedGenerator.GenerateSeed(byteCount, fast: true);
+                            byte[] maskBytes = MyThreadedSeedGenerator.GenerateSeed(byteCount, fast: true);
                             for (int j = 0; j < newBytes.Length; j++)
                             {
                                 newBytes[j] ^= maskBytes[j];
                             }
                             Array.Clear(maskBytes, 0, maskBytes.Length);
                         }
-                        _safeStream.Write(newBytes, 0, newBytes.Length);
+                        SafeStream.Write(newBytes, 0, newBytes.Length);
                     }
                     else
                     {
-                        _poolFullAre.WaitOne();
+                        PoolFullAre.WaitOne();
                     }
                 }
             }

@@ -48,8 +48,8 @@ namespace SafeOrbit.Random.Tinhat
         private class ThreadSchedulerRngCore
         {
             private const int MaxPoolSize = 4096;
-            private object _fifoStreamLock = new object();
-            private SafeMemoryStream _safeStream = new SafeMemoryStream(zeroize: true);
+            private readonly object _fifoStreamLock = new object();
+            private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
             private Thread _mainThread;
             private AutoResetEvent _mainThreadLoopAre = new AutoResetEvent(false);
             private AutoResetEvent _bytesAvailableAre = new AutoResetEvent(false);
@@ -217,23 +217,23 @@ namespace SafeOrbit.Random.Tinhat
             }
         }
 
-        private static ThreadSchedulerRngCore _core = new ThreadSchedulerRngCore();
+        private static readonly ThreadSchedulerRngCore Core = new ThreadSchedulerRngCore();
 
         public override void GetBytes(byte[] data)
         {
-            if (_core.Read(data, 0, data.Length) != data.Length)
+            if (Core.Read(data, 0, data.Length) != data.Length)
             {
                 throw new CryptographicException("Failed to return requested number of bytes");
             }
         }
-
+#if !NETCORE
         public override void GetNonZeroBytes(byte[] data)
         {
             int offset = 0;
             while (offset < data.Length)
             {
                 var newBytes = new byte[data.Length - offset];
-                if (_core.Read(newBytes, 0, newBytes.Length) != newBytes.Length)
+                if (Core.Read(newBytes, 0, newBytes.Length) != newBytes.Length)
                 {
                     throw new CryptographicException("Failed to return requested number of bytes");
                 }
@@ -247,7 +247,7 @@ namespace SafeOrbit.Random.Tinhat
                 }
             }
         }
-
+#endif
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
