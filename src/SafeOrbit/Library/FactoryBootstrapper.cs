@@ -34,7 +34,7 @@ using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Memory.Serialization;
+using SafeOrbit.Infrastructure.Serialization;
 using SafeOrbit.Random;
 using SafeOrbit.Text;
 
