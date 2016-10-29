@@ -33,15 +33,15 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
     internal sealed class EntropyHasher : IEntropyHasher
     {
         public RandomNumberGenerator Rng { get; private set; }
-        public IList<HashAlgorithmWrapper> HashWrappers { get; private set; }
+        public IList<IHashAlgorithmWrapper> HashWrappers { get; private set; }
         public EntropyHasher(RandomNumberGenerator rng, HashAlgorithmWrapper hashWrapper)
         {
             if (rng == null) throw new ArgumentNullException(nameof(rng));
             if (hashWrapper == null) throw new ArgumentNullException(nameof(hashWrapper));
             this.Rng = rng;
-            this.HashWrappers = new List<HashAlgorithmWrapper> {hashWrapper};
+            this.HashWrappers = new List<IHashAlgorithmWrapper> {hashWrapper};
         }
-        public EntropyHasher(RandomNumberGenerator rng, List<HashAlgorithmWrapper> hashWrappers)
+        public EntropyHasher(RandomNumberGenerator rng, List<IHashAlgorithmWrapper> hashWrappers)
         {
             if (rng == null) throw new ArgumentNullException(nameof(rng));
             if (hashWrappers == null) throw new ArgumentNullException(nameof(hashWrappers));

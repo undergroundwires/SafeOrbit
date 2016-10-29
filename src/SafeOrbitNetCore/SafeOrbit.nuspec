@@ -22,6 +22,7 @@
 	- [Security] FastRandom generates secure numbers.
    	- [Security] Sha512Hasher now uses SafeRandom data as salt.
 	- [Security] Comparision for SafeBytes and SafeString uses XOR'ing to protect the byte.
+	- [Security] Changed the behaviour of MemoryDetector. Each memory detector object is only for a single object now.
     - More/better documentations for the code.
 	- More tests
 	</releaseNotes>

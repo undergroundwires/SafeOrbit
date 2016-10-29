@@ -33,9 +33,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
     /// <summary>
     ///     Can occur during deserialization
     /// </summary>
-#if PORTABLE
-#elif SILVERLIGHT
-#else
+#if !NETCORE
     [Serializable]
 #endif
     internal class DeserializingException : Exception
@@ -68,9 +66,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         {
         }
 
-#if PORTABLE
-#elif SILVERLIGHT
-#else
+#if !NETCORE
         /// <summary>
         /// </summary>
         /// <param name="info"></param>

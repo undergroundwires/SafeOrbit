@@ -1,9 +1,11 @@
 ﻿using System.IO;
 using System.Reflection;
+
+#if NETCORE
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
-
+#endif
 
 namespace SafeOrbit.Common.Reflection
 {

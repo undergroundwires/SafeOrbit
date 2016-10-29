@@ -23,21 +23,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.Injection;
 
 namespace SafeOrbit.Memory.InjectionServices.Alerters
 {
     /// <summary>
-    ///     Raises <see cref="LibraryManagement.LibraryInjected"/> event.
+    ///     Raises an event.
     /// </summary>
     internal class RaiseEventAlerter : IAlerter
     {
+        private readonly EventHandler<IInjectionMessage> _eventHandler;
         public InjectionAlertChannel Channel { get; } = InjectionAlertChannel.RaiseEvent;
-
+        public RaiseEventAlerter(EventHandler<IInjectionMessage> eventHandler)
+        {
+            if (eventHandler == null) throw new ArgumentNullException(nameof(eventHandler));
+            _eventHandler = eventHandler;
+        }
         public void Alert(IInjectionMessage info)
         {
-            LibraryManagement.LibraryInjected?.Invoke(info.InjectedObject, info);
+            _eventHandler.Invoke(info.InjectedObject, info);
         }
     }
 }

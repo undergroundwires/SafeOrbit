@@ -33,7 +33,7 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
     ///     System.Security.Cryptography.HashAlgorithm,
     ///     or Bouncy Castle Org.BouncyCastle.Crypto.IDigest, and make the user agnostic.
     /// </summary>
-    internal class HashAlgorithmWrapper : IDisposable
+    internal class HashAlgorithmWrapper : IHashAlgorithmWrapper
     {
         protected ComputeHashDelegate ComputeHashDelegateInstance;
         protected object HashAlgorithmObject;

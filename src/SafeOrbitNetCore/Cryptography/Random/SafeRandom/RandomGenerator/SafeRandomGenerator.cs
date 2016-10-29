@@ -90,7 +90,7 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
             // Add the ThreadedSeedGeneratorRNG as entropy source, and chain SHA256 and RipeMD256 as hash algorithms
             {
                 var rng = new ThreadedSeedGeneratorRng();
-                var hashWrappers = new List<HashAlgorithmWrapper>
+                var hashWrappers = new List<IHashAlgorithmWrapper>
                 {
                     new HashAlgorithmWrapper(SHA256.Create()),
                     new HashAlgorithmWrapper(new RipeMD256Digest())

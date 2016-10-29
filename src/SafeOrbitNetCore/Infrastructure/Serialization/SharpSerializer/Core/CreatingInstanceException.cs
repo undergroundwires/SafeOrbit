@@ -33,9 +33,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
     /// <summary>
     ///   Occurs if no instance of a type can be created. Maybe the type lacks on a public standard (parameterless) constructor?
     /// </summary>
-#if PORTABLE
-#elif SILVERLIGHT
-#else
+#if !NETCORE
     [Serializable]
 #endif
     internal class CreatingInstanceException : Exception
@@ -62,9 +60,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         }
 
 
-#if PORTABLE
-#elif SILVERLIGHT
-#else
+#if !NETCORE
         /// <summary>
         /// </summary>
         /// <param name = "info"></param>

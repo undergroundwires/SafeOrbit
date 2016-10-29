@@ -15,7 +15,9 @@
         "System.Security.Cryptography.ProtectedData": "4.0.0",
         "System.Threading.Thread": "4.0.0",
         "System.Threading.ThreadPool": "4.0.10",
-        "System.Security.Cryptography.Algorithms": "4.2.0"
+        "System.Security.Cryptography.Algorithms": "4.2.0",
+        "System.Xml.ReaderWriter": "4.0.11",
+        "System.Reflection.Metadata": "1.4.1-beta-24322-03"
       },
       "buildOptions": {
         "define": [ "NETCORE" ],
@@ -26,11 +28,11 @@
       "buildOptions": {
         "define": [ "NET46" ],
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
+      },
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0" 
       }
     }
-  },
-  "dependencies": {
-    "System.Reflection.Metadata": "1.4.1-beta-24322-03"
   },
   "version": "0.2.0-*"
 }

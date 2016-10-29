@@ -1,9 +1,10 @@
-﻿namespace SafeOrbit.Cryptography.Random.SafeRandomServices
+﻿using System;
+
+namespace SafeOrbit.Cryptography.Random.SafeRandomServices
 {
-    internal interface IHashAlgorithmWrapper
+    public interface IHashAlgorithmWrapper: IDisposable
     {
         int HashSizeInBits { get; }
-
         byte[] ComputeHash(byte[] data);
         void Dispose();
     }
