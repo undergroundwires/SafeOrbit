@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using Moq;
 using SafeOrbit.Memory.Common;
-using SafeOrbit.Memory.Serialization;
+using SafeOrbit.Infrastructure.Serialization;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.UnitTests

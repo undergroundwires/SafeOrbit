@@ -26,10 +26,10 @@ SOFTWARE.
 using System;
 using System.IO;
 using NUnit.Framework;
-using SafeOrbit.Memory.Serialization.SerializationServices.Core;
+using SafeOrbit.Infrastructure.Serialization.SerializationServices.Core;
 using SafeOrbit.Memory.SafeObject.SharpSerializer;
 
-namespace SafeOrbit.Memory.Serialization.SerializationServices
+namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 {
     [TestFixture]
     public class CorruptedSourceStreamTests
@@ -86,7 +86,7 @@ namespace SafeOrbit.Memory.Serialization.SerializationServices
             Assert.Throws<DeserializingException>(action);
         }
 
-        private static void Serialize(object source, SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer serializer, Func<byte[], byte[]> dataCallback)
+        private static void Serialize(object source, SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer serializer, Func<byte[], byte[]> dataCallback)
         {
             byte[] data;
 
@@ -140,13 +140,13 @@ namespace SafeOrbit.Memory.Serialization.SerializationServices
             return result;
         }
 
-        private SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer GetSut()
+        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut()
         {
-            return new SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer();
+            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer();
         }
-        private SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer GetSut(BinarySettings settings)
+        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut(BinarySettings settings)
         {
-            return new SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer(settings);
+            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer(settings);
         }
     }
 }

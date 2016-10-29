@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using SafeOrbit.Memory;
+using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit
 {

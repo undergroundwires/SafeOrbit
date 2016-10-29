@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -24,8 +23,7 @@ SOFTWARE.
 */
 
 using System;
-using System.Linq;
-using SafeOrbit.Hash;
+using SafeOrbit.Cryptography.Hashers;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {

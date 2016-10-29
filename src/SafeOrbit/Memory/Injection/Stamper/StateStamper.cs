@@ -25,7 +25,7 @@ SOFTWARE.
 
 using System;
 using SafeOrbit.Hash;
-using SafeOrbit.Memory.Serialization;
+using SafeOrbit.Infrastructure.Serialization;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {

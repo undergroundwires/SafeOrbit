@@ -27,7 +27,7 @@ using System;
 using NUnit.Framework;
 using SafeOrbit.Memory;
 using SafeOrbit.Hash;
-using SafeOrbit.Memory.Serialization;
+using SafeOrbit.Infrastructure.Serialization;
 using SafeOrbit.Tests;
 using SafeOrbit.UnitTests;
 
