@@ -27,41 +27,29 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading;
-using SafeOrbit.Random.Tinhat;
-using SafeOrbit.Random.TinHat.Crypto.Digests;
+using SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Digests;
 
 namespace SafeOrbit.Cryptography.Random.SafeRandomServices
 {
     /// <summary>
-    ///     TinHatRandom returns cryptographically strong random data, never to exceed the number of bytes available from
+    ///     <see cref="SafeRandomGenerator"/> returns cryptographically strong random data, never to exceed the number of bytes available from
     ///     the specified entropy sources.  This can cause slow generation, and is recommended only for generating extremely
     ///     strong keys and other things that don't require a large number of bytes quickly.  This is CPU intensive.  For
-    ///     general
-    ///     purposes, see TinHatURandom instead.
+    ///     general purposes, see <see cref="FastRandomGenerator"/> instead.
     /// </summary>
-    /// <remarks>
-    ///     TinHatRandom returns cryptographically strong random data, never to exceed the number of bytes available from
-    ///     the specified entropy sources.  This can cause slow generation, and is recommended only for generating extremely
-    ///     strong keys and other things that don't require a large number of bytes quickly.  This is CPU intensive.  For
-    ///     general
-    ///     purposes, see TinHatURandom instead.
-    /// </remarks>
     /// <example>
     ///     <code>
-    ///  using tinhat;
+    ///           using SafeOrbit.Cryptography.Random.SafeRandomServices;
     ///  
-    ///  static void Main(string[] args)
-    ///  {
-    ///      StartEarly.StartFillingEntropyPools();  // Start gathering entropy as early as possible
-    ///  
-    ///      var randomBytes = new byte[32];
-    /// 
-    ///      // Performance is highly variable.  On my system it generated 497Bytes(minimum)/567KB(avg)/1.7MB(max) per second
-    ///      // default TinHatRandom() constructor uses:
-    ///      //     SystemRNGCryptoServiceProvider/SHA256, 
-    ///      //     ThreadedSeedGeneratorRNG/SHA256/RipeMD256Digest,
-    ///      //     (if available) EntropyFileRNG/SHA256
-    ///      TinHatRandom.StaticInstance.GetBytes(randomBytes);
+    ///           static void Main(string[] args)
+    ///           {
+    ///           StartEarly.StartFillingEntropyPools();  // Start gathering entropy as early as possible
+    ///                 ///      var randomBytes = new byte[32];
+    ///                 // Performance is highly variable.  On my system it generated 497Bytes(minimum)/567KB(avg)/1.7MB(max) per second
+    ///                 // default SafeRandomGenerator() constructor uses:
+    ///                 //     SystemRNGCryptoServiceProvider/SHA256, 
+    ///                 //     ThreadedSeedGeneratorRNG/SHA256/RipeMD256Digest
+    ///      SafeRandomGenerator.StaticInstance.GetBytes(randomBytes);
     ///  }
     ///  </code>
     /// </example>
@@ -74,7 +62,7 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
         private List<IEntropyHasher> _entropyHashers;
         private int _hashLengthInBytes;
         private int _isDisposed = FalseInt;
-
+ 
         public SafeRandomGenerator()
         {
             _entropyHashers = new List<IEntropyHasher>();

@@ -30,7 +30,7 @@ using SafeOrbit.Random.Tinhat;
 
 namespace SafeOrbit.Cryptography.Random.SafeRandomServices
 {
-    public sealed class EntropyHasher : IEntropyHasher
+    internal sealed class EntropyHasher : IEntropyHasher
     {
         public RandomNumberGenerator Rng { get; private set; }
         public IList<HashAlgorithmWrapper> HashWrappers { get; private set; }
