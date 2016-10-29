@@ -52,7 +52,6 @@ namespace SafeOrbit.Memory.Injection
         private readonly IInjectionAlerter _alerter;
 
         private readonly IStamper<Type> _codeStamper;
-        private readonly IObjectIdGenerator _objectIdGenerator;
         private readonly IStamper<object> _stateStamper;
 
 
@@ -64,7 +63,6 @@ namespace SafeOrbit.Memory.Injection
         public InjectionDetector(bool justCode = true, bool justState = true, InjectionAlertChannel alertChannel = Defaults.AlertChannel) : this
         (
             InjectionAlerter.StaticInstance,
-            InstanceIdGenerator.StaticInstance,
             TypeIdGenerator.StaticInstance,
             StateStamper.StaticInstance, IlCodeStamper.StaticInstance, justCode, justState, alertChannel)
         {
@@ -72,7 +70,6 @@ namespace SafeOrbit.Memory.Injection
 
         internal InjectionDetector(
             IInjectionAlerter alerter,
-            IObjectIdGenerator objectIdGenerator,
             ITypeIdGenerator typeIdGenerator,
             IStamper<object> stateStamper,
             IStamper<Type> codeStamper,
@@ -80,11 +77,9 @@ namespace SafeOrbit.Memory.Injection
             InjectionAlertChannel alertChannel)
         {
             if (alerter == null) throw new ArgumentNullException(nameof(alerter));
-            if (objectIdGenerator == null) throw new ArgumentNullException(nameof(objectIdGenerator));
             if (stateStamper == null) throw new ArgumentNullException(nameof(stateStamper));
             if (codeStamper == null) throw new ArgumentNullException(nameof(codeStamper));
             _alerter = alerter;
-            _objectIdGenerator = objectIdGenerator;
             _typeIdGenerator = typeIdGenerator;
             _stateStamper = stateStamper;
             _codeStamper = codeStamper;
