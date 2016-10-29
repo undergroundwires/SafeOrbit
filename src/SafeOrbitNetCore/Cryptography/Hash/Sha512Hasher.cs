@@ -29,10 +29,21 @@ namespace SafeOrbit.Cryptography.Hashers
 {
     public class Sha512Hasher : ISafeHasher
     {
+        private readonly HashAlgorithm _algorithm;
+
+        public Sha512Hasher() : this(SHA512.Create())
+        {
+            
+        }
+
+        internal Sha512Hasher(HashAlgorithm algorithm)
+        {
+            _algorithm = algorithm;
+        }
+
         public byte[] Compute(byte[] input)
         {
-            var hasher = new SHA512Managed();
-            var result = hasher.ComputeHash(input);
+            var result = _algorithm.ComputeHash(input);
             return result;
         }
     }
