@@ -28,8 +28,11 @@ using System.Security.Cryptography;
 
 namespace SafeOrbit.Random
 {
+
+
     /// <summary>
-    /// A wrapper around <see cref="RNGCryptoServiceProvider" />
+    ///     Only use <see cref="SafeRandom"/> for keys and other things that don't require
+    ///      a large number of bytes quickly.Use TinHatURandom for everything else.
     /// </summary>
     /// <seealso cref="RandomNumberGenerator" />
     public class SafeRandom : ISafeRandom

@@ -27,6 +27,11 @@ using SafeOrbit.Interfaces;
 
 namespace SafeOrbit.Random
 {
+    /// <summary>
+    ///     <p><see cref="IFastRandom" /> is a fast crypto random generator that provide both high and performance.</p>
+    /// </summary>
+    /// <seealso cref="IRandom" />
+    /// <seealso cref="ISafeRandom" />
     public interface IFastRandom : IRandom
     {
         void Reseed(int seed);
