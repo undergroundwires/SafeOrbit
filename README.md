@@ -8,7 +8,7 @@
 
 ### The nuget package  [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/)
 
-While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it also provides a bunch of tools to implement strong and high performance algorithms for [encryption, hashing and random](#others). It can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#).
+While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security). SafeOrbit can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#). It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for [encryption, hashers and random](#cryptography). 
 
 **SafeOrbit** is **easy to use** as it does not require you to have a big knowledge of cryptology to take advantage of higher security.
 
@@ -16,16 +16,14 @@ While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-s
 
 **SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (v0.1).
 
-**SafeOrbit** is still under an **active development**. **``NET Core``** support is planned and will come out soon in the next releases.
+**SafeOrbit** is still under an **active development**. **``NET Core``** support is planned and will come out soon in the next release.
 
 ## Want to say thanks? :beer:
 
 Hit the :star: star :star: button
 
 ## Contribute
-Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues).
-
-[Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Contribute)
+Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues). [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Contribute).
 
 ### Donate
 You can also support the project by buying me a coffee
@@ -42,38 +40,15 @@ It's much appreciated if you name the library in credits section of your applica
 
 # Documentation
 
-* [Visit full documentation page](http://safeorb.it)
+* [Visit wiki for full documentation](https://github.com/undergroundwires/SafeOrbit/wiki)
 * [Check html help file from repository](./docs/Help.chm)
 
-## LibraryManagement
-`LibraryManagement` is a static class where you can [change the security levels](#change-security-settings) and [start the library early](#startearly).
-
-### StartEarly
-
+## Quick documentation
 **For better performance**, it's **highly recommended** to start the application early in your application start with this line :
 ```C#
  LibraryManagement.StartEary();
 ```
-
-The performance of the library can be improved by calling ``LibraryManagement.StartEarly()`` method during the start of the application. This methods runs some inner ``StartEarlyTask``s that does the necesessary calculations early on, creates objects, starts filling entropy pools.
- 
-You can also set a protection mode from the start, see [change security settings](#change-security-settings) below.
-
-### Change security settings
-
-**For better security** you can enable the inner class protection against memory injections. For client side applications that it's recommended to enable it but it might be unnecesessary  for a server running in a protected enviroment as it'll lower the performance.
-
-Self protection for **SafeOrbit** is off by default. When self protection is set to on, **SafeOrbit** will start stamping their classes against security attacks 
-
-You can change change the protection mode any time you'd like:
-
-```C#
- LibraryManagement.ProtectionMode = SafeContainerProtectionMode.FullProtection;
-```
-
-
-
-**SafeOrbit** as a class library is secured as default against memory or code injections. The inner classes or **SafeOrbit** are provided by a [SafeContainer](#SafeContainer#) that provides injection detection.
+You can as well change the inner security settings of library. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/LibraryManagement#change-security-settings).
 
 ## Memory security
 
@@ -107,7 +82,8 @@ You can change change the protection mode any time you'd like:
  ```C#
  using(var sm = new SafeStringToStringMarshaler(safeString))
     {
-      // Use sm.String here.  While in the 'using' block, the string is accessible
+
+// Use sm.String here.  While in the 'using' block, the string is accessible
       // but pinned in memory.  When the 'using' block terminates, the string is zeroed
       // out for security, and garbage collected as usual.
     }
@@ -227,7 +203,7 @@ You can use the `InitialSafeObjectSettings` class to set an existing instance of
 
 You can change the protection level depending on an object. For example if your object is stateless, there is no reason to protect the state and you can set the protection mode initially to `SafeObjectProtectionMode.JustCode` or use `safeObject.SetProtectionMode(SafeObjectProtectionMode.JustCode)` dynamically.
 
-## Others
+## Cryptography
 
 ### Encryption
 
@@ -254,13 +230,17 @@ It's implementation,**`Blowfish**`**, passes vector tests and can use different 
 #### Asynchronous encryption
 Encryption algorithms implement `ICryptoTransform` and write a sequence of bytes to the memory stream asynchronously in the [cryptostream](https://msdn.microsoft.com/en-us/library/hh472379(v=vs.110).aspx).
 
-### Hashing
+### Hashers
 
-**Murmur32** algorithm is implemented as `IFastHasher`.
-
-On the other hand **Sha512Hasher** is the implementation of `ISafeHasher`.
+Supported :
+ - [MurmurHash (Murmur32)](https://en.wikipedia.org/wiki/MurmurHash) for better performance.
+ - [SHA512](https://en.wikipedia.org/wiki/SHA-2) for higher security.
+ 
+ [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Hashers).
+ 
 
 ### Random
-For random, combination of different entropy pools are used that includes [`RNGCryptoServiceProvider`](https://msdn.microsoft.com/en-us/library/system.security.cryptography.rngcryptoserviceprovider(v=vs.110).aspx). While **SafeRandom** gets the entropy dynamically, **FastRandom** uses a secure caching strategy.
 
-This implementation is based on [**`tinhat`**](https://github.com/rahvee/tinhat) which is also open source and [MIT-licensed](https://github.com/rahvee/tinhat/blob/master/LICENSE). Keep in my mind that `SafeOrbit` uses a **modified** version of `tinhat`.
+> What if your OS crypto random has in any way been undermined (for example, by a nefarious government agency, or simple incompetence)?
+
+`SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Random).
