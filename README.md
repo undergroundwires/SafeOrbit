@@ -231,9 +231,12 @@ Encryption algorithms implement `ICryptoTransform` and write a sequence of bytes
 
 ### Hashing
 
-**Murmur32** algorithm is implemented as `IFastHasher`.
-
-On the other hand **Sha512Hasher** is the implementation of `ISafeHasher`.
+Supported :
+ - [MurmurHash (Murmur32)](https://en.wikipedia.org/wiki/MurmurHash) for better performance.
+ - [SHA512](https://en.wikipedia.org/wiki/SHA-2) for higher security.
+ 
+ [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Hashers).
+ 
 
 ### Random
 
