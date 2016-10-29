@@ -27,6 +27,12 @@ using SafeOrbit.Interfaces;
 
 namespace SafeOrbit.Random
 {
+    /// <summary>
+    ///     <p><see cref="ISafeRandom" /> is a crypto random generator that's designed to be slow.</p>
+    ///     <p>It should be used for keys and other things that don't require large number of bytes quickly.</p>
+    /// </summary>
+    /// <seealso cref="IRandom" />
+    /// <seealso cref="IFastRandom" />
     public interface ISafeRandom : IRandom
     {
         byte[] GetNonZeroBytes(int length);

@@ -33,17 +33,9 @@ using System.Threading.Tasks;
 namespace SafeOrbit.Random
 {
     /// <summary>
-    /// A fast random number generator. Does not generate secure numbers, use <see cref="SafeRandom"/> for better security.
-    /// 
-    /// * It is up to 8x faster than <see cref="System.Random"/> depending on, depending on which methods are called.
-    /// * Allows fast re-initialisation with a seed, unlike <see cref="System.Random"/> which accepts a seed at construction
-    ///  time which then executes a relatively expensive initialisation routine. This provides a vast speed improvement
-    ///  if you need to reset the pseudo-random number sequence many times, e.g. if you want to re-generate the same
-    ///  sequence of random numbers many times. An alternative might be to cache random numbers in an array, but that 
-    ///  approach is limited by memory capacity and the fact that you may also want a large number of different sequences 
-    ///  cached. Each sequence can be represented by a single seed value (int) when using <see cref="FastRandom"/>.
-    ///  
+    /// A fast and cryptographically secure random number generator.
     /// </summary>
+    /// <seealso cref="SafeRandom" />
     /// <seealso cref="RandomBase" />
     /// <seealso cref="IFastRandom" />
     public class FastRandom : RandomBase, IFastRandom
