@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,12 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-
-namespace SafeOrbit.Hash
+namespace SafeOrbit.Cryptography.Hashers
 {
     /// <summary>
-    /// An interface for a fast and cryptological hasher
+    ///     Abstracts a fast and cryptological hasher
     /// </summary>
     public interface IFastHasher<out TResult, in TSeed>
     {
@@ -36,8 +33,11 @@ namespace SafeOrbit.Hash
         TResult ComputeFast(byte[] input, TSeed seed);
     }
 
+    /// <summary>
+    ///     Abstracts a fast and cryptological hasher that returns <see cref="int" /> and can be seeded by
+    ///     <see cref="uint" />.
+    /// </summary>
     public interface IFastHasher : IFastHasher<int, uint>
     {
-        
     }
 }

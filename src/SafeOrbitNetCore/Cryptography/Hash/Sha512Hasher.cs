@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -22,19 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Security.Cryptography;
+
 namespace SafeOrbit.Cryptography.Hashers
 {
-    /// <summary>
-    ///     Abstracts interface for a slow and cryptological hasher.
-    /// </summary>
-    public interface ISafeHasher<out TResult>
+    public class Sha512Hasher : ISafeHasher
     {
-        TResult Compute(byte[] input);
-    }
-    /// <summary>
-    ///     Abstracts interface for a slow and cryptological hasher returning an array of bytes.
-    /// </summary>
-    public interface ISafeHasher : ISafeHasher<byte[]>
-    {
+        public byte[] Compute(byte[] input)
+        {
+            var hasher = new SHA512Managed();
+            var result = hasher.ComputeHash(input);
+            return result;
+        }
     }
 }
