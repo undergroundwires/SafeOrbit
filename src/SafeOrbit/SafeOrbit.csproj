@@ -235,10 +235,10 @@
     <Compile Include="Random\TinHat\Crypto\Prng\IRandomGenerator.cs" />
     <Compile Include="Random\TinHat\Crypto\Prng\ThreadedSeedGenerator.cs" />
     <Compile Include="Random\TinHat\Crypto\Utilities\Pack.cs" />
-    <Compile Include="Random\TinHat\EntropySources\EntropyFileRNG.cs" />
+    <Compile Include="Random\TinHat\EntropySources\IEntropySource.cs" />
     <Compile Include="Random\TinHat\EntropySources\SystemRNGCryptoServiceProvider.cs" />
     <Compile Include="Random\TinHat\EntropySources\ThreadedSeedGeneratorRNG.cs" />
-    <Compile Include="Random\TinHat\EntropySources\ThreadSchedulerRNG.cs" />
+    <Compile Include="Random\TinHat\EntropySources\ThreadSchedulerRng.cs" />
     <Compile Include="Random\TinHat\FastRandomGenerator.cs" />
     <Compile Include="Random\TinHat\SafeRandomGenerator.cs" />
     <Compile Include="Random\TinHat\Services\EntropyHasher.cs" />

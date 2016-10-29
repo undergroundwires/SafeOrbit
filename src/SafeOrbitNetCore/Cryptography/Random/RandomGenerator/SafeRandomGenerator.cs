@@ -103,25 +103,6 @@ namespace SafeOrbit.Random
                 var hashWrapper = new HashAlgorithmWrapper(new Sha256Digest());
                 _entropyHashers.Add(new EntropyHasher(rng, hashWrapper));
             }
-#if NET46
-            // If available, add EntropyFileRNG as entropy source
-            {
-                EntropyFileRng rng = null;
-                try
-                {
-                    rng = new EntropyFileRng();
-                }
-                catch
-                {
-                    // EntropyFileRNG throws exceptions if it hasn't been seeded yet, if it encouters corruption, etc.
-                }
-                if (rng != null)
-                {
-                    var hashWrapper = new HashAlgorithmWrapper(SHA256.Create());
-                    _entropyHashers.Add(new EntropyHasher(rng, hashWrapper));
-                }
-            }
-#endif
             CtorSanityCheck();
         }
 
@@ -280,7 +261,8 @@ namespace SafeOrbit.Random
                     Array.Clear(byteArray, 0, byteArray.Length);
             }
         }
-#if NET46
+
+#if !NETCORE
         public override void GetNonZeroBytes(byte[] data)
         {
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.

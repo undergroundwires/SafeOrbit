@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,27 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SafeOrbit.Random;
+using System.Runtime.CompilerServices;
 using SafeOrbit.Random.Tinhat;
 
 namespace SafeOrbit.Random
 {
     /// <summary>
-    /// Starts all entropy sources filling their respective entropy pools, to reduce wait time when you actually call them.
-    /// It is recommended to use StartEarly.StartFillingEntropyPools(); at the soonest entry point to your application, for example the 
-    /// first line of Main()
+    ///     Starts all entropy sources filling their respective entropy pools, to reduce wait time when you actually call them.
+    ///     It is recommended to use StartEarly.StartFillingEntropyPools(); at the soonest entry point to your application, for
+    ///     example the
+    ///     first line of Main()
     /// </summary>
     public static class StartEarly
     {
         /// <summary>
-        /// Starts all entropy sources filling their respective entropy pools, to reduce wait time when you actually call them.
-        /// It is recommended to use StartEarly.StartFillingEntropyPools(); at the soonest entry point to your application, for example the 
-        /// first line of Main()
+        ///     Starts all entropy sources filling their respective entropy pools, to reduce wait time when you actually call them.
+        ///     It is recommended to use StartEarly.StartFillingEntropyPools(); at the soonest entry point to your application, for
+        ///     example the
+        ///     first line of Main()
         /// </summary>
         public static void StartFillingEntropyPools()
         {
@@ -73,7 +69,7 @@ namespace SafeOrbit.Random
             // guarantees that the static constructor is only called once,
             // regardless how many times the method is called
             //https://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.runtimehelpers.runclassconstructor%28v=vs.110%29.aspx
-            System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+            RuntimeHelpers.RunClassConstructor(type.TypeHandle);
         }
     }
 }
