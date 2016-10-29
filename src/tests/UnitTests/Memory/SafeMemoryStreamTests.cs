@@ -38,6 +38,7 @@ namespace SafeOrbit.Memory
             Assert.That(sut.Length, Is.Zero);
         }
 
+
         private static Stream GetSut() => new SafeMemoryStream();
     }
 }
