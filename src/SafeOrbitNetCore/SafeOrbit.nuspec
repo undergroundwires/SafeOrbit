@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>0.2.0</version>
+    <version>0.2</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -10,16 +10,20 @@
     <projectUrl>https://github.com/undergroundwires/SafeOrbit</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/icon.png</iconUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>
+	While SafeOrbit's primarly focus is strong memory protection. SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashers and random. 
+	
+	Source code : https://github.com/undergroundwires/safeOrbit
+	Wiki : https://github.com/undergroundwires/safeOrbit/wiki
+	</description>
     <releaseNotes>
-	------0.2.0------
+	------0.2------
 	-.NET Core is supported.
-	- FastRandom generates secure numbers.
+	- [Security] FastRandom generates secure numbers.
+   	- [Security] Sha512Hasher now uses SafeRandom data as salt.
+	- [Security] Comparision for SafeBytes and SafeString uses XOR'ing to protect the byte.
     - More/better documentations for the code.
 	- More tests
-	
-	------0.1.0------
-	- Initial release
 	</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>.net security protect safe orbit c# encryption hash safestring memory protection injection detection Asynchronous encryption</tags>
