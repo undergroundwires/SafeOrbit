@@ -55,18 +55,6 @@ You can as well change the inner security settings of library. [Read more on wik
 ### SafeString : Protect your strings
 `SafeString` represents an encrypted string that's not leaked in the memory. It's modifiable and can work with [different encodings](#supported-encodings#).
 
-**Example usage:**
-
-```C#
- var safeString = new SafeString();
- safeString.Append('t');
- safeString.Append('e');
- safeString.Append("st");
- //safeString will hold encrypted "test" text
-  ```
-
-`SafeString` uses [`SafeBytes`](#safebytes-protect-every-single-byte) as its internal data storage. That makes `SafeString` safe to both modify and compare with other `string` and `SafeString` instances.
-
 #### SafeString vs [System.Security.SecureString](https://msdn.microsoft.com/en-us/library/system.security.securestring(v=vs.110).aspx) 
 
 ##### Safe to modify
@@ -76,18 +64,9 @@ You can as well change the inner security settings of library. [Read more on wik
 `SecureString`'s are not comparable with each other. But the security design and architecture of `SafeString` makes it safe to compare with another sensitive information in a secure context.
 
 ##### Retrieve the protected data
-`SecureString` is not retrievable, but `SafeString` is. You can use a built-in `SafeStringToStringMarshaler` class to do this. The marshaler is a disposable `string`, it promises the total removal of the data from the memory after disposing it. **Important :** `SafeStringToStringMarshaler` should be used very carefully it's probably not a good idea to reveal information in the memory even though it appears in milliseconds.
+`SecureString` is not retrievable, but `SafeString` is. You can use a built-in `SafeStringToStringMarshaler` class to do this.
 
-**Example usage:**
- ```C#
- using(var sm = new SafeStringToStringMarshaler(safeString))
-    {
-
-// Use sm.String here.  While in the 'using' block, the string is accessible
-      // but pinned in memory.  When the 'using' block terminates, the string is zeroed
-      // out for security, and garbage collected as usual.
-    }
-```
+[Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeString)
 
 #### Supported encodings
 * Ansii
