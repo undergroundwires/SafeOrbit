@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Security.Cryptography;
 
 namespace SafeOrbit.Random.Tinhat
@@ -13,7 +14,9 @@ namespace SafeOrbit.Random.Tinhat
     {
         private readonly RandomNumberGenerator _systemRngProvider;
         public bool IsDisposed { get; private set; }
-        public SystemRng() : this(new RNGCryptoServiceProvider()) { }
+
+        public SystemRng() : this(RandomNumberGenerator.Create()) { }
+
         /// <exception cref="ArgumentNullException"><paramref name="systemRngProvider"/> is <see langword="null" />.</exception>
         internal SystemRng(RandomNumberGenerator systemRngProvider)
         {
