@@ -103,25 +103,6 @@ namespace SafeOrbit.Random
                 var hashWrapper = new HashAlgorithmWrapper(new Sha256Digest());
                 _entropyHashers.Add(new EntropyHasher(rng, hashWrapper));
             }
-
-            // If available, add EntropyFileRNG as entropy source
-            {
-                EntropyFileRng rng = null;
-                try
-                {
-                    rng = new EntropyFileRng();
-                }
-                catch
-                {
-                    // EntropyFileRNG thows exceptions if it hasn't been seeded yet, if it encouters corruption, etc.
-                }
-                if (rng != null)
-                {
-                    var hashWrapper = new HashAlgorithmWrapper(SHA256.Create());
-                    _entropyHashers.Add(new EntropyHasher(rng, hashWrapper));
-                }
-            }
-
             CtorSanityCheck();
         }
 

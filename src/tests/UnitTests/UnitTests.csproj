@@ -73,6 +73,7 @@
     <Compile Include="Internal\Stubs\InstanceProviderFactoryFaker.cs" />
     <Compile Include="Internal\Stubs\InstanceValidatorFaker.cs" />
     <Compile Include="Internal\Stubs\SafeObjectFactoryFaker.cs" />
+    <Compile Include="Memory\SafeMemoryStreamTests.cs" />
     <Compile Include="Memory\Common\IdGenerators\InstanceIdGeneratorTests.cs" />
     <Compile Include="Memory\Common\Injection\Alert\Alerters\AlerterTestsBase.cs" />
     <Compile Include="Memory\Common\Injection\Alert\Alerters\-DebugFailAlerterTests.cs" />

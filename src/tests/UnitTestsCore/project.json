@@ -3,7 +3,8 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "NUnit": "3.5.0"
+    "NUnit": "3.5.0",
+    "SafeOrbitNetCore": "0.2.0-*"
   },
 
   "frameworks": {
@@ -12,6 +13,6 @@
     }
   },
   "buildOptions": {
-    "keyFile": "../../docs/signature_keys/private/UnitTests-key.snk"
+    "keyFile": "../../../docs/signature_keys/private/UnitTests-key.snk"
   }
 }
