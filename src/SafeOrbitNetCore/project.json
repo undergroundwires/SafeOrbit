@@ -14,7 +14,8 @@
         "System.Reflection.TypeExtensions": "4.1.0",
         "System.Security.Cryptography.ProtectedData": "4.0.0",
         "System.Threading.Thread": "4.0.0",
-        "System.Threading.ThreadPool":"4.0.10"
+        "System.Threading.ThreadPool": "4.0.10",
+        "System.Security.Cryptography.Algorithms": "4.2.0"
       },
       "buildOptions": {
         "define": [ "NETCORE" ],

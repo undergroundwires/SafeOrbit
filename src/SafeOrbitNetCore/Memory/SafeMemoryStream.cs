@@ -71,8 +71,13 @@ namespace SafeOrbit.Memory
         private int _currentBlockPosition;
         private bool _ioException;
         private long _length;
-
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SafeMemoryStream"/> class.
+        /// </summary>
+        public SafeMemoryStream()
+        {
+            
+        }
         public override bool CanRead => true;
         public override bool CanSeek => false;
         public override bool CanWrite => !_closed;
