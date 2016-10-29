@@ -68,36 +68,9 @@ You can as well change the inner security settings of library. [Read more on wik
 
 [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeString)
 
-#### Supported encodings
-* Ansii
-* Utf16LittleEndian
-* Utf16BigEndian
-
 
 ### SafeBytes : Protect every single byte
-SafeBytes encryption has different levels. The first level is to have cryptologically strong (hashed with a session key that's unique for each application start) unique identifiers for bytes. Those codes are used during the modification, and this way not a single byte becomes visible in the memory during modification of SafeString.
-
-**Example usage:**
-
-```C#
- var safeBytes = new SafeBytes();
- safeBytes.Append(0);
- safeBytes.Append(5);
- safeBytes.Append(10);
- //safeBytes will hold encrypted 0,5,10 as inner binary
-  ```
-
-#### SafeByte ####
-
-`SafeByte` represents a single byte protected in the memory. They're hashed with a key that's different for each application start. The result of hash with a session key that's created by `SafeRandom`.
-
-`SafeByte` is the first security layer of both `SafeString` and `SafeBytes`. 
-
-`SafeByte` holds instructions to decrpyt the encryption of a single `byte`. The encrypted data (representing a single byte) is not visible in the memory.
-
-Those id's allow equality checks without revealing the real data in the memory (pretty common memory leak, see **.NET**'s [`System.Security.SecureString`](https://msdn.microsoft.com/en-us/library/system.security.securestring%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396) or [`ProtectedData`](https://github.com/huahang/KeePass/blob/master/KeePassLibSD/ProtectedData.cs) from [**KeePass**](https://github.com/huahang/KeePass)). 
-
-Creation of a new `SafeByte` instance is costly, therefore SafeOrbit caches them in the memory (using their id's as keys) and protect their code and state against memory injections. It's **recommended** to call **StartEarly** in your application to do this caching at application start.
+SafeBytes is protected sequence of bytes in memory. You can hide the data from the memory, then modify and compare them safely without revealing the bytes. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes).
 
 ## Detect injections
 
