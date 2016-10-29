@@ -23,9 +23,7 @@ While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-s
 Hit the :star: star :star: button
 
 ## Contribute
-Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues).
-
-[Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Contribute)
+Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues). [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Contribute).
 
 ### Donate
 You can also support the project by buying me a coffee
