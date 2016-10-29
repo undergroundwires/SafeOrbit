@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Utilities;
 
 namespace SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Digests
 {
@@ -72,10 +73,7 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Digests
             xOff = t.xOff;
         }
 
-        public override string AlgorithmName
-        {
-            get { return "SHA-256"; }
-        }
+        public override string AlgorithmName => "SHA-256";
 
         public override int GetDigestSize()
         {

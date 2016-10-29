@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -25,43 +24,49 @@ SOFTWARE.
 
 using System;
 using System.Security.Cryptography;
-using SafeOrbit.Random.TinHat.Crypto;
+using SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto;
 
 namespace SafeOrbit.Cryptography.Random.SafeRandomServices
 {
     /// <summary>
-    /// HashAlgorithmWrapper is an abstraction wrapper class, to contain either .NET System.Security.Cryptography.HashAlgorithm, 
-    /// or Bouncy Castle Org.BouncyCastle.Crypto.IDigest, and make the user agnostic.
+    ///     HashAlgorithmWrapper is an abstraction wrapper class, to contain either .NET
+    ///     System.Security.Cryptography.HashAlgorithm,
+    ///     or Bouncy Castle Org.BouncyCastle.Crypto.IDigest, and make the user agnostic.
     /// </summary>
-    public class HashAlgorithmWrapper : IDisposable
+    internal class HashAlgorithmWrapper : IDisposable
     {
-        protected delegate byte[] ComputeHashDelegate(byte[] data);
-        protected object HashAlgorithmObject;
         protected ComputeHashDelegate ComputeHashDelegateInstance;
-
-        public int HashSizeInBits { get; protected set; }
+        protected object HashAlgorithmObject;
 
         public HashAlgorithmWrapper(HashAlgorithm hashAlg)
         {
             HashAlgorithmObject = hashAlg;
             ComputeHashDelegateInstance = hashAlg.ComputeHash;
-            HashSizeInBits = hashAlg.HashSize;     // HashAlg.HashSize is measured in bits
+            HashSizeInBits = hashAlg.HashSize; // HashAlg.HashSize is measured in bits
         }
+
         public HashAlgorithmWrapper(IDigest bciDigest)
         {
             HashAlgorithmObject = bciDigest;
             ComputeHashDelegateInstance = BouncyCastleComputeHashDelegateProvider;
-            HashSizeInBits = bciDigest.GetDigestSize() * 8;   // GetDigestSize() returns a number of bytes
+            HashSizeInBits = bciDigest.GetDigestSize()*8; // GetDigestSize() returns a number of bytes
+        }
+
+        public int HashSizeInBits { get; protected set; }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
 
         public byte[] ComputeHash(byte[] data)
         {
-            return this.ComputeHashDelegateInstance(data);
+            return ComputeHashDelegateInstance(data);
         }
 
         protected byte[] BouncyCastleComputeHashDelegateProvider(byte[] data)
         {
-            IDigest bciDigest = (IDigest)this.HashAlgorithmObject;
+            var bciDigest = (IDigest) HashAlgorithmObject;
             var output = new byte[bciDigest.GetDigestSize()];
             bciDigest.BlockUpdate(data, 0, data.Length);
             bciDigest.DoFinal(output, 0);
@@ -69,39 +74,38 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
             return output;
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
         protected virtual void Dispose(bool disposing)
         {
             lock (this)
             {
-                if (this.HashAlgorithmObject != null)
+                if (HashAlgorithmObject != null)
                 {
                     try
                     {
-                        if (this.HashAlgorithmObject is IDisposable)
-                        {
-                            ((IDisposable)this.HashAlgorithmObject).Dispose();
-                        }
+                        if (HashAlgorithmObject is IDisposable)
+                            ((IDisposable) HashAlgorithmObject).Dispose();
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                     try
                     {
-                        if (this.HashAlgorithmObject is IDigest)
-                        {
-                            ((IDigest)this.HashAlgorithmObject).Reset();
-                        }
+                        if (HashAlgorithmObject is IDigest)
+                            ((IDigest) HashAlgorithmObject).Reset();
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                     HashAlgorithmObject = null;
                 }
             }
         }
+
         ~HashAlgorithmWrapper()
         {
             Dispose(false);
         }
+
+        protected delegate byte[] ComputeHashDelegate(byte[] data);
     }
 }

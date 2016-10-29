@@ -27,9 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading;
-using SafeOrbit.Random.TinHat.Crypto;
-using SafeOrbit.Random.TinHat.Crypto.Digests;
-using SafeOrbit.Random.TinHat.Crypto.Prng;
+using SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto;
+using SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Digests;
+using SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Prng;
 
 namespace SafeOrbit.Cryptography.Random.SafeRandomServices
 {
@@ -62,7 +62,7 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
     ///     TinHatURandom.StaticInstance.GetBytes(randomBytes);
     /// }
     /// </code></example>
-    public sealed class FastRandomGenerator : RandomNumberGenerator
+    internal sealed class FastRandomGenerator : RandomNumberGenerator
     {
         public static FastRandomGenerator StaticInstance = StaticInstanceLazy.Value;
         private static readonly Lazy<FastRandomGenerator> StaticInstanceLazy = new Lazy<FastRandomGenerator>(

@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Utilities;
 
 namespace SafeOrbit.Cryptography.Random.SafeRandomServices.Crypto.Digests
 {

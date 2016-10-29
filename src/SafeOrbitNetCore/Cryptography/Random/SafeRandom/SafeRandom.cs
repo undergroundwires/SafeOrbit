@@ -25,11 +25,10 @@ SOFTWARE.
 
 using System;
 using System.Security.Cryptography;
+using SafeOrbit.Cryptography.Random.SafeRandomServices;
 
 namespace SafeOrbit.Cryptography.Random
 {
-
-
     /// <summary>
     ///     Only use <see cref="SafeRandom"/> for keys and other things that don't require
     ///      a large number of bytes quickly.Use TinHatURandom for everything else.
@@ -37,7 +36,6 @@ namespace SafeOrbit.Cryptography.Random
     /// <seealso cref="RandomNumberGenerator" />
     public class SafeRandom : ISafeRandom
     {
-        public static ISafeRandom StaticInstance => SafeRandomGenerator.StaticInstance
         private readonly RandomNumberGenerator _generator;
         public SafeRandom() : this(SafeRandomGenerator.StaticInstance) { }
         internal SafeRandom(RandomNumberGenerator generator)
@@ -71,12 +69,14 @@ namespace SafeOrbit.Cryptography.Random
             return (int)(scale);
         }
 
+#if NET46
         public byte[] GetNonZeroBytes(int length)
         {
             var data = new byte[length];
             _generator.GetNonZeroBytes(data);
             return data;
         }
+#endif
 
         public int GetInt(int min, int max)
         {

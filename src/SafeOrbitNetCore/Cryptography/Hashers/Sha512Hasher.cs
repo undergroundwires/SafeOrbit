@@ -24,7 +24,6 @@ SOFTWARE.
 
 using System;
 using System.Security.Cryptography;
-using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Extensions;
 
 namespace SafeOrbit.Cryptography.Hashers
@@ -41,14 +40,11 @@ namespace SafeOrbit.Cryptography.Hashers
         };
 
         private readonly HashAlgorithm _algorithm;
-        private readonly ISafeRandom _safeRandom;
 
-        internal Sha512Hasher(HashAlgorithm algorithm, ISafeRandom safeRandom)
+        internal Sha512Hasher(HashAlgorithm algorithm)
         {
             if (algorithm == null) throw new ArgumentNullException(nameof(algorithm));
-            if (safeRandom == null) throw new ArgumentNullException(nameof(safeRandom));
             _algorithm = algorithm;
-            _safeRandom = safeRandom;
         }
 
         public byte[] Compute(byte[] input)
