@@ -14,7 +14,8 @@
     <releaseNotes>
 	------0.2------
 	-.NET Core is supported.
-	- FastRandom generates secure numbers.
+	- [Security] FastRandom generates secure numbers.
+   	- [Security] Sha512Hasher now uses SafeRandom data as salt.
     - More/better documentations for the code.
 	- More tests
 	
