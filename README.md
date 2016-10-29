@@ -40,38 +40,15 @@ It's much appreciated if you name the library in credits section of your applica
 
 # Documentation
 
-* [Visit full documentation page](http://safeorb.it)
+* [Visit wiki for full documentation](https://github.com/undergroundwires/SafeOrbit/wiki)
 * [Check html help file from repository](./docs/Help.chm)
 
-## LibraryManagement
-`LibraryManagement` is a static class where you can [change the security levels](#change-security-settings) and [start the library early](#startearly).
-
-### StartEarly
-
+## Quick documentation
 **For better performance**, it's **highly recommended** to start the application early in your application start with this line :
 ```C#
  LibraryManagement.StartEary();
 ```
-
-The performance of the library can be improved by calling ``LibraryManagement.StartEarly()`` method during the start of the application. This methods runs some inner ``StartEarlyTask``s that does the necesessary calculations early on, creates objects, starts filling entropy pools.
- 
-You can also set a protection mode from the start, see [change security settings](#change-security-settings) below.
-
-### Change security settings
-
-**For better security** you can enable the inner class protection against memory injections. For client side applications that it's recommended to enable it but it might be unnecesessary  for a server running in a protected enviroment as it'll lower the performance.
-
-Self protection for **SafeOrbit** is off by default. When self protection is set to on, **SafeOrbit** will start stamping their classes against security attacks 
-
-You can change change the protection mode any time you'd like:
-
-```C#
- LibraryManagement.ProtectionMode = SafeContainerProtectionMode.FullProtection;
-```
-
-
-
-**SafeOrbit** as a class library is secured as default against memory or code injections. The inner classes or **SafeOrbit** are provided by a [SafeContainer](#SafeContainer#) that provides injection detection.
+You can as well change the inner security settings of library. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/LibraryManagement#change-security-settings).
 
 ## Memory security
 
