@@ -50,6 +50,9 @@
       <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SafeOrbitNetCore">
+      <HintPath>..\..\SafeOrbitNetCore\bin\Debug\net46\SafeOrbitNetCore.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -142,10 +145,6 @@
     <ProjectReference Include="..\TestApi\TestApi.csproj">
       <Project>{1e69549b-d6a5-42ba-8bd7-b3370731c59a}</Project>
       <Name>TestApi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SafeOrbit\SafeOrbit.csproj">
-      <Project>{ffd400ab-fe87-4cb0-9426-83b7609f9cfa}</Project>
-      <Name>SafeOrbit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
