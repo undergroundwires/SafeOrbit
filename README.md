@@ -8,7 +8,7 @@
 
 ### The nuget package  [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/)
 
-While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it also provides a bunch of tools to implement strong and high performance algorithms for [encryption, hashing and random](#others). It can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#).
+While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security). SafeOrbit can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#). It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for [encryption, hashers and random](#cryptography). 
 
 **SafeOrbit** is **easy to use** as it does not require you to have a big knowledge of cryptology to take advantage of higher security.
 
@@ -82,7 +82,8 @@ You can as well change the inner security settings of library. [Read more on wik
  ```C#
  using(var sm = new SafeStringToStringMarshaler(safeString))
     {
-      // Use sm.String here.  While in the 'using' block, the string is accessible
+
+// Use sm.String here.  While in the 'using' block, the string is accessible
       // but pinned in memory.  When the 'using' block terminates, the string is zeroed
       // out for security, and garbage collected as usual.
     }
@@ -202,7 +203,7 @@ You can use the `InitialSafeObjectSettings` class to set an existing instance of
 
 You can change the protection level depending on an object. For example if your object is stateless, there is no reason to protect the state and you can set the protection mode initially to `SafeObjectProtectionMode.JustCode` or use `safeObject.SetProtectionMode(SafeObjectProtectionMode.JustCode)` dynamically.
 
-## Others
+## Cryptography
 
 ### Encryption
 
@@ -229,7 +230,7 @@ It's implementation,**`Blowfish**`**, passes vector tests and can use different 
 #### Asynchronous encryption
 Encryption algorithms implement `ICryptoTransform` and write a sequence of bytes to the memory stream asynchronously in the [cryptostream](https://msdn.microsoft.com/en-us/library/hh472379(v=vs.110).aspx).
 
-### Hashing
+### Hashers
 
 Supported :
  - [MurmurHash (Murmur32)](https://en.wikipedia.org/wiki/MurmurHash) for better performance.
