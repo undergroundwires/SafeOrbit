@@ -1,4 +1,4 @@
-﻿{
+{
   //"frameworkAssemblies": {
   //  "mscorlib": "",
   //  "System": "",
@@ -28,6 +28,9 @@
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
       }
     }
+  },
+  "dependencies": {
+    "System.Reflection.Metadata": "1.4.1-beta-24322-03"
   },
   "version": "0.2.0-*"
 }
