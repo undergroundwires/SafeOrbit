@@ -29,10 +29,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using SafeOrbit.Memory.Serialization.SerializationServices;
+using SafeOrbit.Infrastructure.Serialization.SerializationServices;
 using SafeOrbit.Memory.SafeObject.SharpSerializer;
 
-namespace SafeOrbit.Memory.Serialization.SerializationServices
+namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 {
     [TestFixture]
     public class HelloWorldTests
@@ -53,7 +53,7 @@ namespace SafeOrbit.Memory.Serialization.SerializationServices
 
         #region HelloWorldTests
 
-        private static void Serialize(HelloWorldTestCase testCase, SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer serializer)
+        private static void Serialize(HelloWorldTestCase testCase, SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer serializer)
         {
             using (var stream = new MemoryStream())
             {
@@ -335,13 +335,13 @@ namespace SafeOrbit.Memory.Serialization.SerializationServices
             Two,
             Three
         }
-        private SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer GetSut()
+        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut()
         {
-            return new SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer();
+            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer();
         }
-        private SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer GetSut(BinarySettings settings)
+        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut(BinarySettings settings)
         {
-            return new SafeOrbit.Memory.Serialization.SerializationServices.SharpSerializer(settings);
+            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer(settings);
         }
     }
 }

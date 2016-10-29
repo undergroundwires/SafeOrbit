@@ -30,10 +30,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework;
 using SafeOrbit.Memory.Common;
-using SafeOrbit.Memory.Serialization;
+using SafeOrbit.Infrastructure.Serialization;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.Memory.Serialization
+namespace SafeOrbit.Infrastructure.Serialization
 {
     /// <seealso cref="Serializer" />
     /// <seealso cref="ISerializer" />

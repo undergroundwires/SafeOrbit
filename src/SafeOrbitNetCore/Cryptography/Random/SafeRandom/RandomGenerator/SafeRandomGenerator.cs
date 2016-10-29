@@ -59,19 +59,32 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
         private const int TrueInt = 1;
         private const int FalseInt = 0;
         private static readonly Lazy<SafeRandomGenerator> StaticInstanceLazy = new Lazy<SafeRandomGenerator>();
-        private List<IEntropyHasher> _entropyHashers;
+        private IReadOnlyList<IEntropyHasher> _entropyHashers;
         private int _hashLengthInBytes;
         private int _isDisposed = FalseInt;
  
-        public SafeRandomGenerator()
+        public SafeRandomGenerator() : this(GetAllEntropyHashers())
         {
-            _entropyHashers = new List<IEntropyHasher>();
+
+        }
+
+        public SafeRandomGenerator(List<IEntropyHasher> entropyHashers)
+        {
+            _entropyHashers = entropyHashers;
+            CtorSanityCheck();
+        }
+
+        public static SafeRandomGenerator StaticInstance => StaticInstanceLazy.Value;
+
+        private static List<IEntropyHasher> GetAllEntropyHashers()
+        {
+            var hashers = new List<IEntropyHasher>();
 
             // Add the .NET implementation of SHA256 and RNGCryptoServiceProvider
             {
                 var rng = new SystemRng();
                 var hashWrapper = new HashAlgorithmWrapper(SHA256.Create());
-                _entropyHashers.Add(new EntropyHasher(rng, hashWrapper));
+                hashers.Add(new EntropyHasher(rng, hashWrapper));
             }
 
             // Add the ThreadedSeedGeneratorRNG as entropy source, and chain SHA256 and RipeMD256 as hash algorithms
@@ -82,25 +95,17 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
                     new HashAlgorithmWrapper(SHA256.Create()),
                     new HashAlgorithmWrapper(new RipeMD256Digest())
                 };
-                _entropyHashers.Add(new EntropyHasher(rng, hashWrappers));
+                hashers.Add(new EntropyHasher(rng, hashWrappers));
             }
 
             // Add the ThreadSchedulerRNG as entropy source, and SHA256 as hash algorithm
             {
                 var rng = new ThreadSchedulerRng();
                 var hashWrapper = new HashAlgorithmWrapper(new Sha256Digest());
-                _entropyHashers.Add(new EntropyHasher(rng, hashWrapper));
+                hashers.Add(new EntropyHasher(rng, hashWrapper));
             }
-            CtorSanityCheck();
+            return hashers;
         }
-
-        public SafeRandomGenerator(List<IEntropyHasher> entropyHashers)
-        {
-            _entropyHashers = entropyHashers;
-            CtorSanityCheck();
-        }
-
-        public static SafeRandomGenerator StaticInstance => StaticInstanceLazy.Value;
 
         private void CtorSanityCheck()
         {
@@ -283,7 +288,7 @@ namespace SafeOrbit.Cryptography.Random.SafeRandomServices
                 return;
             if (_entropyHashers != null)
             {
-                List<IEntropyHasher> myHashers = _entropyHashers;
+                var myHashers = _entropyHashers;
                 _entropyHashers = null;
                 try
                 {

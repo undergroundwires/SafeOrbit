@@ -25,11 +25,11 @@ SOFTWARE.
 
 using System.Collections.Generic;
 using NUnit.Framework;
-using SafeOrbit.Memory.Serialization.SerializationServices.Advanced;
-using SafeOrbit.Memory.Serialization.SerializationServices.Core;
-using SafeOrbit.Memory.Serialization.SerializationServices.Serializing;
+using SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced;
+using SafeOrbit.Infrastructure.Serialization.SerializationServices.Core;
+using SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializing;
 
-namespace SafeOrbit.Memory.Serialization.SerializationServices
+namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 {
     [TestFixture]
     public class PropertyFactoryTests

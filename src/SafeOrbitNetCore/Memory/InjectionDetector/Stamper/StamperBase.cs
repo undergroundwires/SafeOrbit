@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,32 +22,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using SafeOrbit.Hash;
+using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Memory.Injection;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {
-    internal abstract class StamperBase<TObject>: IStamper<TObject>
+    /// <summary>
+    ///     Base class for stampers that returns hash of the bytes from the member class.
+    /// </summary>
+    internal abstract class StamperBase<TObject> : IStamper<TObject>
     {
-        protected abstract byte[] GetSerializedBytes(TObject @object);
-        public abstract InjectionType InjectionType { get; }
         private readonly IFastHasher _fastHasher;
+
         protected StamperBase(IFastHasher fastHasher)
         {
             _fastHasher = fastHasher;
         }
+
+        public abstract InjectionType InjectionType { get; }
+
+        public IStamp<int> GetStamp(TObject @object)
+        {
+            var hash = SerializeAndHash(@object);
+            return new Stamp(hash);
+        }
+
+        protected abstract byte[] GetSerializedBytes(TObject @object);
         protected int Hash(byte[] input) => _fastHasher.ComputeFast(input);
+
         private int SerializeAndHash(TObject @object)
         {
             var serialization = GetSerializedBytes(@object);
             var hash = _fastHasher.ComputeFast(serialization);
             return hash;
-        }
-        public IStamp<int> GetStamp(TObject @object)
-        {
-            var hash = SerializeAndHash(@object);
-            return new Stamp(hash);
         }
     }
 }
