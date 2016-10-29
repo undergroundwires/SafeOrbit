@@ -58,7 +58,6 @@ namespace SafeOrbit.Memory
     ///     </p>
     /// </remarks>
     /// <seealso cref="Stream" />
-    /// <seealso cref="MemoryStream" />
     /// <seealso cref="SafeMemoryStream.Close()" />
     /// <seealso cref="SafeMemoryStream.Read(byte[], int,int)" />
     public class SafeMemoryStream : Stream
@@ -248,8 +247,10 @@ namespace SafeOrbit.Memory
             // flushARE.Dispose();
             base.Dispose(disposing);
         }
-
-
+        /// <summary>
+        /// Closes the instance. The reader may read up to the number of bytes available, and subsequent calls to <see cref="SafeMemoryStream.Read(byte[], int,int)" /> will return <c>0</c>.
+        /// </summary>
+        public void Close() => _closed = true;
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
         public void EnsureReadOrWriteParameters(byte[] buffer, int offset, int count)
