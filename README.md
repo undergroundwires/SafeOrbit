@@ -84,32 +84,15 @@ You can also use [`SafeContainer`](#safecontainer#) to have a factory that track
 
 Internal protection for C# code and classes will be **disabled as default** for the SafeOrbit's inner code. To get notified by memory injections to SafeOrbit's library, you can enable it [by changing SafeOrbit's security settings](#change-security-settings).
 
-### SafeObject
+### [SafeObject](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject)
+An object that can detect memory injections to itself.
 
-**`SafeObject`** is a class that provides locking pattern to access object in a thread safe matter. It uses `IInjectionProtector` internally that checks if the object is safe (not injected in the memory) on each access to the object. The security mode can be changed dynamically or in the constructor.
-
-**Caution** : This class should not be used for strings or binaries (`byte[]`). Use the better classes that's specificialyl designed for this puproses : `SafeString` and `SafeBytes`.
-
-#### Usage
 ```C#
-            var safeObject = new SafeObject<Customer>(/*leaving default instance empty in constructor to get a new instance*/);
-            //you can alternatively use an existing instance to protect: new SafeObject&lt;TObject&gt;(new InitialSafeObjectSettings(initialValue, true));
+            var safeObject = new SafeObject<Customer>();
             //each change to the object's state or code must be using ApplyChanges
-            safeObject.ApplyChanges((customer) => customer.Id = 5);
+            safeObject.ApplyChanges((customer) => customer.SensitiveInfo = "I'm protected!");
             //retrieve safe data
-            var customerId = safeObject.Object.Id; //returns 5 or alerts if any injection is detected
-```
-
-#### Advanced usage
-```C#
-            //if the object's Id property becomes 0 by any non-applied change,
-            //the SafeObject instance will alert a memory injection depending on its protection mode.
-            safeObject.SetProtectionMode(SafeObjectProtectionMode.StateAndCode); //changes its protection mode to no protection
-            //you can change the alert channel:
-            safeObject.AlertChannel = InjectionAlertChannel.DebugWrite; //any detected injections will be alerted using the alert channel
-            safeObject.SetProtectionMode(SafeObjectProtectionMode.NoProtection); //stops the protection of object,
-            //SafeObject will never alert when it's not protected.
-            var willAlert = safeObject.CanAlert; //returns false as the instance will only alert when it's protected.
+            var semsotoveOmfp = safeObject.Object.SensitiveInfo; //returns "I'm protected!" or alerts if any injection is detected
 ```
 
 ### SafeContainer
@@ -186,17 +169,12 @@ It's implementation,**`Blowfish**`**, passes vector tests and can use different 
 #### Asynchronous encryption
 Encryption algorithms implement `ICryptoTransform` and write a sequence of bytes to the memory stream asynchronously in the [cryptostream](https://msdn.microsoft.com/en-us/library/hh472379(v=vs.110).aspx).
 
-### Hashers
-
+### [Hashers](https://github.com/undergroundwires/SafeOrbit/wiki/Hashers)
 Supported :
- - [MurmurHash (Murmur32)](https://en.wikipedia.org/wiki/MurmurHash) for better performance.
- - [SHA512](https://en.wikipedia.org/wiki/SHA-2) for higher security.
- 
- [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Hashers).
- 
+ - **MurmurHash (Murmur32)** for better performance, it should be seeded and salted.
+ - **SHA512** for higher security.
 
-### Random
-
+### [Random](https://github.com/undergroundwires/SafeOrbit/wiki/Random).
 > What if your OS crypto random has in any way been undermined (for example, by a nefarious government agency, or simple incompetence)?
 
-`SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Random).
+`SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random.
