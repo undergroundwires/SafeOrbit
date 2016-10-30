@@ -30,8 +30,13 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory
 {
-    /// <seealso cref="SafeObject{TObject}" />
-    /// <seealso cref="SafeObjectProtectionMode" />
+    /// <summary>
+    /// Abstracts an object that can detect the injections to itself.
+    /// </summary>
+    /// <typeparam name="TObject">The type of the the class.</typeparam>
+    /// <seealso cref="Common.IProtectionLevelSwitchProvider{SafeObjectProtectionMode}" />
+    /// <seealso cref="IAlerts" />
+    /// <seealso cref="IDisposable" />
     public interface ISafeObject<out TObject> :
         IProtectionLevelSwitchProvider<SafeObjectProtectionMode>,
         IAlerts,
