@@ -29,12 +29,6 @@ Hit the :star: star :star: button
 ## Contribute
 Feel free to contribute by joining the coding process or opening [issues](https://github.com/undergroundwires/safeOrbit/issues). [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Contribute).
 
-### Donate
-You can also support the project by buying me a coffee
-
-[![](https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/paypal_donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CXXENGW8QMABC)
-
-
 ## License
 [This project is MIT Licensed](LICENSE).
 
