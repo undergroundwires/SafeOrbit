@@ -56,11 +56,19 @@ You can as well change the inner security settings of library. [Read more on wik
 
 ## Memory security
 
-### SafeString : Protect your strings
+### SafeString [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes)
 `SafeString` represents an encrypted string that's not leaked in the memory. It's modifiable and can work with [different encodings](#supported-encodings#).
 
 #### SafeString vs [System.Security.SecureString](https://msdn.microsoft.com/en-us/library/system.security.securestring(v=vs.110).aspx) 
 
+    |                       Class : SecureString | SafeString |
+    |--------------------------------------------|------------|
+    |  Supports multiple encodings :       ✘     |     ✔      |
+    |      Safely character insert :       ✘     |     ✔      |
+    |      Safely character remove :       ✘     |     ✔      |
+    |                Safely equals :       ✘     |     ✔      |
+   	|              Safely retrieve :       ✘     |     ✔      |
+    
 ##### Safe to modify
 `SecureString` is only char appendable and you need to reveal the sensitive information in order to be able to modify it. But `SafeString` can be safely modified by inserting chars/strings/bytes, deleting, replacing and more.
 
@@ -70,19 +78,14 @@ You can as well change the inner security settings of library. [Read more on wik
 ##### Retrieve the protected data
 `SecureString` is not retrievable, but `SafeString` is. You can use a built-in `SafeStringToStringMarshaler` class to do this.
 
-[Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeString)
-
-
-### SafeBytes : Protect every single byte
-SafeBytes is protected sequence of bytes in memory. You can hide the data from the memory, then modify and compare them safely without revealing the bytes. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes).
+### SafeBytes [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes)
+`SafeBytes` is protected sequence of bytes in memory. You can hide the data from the memory, then modify and compare them safely without revealing the bytes. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes).
 
 ## Detect injections
 
-You can detect injections for the state (data in the memory), and/or code of any C# class. You can scan and alert the injections using [`InjectionDetector`](#injection-detector) in lower levels. However, it's  **recommended** to use [`SafeObject`](#safeobject#) for the object you want to track.
+You can detect injections for the state (data in the memory), and/or code of any `.NET` class. 
 
-You can also use [`SafeContainer`](#safecontainer#) to have a factory that tracks all of its instances.
-
-Internal protection for C# code and classes will be **disabled as default** for the SafeOrbit's inner code. To get notified by memory injections to SafeOrbit's library, you can enable it [by changing SafeOrbit's security settings](#change-security-settings).
+Internal protection for `SafeOrbit` library be **enabled as default**. You can disable it to gain more performance [by changing SafeOrbit's security settings](#change-security-settings).
 
 ### SafeObject [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject)
 An object that can detect memory injections to itself.
