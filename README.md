@@ -68,7 +68,8 @@ You can as well change the inner security settings of library. [Read more on wik
 |      Safely character remove |       ✖     |     ✔      |
 |                Safely equals |       ✖     |     ✔      |
 |              Safely retrieve |       ✖     |     ✔      |
-    
+|         Unlimited characters |       ✖     |     ✔      |
+
 
 ### SafeBytes [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes)
 `SafeBytes` is protected sequence of bytes in memory. You can hide the data from the memory, then modify and compare them safely without revealing the bytes. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes).
