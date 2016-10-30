@@ -144,37 +144,19 @@ You can change the protection level depending on an object. For example if your 
 
 ## Cryptography
 
-### Encryption
+### Encryption [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/Encryption)
+Supported:
+ - Asynchronous encryption
+ - **Aes-256** implementation with Pbkdf2, random IV and salt. Aes-256 is considered as one of the strongest encryption algorithms. It's implemented with more security layers with a very easy to use interface in **SafeOrbit**.
+ - **Blowfish** is implemented with a more secure CBC mode with IV. The implementation passes the vector tests. The algorithm is considered as one of the fastest encryption algorithms.
 
-There are **Aes** and **Blowfish** implementations to provide stronger and faster security. They are  are pretty easy-to use and are implemented in a secure way. They can be used synchronously and asynchronously.
 
-#### Aes the `ISafeEncrpytor`
-
-**`ISafeEncryptor`** abstracts an encryption operation which is designed to be slower to be more secure.
-Use it when you choose more security over performance (for most sensitive data).
-
-**`AesEncryptor`** is the implementation of `ISafeEncryptor`. It uses =>
- - 256 bit key
- - random IV for each encryption
- - secures the key with with 100 iterations of Pbkdf2 key derivation function.
-
-#### Blowfish the `IFastEncryptor`
-
-**`IFastEncryptor`** abstracts a secure and faster encryption alghoritm.
-
-Use it when the performance is also important as security.
-
-It's implementation,**`Blowfish**`**, passes vector tests and can use different cipher modes. The default `CBC` mode uses a random IV while `ECB` has no IV protection.
-
-#### Asynchronous encryption
-Encryption algorithms implement `ICryptoTransform` and write a sequence of bytes to the memory stream asynchronously in the [cryptostream](https://msdn.microsoft.com/en-us/library/hh472379(v=vs.110).aspx).
-
-### [Hashers](https://github.com/undergroundwires/SafeOrbit/wiki/Hashers)
+### Hashers [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/Hashers)
 Supported :
  - **MurmurHash (Murmur32)** for better performance, it should be seeded and salted.
  - **SHA512** for higher security.
 
-### [Random](https://github.com/undergroundwires/SafeOrbit/wiki/Random).
+### Random [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/Random)
 > What if your OS crypto random has in any way been undermined (for example, by a nefarious government agency, or simple incompetence)?
 
 `SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random.
