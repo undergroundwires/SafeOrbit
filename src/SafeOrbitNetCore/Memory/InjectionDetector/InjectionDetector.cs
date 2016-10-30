@@ -57,8 +57,7 @@ namespace SafeOrbit.Memory.Injection
 
         private readonly ITypeIdGenerator _typeIdGenerator;
 
-        private ConcurrentDictionary<long, IStamp<int>> _stateStampsDictionary =
-            new ConcurrentDictionary<long, IStamp<int>>();
+        private IStamp<int> _lastStateStamp;
 
         public InjectionDetector(bool justCode = true, bool justState = true, InjectionAlertChannel alertChannel = Defaults.AlertChannel) : this
         (
@@ -107,7 +106,7 @@ namespace SafeOrbit.Memory.Injection
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             if (this.ScanState)
             {
-                SaveStateStampFor(obj);
+                SaveStateStamp(obj);
             }
             if (this.ScanCode)
             {
@@ -158,11 +157,9 @@ namespace SafeOrbit.Memory.Injection
             CodeStampsDictionary.AddOrUpdate(codeId, codeStamp, (key, existingVal) => codeStamp);
         }
 
-        private void SaveStateStampFor(object obj)
+        private void SaveStateStamp(object obj)
         {
-            var stateId = GetStateId(obj);
-            var stateStamp = _stateStamper.GetStamp(obj);
-            _stateStampsDictionary.AddOrUpdate(stateId, stateStamp, (key, existingVal) => stateStamp);
+            _lastStateStamp = _stateStamper.GetStamp(obj);
         }
 
         /// <exception cref="ArgumentException">
@@ -195,7 +192,6 @@ namespace SafeOrbit.Memory.Injection
             return stamp;
         }
 
-        private long GetStateId(object obj) => _objectIdGenerator.GetStateId(obj);
         private string GetCodeId(Type type) => _typeIdGenerator.Generate(type);
 
         #region [IAlerts]
