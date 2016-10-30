@@ -84,7 +84,7 @@ You can also use [`SafeContainer`](#safecontainer#) to have a factory that track
 
 Internal protection for C# code and classes will be **disabled as default** for the SafeOrbit's inner code. To get notified by memory injections to SafeOrbit's library, you can enable it [by changing SafeOrbit's security settings](#change-security-settings).
 
-### [SafeObject](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject)
+### SafeObject [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject)
 An object that can detect memory injections to itself.
 
 ```C#
@@ -95,52 +95,11 @@ An object that can detect memory injections to itself.
             var semsotoveOmfp = safeObject.Object.SensitiveInfo; //returns "I'm protected!" or alerts if any injection is detected
 ```
 
-### SafeContainer
-**`SafeContainer`** is a dependency container that uses `InjectionProtector` to protect its instances and instance creation logic. It holds its data in an inner `SafeObject`. 
+### SafeContainer [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeContainer)
+**`SafeContainer`** is a dependency container that detects and notifies injections to its instances. It's security mode can be changed dynamically.
 
-The security mode any of the `SafeContainer` can be disabled via calling `container.SetProtectionMode(SafeContainerProtectionMode.NonProtection)` for the instance. It can also be re-enabled by calling `container.SetProtectionMode(SafeContainerProtectionMode.FullProtection)`.
-
-This class is used widely in `SafeOrbit` for dependency injection pattern, [you can change the inner injection protection](#change-security-settings) of `SafeOrbit` as well.
-
-### InjectionDetector
-**`InjectionProtector`** is the lowest level of injection detection. It's consumed by both `SafeObject` and `SafeContainer`. It keeps track of the state or IL-code of any class, stamps them regularly and validates that the class/object is not injected by comparing last stamps.
-
-#### Example
-```C#
-            var obj = new[] {5, 10};
-            var protector = new InjectionProtector(protectCode: true, protectState:true);
-            protector.NotifyChanges(obj);
-            protector.AlertChannel = InjectionAlertChannel.ThrowException;
-            protector.AlertUnnotifiedChanges(obj); //does not throw
-            obj[1] = 5;
-            protector.AlertUnnotifiedChanges(obj); //throws as the change is not notified.
-```
-
-
-#### Example
-
-Let's say that we have `UserCreditials` that holds sensitive data, and we want to secure this class in the memory.
-
-```C#
-var safeUserCreditials = new SafeObject<UserCreditials>(); //Creates a new instance of UserCreditials
-safeUserCreditials.Object.Username = "newUserName"; // modify the inner object
-safeUserCreditials.Object.Password = "safePassword";
-safeUserCreditials.VerifyChanges(); //verifies that the changes are made by the application
-safeUserCreditials.CloseToAllChanges(); //closes the object to further modifications (note that VerifyChanges cannot be used after this method is called)
-```
-
-You can use the `InitialSafeObjectSettings` class to set an existing instance of `UserCreditials` or more:
-
-```C#
-           var safeUserCreditials = new SafeObject<UserCreditials>(new InitialSafeObjectSettings
-            {
-                InitialValue = existingUserCreditials,
-                IsModifiable = true,
-                ProtectionMode = SafeObjectProtectionMode.StateAndCode
-            }); //secures the "existingUserCreditials"
-```
-
-You can change the protection level depending on an object. For example if your object is stateless, there is no reason to protect the state and you can set the protection mode initially to `SafeObjectProtectionMode.JustCode` or use `safeObject.SetProtectionMode(SafeObjectProtectionMode.JustCode)` dynamically.
+### InjectionDetector [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/InjectionDetector)
+A service that's consumed by `SafeContainer` and `SafeObject`. It's the lowest level of the injection detection and alerting mechanism.
 
 ## Cryptography
 
