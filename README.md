@@ -61,22 +61,14 @@ You can as well change the inner security settings of library. [Read more on wik
 
 #### SafeString vs [System.Security.SecureString](https://msdn.microsoft.com/en-us/library/system.security.securestring(v=vs.110).aspx) 
 
-    |                       Class : SecureString | SafeString |
-    |--------------------------------------------|------------|
-    |  Supports multiple encodings :       ✘     |     ✔      |
-    |      Safely character insert :       ✘     |     ✔      |
-    |      Safely character remove :       ✘     |     ✔      |
-    |                Safely equals :       ✘     |     ✔      |
-   	|              Safely retrieve :       ✘     |     ✔      |
+|                              | SecureString | SafeString |
+|------------------------------|-------------|------------|
+|  Supports multiple encodings |      ✖      |     ✔      |
+|      Safely character insert |       ✖     |     ✔      |
+|      Safely character remove |       ✖     |     ✔      |
+|                Safely equals |       ✖     |     ✔      |
+|              Safely retrieve |       ✖     |     ✔      |
     
-##### Safe to modify
-`SecureString` is only char appendable and you need to reveal the sensitive information in order to be able to modify it. But `SafeString` can be safely modified by inserting chars/strings/bytes, deleting, replacing and more.
-
-##### Safe to compare
-`SecureString`'s are not comparable with each other. But the security design and architecture of `SafeString` makes it safe to compare with another sensitive information in a secure context.
-
-##### Retrieve the protected data
-`SecureString` is not retrievable, but `SafeString` is. You can use a built-in `SafeStringToStringMarshaler` class to do this.
 
 ### SafeBytes [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes)
 `SafeBytes` is protected sequence of bytes in memory. You can hide the data from the memory, then modify and compare them safely without revealing the bytes. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes).
