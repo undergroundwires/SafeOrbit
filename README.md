@@ -51,7 +51,7 @@ You can as well change the inner security settings of library. [Read more on wik
 ## Memory security
 
 ### SafeString [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes)
-`SafeString` represents an encrypted string that's not leaked in the memory. It has more advantages than similiar classes because of the security design of the application.
+`SafeString` represents an encrypted string that's not leaked in the memory. It has more advantages over `System.Security.SecureString` because of the security design of the **SafeOrbit**.
 
 #### SafeString vs [System.Security.SecureString](https://msdn.microsoft.com/en-us/library/system.security.securestring(v=vs.110).aspx) 
 
