@@ -49,9 +49,17 @@ namespace SafeOrbit.Cryptography.Hashers
 
         public byte[] Compute(byte[] input)
         {
+<<<<<<< HEAD
+            var saltedBuffer = new byte[input.Length + SaltBytes.Length];
+            Buffer.BlockCopy(SaltBytes, 0, saltedBuffer, 0, SaltBytes.Length);
+            Buffer.BlockCopy(input, 0, saltedBuffer, SaltBytes.Length, input.Length);
+            var result = _algorithm.ComputeHash(saltedBuffer);
+            Array.Clear(saltedBuffer, 0, saltedBuffer.Length);
+=======
             var data = input.Combine(SaltBytes);
             var result = _algorithm.ComputeHash(data);
             Array.Clear(data, 0, data.Length);
+>>>>>>> 1fc22b9925ccbf033e54e5346e7c4e0be7e2d821
             return result;
         }
     }
