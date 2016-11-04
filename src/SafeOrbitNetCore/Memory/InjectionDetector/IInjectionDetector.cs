@@ -47,7 +47,9 @@ namespace SafeOrbit.Memory
     /// <seealso cref="MemoryInjectionException" />
     /// <seealso cref="InjectionDetector" />
     /// <seealso cref="IAlerts" />
-    public interface IInjectionDetector : IAlerts
+    public interface IInjectionDetector :
+        IDisposable,
+        IAlerts
     {
         bool ScanState { get; set; }
         bool ScanCode { get; set; }

@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Memory.Injection;
@@ -271,9 +272,9 @@ namespace SafeOrbit.Memory
 
         private static bool IsDictionary(Type t)
         {
-            var isDic = typeof(IDictionary).IsAssignableFrom(t);
+            var isDic = typeof(IDictionary).GetTypeInfo().IsAssignableFrom(t);
             if (isDic) return true;
-            var isGenericDic = t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(Dictionary<,>));
+            var isGenericDic = t.GetTypeInfo().IsGenericType && (t.GetGenericTypeDefinition() == typeof(Dictionary<,>));
             return isGenericDic;
         }
 
@@ -313,7 +314,7 @@ namespace SafeOrbit.Memory
                     _injectionDetector.ScanState = false;
                     break;
                 default:
-                    throw new InvalidEnumArgumentException(nameof(context.NewValue));
+                    throw new UnexpectedEnumValueException<SafeObjectProtectionMode>(context.NewValue);
             }
         }
 

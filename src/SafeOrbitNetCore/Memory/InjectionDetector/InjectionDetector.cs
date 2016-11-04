@@ -204,5 +204,30 @@ namespace SafeOrbit.Memory.Injection
         public bool CanAlert => ScanCode || ScanState;
 
         #endregion
+
+        #region [IDisposable]
+        private bool _isDisposed; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                _lastStateStamp = null;
+                _isDisposed = true;
+            }
+        }
+
+        ~InjectionDetector()
+        {
+            Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

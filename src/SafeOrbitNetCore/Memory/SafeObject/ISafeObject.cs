@@ -23,8 +23,7 @@ SOFTWARE.
 */
 
 using System;
-using SafeOrbit.Exceptions;
-using SafeOrbit.Memory.Common;
+using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory

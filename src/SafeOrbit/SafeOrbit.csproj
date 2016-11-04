@@ -86,10 +86,6 @@
     <Compile Include="Library\StartEarly\StartEarlyTaskBase.cs" />
     <Compile Include="Library\StartEarly\IStartEarlyTask.cs" />
     <Compile Include="Library\StartEarly\Tasks\StartFillingEntropyPoolsStartEarlyTask.cs" />
-    <Compile Include="Memory\Common\ProtectionLevelSwitch\IProtectionLevelSwitchingContext.cs" />
-    <Compile Include="Memory\Common\ProtectionLevelSwitch\IProtectionLevelSwitchProvider.cs" />
-    <Compile Include="Memory\Common\ProtectionLevelSwitch\ProtectionLevelSwitchingContext.cs" />
-    <Compile Include="Memory\Common\ProtectionLevelSwitch\ProtectionLevelSwitchProviderBase.cs" />
     <Compile Include="Memory\SafeBytes\SafeByte\Factory\ISafeByteFactory.cs" />
     <Compile Include="Memory\SafeBytes\SafeByte\Collection\ISafeByteCollection.cs" />
     <Compile Include="Memory\SafeBytes\SafeByte\ISafeByte.cs" />
