@@ -26,9 +26,8 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using SafeOrbit.Random.Tinhat;
 
-namespace SafeOrbit.Cryptography.Random.SafeRandomServices
+namespace SafeOrbit.Cryptography.Random.RandomServices
 {
     public interface IEntropyHasher : IDisposable
     {

@@ -124,12 +124,6 @@
     <Compile Include="Infrastructure\Reflection\TypeKeyGenerator.cs" />
     <Compile Include="Memory\SafeMemoryStream.cs" />
     <Compile Include="Infrastructure\Exceptions\MemoryInjectionException.cs" />
-    <Compile Include="Memory\SafeObject\SafeObjectFactory.cs" />
-    <Compile Include="Memory\SafeObject\Settings\IInitialSafeObjectSettings.cs" />
-    <Compile Include="Memory\SafeObject\ISafeObject.cs" />
-    <Compile Include="Memory\SafeObject\SafeObjectProtectionMode.cs" />
-    <Compile Include="Memory\SafeObject\SafeObject.cs" />
-    <Compile Include="Memory\SafeObject\Settings\SafeObjectSettings.cs" />
     <Compile Include="Memory\SafeString\ISafeString.cs" />
     <Compile Include="Memory\SafeString\ISafeStringToStringMarshaler.cs" />
     <Compile Include="Memory\SafeString\SafeString.cs" />
