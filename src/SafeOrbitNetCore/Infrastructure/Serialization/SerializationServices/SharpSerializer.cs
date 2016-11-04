@@ -41,8 +41,9 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 {
     /// <summary>
     ///     This is the main class of SharpSerializer. It serializes and deserializes objects.
+    ///     SafeOrbit SharpSerializer is modified and is not the same as the original.
     /// </summary>
-    internal sealed class SharpSerializerExtended
+    internal sealed class SharpSerializer
     {
         private IPropertyDeserializer _deserializer;
         private PropertyProvider _propertyProvider;
