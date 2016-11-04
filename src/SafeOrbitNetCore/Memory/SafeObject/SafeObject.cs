@@ -139,7 +139,7 @@ namespace SafeOrbit.Memory
         ///     <p><paramref name="injectionDetector" /> is <see langword="null" />.</p>
         ///     <p>Initial object value from <see cref="settings" /> is null or cannot be casted to <see cref="TObject" /></p>
         /// </exception>
-        internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector)
+        internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector, InjectionAlertChannel alertChannel)
             : base(settings.ProtectionMode)
         {
             if (injectionDetector == null) throw new ArgumentNullException(nameof(injectionDetector));

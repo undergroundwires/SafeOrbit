@@ -25,7 +25,7 @@ SOFTWARE.
 
 using System;
 using System.Security.Cryptography;
-using SafeOrbit.Cryptography.Random.SafeRandomServices;
+using SafeOrbit.Cryptography.Random.Common;
 
 namespace SafeOrbit.Cryptography.Random
 {
