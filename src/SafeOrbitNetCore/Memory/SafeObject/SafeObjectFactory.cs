@@ -23,22 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using SafeOrbit.Memory;
-using SafeOrbit.Memory.InjectionServices;
-
-namespace SafeOrbit
+namespace SafeOrbit.Memory
 {
-    internal class Defaults
+    public class SafeObjectFactory : ISafeObjectFactory
     {
-        //SafeObject
-        public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
-        public static IInitialSafeObjectSettings SafeObjectSettings => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, AlertChannel);
-
-        //SafeContainer
-        //public const SafeContainerProtectionMode ContainerProtectionMode = SafeContainerProtectionMode.FullProtection;
-
-
-        //InjectionProtector
-        public const InjectionAlertChannel AlertChannel = InjectionAlertChannel.ThrowException;
+        public static ISafeObjectFactory StaticInstance => new SafeObjectFactory();
+        public ISafeObject<T> Get<T>(IInitialSafeObjectSettings settings) where T : class, new()
+        {
+            return new SafeObject<T>(settings);
+        }
+    }
+    public interface ISafeObjectFactory
+    {
+        ISafeObject<T> Get<T>(IInitialSafeObjectSettings settings) where T : class, new();
     }
 }

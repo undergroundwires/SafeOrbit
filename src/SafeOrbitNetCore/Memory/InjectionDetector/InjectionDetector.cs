@@ -41,7 +41,7 @@ namespace SafeOrbit.Memory.Injection
     /// <seealso cref="IInjectionDetector" />
     /// <seealso cref="IDisposable" />
     /// <seealso cref="ISafeObject{TObject}" />
-    public class InjectionDetector
+    public class InjectionDetector : IInjectionDetector
     {
         private static readonly ConcurrentDictionary<string, IStamp<int>> CodeStampsDictionary =
             new ConcurrentDictionary<string, IStamp<int>>(); //static for caching as types always must be the same.

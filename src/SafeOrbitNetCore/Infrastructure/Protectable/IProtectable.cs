@@ -23,22 +23,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using SafeOrbit.Memory;
 using SafeOrbit.Memory.InjectionServices;
 
-namespace SafeOrbit
+namespace SafeOrbit.Infrastructure.Protectable
 {
-    internal class Defaults
+    /// <summary>
+    ///     Defines a class that can work in different protection modes, and can dynamically switch between them.
+    /// </summary>
+    /// <typeparam name="TProtectionLevel">The type of the protection model.</typeparam>
+    public interface IProtectable<TProtectionLevel>
+        where TProtectionLevel : struct
     {
-        //SafeObject
-        public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
-        public static IInitialSafeObjectSettings SafeObjectSettings => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, AlertChannel);
+        /// <summary>
+        ///     Gets the current protection mode.
+        /// </summary>
+        /// <value>The current protection mode.</value>
+        TProtectionLevel CurrentProtectionMode { get; }
 
-        //SafeContainer
-        //public const SafeContainerProtectionMode ContainerProtectionMode = SafeContainerProtectionMode.FullProtection;
-
-
-        //InjectionProtector
-        public const InjectionAlertChannel AlertChannel = InjectionAlertChannel.ThrowException;
+        /// <summary>
+        ///     Sets the protection mode.
+        /// </summary>
+        /// <param name="objectProtectionMode">The object protection mode.</param>
+        void SetProtectionMode(TProtectionLevel objectProtectionMode);
     }
 }

@@ -26,16 +26,16 @@ SOFTWARE.
 using System;
 using System.Threading;
 
-namespace SafeOrbit.Memory.Common
+namespace SafeOrbit.Infrastructure.Protectable
 {
     /// <summary>
     ///     A base class that provides helper methods for the implementation of
-    ///     <see cref="IProtectionLevelSwitchProvider{TProtectionLevel}" />.
+    ///     <see cref="IProtectable{TProtectionLevel}" />.
     /// </summary>
     /// <typeparam name="TProtectionLevel">The type of the t protection level.</typeparam>
-    /// <seealso cref="IProtectionLevelSwitchProvider{TProtectionLevel}" />
-    public abstract class ProtectionLevelSwitchProviderBase<TProtectionLevel> :
-        IProtectionLevelSwitchProvider<TProtectionLevel> where TProtectionLevel : struct
+    /// <seealso cref="IProtectable{TProtectionLevel}" />
+    public abstract class ProtectableBase<TProtectionLevel> :
+        IProtectable<TProtectionLevel> where TProtectionLevel : struct
     {
         /// <summary>
         ///     A flag that indicates mode is being set in any thread.
@@ -43,7 +43,7 @@ namespace SafeOrbit.Memory.Common
         private volatile bool _isSettingMode;
 
 
-        protected ProtectionLevelSwitchProviderBase(TProtectionLevel protectionMode)
+        protected ProtectableBase(TProtectionLevel protectionMode)
         {
             CurrentProtectionMode = protectionMode;
         }
@@ -76,7 +76,7 @@ namespace SafeOrbit.Memory.Common
         /// <summary>
         ///     Must be overridden with a logic while switching happens.
         /// </summary>
-        protected abstract void ChangeProtectionMode(IProtectionLevelSwitchingContext<TProtectionLevel> context);
+        protected abstract void ChangeProtectionMode(IProtectionChangeContext<TProtectionLevel> context);
 
         /// <summary>
         ///     Calls the <see cref="ChangeProtectionMode" /> method with right context. If the operation is not canceled then
@@ -94,10 +94,10 @@ namespace SafeOrbit.Memory.Common
             _isSettingMode = false;
         }
 
-        private IProtectionLevelSwitchingContext<TProtectionLevel> GetContext(TProtectionLevel oldValue,
+        private IProtectionChangeContext<TProtectionLevel> GetContext(TProtectionLevel oldValue,
             TProtectionLevel newValue)
         {
-            var result = new ProtectionLevelSwitchingContext<TProtectionLevel>
+            var result = new ProtectionChangeContext<TProtectionLevel>
             (
                 newValue: newValue,
                 oldValue: oldValue
