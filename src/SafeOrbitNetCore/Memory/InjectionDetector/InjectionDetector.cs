@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -26,8 +25,6 @@ SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using SafeOrbit.Common.Reflection;
-using SafeOrbit.Exceptions;
-using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Stampers;
 
@@ -35,16 +32,16 @@ namespace SafeOrbit.Memory.Injection
 {
     /// <summary>
     ///     <p>Injection protector is a thread-safe class with a state.</p>
+    ///     <p>The instance should only be used for single object.</p>
     ///     <p>
-    ///         Each time you call <see cref="NotifyChanges" />, it saves the information related to object its inner
-    ///         dictionary.
+    ///         Each time you call <see cref="NotifyChanges" />, it saves the information related to the object.
     ///     </p>
     ///     <p>You can call <see cref="AlertUnnotifiedChanges" /> to throw if the objects last saved state has been changed.</p>
     /// </summary>
     /// <seealso cref="IInjectionDetector" />
     /// <seealso cref="IDisposable" />
-    /// <seealso cref="SafeObject{TObject}" />
-    public class InjectionDetector : IInjectionDetector
+    /// <seealso cref="ISafeObject{TObject}" />
+    public class InjectionDetector
     {
         private static readonly ConcurrentDictionary<string, IStamp<int>> CodeStampsDictionary =
             new ConcurrentDictionary<string, IStamp<int>>(); //static for caching as types always must be the same.
@@ -59,7 +56,8 @@ namespace SafeOrbit.Memory.Injection
 
         private IStamp<int> _lastStateStamp;
 
-        public InjectionDetector(bool justCode = true, bool justState = true, InjectionAlertChannel alertChannel = Defaults.AlertChannel) : this
+        public InjectionDetector(bool justCode = true, bool justState = true,
+            InjectionAlertChannel alertChannel = Defaults.AlertChannel) : this
         (
             InjectionAlerter.StaticInstance,
             TypeIdGenerator.StaticInstance,
@@ -88,12 +86,14 @@ namespace SafeOrbit.Memory.Injection
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether <see cref="InjectionDetector"/> will keep track of the state of the objects.
+        ///     Gets or sets a value indicating whether <see cref="InjectionDetector" /> will keep track of the state of the
+        ///     objects.
         /// </summary>
         public bool ScanState { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether <see cref="InjectionDetector"/> will keep track of the code of the objects.
+        ///     Gets or sets a value indicating whether <see cref="InjectionDetector" /> will keep track of the code of the
+        ///     objects.
         /// </summary>
         public bool ScanCode { get; set; }
 
@@ -104,20 +104,16 @@ namespace SafeOrbit.Memory.Injection
         public void NotifyChanges(object obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-            if (this.ScanState)
-            {
+            if (ScanState)
                 SaveStateStamp(obj);
-            }
-            if (this.ScanCode)
-            {
+            if (ScanCode)
                 SaveCodeStampFor(obj.GetType());
-            }
         }
 
         /// <summary>
-        ///     Alerts when any unnotified changes are detected any <see cref="CanAlert"/> is true.
+        ///     Alerts when any unnotified changes are detected any <see cref="CanAlert" /> is true.
         /// </summary>
-        /// <seealso cref="IAlerts"/>
+        /// <seealso cref="IAlerts" />
         public void AlertUnnotifiedChanges(object obj)
         {
             //get validation results
@@ -125,9 +121,9 @@ namespace SafeOrbit.Memory.Injection
             var isCodeValid = ScanCode ? IsCodeValid(obj) : true;
             //alert
             if (isStateValid && isCodeValid) return;
-            if (!this.CanAlert) return;
+            if (!CanAlert) return;
             var message = new InjectionMessage(!isStateValid, !isCodeValid, obj);
-            _alerter.Alert(message, this.AlertChannel);
+            _alerter.Alert(message, AlertChannel);
         }
 
 
@@ -141,12 +137,12 @@ namespace SafeOrbit.Memory.Injection
 
         private bool IsStateValid(object obj)
         {
-            var lastStamp = GetLastStateStampFor(obj);
+            var lastStamp = _lastStateStamp;
             var currentStamp = _stateStamper.GetStamp(obj);
             var result = currentStamp.Equals(lastStamp);
             return result;
         }
-        
+
 
         private void SaveCodeStampFor(Type type)
         {
@@ -177,20 +173,6 @@ namespace SafeOrbit.Memory.Injection
             return stamp;
         }
 
-        /// <exception cref="ArgumentException">
-        ///     Please validate the object using <see cref="NotifyChanges" /> method before
-        ///     requesting a state stamp.
-        /// </exception>
-        private IStamp<int> GetLastStateStampFor(object obj)
-        {
-            var id = GetStateId(obj);
-            IStamp<int> stamp;
-            var valueExists = _stateStampsDictionary.TryGetValue(id, out stamp);
-            if (!valueExists)
-                throw new ArgumentException(
-                    $"Please validate the object using {nameof(NotifyChanges)} method before requesting a state stamp");
-            return stamp;
-        }
 
         private string GetCodeId(Type type) => _typeIdGenerator.Generate(type);
 
@@ -220,34 +202,6 @@ namespace SafeOrbit.Memory.Injection
         /// <seealso cref="AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert => ScanCode || ScanState;
-
-        #endregion
-
-        #region [IDisposable]
-
-        private bool _isDisposed; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_isDisposed) return;
-            if (disposing)
-                _stateStampsDictionary.Clear();
-            //unmanaged resources
-            _stateStampsDictionary = null;
-            _isDisposed = true;
-        }
-
-        ~InjectionDetector()
-        {
-            Dispose(false);
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
 
         #endregion
     }
