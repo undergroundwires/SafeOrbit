@@ -29,6 +29,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SafeOrbit.Infrastructure.Serialization.SerializationServices.Core;
+using System.Reflection;
+using SafeOrbitNetCore.Infrastructure.Serialization.SharpSerializer.Common;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core.Binary
 {
@@ -129,10 +131,10 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core.Bina
                 if (type == typeof(TimeSpan)) return new TimeSpan(reader.ReadInt64());
 
                 // Enumeration
-                if (type.IsEnum) return ReadEnumeration(type, reader);
+                if (type.GetTypeInfo().IsEnum) return ReadEnumeration(type, reader);
 
                 // Type
-                if (IsType(type))
+                if (ReflectionHelper.IsType(type))
                 {
                     var typeName = reader.ReadString();
                     return Type.GetType(typeName, true);
@@ -157,10 +159,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core.Bina
             return new decimal(bits);
         }
 
-        private static bool IsType(Type type)
-        {
-            return type == typeof(Type) || type.IsSubclassOf(typeof(Type));
-        }
+
 
         private static object ReadEnumeration(Type expectedType, BinaryReader reader)
         {

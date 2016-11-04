@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TypeInfo = SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializing.TypeInfo;
+using SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializing;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced
 {
@@ -59,7 +59,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced
         /// </summary>
         /// <param name="typeInfo"></param>
         /// <returns></returns>
-        public IList<PropertyInfo> GetProperties(TypeInfo typeInfo)
+        public IList<PropertyInfo> GetProperties(InternalTypeInfo typeInfo)
         {
             // Search in cache
             var propertyInfos = Cache.TryGetPropertyInfos(typeInfo.Type);
@@ -90,7 +90,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced
         ///     - does not have it's set or get accessor
         ///     - is indexer
         /// </returns>
-        protected virtual bool IgnoreProperty(TypeInfo info, PropertyInfo property)
+        protected virtual bool IgnoreProperty(InternalTypeInfo info, PropertyInfo property)
         {
             if (!property.CanRead || !property.CanWrite)
                 return true;

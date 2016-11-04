@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -26,6 +25,8 @@ SOFTWARE.
 //This is a modified version of the beautiful SharpSerializer by Pawel Idzikowski (see: http://www.sharpserializer.com)
 
 using System;
+using System.Linq;
+using System.Reflection;
 using SafeOrbit.Infrastructure.Serialization.SerializationServices.Core;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializing
@@ -33,7 +34,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
     /// <summary>
     ///     Gives extended information about a Type
     /// </summary>
-    internal sealed class TypeInfo
+    internal sealed class InternalTypeInfo
     {
         /// <summary>
         ///     Cache stores type info and spares time be recall the info every time it is needed
@@ -99,7 +100,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
         /// <param name="obj"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TypeInfo GetTypeInfo(object obj)
+        public static InternalTypeInfo GetTypeInfo(object obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
@@ -112,14 +113,14 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static TypeInfo GetTypeInfo(Type type)
+        public static InternalTypeInfo GetTypeInfo(Type type)
         {
             // check if Info is in cache
             var typeInfo = Cache.TryGetTypeInfo(type);
             if (typeInfo == null)
             {
                 // no info in cache yet
-                typeInfo = new TypeInfo
+                typeInfo = new InternalTypeInfo
                 {
                     Type = type,
                     IsSimple = Tools.IsSimple(type)
@@ -164,7 +165,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
                                 do
                                 {
                                     elementTypeDefinitionFound = FillKeyAndElementType(typeInfo, examinedType);
-                                    examinedType = examinedType.BaseType;
+                                    examinedType = examinedType.GetTypeInfo().BaseType;
                                     // until key and element definition was found, or the base typ is an object
                                 } while (!elementTypeDefinitionFound && (examinedType != null) &&
                                          (examinedType != typeof(object)));
@@ -172,37 +173,37 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
                         }
                     }
                 }
-#if PORTABLE
-                Cache.AddIfNotExists(typeInfo);
-#else
-                Cache.Add(typeInfo);
-#endif
+                if (!Cache.Contains(typeInfo))
+                {
+                    Cache.Add(typeInfo);
+                }
             }
 
             return typeInfo;
         }
 
         /// <summary>
+        ///     Fills the <see cref="InternalTypeInfo.KeyType" /> and <see cref="InternalTypeInfo.ElementType" /> properties
+        ///     to target <see cref="target" /> from <see cref="source" />.
         /// </summary>
-        /// <param name="typeInfo"></param>
-        /// <param name="type"></param>
-        /// <returns>true if the key and value definition was found</returns>
-        private static bool FillKeyAndElementType(TypeInfo typeInfo, Type type)
+        /// <returns><c>TRUE</c> if the key and value definition was found, otherwise <c>FALSE</c></returns>
+        private static bool FillKeyAndElementType(InternalTypeInfo source, Type target)
         {
-            if (type.IsGenericType)
+            var targetInfo = target.GetTypeInfo();
+            if (targetInfo.IsGenericType)
             {
-                var arguments = type.GetGenericArguments();
+                var arguments = target.GetGenericArguments();
 
-                if (typeInfo.IsDictionary)
+                if (source.IsDictionary)
                 {
                     // in Dictionary there are keys and values
-                    typeInfo.KeyType = arguments[0];
-                    typeInfo.ElementType = arguments[1];
+                    source.KeyType = arguments[0];
+                    source.ElementType = arguments[1];
                 }
                 else
                 {
                     // In Collection there are only items
-                    typeInfo.ElementType = arguments[0];
+                    source.ElementType = arguments[0];
                 }
                 return arguments.Length > 0;
             }

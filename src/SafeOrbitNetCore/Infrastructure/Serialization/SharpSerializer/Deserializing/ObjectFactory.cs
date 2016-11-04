@@ -27,6 +27,7 @@ SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SafeOrbit.Infrastructure.Serialization.SerializationServices.Core;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Deserializing
@@ -141,17 +142,14 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Deseriali
             FillProperties(collection, property.Properties);
 
             // Fill the items but only if the "Add" method was found, which has only 1 parameter
-            var methodInfo = collection.GetType().GetMethod("Add");
-            if (methodInfo != null)
-            {
-                var parameters = methodInfo.GetParameters();
-                if (parameters.Length == 1)
-                    foreach (var item in property.Items)
-                    {
-                        var value = CreateObject(item);
-                        methodInfo.Invoke(collection, new[] {value});
-                    }
-            }
+            var methodInfo = collection.GetType().GetTypeInfo().GetMethod("Add");
+            var parameters = methodInfo?.GetParameters();
+            if (parameters?.Length == 1)
+                foreach (var item in property.Items)
+                {
+                    var value = CreateObject(item);
+                    methodInfo.Invoke(collection, new[] {value});
+                }
             return collection;
         }
 
@@ -172,18 +170,15 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Deseriali
 
             // fill items, but only if Add(key, value) was found
             var methodInfo = dictionary.GetType().GetMethod("Add");
-            if (methodInfo != null)
-            {
-                var parameters = methodInfo.GetParameters();
-                if (parameters.Length == 2)
-                    foreach (var item in property.Items)
-                    {
-                        var keyValue = CreateObject(item.Key);
-                        var valueValue = CreateObject(item.Value);
+            var parameters = methodInfo?.GetParameters();
+            if (parameters?.Length == 2)
+                foreach (var item in property.Items)
+                {
+                    var keyValue = CreateObject(item.Key);
+                    var valueValue = CreateObject(item.Value);
 
-                        methodInfo.Invoke(dictionary, new[] {keyValue, valueValue});
-                    }
-            }
+                    methodInfo.Invoke(dictionary, new[] {keyValue, valueValue});
+                }
 
 
             return dictionary;
@@ -198,7 +193,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Deseriali
         {
             foreach (var property in properties)
             {
-                var propertyInfo = obj.GetType().GetProperty(property.Name);
+                var propertyInfo = obj.GetType().GetTypeInfo().GetProperty(property.Name);
                 if (propertyInfo == null) continue;
 
                 var value = CreateObject(property);

@@ -28,6 +28,7 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced.Binary;
 using SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced.Serializing;
 using SafeOrbit.Infrastructure.Serialization.SerializationServices.Core;
@@ -288,7 +289,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced
             // Serialize all of them
             foreach (var property in properties)
             {
-                var propertyInfo = ownerType.GetProperty(property.Name);
+                var propertyInfo = ownerType.GetTypeInfo().GetProperty(property.Name);
                 SerializeCore(new PropertyTypeInfo<Property>(property, propertyInfo.PropertyType));
             }
         }

@@ -27,6 +27,8 @@ SOFTWARE.
 
 using System;
 using System.IO;
+using System.Reflection;
+using SafeOrbitNetCore.Infrastructure.Serialization.SharpSerializer.Common;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core.Binary
 {
@@ -220,14 +222,14 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core.Bina
             }
 
             // Enumeration
-            if (type.IsEnum)
+            if (type.GetTypeInfo().IsEnum)
             {
                 writer.Write(Convert.ToInt32(value));
                 return;
             }
 
             // Type
-            if (IsType(type))
+            if (ReflectionHelper.IsType(type))
             {
                 writer.Write(((Type) value).AssemblyQualifiedName);
                 return;
@@ -244,12 +246,6 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core.Bina
             writer.Write(bits[2]);
             writer.Write(bits[3]);
         }
-
-        private static bool IsType(Type type)
-        {
-            return (type == typeof(Type)) || type.IsSubclassOf(typeof(Type));
-        }
-
         private static void WriteArrayOfByte(byte[] data, BinaryWriter writer)
         {
             WriteNumber(data.Length, writer);

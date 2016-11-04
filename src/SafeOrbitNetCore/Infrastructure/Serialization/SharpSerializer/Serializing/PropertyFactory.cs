@@ -72,7 +72,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             if (value == null) return new NullProperty(name);
 
             // If value type is recognized, it will be taken from typeinfo cache
-            var typeInfo = TypeInfo.GetTypeInfo(value);
+            var typeInfo = InternalTypeInfo.GetTypeInfo(value);
 
             // Is it simple type
             var property = CreateSimpleProperty(name, typeInfo, value);
@@ -119,7 +119,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             return referenceTarget;
         }
 
-        private static ReferenceTargetProperty CreateReferenceTargetInstance(string name, TypeInfo typeInfo)
+        private static ReferenceTargetProperty CreateReferenceTargetInstance(string name, InternalTypeInfo typeInfo)
         {
             // Is it array?
             if (typeInfo.IsArray)
@@ -141,7 +141,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             return new ComplexProperty(name, typeInfo.Type);
         }
 
-        private bool FillComplexProperty(ComplexProperty property, TypeInfo typeInfo, object value)
+        private bool FillComplexProperty(ComplexProperty property, InternalTypeInfo typeInfo, object value)
         {
             if (property == null)
                 return false;
@@ -152,7 +152,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             return true;
         }
 
-        private void ParseProperties(ComplexProperty property, TypeInfo typeInfo, object value)
+        private void ParseProperties(ComplexProperty property, InternalTypeInfo typeInfo, object value)
         {
             var propertyInfos = _propertyProvider.GetProperties(typeInfo);
             foreach (var propertyInfo in propertyInfos)
@@ -166,7 +166,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
         }
 
 
-        private bool FillCollectionProperty(CollectionProperty property, TypeInfo info, object value)
+        private bool FillCollectionProperty(CollectionProperty property, InternalTypeInfo info, object value)
         {
             if (property == null)
                 return false;
@@ -180,7 +180,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             return true;
         }
 
-        private void ParseCollectionItems(CollectionProperty property, TypeInfo info, object value)
+        private void ParseCollectionItems(CollectionProperty property, InternalTypeInfo info, object value)
         {
             property.ElementType = info.ElementType;
 
@@ -193,7 +193,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             }
         }
 
-        private bool FillDictionaryProperty(DictionaryProperty property, TypeInfo info, object value)
+        private bool FillDictionaryProperty(DictionaryProperty property, InternalTypeInfo info, object value)
         {
             if (property == null)
                 return false;
@@ -207,7 +207,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             return true;
         }
 
-        private void ParseDictionaryItems(DictionaryProperty property, TypeInfo info, object value)
+        private void ParseDictionaryItems(DictionaryProperty property, InternalTypeInfo info, object value)
         {
             property.KeyType = info.KeyType;
             property.ValueType = info.ElementType;
@@ -223,7 +223,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             }
         }
 
-        private bool FillMultiDimensionalArrayProperty(MultiDimensionalArrayProperty property, TypeInfo info,
+        private bool FillMultiDimensionalArrayProperty(MultiDimensionalArrayProperty property, InternalTypeInfo info,
             object value)
         {
             if (property == null)
@@ -246,7 +246,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             return true;
         }
 
-        private bool FillSingleDimensionalArrayProperty(SingleDimensionalArrayProperty property, TypeInfo info,
+        private bool FillSingleDimensionalArrayProperty(SingleDimensionalArrayProperty property, InternalTypeInfo info,
             object value)
         {
             if (property == null)
@@ -271,7 +271,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
             return true;
         }
 
-        private static Property CreateSimpleProperty(string name, TypeInfo typeInfo, object value)
+        private static Property CreateSimpleProperty(string name, InternalTypeInfo typeInfo, object value)
         {
             if (!typeInfo.IsSimple) return null;
             var result = new SimpleProperty(name, typeInfo.Type)

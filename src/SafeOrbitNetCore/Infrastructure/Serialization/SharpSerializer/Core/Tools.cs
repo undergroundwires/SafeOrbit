@@ -27,6 +27,8 @@ SOFTWARE.
 
 using System;
 using System.Collections;
+using System.Reflection;
+using SafeOrbitNetCore.Infrastructure.Serialization.SharpSerializer.Common;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
 {
@@ -53,14 +55,14 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
                 return true;
             if (type == typeof(Guid))
                 return true;
-            if ((type == typeof(Type)) || type.IsSubclassOf(typeof(Type)))
+            var typeInfo = type.GetTypeInfo();
+            if ((type == typeof(Type)) || typeInfo.IsSubclassOf(typeof(Type)))
                 return true;
-            if (type.IsEnum)
+            if (typeInfo.IsEnum)
                 return true;
             if (type == typeof(byte[]))
                 return true;
-
-            return type.IsPrimitive;
+            return typeInfo.IsPrimitive;
         }
 
         /// <summary>

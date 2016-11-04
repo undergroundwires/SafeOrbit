@@ -30,12 +30,12 @@ using System.Collections.ObjectModel;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializing
 {
-    internal sealed class TypeInfoCollection : KeyedCollection<Type, TypeInfo>
+    internal sealed class TypeInfoCollection : KeyedCollection<Type, InternalTypeInfo>
     {
         /// <summary>
         /// </summary>
         /// <returns>null if the key was not found</returns>
-        public TypeInfo TryGetTypeInfo(Type type)
+        public InternalTypeInfo TryGetTypeInfo(Type type)
         {
             if (!Contains(type))
                 return null;
@@ -46,7 +46,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        protected override Type GetKeyForItem(TypeInfo item)
+        protected override Type GetKeyForItem(InternalTypeInfo item)
         {
             return item.Type;
         }
