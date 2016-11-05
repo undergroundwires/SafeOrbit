@@ -139,7 +139,6 @@
     <Compile Include="Internal\Stubs\TypeKeyGeneratorFaker.cs" />
     <Compile Include="Common\Text\--TextServiceTests.cs" />
     <Compile Include="Common\Utilities\FastTests.cs" />
-    <Compile Include="Common\Utilities\NewTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestApi\TestApi.csproj">
