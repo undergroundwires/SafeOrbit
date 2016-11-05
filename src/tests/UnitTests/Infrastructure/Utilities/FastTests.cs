@@ -23,37 +23,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Tests;
+using SafeOrbit.Utilities;
 
-namespace SafeOrbit.Memory.Common.ProtectionLevelSwitch
+namespace SafeOrbit.UnitTests.Utilities
 {
     [TestFixture]
-    public abstract class ProtectionLevelSwitchProviderBaseTests<TProtectionMode> : TestsBase
-        where TProtectionMode : struct
+    public class FastTests : TestsBase
     {
-        /// <summary>
-        /// Gets the protection mode test cases where first argument is the sut and the second is <see cref="TProtectionMode"/> to be set and expected.
-        /// </summary>
-        protected abstract IEnumerable<TestCaseData> GetProtectionModeTestCases();
-
         [Test]
-        public void SetProtectionMode_SetsTheCurrentProtectionMode()
+        public void FastFor_1000Factorials_FasterThanForLoop()
         {
-            var testCases = GetProtectionModeTestCases();
-            foreach (var testCase in testCases)
+            //arrange
+            var iterations = 1000;
+            Func<int, int> factorial = n => n == 0 ? 1 :
+                Enumerable.Range(1, n).Aggregate((acc, x) => acc * x);
+            var expectedMax = base.Measure(() =>
             {
-                //arrange
-                var sut = (IProtectionLevelSwitchProvider < TProtectionMode > )testCase.Arguments[0];
-                var expected = (TProtectionMode)testCase.Arguments[1];
-                //act
-                sut.SetProtectionMode(expected);
-                var actual = sut.CurrentProtectionMode;
-                //assert
-                Assert.That(actual, Is.EqualTo(expected));
-            }
+                for (int i = 0; i < iterations; i++)
+                {
+                    factorial.Invoke(i);
+                }
+            });
+            //act
+            var actual = base.Measure(() =>
+            {
+                Fast.For(0, iterations, (i) => factorial.Invoke(i));
+            });
+            //assert
+            Assert.That(actual, Is.LessThan(expectedMax));
         }
-
     }
 }

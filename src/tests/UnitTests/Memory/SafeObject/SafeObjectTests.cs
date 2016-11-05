@@ -40,7 +40,7 @@ namespace SafeOrbit.Memory
     /// <seealso cref="SafeObjectProtectionMode" />
     /// <seealso cref="IProtectionLevelSwitchProvider{SafeObjectProtectionMode}"/>
     [TestFixture]
-    public class SafeObjectTests : ProtectionLevelSwitchProviderBaseTests<SafeObjectProtectionMode>
+    public class SafeObjectTests : ProtectableBaseTests<SafeObjectProtectionMode>
     {
         [Test, TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.SafeObjectProtectionModeCases))]
         public void Constructor_Sets_ProtectionMode(SafeObjectProtectionMode mode)
@@ -417,7 +417,7 @@ namespace SafeOrbit.Memory
         /// <summary>
         /// Gets the protection mode test cases where first argument is the sut and the second is <see cref="SafeObjectProtectionMode"/> to be set and expected.
         /// </summary>
-        /// <seealso cref="ProtectionLevelSwitchProviderBaseTests{ProtectionMode}"/>
+        /// <seealso cref="ProtectableBaseTests{TProtectionMode}"/>
         protected override IEnumerable<TestCaseData> GetProtectionModeTestCases()
         {
             yield return

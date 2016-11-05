@@ -23,38 +23,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Linq;
+using System.Collections.Generic;
 using NUnit.Framework;
-using SafeOrbit.Utilities;
+using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests.Utilities
+namespace SafeOrbit.Memory.Common.ProtectionLevelSwitch
 {
     [TestFixture]
-    public class FastTests : TestsBase
+    public abstract class ProtectableBaseTests<TProtectionMode> : TestsBase
+        where TProtectionMode : struct
     {
+        /// <summary>
+        /// Gets the protection mode test cases where first argument is the sut and the second is <see cref="TProtectionMode"/> to be set and expected.
+        /// </summary>
+        protected abstract IEnumerable<TestCaseData> GetProtectionModeTestCases();
+
         [Test]
-        public void FastFor_1000Factorials_FasterThanForLoop()
+        public void SetProtectionMode_SetsTheCurrentProtectionMode()
         {
-            //arrange
-            var iterations = 1000;
-            Func<int, int> factorial = n => n == 0 ? 1 :
-                Enumerable.Range(1, n).Aggregate((acc, x) => acc * x);
-            var expectedMax = base.Measure(() =>
+            var testCases = GetProtectionModeTestCases();
+            foreach (var testCase in testCases)
             {
-                for (int i = 0; i < iterations; i++)
-                {
-                    factorial.Invoke(i);
-                }
-            });
-            //act
-            var actual = base.Measure(() =>
-            {
-                Fast.For(0, iterations, (i) => factorial.Invoke(i));
-            });
-            //assert
-            Assert.That(actual, Is.LessThan(expectedMax));
+                //arrange
+                var sut = (IProtectable<TProtectionMode>)testCase.Arguments[0];
+                var expected = (TProtectionMode)testCase.Arguments[1];
+                //act
+                sut.SetProtectionMode(expected);
+                var actual = sut.CurrentProtectionMode;
+                //assert
+                Assert.That(actual, Is.EqualTo(expected));
+            }
         }
+
     }
 }

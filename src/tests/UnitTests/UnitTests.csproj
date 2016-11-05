@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SafeOrbit</RootNamespace>
     <AssemblyName>SafeOrbit.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,19 +58,22 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Extensions\IEnumerableExtensionsTests.cs" />
     <Compile Include="Cryptography\Encryption\AesEncrpytorTests.cs" />
     <Compile Include="Cryptography\Encryption\BlowfishEncryptorTests.cs" />
     <Compile Include="Cryptography\Encryption\Kdf\Pbkdf2KeyDeriverTests.cs" />
     <Compile Include="Cryptography\Hash\Murmur32Tests.cs" />
     <Compile Include="Cryptography\Random\FastRandomTests.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\SerializableExceptionTestsBase.cs" />
+    <Compile Include="Infrastructure\Exceptions\DataLengthExceptionTests.cs" />
+    <Compile Include="Infrastructure\Exceptions\MemoryInjectionExceptionTests.cs" />
+    <Compile Include="Infrastructure\Exceptions\UnexpectedEnumValueExceptionTests.cs" />
+    <Compile Include="Infrastructure\Extensions\ByteArrayExtensionsTests.cs" />
+    <Compile Include="Infrastructure\Extensions\IEnumerableExtensionsTests.cs" />
+    <Compile Include="Infrastructure\Reflection\TypeIdGeneratorTests.cs" />
+    <Compile Include="Infrastructure\Text\TextServiceTests.cs" />
+    <Compile Include="Infrastructure\Utilities\FastTests.cs" />
     <Compile Include="Internal\Cases\InjectionCases.cs" />
     <Compile Include="Internal\Cases\InstanceCases.cs" />
-    <Compile Include="Common\Exceptions\Base\SerializableExceptionTestsBase.cs" />
-    <Compile Include="Common\Converters\IntToBytesConverter.cs" />
-    <Compile Include="Common\Exceptions\DataLengthExceptionTests.cs" />
-    <Compile Include="Common\Extensions\ByteArrayExtensionsTests.cs" />
-    <Compile Include="Common\Exceptions\UnexpectedEnumValueExceptionTests.cs" />
     <Compile Include="Internal\Cases\SafeContainerCases.cs" />
     <Compile Include="Internal\Helpers\AsyncHelper.cs" />
     <Compile Include="Internal\Helpers\SafeBytesHelper.cs" />
@@ -90,8 +94,7 @@
     <Compile Include="Memory\Common\Injection\Stamper\IlCodeStamperTests.cs" />
     <Compile Include="Memory\Common\Injection\Stamper\StateStamperTests.cs" />
     <Compile Include="Memory\Common\Injection\Stamp\StampTests.cs" />
-    <Compile Include="Common\Exceptions\MemoryInjectionExceptionTests.cs" />
-    <Compile Include="Memory\Common\ProtectionLevelSwitch\ProtectionLevelSwitchProviderBase.cs" />
+    <Compile Include="Memory\Common\ProtectionLevelSwitch\ProtectableBaseTests.cs" />
     <Compile Include="Memory\Common\Serializer\SharpSerializer\CorruptedSourceStreamTests.cs" />
     <Compile Include="Memory\Common\Serializer\SharpSerializer\HelloWorldTests.cs" />
     <Compile Include="Memory\Common\Serializer\SharpSerializer\PropertyFactoryTests.cs" />
@@ -113,7 +116,6 @@
     <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotDependOnTransientRuleTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotImplementIDisposableTests.cs" />
     <Compile Include="Memory\SafeContainer\SafeContainerTests.cs" />
-    <Compile Include="Common\Reflection\TypeIdGeneratorTests.cs" />
     <Compile Include="Memory\Common\Serializer\SerializerTests.cs" />
     <Compile Include="Internal\Cases\SafeObjectCases.cs" />
     <Compile Include="Memory\SafeObject\SafeObjectTests.cs" />
@@ -136,8 +138,6 @@
     <Compile Include="Internal\Stubs.cs" />
     <Compile Include="Internal\Fakes\TextServiceFaker.cs" />
     <Compile Include="Internal\Fakes\TypeIdGeneratorFaker.cs" />
-    <Compile Include="Common\Text\TextServiceTests.cs" />
-    <Compile Include="Common\Utilities\FastTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestApi\TestApi.csproj">

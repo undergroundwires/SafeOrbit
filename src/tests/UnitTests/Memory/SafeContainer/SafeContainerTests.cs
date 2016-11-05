@@ -41,7 +41,7 @@ namespace SafeOrbit.Memory
     /// <seealso cref="ISafeContainer" />
     /// <seealso cref="SafeContainerProtectionMode" />
     [TestFixture]
-    public class SafeContainerTests : ProtectionLevelSwitchProviderBaseTests<SafeContainerProtectionMode>
+    public class SafeContainerTests : ProtectableBaseTests<SafeContainerProtectionMode>
     {
         //TODO: Test inner instance validator call with a stub
 

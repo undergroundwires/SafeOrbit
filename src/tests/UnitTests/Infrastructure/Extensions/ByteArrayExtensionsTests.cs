@@ -28,7 +28,7 @@ using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Tests.Cases;
 
-namespace SafeOrbit.Common.Extensions
+namespace SafeOrbit.Extensions
 {
     /// <see cref="ByteArrayExtensions"/>
     [TestFixture]
