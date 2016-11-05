@@ -34,6 +34,7 @@ using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Random;
+using SafeOrbit.Utilities;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {
@@ -145,8 +146,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
         public void Set(byte b)
         {
             EnsureByteIsNotSet();
-            RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
-                delegate
+            RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
+                () =>
                 {
                     //Generate ID
                     _id = _byteIdGenerator.Generate(b);
@@ -154,12 +155,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
                     Encrypt(b);
                     IsByteSet = true;
                 },
-                delegate
+                () =>
                 {
                     _memoryProtector.Protect(_encryptionKey);
                     _memoryProtector.Protect(_encryptedByte);
-                },
-                null);
+                });
         }
 
         /// <summary>
@@ -250,29 +250,35 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Mix the with arbitrary bytes
             _realBytePosition = _fastRandom.GetInt(0, SaltSize);
             var arbitraryBytes = _fastRandom.GetBytes(SaltSize);
-            RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
-                delegate
+            RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
+                //Action
+                () =>
                 {
                     arbitraryBytes[_realBytePosition] = b;
                     //Get key
                     _encryptionKey = _fastRandom.GetBytes(KeySize);
                     //Encrypt
                     var encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, _encryptionKey);
-                    RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
-                        delegate
+                    RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
+                        //Action
+                        () =>
                         {
                             //Add arbitrary bytes
                             _encryptedByteLength = encryptedBuffer.Length;
                             _encryptedByte = GetMemoryProtectableSizedBytes(encryptedBuffer);
                         },
-                        delegate
+                        //Cleanup
+                        () =>
                         {
                             if (encryptedBuffer != null)
                                 Array.Clear(encryptedBuffer, 0, encryptedBuffer.Length);
-                        }, null);
+                        });
                 },
-                delegate { Array.Clear(arbitraryBytes, 0, arbitraryBytes.Length); },
-                null);
+                //Cleanup
+                () =>
+                {
+                    Array.Clear(arbitraryBytes, 0, arbitraryBytes.Length);
+                });
         }
 
         /// <summary>
