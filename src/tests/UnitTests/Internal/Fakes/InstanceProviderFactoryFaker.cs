@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
 using Moq;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.InjectionServices;
@@ -31,8 +30,9 @@ using SafeOrbit.Memory.SafeContainerServices.Instance;
 using SafeOrbit.Memory.SafeContainerServices.Instance.Providers;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.Internal.Stubs
+namespace SafeOrbit.Fakes
 {
+    /// <seealso cref="IInstanceProviderFactory" />
     internal class InstanceProviderFactoryFaker : StubProviderBase<IInstanceProviderFactory>
     {
         public override IInstanceProviderFactory Provide()

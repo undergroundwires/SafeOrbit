@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
 using NUnit.Framework;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.Injection;
@@ -34,13 +35,14 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     [TestFixture]
     internal class RaiseEventAlerterTests : AlerterTestsBase<RaiseEventAlerter>
     {
-        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter();
-        public override InjectionAlertChannel CoveredChannel { get; } = InjectionAlertChannel.RaiseEvent;
+        private EventHandler<IInjectionMessage> _injectedEvent;
+        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter(_injectedEvent);
+        public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.RaiseEvent;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
             object sender = null;
             IInjectionMessage args = null;
-            LibraryManagement.LibraryInjected += (s, e) =>
+            _injectedEvent += (s, e) =>
             {
                 sender = s;
                 args = e;

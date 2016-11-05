@@ -28,7 +28,7 @@ using SafeOrbit.Text;
 using SafeOrbit.Memory;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
     public class TextServiceFaker : StubProviderBase<ITextService>
     {

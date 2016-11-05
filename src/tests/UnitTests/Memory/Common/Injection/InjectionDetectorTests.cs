@@ -24,20 +24,13 @@ SOFTWARE.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using SafeOrbit.Common.Reflection;
-using SafeOrbit.Exceptions;
-using SafeOrbit.Memory;
-using SafeOrbit.Memory.Injection;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Stampers;
-using SafeOrbit.Memory.SafeContainerServices;
 using SafeOrbit.Tests.Cases;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory.Injection
 {

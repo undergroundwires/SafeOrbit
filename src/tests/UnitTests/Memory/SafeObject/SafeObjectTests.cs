@@ -29,12 +29,9 @@ using System.Threading;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Memory;
-using SafeOrbit.Memory.Common;
 using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
-using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
-using SafeOrbit.UnitTests;
+using SafeOrbit.Fakes;
 
 namespace SafeOrbit.Memory
 {

@@ -23,35 +23,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
 using Moq;
 using SafeOrbit.Memory;
-using SafeOrbit.Memory.SafeBytesServices;
-using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Tests;
-using SafeOrbit.UnitTests;
 
-namespace SafeOrbit.Memory.SafeBytesServices.Factory
+namespace SafeOrbit.Fakes
 {
-    internal class SafeByteFactoryFaker : StubProviderBase<ISafeByteFactory>
+    /// <seealso cref="ISafeObjectFactory" />
+    public class SafeObjectFactoryFaker : StubProviderBase<ISafeObjectFactory>
     {
-        public override ISafeByteFactory Provide()
+        public override ISafeObjectFactory Provide() => new FakeSafeObjectFactory();
+
+        private class FakeSafeObjectFactory : ISafeObjectFactory
         {
-            var fake = new Mock<ISafeByteFactory>();
-            fake.Setup(x => x.GetByByte(It.IsAny<byte>())).Returns(
-                (byte b) =>
-                {
-                    var safeByte = Stubs.Get<ISafeByte>();
-                    safeByte.Set(b);
-                    return safeByte;
-                });
-            fake.Setup(x => x.GetById(It.IsAny<int>())).Returns(
-                (int id) =>
-                {
-                    var safeByte = Stubs.Get<ISafeByte>();
-                    safeByte.Set((byte)id);
-                    return safeByte;
-                });
-            return fake.Object;
+            public ISafeObject<T> Get<T>(IInitialSafeObjectSettings settings) where T : class, new()
+            {
+                var mock = new Mock<ISafeObject<T>>();
+                var obj = settings.InitialValue == null ? new T() : (T)settings.InitialValue;
+                mock.Setup(m => m.AlertChannel).Returns(settings.AlertChannel);
+                mock.Setup(m => m.CurrentProtectionMode).Returns(settings.ProtectionMode);
+                mock.Setup(m => m.ApplyChanges(It.IsAny<Action<T>>())).Callback(
+                    (Action<T> action) => action.Invoke(obj));
+                mock.SetupGet(m => m.Object).Returns(obj);
+                return mock.Object;
+            }
         }
     }
 }

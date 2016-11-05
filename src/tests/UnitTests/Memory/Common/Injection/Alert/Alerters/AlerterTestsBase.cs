@@ -36,12 +36,12 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     [TestFixture]
     internal abstract class AlerterTestsBase<T> : TestsFor<T> where T: class, IAlerter
     {
-        public abstract InjectionAlertChannel CoveredChannel { get; }
+        public abstract InjectionAlertChannel ExpectedChannel { get; }
 
         [Test]
         public void Channel_Is_CoveredChannel()
         {
-            var expected = CoveredChannel;
+            var expected = ExpectedChannel;
             var sut = GetSut();
             var actual = sut.Channel;
             Assert.That(actual, Is.EqualTo(expected));

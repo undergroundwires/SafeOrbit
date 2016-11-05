@@ -23,27 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
-using System.Linq;
 using Moq;
-using SafeOrbit.Memory;
-using SafeOrbit.Memory.SafeBytesServices;
-using SafeOrbit.Memory.SafeBytesServices.Collection;
+using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
-    internal class SafeByteCollectionFaker : StubProviderBase<ISafeByteCollection>
+    /// <seealso cref="IByteIdGenerator" />
+    /// <seealso cref="HashedByteIdGenerator" />
+    /// <seealso cref="HashedByteIdGeneratorTests" />
+    internal class ByteIdGeneratorFaker : StubProviderBase<IByteIdGenerator>
     {
-        public override ISafeByteCollection Provide()
+        public override IByteIdGenerator Provide()
         {
-            var fake = new Mock<ISafeByteCollection>();
-            var list = new List<ISafeByte>();
-            fake.Setup(x => x.Append(It.IsAny<ISafeByte>())).Callback<ISafeByte>(safeByte => list.Add(safeByte));
-            fake.Setup(x => x.Length).Returns(() => list.Count);
-            fake.Setup(x => x.Get(It.IsAny<int>())).Returns((int index) => list[index]);
-            fake.Setup(x => x.ToDecryptedBytes()).Returns(list.Select(safeByte => safeByte.Get()).ToArray());
-            fake.Setup(x => x.Dispose()).Callback(() => list.Clear());
+            var fake = new Mock<IByteIdGenerator>();
+            fake.Setup(x => x.Generate(It.IsAny<byte>())).Returns((byte b) => b);
             return fake.Object;
         }
     }

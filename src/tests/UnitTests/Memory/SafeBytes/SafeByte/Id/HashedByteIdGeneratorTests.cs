@@ -23,14 +23,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Concurrent;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Hash;
+using SafeOrbit.Cryptography.Hashers;
+using SafeOrbit.Cryptography.Random;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
-using SafeOrbit.Random;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Id
 {

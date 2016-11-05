@@ -23,13 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
-using SafeOrbit.Memory.Injection;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory.InjectionServices;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {

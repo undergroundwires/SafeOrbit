@@ -26,13 +26,12 @@ SOFTWARE.
 using System;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption;
-using SafeOrbit.Memory;
+using SafeOrbit.Cryptography.Random;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Random;
 using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {

@@ -25,9 +25,9 @@ SOFTWARE.
 
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Hash;
+using SafeOrbit.Cryptography.Hashers;
+using SafeOrbit.Fakes;
 using SafeOrbit.Infrastructure.Serialization;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {

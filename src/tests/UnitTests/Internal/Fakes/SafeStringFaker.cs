@@ -30,8 +30,9 @@ using SafeOrbit.Text;
 using SafeOrbit.Memory;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
+    /// <seealso cref="ISafeString" />
     public class SafeStringFaker : StubProviderBase<ISafeString>
     {
         public override ISafeString Provide()

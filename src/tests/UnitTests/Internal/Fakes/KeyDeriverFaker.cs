@@ -24,14 +24,20 @@ SOFTWARE.
 */
 
 using Moq;
-using SafeOrbit.Memory;
-using SafeOrbit.Memory.SafeContainerServices.Instance.Validation;
+using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.Internal.Stubs
+namespace SafeOrbit.Fakes
 {
-    internal class InstanceValidatorFaker : StubProviderBase<IInstanceValidator>
+    /// <seealso cref="IKeyDerivationFunction" />
+    public class KeyDeriverFaker : StubProviderBase<IKeyDerivationFunction>
     {
-        public override IInstanceValidator Provide() => Mock.Of<IInstanceValidator>();
+        public override IKeyDerivationFunction Provide()
+        {
+            var fake = new Mock<IKeyDerivationFunction>();
+            fake.Setup(f => f.Derive(It.IsAny<byte[]>(), It.IsAny<byte[]>(), It.IsAny<int>()))
+                .Returns((byte[] key, byte[] salt, int length) => new byte[length]);
+            return fake.Object;
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     internal class ThrowExceptionAlerterTests : AlerterTestsBase<ThrowExceptionAlerter>
     {
         protected override ThrowExceptionAlerter GetSut() => new ThrowExceptionAlerter();
-        public override InjectionAlertChannel CoveredChannel { get; } = InjectionAlertChannel.ThrowException;
+        public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.ThrowException;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
             Assert.That(alertingMessage,

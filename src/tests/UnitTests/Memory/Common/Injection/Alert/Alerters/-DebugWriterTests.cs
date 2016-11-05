@@ -34,7 +34,7 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     internal class DebugWriterTests : AlerterTestsBase<DebugWriteAlerter>
     {
         protected override DebugWriteAlerter GetSut() => new DebugWriteAlerter();
-        public override InjectionAlertChannel CoveredChannel { get; } = InjectionAlertChannel.DebugWrite;
+        public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.DebugWrite;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
             base.IgnoreTest();

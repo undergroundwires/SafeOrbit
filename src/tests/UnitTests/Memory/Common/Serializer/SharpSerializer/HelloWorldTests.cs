@@ -335,13 +335,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
             Two,
             Three
         }
-        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut()
-        {
-            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer();
-        }
-        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut(BinarySettings settings)
-        {
-            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer(settings);
-        }
+        private SharpSerializer GetSut() => new SharpSerializer();
+        private SharpSerializer GetSut(BinarySettings settings) => new SharpSerializer(settings);
     }
 }

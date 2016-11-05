@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,25 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using SafeOrbit.Interfaces;
+using Moq;
+using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
-    using Moq;
-    using SafeOrbit.Tests;
     public static class Stubs
     {
         private static StubFactory _factory;
 
         public static T Get<T>()
         {
-            if(_factory == null) _factory = GetFactory();
+            if (_factory == null) _factory = GetFactory();
             return _factory.Provide<T>();
         }
+
         public static IFactory<T> GetFactory<T>()
         {
             if (_factory == null) _factory = GetFactory();
@@ -49,6 +45,7 @@ namespace SafeOrbit.UnitTests
             mock.Setup(f => f.Create()).Returns(Get<T>);
             return mock.Object;
         }
+
         private static StubFactory GetFactory()
         {
             var factory = new StubFactory();

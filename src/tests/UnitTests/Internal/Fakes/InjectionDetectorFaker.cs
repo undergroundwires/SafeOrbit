@@ -25,21 +25,16 @@ SOFTWARE.
 
 using Moq;
 using SafeOrbit.Memory;
-using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
-    /// <seealso cref="IByteIdGenerator" />
-    /// <seealso cref="HashedByteIdGenerator" />
-    /// <seealso cref="HashedByteIdGeneratorTests" />
-    internal class ByteIdGeneratorFaker : StubProviderBase<IByteIdGenerator>
+    /// <seealso cref="IInjectionDetector" />
+    public class InjectionDetectorFaker : StubProviderBase<IInjectionDetector>
     {
-        public override IByteIdGenerator Provide()
+        public override IInjectionDetector Provide()
         {
-            var fake = new Mock<IByteIdGenerator>();
-            fake.Setup(x => x.Generate(It.IsAny<byte>())).Returns((byte b) => b);
-            return fake.Object;
+            return Mock.Of<IInjectionDetector>();
         }
     }
 }

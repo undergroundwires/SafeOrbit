@@ -25,6 +25,8 @@ SOFTWARE.
 
 using System;
 using NUnit.Framework;
+using SafeOrbit.Cryptography.Random;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Random;

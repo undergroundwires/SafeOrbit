@@ -28,8 +28,9 @@ using Moq;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
+    /// <seealso cref="IFastEncryptor" />
     public class FastEncryptorFaker : StubProviderBase<IFastEncryptor>
     {
         public override IFastEncryptor Provide()

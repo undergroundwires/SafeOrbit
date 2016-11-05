@@ -24,16 +24,19 @@ SOFTWARE.
 */
 
 using Moq;
-using SafeOrbit.Memory;
+using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
-    public class InjectionDetectorFaker : StubProviderBase<IInjectionDetector>
+    /// <seealso cref="IFastRandom" />
+    public class FastRandomFaker : StubProviderBase<IFastRandom>
     {
-        public override IInjectionDetector Provide()
+        public override IFastRandom Provide()
         {
-            return Mock.Of<IInjectionDetector>();
+            var fake = new Mock<IFastRandom>();
+            fake.Setup(x => x.GetBytes(It.IsAny<int>())).Returns<int>((x) => new byte[x]);
+            return fake.Object;
         }
     }
 }

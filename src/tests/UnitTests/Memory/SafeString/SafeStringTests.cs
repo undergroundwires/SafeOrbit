@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Common;
+using SafeOrbit.Extensions;
+using SafeOrbit.Fakes;
 using SafeOrbit.Tests;
 using SafeOrbit.Text;
 using SafeOrbit.UnitTests;

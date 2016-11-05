@@ -25,11 +25,10 @@ SOFTWARE.
 
 using System;
 using NUnit.Framework;
-using SafeOrbit.Memory;
-using SafeOrbit.Hash;
+using SafeOrbit.Cryptography.Hashers;
+using SafeOrbit.Fakes;
 using SafeOrbit.Infrastructure.Serialization;
 using SafeOrbit.Tests;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {

@@ -29,15 +29,17 @@ using SafeOrbit.Common.Reflection;
 using SafeOrbit.Memory.SafeContainerServices;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
-    public class TypeKeyGeneratorFaker : StubProviderBase<ITypeKeyGenerator>
+    /// <seealso cref="ITypeIdGenerator" />
+    public class TypeIdGeneratorFaker : StubProviderBase<ITypeIdGenerator>
     {
-        public override ITypeKeyGenerator Provide() => new FakeTypeKeyGenerator();
+        public override ITypeIdGenerator Provide() => new FakeTypeIdGenerator();
+        private class FakeTypeIdGenerator : ITypeIdGenerator
+        {
+            public string Generate<T>() => typeof(T).AssemblyQualifiedName;
+            public string Generate(Type type) => type.AssemblyQualifiedName;
+        }
     }
-    public class FakeTypeKeyGenerator : ITypeKeyGenerator
-    {
-        public string Generate<T>() => typeof(T).AssemblyQualifiedName;
-        public string Generate(Type type) => type.AssemblyQualifiedName;
-    }
+
 }

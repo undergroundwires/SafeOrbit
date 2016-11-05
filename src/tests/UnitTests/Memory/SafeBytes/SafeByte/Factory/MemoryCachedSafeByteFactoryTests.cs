@@ -25,13 +25,10 @@ SOFTWARE.
 
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Memory;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory.InjectionServices;
-using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Factory
 {

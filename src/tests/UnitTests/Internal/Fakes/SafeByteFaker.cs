@@ -24,11 +24,10 @@ SOFTWARE.
 */
 
 using Moq;
-using SafeOrbit.Memory;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
     /// <seealso cref="ISafeByte" />
     /// <seealso cref="SafeByte" />

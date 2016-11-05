@@ -24,11 +24,12 @@ SOFTWARE.
 */
 
 using Moq;
-using SafeOrbit.Random;
+using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
+    /// <seealso cref="ISafeRandom" />
     public class SafeRandomFaker : StubProviderBase<ISafeRandom>
     {
         public override ISafeRandom Provide()

@@ -36,7 +36,7 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     {
         protected override DebugFailAlerter GetSut() => new DebugFailAlerter();
 
-        public override InjectionAlertChannel CoveredChannel { get; } = InjectionAlertChannel.DebugFail;
+        public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.DebugFail;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
             base.IgnoreTest();

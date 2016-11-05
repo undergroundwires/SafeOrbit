@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -31,10 +30,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Permissions;
 using NUnit.Framework;
-using SafeOrbit.Common;
-using SafeOrbit.Exceptions;
+using SafeOrbit.Exceptions.SerializableException;
+using SafeOrbit.Extensions;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Exceptions
@@ -45,39 +43,34 @@ namespace SafeOrbit.Exceptions
     {
         protected abstract T GetSutForSerialization();
         protected virtual IEnumerable<PropertyInfo> GetExpectedPropertiesForSerialization() => null;
-        protected SerializableExceptionBase GetSut(params object[] parameters) => parameters == null ? Activator.CreateInstance<T>() : (T)Activator.CreateInstance(typeof(T), parameters);
+
+        protected SerializableExceptionBase GetSut(params object[] parameters)
+            => parameters == null ? Activator.CreateInstance<T>() : (T) Activator.CreateInstance(typeof(T), parameters);
+
         protected override SerializableExceptionBase GetSut() => GetSut(null);
-        private bool HasConstructor(params Type[] parameterTypes)
+
+
+
+        [Serializable]
+        private class SerializableExceptionTestClass : SerializableExceptionBase
         {
-            if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
-            var constructor = typeof(T).GetConstructor(parameterTypes);
-            return constructor != null;
+            public SerializableExceptionTestClass()
+            {
+            }
+
+            public SerializableExceptionTestClass(string message) : base(message)
+            {
+            }
+
+            public SerializableExceptionTestClass(string message, Exception inner) : base(message, inner)
+            {
+            }
+
+            protected SerializableExceptionTestClass(SerializationInfo info, StreamingContext context)
+                : base(info, context)
+            {
+            }
         }
-
-        protected PropertyInfo GetPropertyFromExpression<TObject>(Expression<Func<T, TObject>> getPropertyLambda)
-        {
-            MemberExpression exp = null;
-            //this line is necessary, because sometimes the expression comes in as Convert(original expression)
-            if (getPropertyLambda.Body is UnaryExpression)
-            {
-                var UnExp = (UnaryExpression) getPropertyLambda.Body;
-                if (UnExp.Operand is MemberExpression)
-                    exp = (MemberExpression) UnExp.Operand;
-                else
-                    throw new ArgumentException();
-            }
-            else if (getPropertyLambda.Body is MemberExpression)
-            {
-                exp = (MemberExpression) getPropertyLambda.Body;
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            return (PropertyInfo) exp.Member;
-        }
-
 
 
         //Serialization
@@ -108,55 +101,12 @@ namespace SafeOrbit.Exceptions
                 Assert.That(actual.InnerException, Is.Null);
             Assert.That(actual.Message, Is.EqualTo(expected.Message));
             var properties = GetExpectedPropertiesForSerialization().EmptyIfNull().ToArray();
-                foreach (var property in properties)
-                {
-                    var expectedValue = property.GetValue(expected);
-                    var actualValue = property.GetValue(actual);
-                    Assert.That(actualValue, Is.EqualTo(expectedValue));
-                }
-        }
-
-
-        
-
-        //GetObjectData
-        [Test]
-        public void GetObjectData_ParameterIsNull_throwsArgumentNUllException()
-        {
-            // Arrange
-            var sut = GetSutForSerialization();
-            // Act
-            TestDelegate invokingWithNullParamater = () => sut.GetObjectData(null, new StreamingContext());
-            // Assert
-            Assert.Throws<ArgumentNullException>(invokingWithNullParamater);
-        }
-
-        [Test]
-        public void Sut_Derives_SafeOrbitException()
-        {
-            const bool expected = true;
-            var expectedType = typeof(SafeOrbitException);
-            var actualType = typeof(T);
-            var actual = expectedType.IsAssignableFrom(actualType);
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void Sut_Has_Serialization_Constructor()
-        {
-            //arrange
-            const bool expected = true;
-            var ctorParamTypes = new[] {typeof(SerializationInfo), typeof(StreamingContext)};
-            var actual = typeof(T).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public, null, ctorParamTypes, null) != null;
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void Sut_Has_Serializable_Attribute()
-        {
-            const bool expected = true;
-            var actual = typeof(T).GetCustomAttributes(typeof(SerializableAttribute), true).Length == 1;
-            Assert.That(actual, Is.EqualTo(expected));
+            foreach (var property in properties)
+            {
+                var expectedValue = property.GetValue(expected);
+                var actualValue = property.GetValue(actual);
+                Assert.That(actualValue, Is.EqualTo(expectedValue));
+            }
         }
 
         [Test]
@@ -285,7 +235,7 @@ namespace SafeOrbit.Exceptions
         [Test]
         public void Constructor_StringAndEx_HasNoResourceReferenceProperty()
         {
-            if (!HasConstructor(new[] { typeof(string) , typeof(Exception)})) IgnoreTest();
+            if (!HasConstructor(typeof(string), typeof(Exception))) IgnoreTest();
             //arrange
             const string @string = "string parameter";
             var exception = new Exception("Test exception");
@@ -300,7 +250,7 @@ namespace SafeOrbit.Exceptions
         [Test]
         public void Constructor_StringAndEx_SetsInnerException()
         {
-            if (!HasConstructor(new[] { typeof(string), typeof(Exception) })) IgnoreTest();
+            if (!HasConstructor(typeof(string), typeof(Exception))) IgnoreTest();
             //arrange
             const string @string = "string parameter";
             var expected = new Exception("Expected exception");
@@ -314,7 +264,7 @@ namespace SafeOrbit.Exceptions
         [Test]
         public void Constructor_StringAndEx_SetsMessage()
         {
-            if (!HasConstructor(new[] { typeof(string), typeof(Exception) })) IgnoreTest();
+            if (!HasConstructor(typeof(string), typeof(Exception))) IgnoreTest();
             //arrange
             const string expected = "string parameter";
             var exception = new Exception("Test exception");
@@ -326,26 +276,76 @@ namespace SafeOrbit.Exceptions
         }
 
 
-        [Serializable]
-        private class SerializableExceptionTestClass : SerializableExceptionBase
+        //GetObjectData
+        [Test]
+        public void GetObjectData_ParameterIsNull_throwsArgumentNUllException()
         {
-            public SerializableExceptionTestClass()
+            // Arrange
+            var sut = GetSutForSerialization();
+            // Act
+            TestDelegate invokingWithNullParamater = () => sut.GetObjectData(null, new StreamingContext());
+            // Assert
+            Assert.Throws<ArgumentNullException>(invokingWithNullParamater);
+        }
+
+        [Test]
+        public void Sut_Derives_SafeOrbitException()
+        {
+            const bool expected = true;
+            var expectedType = typeof(SafeOrbitException);
+            var actualType = typeof(T);
+            var actual = expectedType.IsAssignableFrom(actualType);
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Sut_Has_Serializable_Attribute()
+        {
+            const bool expected = true;
+            var actual = typeof(T).GetCustomAttributes(typeof(SerializableAttribute), true).Length == 1;
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Sut_Has_Serialization_Constructor()
+        {
+            //arrange
+            const bool expected = true;
+            var ctorParamTypes = new[] {typeof(SerializationInfo), typeof(StreamingContext)};
+            var actual =
+                typeof(T).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public, null,
+                    ctorParamTypes, null) != null;
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+        private bool HasConstructor(params Type[] parameterTypes)
+        {
+            if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
+            var constructor = typeof(T).GetConstructor(parameterTypes);
+            return constructor != null;
+        }
+
+        protected PropertyInfo GetPropertyFromExpression<TObject>(Expression<Func<T, TObject>> getPropertyLambda)
+        {
+            MemberExpression exp = null;
+            //this line is necessary, because sometimes the expression comes in as Convert(original expression)
+            if (getPropertyLambda.Body is UnaryExpression)
             {
+                var UnExp = (UnaryExpression)getPropertyLambda.Body;
+                if (UnExp.Operand is MemberExpression)
+                    exp = (MemberExpression)UnExp.Operand;
+                else
+                    throw new ArgumentException();
+            }
+            else if (getPropertyLambda.Body is MemberExpression)
+            {
+                exp = (MemberExpression)getPropertyLambda.Body;
+            }
+            else
+            {
+                throw new ArgumentException();
             }
 
-            public SerializableExceptionTestClass(string message) : base(message)
-            {
-            }
-
-            public SerializableExceptionTestClass(string message, Exception inner) : base(message, inner)
-            {
-            }
-
-            protected SerializableExceptionTestClass(SerializationInfo info, StreamingContext context)
-                : base(info, context)
-            {
-            }
+            return (PropertyInfo)exp.Member;
         }
     }
-
 }

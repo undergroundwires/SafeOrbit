@@ -27,9 +27,9 @@ using System;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Exceptions;
+using SafeOrbit.Fakes;
 using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Cryptography.Encryption
 {

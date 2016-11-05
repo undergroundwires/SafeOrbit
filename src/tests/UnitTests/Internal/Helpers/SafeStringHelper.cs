@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -31,10 +30,10 @@ namespace SafeOrbit.UnitTests
     internal static class SafeStringHelper
     {
         /// <summary>
-        /// For easier syntax to append and return the appended instance.
+        ///     For easier syntax to append and return the appended instance.
         /// </summary>
         /// <example>
-        /// <code>new SafeBytes().AppendAndReturnDeepClone(5).AppendAndReturnDeepClone(10);</code>
+        ///     <code>new SafeBytes().AppendAndReturnDeepClone(5).AppendAndReturnDeepClone(10);</code>
         /// </example>
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         public static ISafeString AppendAndReturnDeepClone(this ISafeString safeString, char c)

@@ -24,18 +24,14 @@ SOFTWARE.
 */
 
 using Moq;
-using SafeOrbit.Hash;
+using SafeOrbit.Memory.SafeContainerServices.Instance.Validation;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
-    public class FastHasherFaker : StubProviderBase<IFastHasher>
+    /// <seealso cref="IInstanceValidator" />
+    internal class InstanceValidatorFaker : StubProviderBase<IInstanceValidator>
     {
-        public override IFastHasher Provide()
-        {
-            var fake = new Mock<IFastHasher>();
-            fake.Setup(o => o.ComputeFast(It.IsAny<byte[]>())).Returns((byte[] bytes) => bytes[0] + bytes.Length * 5);
-            return fake.Object;
-        }
+        public override IInstanceValidator Provide() => Mock.Of<IInstanceValidator>();
     }
 }

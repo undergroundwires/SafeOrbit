@@ -28,17 +28,12 @@ using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Common.Reflection;
-using SafeOrbit.Library;
-using SafeOrbit.Memory;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
-using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
-using SafeOrbit.Memory.SafeContainerServices;
 using SafeOrbit.Memory.SafeContainerServices.Instance;
 using SafeOrbit.Memory.SafeContainerServices.Instance.Providers;
 using SafeOrbit.Memory.SafeContainerServices.Instance.Validation;
-using SafeOrbit.Tests;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
 {
@@ -351,7 +346,7 @@ namespace SafeOrbit.Memory
         )
         {
             return new SafeContainer(
-                Stubs.Get<ITypeKeyGenerator>(),
+                Stubs.Get<ITypeIdGenerator>(),
                 providerFactory ?? Stubs.Get<IInstanceProviderFactory>(),
                 instanceValidator ?? Stubs.Get<IInstanceValidator>(),
                 safeObjectFactory ?? Stubs.Get<ISafeObjectFactory>(),

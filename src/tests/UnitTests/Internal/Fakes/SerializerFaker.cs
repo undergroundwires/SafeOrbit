@@ -30,7 +30,7 @@ using SafeOrbit.Memory.Common;
 using SafeOrbit.Infrastructure.Serialization;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
     /// <seealso cref="ISerializer" />
     /// <seealso cref="Serializer" />

@@ -24,17 +24,18 @@ SOFTWARE.
 */
 
 using Moq;
-using SafeOrbit.Random;
+using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests
+namespace SafeOrbit.Fakes
 {
-    public class FastRandomFaker : StubProviderBase<IFastRandom>
+    /// <seealso cref="IFastHasher" />
+    public class FastHasherFaker : StubProviderBase<IFastHasher>
     {
-        public override IFastRandom Provide()
+        public override IFastHasher Provide()
         {
-            var fake = new Mock<IFastRandom>();
-            fake.Setup(x => x.GetBytes(It.IsAny<int>())).Returns<int>((x) => new byte[x]);
+            var fake = new Mock<IFastHasher>();
+            fake.Setup(o => o.ComputeFast(It.IsAny<byte[]>())).Returns((byte[] bytes) => bytes[0] + bytes.Length * 5);
             return fake.Object;
         }
     }

@@ -23,30 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
 using Moq;
-using SafeOrbit.Memory;
+using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.Internal.Stubs
+namespace SafeOrbit.Fakes
 {
-    public class SafeObjectFactoryFaker : StubProviderBase<ISafeObjectFactory>
+    /// <seealso cref="IByteArrayProtector" />
+    internal class MemoryProtectorFaker : StubProviderBase<IByteArrayProtector>
     {
-        public override ISafeObjectFactory Provide() => new FakeSafeObjectFactory();
-
-        private class FakeSafeObjectFactory : ISafeObjectFactory
+        public override IByteArrayProtector Provide()
         {
-            public ISafeObject<T> Get<T>(IInitialSafeObjectSettings settings) where T : class, new()
-            {
-                var mock = new Mock<ISafeObject<T>>();
-                var obj = settings.InitialValue == null ? new T() : (T)settings.InitialValue;
-                mock.Setup(m => m.AlertChannel).Returns(settings.AlertChannel);
-                mock.Setup(m => m.CurrentProtectionMode).Returns(settings.ProtectionMode);
-                mock.Setup(m => m.ApplyChanges(It.IsAny<Action<T>>())).Callback(
-                    (Action<T> action) => action.Invoke(obj));
-                mock.SetupGet(m => m.Object).Returns(obj);
-                return mock.Object;
-            }
+            var fake = new Mock<IByteArrayProtector>();
+            fake.Setup(x => x.BlockSize).Returns(16);
+            return fake.Object;
         }
     }
 }

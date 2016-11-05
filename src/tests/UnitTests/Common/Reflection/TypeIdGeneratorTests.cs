@@ -30,19 +30,19 @@ using SafeOrbit.Tests;
 
 namespace SafeOrbit.Common.Reflection
 {
-    /// <seealso cref="ITypeKeyGenerator" />
-    /// <seealso cref="TypeKeyGenerator" />
+    /// <seealso cref="ITypeIdGenerator" />
+    /// <seealso cref="TypeIdGeneratorTests" />
     [TestFixture]
-    public class TypeKeyGeneratorTests : TestsFor<ITypeKeyGenerator>
+    public class TypeIdGeneratorTests : TestsFor<ITypeIdGenerator>
     {
-        protected override ITypeKeyGenerator GetSut() => new TypeKeyGenerator();
+        protected override ITypeIdGenerator GetSut() => new TypeIdGenerator();
 
         [Test]
         public void AllClassesInSutAndTestAssemblies_HaveUniqueKeys()
         {
             //arrange
-            var sutAssembly = typeof(TypeKeyGenerator).Assembly;
-            var testAssembly = typeof(TypeKeyGeneratorTests).Assembly;
+            var sutAssembly = typeof(TypeIdGenerator).Assembly;
+            var testAssembly = typeof(TypeIdGeneratorTests).Assembly;
             var allTypes = sutAssembly.GetTypes().Concat(testAssembly.GetTypes());
             var expected = allTypes.Count();
             var sut = GetSut();
@@ -110,10 +110,10 @@ namespace SafeOrbit.Common.Reflection
             //string case
             var expected1= sut.Generate<string>();
             var expected2 = sut.Generate<int>();
-            var expected3 = sut.Generate<TypeKeyGeneratorTests>();
+            var expected3 = sut.Generate<TypeIdGeneratorTests>();
             var actual1 = sut.Generate(typeof(string));
             var actual2 = sut.Generate(typeof(int));
-            var actual3 = sut.Generate(typeof(TypeKeyGeneratorTests));
+            var actual3 = sut.Generate(typeof(TypeIdGeneratorTests));
             //assert
             Assert.That(expected1, Is.EqualTo(actual1));
             Assert.That(expected2, Is.EqualTo(actual2));
