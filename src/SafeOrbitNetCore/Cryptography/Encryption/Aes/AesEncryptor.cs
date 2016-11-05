@@ -144,7 +144,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             EnsureKeyParameter(key);
             EnsureParameters(input, key, salt);
-            return InternalEncryptAsync<AesManaged>(input, key, salt);
+            return InternalEncryptAsync(input, key, salt);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
@@ -157,7 +157,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public Task<byte[]> DecryptAsync(byte[] input, byte[] key, byte[] salt)
         {
             EnsureParameters(input, key, salt);
-            return InternalDecryptAsync<AesManaged>(input, key, salt);
+            return InternalDecryptAsync(input, key, salt);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
@@ -175,15 +175,14 @@ namespace SafeOrbit.Cryptography.Encryption
             EnsureKeyParameter(key);
         }
 
-        private async Task<byte[]> InternalEncryptAsync<TAlghoritm>(byte[] input, byte[] key, byte[] salt)
-            where TAlghoritm : SymmetricAlgorithm, new()
+        private async Task<byte[]> InternalEncryptAsync(byte[] input, byte[] key, byte[] salt)
         {
             byte[] iv = null;
             byte[] encryptedContent = null;
             var derivedKey = _keyDeriver.Derive(key, salt, KeySize / 8);
             using (var ms = new MemoryStream())
             {
-                using (var algorithm = GetAlgorithm<TAlghoritm>(derivedKey, KeySize))
+                using (var algorithm = GetAlgorithm(derivedKey))
                 {
                     iv = GetIv(); //Use the random generated iv created by AesManaged
                     using (var encryptor = algorithm.CreateEncryptor(derivedKey, iv))
@@ -201,8 +200,7 @@ namespace SafeOrbit.Cryptography.Encryption
             return result;
         }
 
-        private async Task<byte[]> InternalDecryptAsync<TAlghoritm>(byte[] input, byte[] key, byte[] salt)
-            where TAlghoritm : SymmetricAlgorithm, new()
+        private async Task<byte[]> InternalDecryptAsync(byte[] input, byte[] key, byte[] salt)
         {
             var iv = new byte[IvSize];
             var encryptedContent = new byte[input.Length - IvSize];
@@ -211,7 +209,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var derivedKey = _keyDeriver.Derive(key, salt, KeySize / 8);
             using (var ms = new MemoryStream())
             {
-                using (var algorithm = GetAlgorithm<TAlghoritm>(derivedKey, KeySize))
+                using (var algorithm = GetAlgorithm(derivedKey))
                 {
                     using (var decryptor = algorithm.CreateDecryptor(derivedKey, iv))
                     {
@@ -235,17 +233,14 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <seealso cref="Padding" />
         /// <seealso cref="Mode" />
         /// <seealso cref="KeySize" />
-        private TAlgorithm GetAlgorithm<TAlgorithm>(byte[] key, int keySize)
-            where TAlgorithm : SymmetricAlgorithm, new()
+        private SymmetricAlgorithm GetAlgorithm(byte[] key)
         {
-            var algorithm = new TAlgorithm
-            {
-                Mode = Mode,
-                Padding = Padding,
-                BlockSize = 128,
-                KeySize = keySize,
-                Key = key
-            };
+            var algorithm = Aes.Create();
+            algorithm.Mode = Mode;
+            algorithm.Padding = Padding;
+            algorithm.BlockSize = 128;
+            algorithm.KeySize = KeySize;
+            algorithm.Key = key;
             return algorithm;
         }
     }
