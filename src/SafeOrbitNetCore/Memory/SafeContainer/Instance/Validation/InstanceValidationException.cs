@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -24,21 +23,29 @@ SOFTWARE.
 */
 
 using System;
+using SafeOrbit.Exceptions;
+
+#if NET46
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using SafeOrbit.Exceptions;
+#endif
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
+#if NET46
     [Serializable]
+#endif
     public class InstanceValidationException : SafeOrbitException
     {
         public InstanceValidationException(string message, Exception inner) : base(message, inner)
         {
         }
+
+#if NET46
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public InstanceValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
     }
 }
