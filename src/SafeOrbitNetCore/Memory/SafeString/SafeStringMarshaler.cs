@@ -132,9 +132,11 @@ namespace SafeOrbit.Memory
             {
                 String = new string('\0', SafeString.Length);
                 _gch = new GCHandle();
+#if NET46
                 // Create a CER (Constrained Execution Region)
                 RuntimeHelpers.PrepareConstrainedRegions();
-                try
+#endif
+              try
                 {
                 }
                 finally
@@ -143,7 +145,9 @@ namespace SafeOrbit.Memory
                     _gch = GCHandle.Alloc(String, GCHandleType.Pinned);
                 }
                 // Create a CER (Constrained Execution Region)
-                RuntimeHelpers.PrepareConstrainedRegions();
+#if NET46
+         RuntimeHelpers.PrepareConstrainedRegions();
+#endif
                 var pInsecureString = (char*) _gch.AddrOfPinnedObject();
                 for (var charIndex = 0; charIndex < SafeString.Length; charIndex++)
                     pInsecureString[charIndex] = SafeString.GetAsChar(charIndex);

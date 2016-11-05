@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -28,13 +27,11 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using SafeOrbit.Common;
 using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
 using SafeOrbit.Library;
-using SafeOrbit.Random;
 using SafeOrbit.Utilities;
 
 namespace SafeOrbit.Cryptography.Encryption
@@ -160,6 +157,9 @@ namespace SafeOrbit.Cryptography.Encryption
             return InternalDecryptAsync(input, key, salt);
         }
 
+        /// <summary>
+        ///     Ensures the parameters are valid.
+        /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
@@ -179,7 +179,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             byte[] iv = null;
             byte[] encryptedContent = null;
-            var derivedKey = _keyDeriver.Derive(key, salt, KeySize / 8);
+            var derivedKey = _keyDeriver.Derive(key, salt, KeySize/8);
             using (var ms = new MemoryStream())
             {
                 using (var algorithm = GetAlgorithm(derivedKey))
@@ -206,7 +206,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var encryptedContent = new byte[input.Length - IvSize];
             Buffer.BlockCopy(input, 0, iv, 0, iv.Length);
             Buffer.BlockCopy(input, iv.Length, encryptedContent, 0, encryptedContent.Length);
-            var derivedKey = _keyDeriver.Derive(key, salt, KeySize / 8);
+            var derivedKey = _keyDeriver.Derive(key, salt, KeySize/8);
             using (var ms = new MemoryStream())
             {
                 using (var algorithm = GetAlgorithm(derivedKey))
