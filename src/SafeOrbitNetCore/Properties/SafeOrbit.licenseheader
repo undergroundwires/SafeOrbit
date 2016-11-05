@@ -1,4 +1,6 @@
-﻿/*
+﻿extensions: .cs
+
+/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -21,30 +23,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
-using System.Linq;
-using NUnit.Framework;
-using SafeOrbit.Tests;
-using SafeOrbit.Tests.Cases;
-
-namespace SafeOrbit.Cryptography.Encryption
-{
-    public class AesTests : TestsFor<ISafeEncryptor>
-    {
-        protected override ISafeEncryptor GetSut() =>  new AesEncryptor();
-
-        [Test]
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ThreeDifferentByteArrays16Length))]
-        public void Decrypt_WhenDecryptedWithEncryptionKey_returnsInput(byte[] input, byte[] key, byte[] salt)
-        {
-            //Arrange
-            var sut = GetSut();
-            var expected = input;
-            var encrypted = sut.Encrypt(input, key, salt);
-            //Act
-            var actual = sut.Decrypt(encrypted, key, salt);
-            //Assert
-            Assert.IsTrue(expected.SequenceEqual(actual));
-        }
-    }
-}

@@ -51,11 +51,11 @@ namespace SafeOrbit.Cryptography.Encryption
     ///     </p>
     ///     <p>https://www.schneier.com/academic/blowfish/</p>
     /// </remarks>
-    /// <seealso cref="SafeOrbit.Cryptography.Encryption.IFastEncryptor" />
+    /// <seealso cref="IFastEncryptor" />
     public class BlowfishEncryptor : EncryptorBase, IFastEncryptor
     {
-        public static IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
         public const BlowfishCipherMode DefaultCipherMode = BlowfishCipherMode.Cbc;
+        public static IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class. Uses <see cref="DefaultCipherMode" /> for

@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -26,7 +25,6 @@ SOFTWARE.
 using System;
 using System.IO;
 using NUnit.Framework;
-using SafeOrbit.Infrastructure.Serialization.SerializationServices;
 using SafeOrbit.Memory.SafeObject.SharpSerializer;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
@@ -34,12 +32,30 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
     [TestFixture]
     public class SerializationTests
     {
+        /// <summary>
+        ///     Local testclass to be serialized
+        /// </summary>
+        public class ClassWithGuid
+        {
+            public Guid Guid { get; set; }
+        }
+
+        /// <summary>
+        ///     Local testclass to be serialized
+        /// </summary>
+        public class ParentChildTestClass
+        {
+            public string Name { get; set; }
+            public ParentChildTestClass Mother { get; set; }
+            public ParentChildTestClass Father { get; set; }
+        }
+        private SharpSerializer GetSut(BinarySettings settings) => new SharpSerializer(settings);
         [Test]
         public void BinSerial_ShouldSerializeGuid()
         {
-            var parent = new ClassWithGuid()
+            var parent = new ClassWithGuid
             {
-                Guid = Guid.NewGuid(),
+                Guid = Guid.NewGuid()
             };
 
             var stream = new MemoryStream();
@@ -59,16 +75,16 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         [Test]
         public void BinSerial_TwoIdenticalChildsShouldBeSameInstance()
         {
-            var parent = new ParentChildTestClass()
+            var parent = new ParentChildTestClass
             {
-                Name = "parent",
+                Name = "parent"
             };
 
-            var child = new ParentChildTestClass()
+            var child = new ParentChildTestClass
             {
                 Name = "child",
                 Father = parent,
-                Mother = parent,
+                Mother = parent
             };
 
             Assert.AreSame(child.Father, child.Mother, "Precondition: Saved Father and Mother are same instance");
@@ -84,31 +100,6 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
             var loaded = serializer.Deserialize(stream) as ParentChildTestClass;
 
             Assert.AreSame(loaded.Father, loaded.Mother, "Loaded Father and Mother are same instance");
-        }
-
-        /// <summary>
-        /// Local testclass to be serialized
-        /// </summary>
-        public class ClassWithGuid
-        {
-            public Guid Guid { get; set; }
-        }
-        /// <summary>
-        /// Local testclass to be serialized
-        /// </summary>
-        public class ParentChildTestClass
-        {
-            public string Name { get; set; }
-            public ParentChildTestClass Mother { get; set; }
-            public ParentChildTestClass Father { get; set; }
-        }
-        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut()
-        {
-            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer();
-        }
-        private SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer GetSut(BinarySettings settings)
-        {
-            return new SafeOrbit.Infrastructure.Serialization.SerializationServices.SharpSerializer(settings);
         }
     }
 }

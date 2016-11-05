@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -25,7 +24,6 @@ SOFTWARE.
 
 using NUnit.Framework;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Memory;
 
 namespace SafeOrbit.Memory
 {
@@ -42,8 +40,8 @@ namespace SafeOrbit.Memory
             var expected = "PropertyData";
             var sut = new SafeObject<TestClass>();
             sut.ApplyChanges(
-                (obj) => obj.Class = new TestClass { Property = expected }
-                );
+                obj => obj.Class = new TestClass {Property = expected}
+            );
             sut.Object.Class.Property = $"{expected}_changed";
             //act
             TestDelegate callingGetter = () =>
@@ -58,5 +56,6 @@ namespace SafeOrbit.Memory
             public TestClass Class { get; set; }
             public string Property { get; set; }
         }
+
     }
 }

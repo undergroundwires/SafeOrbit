@@ -28,6 +28,8 @@ using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory
 {
+    /// <seealso cref="ISafeBytes"/>
+    /// <seealso cref="SafeBytes"/>
     [TestFixture]
     public class SafeBytesTests
     {

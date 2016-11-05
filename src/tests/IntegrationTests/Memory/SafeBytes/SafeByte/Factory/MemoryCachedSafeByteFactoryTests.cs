@@ -64,7 +64,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var sut = _sut;
             var expected = b;
             //act
-            var id = LibraryManagement.Factory.Get<IByteIdGenerator>().Generate(expected);
+            var id = LibraryManagement.Current.Factory.Get<IByteIdGenerator>().Generate(expected);
             var safeByte = sut.GetById(id);
             var actual = safeByte.Get();
             //assert

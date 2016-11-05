@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,8 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace SafeOrbit.Memory
@@ -35,31 +32,34 @@ namespace SafeOrbit.Memory
     [TestFixture]
     public class SafeContainerTests
     {
+        private static ISafeContainer GetSut() => new SafeContainer();
+
         [Test]
-        public void TypedCustomFuncRegistration_returnsResultFromFunc()
+        public void Get_AfterDisablingProtection_ReturnsInstance()
         {
-            //arrange
-            var sut = GetSut();
-            var expected = new InstanceTestClass(88);
-            sut.Register<IInstanceTestClass, InstanceTestClass>(() => expected);
+            var from = SafeContainerProtectionMode.NonProtection;
+            var to = SafeContainerProtectionMode.FullProtection;
+            var sut = new SafeContainer(from);
+            sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
             sut.Verify();
-            //act
             var actual = sut.Get<IInstanceTestClass>();
-            //assert
-            Assert.That(expected, Is.EqualTo(actual));
+            sut.SetProtectionMode(to);
+            var expected = sut.Get<IInstanceTestClass>();
+            Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
-        public void NonTypedCustomFuncRegistration_returnsResultFromFunc()
+        public void Get_AfterEnablingProtection_ReturnsInstance()
         {
-            //arrange
-            var sut = GetSut();
-            var expected = new InstanceTestClass(88);
-            sut.Register(() => expected);
+            var from = SafeContainerProtectionMode.FullProtection;
+            var to = SafeContainerProtectionMode.NonProtection;
+            var sut = new SafeContainer(from);
+            sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
             sut.Verify();
-            //act
-            var actual = sut.Get<InstanceTestClass>();
-            //assert
-            Assert.That(expected, Is.EqualTo(actual));
+            var actual = sut.Get<IInstanceTestClass>();
+            sut.SetProtectionMode(to);
+            var expected = sut.Get<IInstanceTestClass>();
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -102,33 +102,31 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Get_AfterEnablingProtection_ReturnsInstance()
+        public void NonTypedCustomFuncRegistration_returnsResultFromFunc()
         {
-            var from = SafeContainerProtectionMode.FullProtection;
-            var to = SafeContainerProtectionMode.NonProtection;
-            var sut = new SafeContainer(protectionMode: from);
-            sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
+            //arrange
+            var sut = GetSut();
+            var expected = new InstanceTestClass(88);
+            sut.Register(() => expected);
             sut.Verify();
-            var actual = sut.Get<IInstanceTestClass>();
-            sut.SetProtectionMode(to);
-            var expected = sut.Get<IInstanceTestClass>();
-            Assert.That(actual, Is.EqualTo(expected));
+            //act
+            var actual = sut.Get<InstanceTestClass>();
+            //assert
+            Assert.That(expected, Is.EqualTo(actual));
         }
 
         [Test]
-        public void Get_AfterDisablingProtection_ReturnsInstance()
+        public void TypedCustomFuncRegistration_returnsResultFromFunc()
         {
-            var from = SafeContainerProtectionMode.NonProtection;
-            var to = SafeContainerProtectionMode.FullProtection;
-            var sut = new SafeContainer(protectionMode: from);
-            sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
+            //arrange
+            var sut = GetSut();
+            var expected = new InstanceTestClass(88);
+            sut.Register<IInstanceTestClass, InstanceTestClass>(() => expected);
             sut.Verify();
+            //act
             var actual = sut.Get<IInstanceTestClass>();
-            sut.SetProtectionMode(to);
-            var expected = sut.Get<IInstanceTestClass>();
-            Assert.That(actual, Is.EqualTo(expected));
+            //assert
+            Assert.That(expected, Is.EqualTo(actual));
         }
-
-        private static ISafeContainer GetSut() => new SafeContainer();
     }
 }

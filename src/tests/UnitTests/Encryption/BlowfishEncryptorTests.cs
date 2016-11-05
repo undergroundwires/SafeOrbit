@@ -32,8 +32,10 @@ using SafeOrbit.Tests.Cases;
 using SafeOrbit.Tests;
 using SafeOrbit.UnitTests;
 
-namespace SafeOrbit.Encryption
+namespace SafeOrbit.Cryptography.Encryption
 {
+    /// <seealso cref="IFastEncryptor" />
+    /// <seealso cref="BlowfishEncryptor" />
     [TestFixture]
     public class BlowfishEncryptorTests : TestsFor<IFastEncryptor>
     {
