@@ -220,7 +220,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                     var result = new int[count];
                     for (var i = 0; i < count; i++)
                         result[i] = reader.ReadInt32();
-                    reader.Close();
                     return result;
                 }
             }

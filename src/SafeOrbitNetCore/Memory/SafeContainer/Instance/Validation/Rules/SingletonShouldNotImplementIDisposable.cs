@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
@@ -37,7 +38,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
             if (instance.LifeTime == LifeTime.Transient) return true;
             var type = instance.ImplementationType;
             if (type == null) throw new ArgumentException($"Type ({type.FullName}) could not be loaded");
-            var isDisposable = typeof(IDisposable).IsAssignableFrom(type);
+            var isDisposable = typeof(IDisposable).GetTypeInfo().IsAssignableFrom(type);
             if (!isDisposable) return true;
             Errors = new[] { $"{type.AssemblyQualifiedName} implements {nameof(IDisposable)} but registered as {nameof(LifeTime.Singleton)}" };
             return false;

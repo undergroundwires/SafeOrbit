@@ -14,8 +14,16 @@ namespace SafeOrbit.Utilities
             if (cleanup == null) throw new ArgumentNullException(nameof(cleanup));
 
 #if NET46
-            RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(action
-                , cleanup,
+            RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
+            delegate
+                {
+                    action.Invoke();
+                }
+                ,
+            delegate
+            {
+                cleanup.Invoke();
+            },
                 null);
 #else
             try

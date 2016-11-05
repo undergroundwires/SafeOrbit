@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using SafeOrbit.Library;
 
 namespace SafeOrbit.Memory
 {
