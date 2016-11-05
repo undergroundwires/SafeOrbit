@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -25,6 +26,8 @@ SOFTWARE.
 using System;
 using System.IO;
 using System.Linq;
+using SafeOrbit.Library;
+using SafeOrbit.Memory;
 
 namespace SafeOrbit.Text
 {
@@ -48,12 +51,12 @@ namespace SafeOrbit.Text
         /// </summary>
         /// <seealso cref="GetSafeString" />
         /// <seealso cref="ITextService" />
-        //private readonly IFactory<ISafeString> _safeStringFactory;
+        private readonly IFactory<ISafeString> _safeStringFactory;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TextService" /> class.
         /// </summary>
-        public TextService() : this(null)
+        public TextService() : this(LibraryManagement.Current.Factory.Get<IFactory<ISafeString>>())
         {
         }
 
@@ -62,10 +65,10 @@ namespace SafeOrbit.Text
         /// </summary>
         /// <param name="safeStringFactory">The safe string factory.</param>
         /// <exception cref="ArgumentNullException"><paramref name="safeStringFactory" /> is <see langword="null" /></exception>
-        internal TextService(object fact) //internal TextService(IFactory<ISafeString> safeStringFactory)
+        internal TextService(IFactory<ISafeString> safeStringFactory)
         {
-            //if (safeStringFactory == null) throw new ArgumentNullException(nameof(safeStringFactory));
-            //_safeStringFactory = safeStringFactory;
+            if (safeStringFactory == null) throw new ArgumentNullException(nameof(safeStringFactory));
+            _safeStringFactory = safeStringFactory;
         }
 
         /// <summary>
@@ -150,7 +153,7 @@ namespace SafeOrbit.Text
         /// </exception>
         public byte[] GetBytes(char @char, Encoding encoding = DefaultEncoding)
         {
-            return GetBytes(new[] {@char}, encoding);
+            return GetBytes(new[] { @char }, encoding);
         }
 
         /// <summary>
@@ -239,23 +242,23 @@ namespace SafeOrbit.Text
         ///     <see cref="T:System.Text.DecoderExceptionFallback" />.
         /// </exception>
         /// <seealso cref="_safeStringFactory" />
-        //public ISafeString GetSafeString(byte[] bytes, Encoding encoding)
-        //{
-        //    if ((bytes == null) || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
-        //    var result = _safeStringFactory.Create();
-        //    using (var stream = new MemoryStream(bytes))
-        //    {
-        //        using (var streamReader = new StreamReader(stream, GetEncodingObject(encoding)))
-        //        {
-        //            do
-        //            {
-        //                var ch = (char) streamReader.Read();
-        //                result.Append(ch);
-        //            } while (!streamReader.EndOfStream);
-        //        }
-        //    }
-        //    return result;
-        //}
+        public ISafeString GetSafeString(byte[] bytes, Encoding encoding)
+        {
+            if ((bytes == null) || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
+            var result = _safeStringFactory.Create();
+            using (var stream = new MemoryStream(bytes))
+            {
+                using (var streamReader = new StreamReader(stream, GetEncodingObject(encoding)))
+                {
+                    do
+                    {
+                        var ch = (char)streamReader.Read();
+                        result.Append(ch);
+                    } while (!streamReader.EndOfStream);
+                }
+            }
+            return result;
+        }
 
         /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="encoding" /> must be defined in
