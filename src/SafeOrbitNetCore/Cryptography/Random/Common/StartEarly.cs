@@ -43,7 +43,7 @@ namespace SafeOrbit.Cryptography.Random.Common
         public static void StartFillingEntropyPools()
         {
             /* We could instantiate each of these individually - as we formerly did - 
-             * But we could also just instantiate TinHatURandom() once, which will instantiate TinHatRandom, 
+             * But we could also just instantiate SafeRandomGenerator() once, which will instantiate SafeRandomGenerator, 
              * which will instantiate everything else that it uses by default.
              * So let's do that.
              * 
@@ -53,8 +53,8 @@ namespace SafeOrbit.Cryptography.Random.Common
             threadedSeedRNG.Dispose();
             var systemRNG = new EntropySources.SystemRNGCryptoServiceProvider();
             systemRNG.Dispose();
-            // Also by referencing TinHatRandom.StaticInstance once, we force it to be created
-            var junkString = TinHatRandom.StaticInstance.ToString();
+            // Also by referencing SafeRandomGenerator.StaticInstance once, we force it to be created
+            var junkString = SafeRandomGenerator.StaticInstance.ToString();
              */
 
             // Just do anything that references StaticInstance, in order to make StaticInstance run through its

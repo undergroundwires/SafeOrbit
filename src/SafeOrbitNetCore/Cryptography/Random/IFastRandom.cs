@@ -22,14 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using SafeOrbit.Cryptography.Random.Common;
+
 namespace SafeOrbit.Cryptography.Random
 {
     /// <summary>
     ///     Abstracts fast and cryptographically secure random generator.
     /// </summary>
     /// <seealso cref="ICryptoRandom" />
-    public interface IFastRandom : ICryptoRandom
+    /// <seealso cref="FastRandom"/>
+    public interface IFastRandom : ICryptoRandom 
     {
-
     }
 }

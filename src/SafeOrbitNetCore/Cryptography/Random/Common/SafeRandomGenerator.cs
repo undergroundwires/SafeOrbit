@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -32,10 +31,10 @@ using SafeOrbit.Cryptography.Random.Common.Crypto.Digests;
 namespace SafeOrbit.Cryptography.Random.Common
 {
     /// <summary>
-    ///     <see cref="SafeRandomGenerator"/> returns cryptographically strong random data, never to exceed the number of bytes available from
-    ///     the specified entropy sources.  This can cause slow generation, and is recommended only for generating extremely
-    ///     strong keys and other things that don't require a large number of bytes quickly.  This is CPU intensive.  For
-    ///     general purposes, see <see cref="FastRandomGenerator"/> instead.
+    ///     <see cref="SafeRandomGenerator" /> returns cryptographically strong random data, never to exceed the number of
+    ///     bytes available from the specified entropy sources.  This can cause slow generation, and is recommended only for
+    ///     generating extremely strong keys and other things that don't require a large number of bytes quickly.  This is CPU
+    ///     intensive. For general purposes, see <see cref="FastRandomGenerator" /> instead.
     /// </summary>
     /// <example>
     ///     <code>
@@ -62,10 +61,9 @@ namespace SafeOrbit.Cryptography.Random.Common
         private IReadOnlyList<IEntropyHasher> _entropyHashers;
         private int _hashLengthInBytes;
         private int _isDisposed = FalseInt;
- 
+
         public SafeRandomGenerator() : this(GetAllEntropyHashers())
         {
-
         }
 
         internal SafeRandomGenerator(List<IEntropyHasher> entropyHashers)
@@ -76,36 +74,6 @@ namespace SafeOrbit.Cryptography.Random.Common
 
         public static SafeRandomGenerator StaticInstance => StaticInstanceLazy.Value;
 
-        private static List<IEntropyHasher> GetAllEntropyHashers()
-        {
-            var hashers = new List<IEntropyHasher>();
-
-            // Add the .NET implementation of SHA256 and RNGCryptoServiceProvider
-            {
-                var rng = new SystemRng();
-                var hashWrapper = new HashAlgorithmWrapper(SHA256.Create());
-                hashers.Add(new EntropyHasher(rng, hashWrapper));
-            }
-
-            // Add the ThreadedSeedGeneratorRNG as entropy source, and chain SHA256 and RipeMD256 as hash algorithms
-            {
-                var rng = new ThreadedSeedGeneratorRng();
-                var hashWrappers = new List<IHashAlgorithmWrapper>
-                {
-                    new HashAlgorithmWrapper(SHA256.Create()),
-                    new HashAlgorithmWrapper(new RipeMD256Digest())
-                };
-                hashers.Add(new EntropyHasher(rng, hashWrappers));
-            }
-
-            // Add the ThreadSchedulerRNG as entropy source, and SHA256 as hash algorithm
-            {
-                var rng = new ThreadSchedulerRng();
-                var hashWrapper = new HashAlgorithmWrapper(new Sha256Digest());
-                hashers.Add(new EntropyHasher(rng, hashWrapper));
-            }
-            return hashers;
-        }
 
         private void CtorSanityCheck()
         {
@@ -139,6 +107,38 @@ namespace SafeOrbit.Cryptography.Random.Common
             _hashLengthInBytes = hashLengthInBits/8;
         }
 
+        private static List<IEntropyHasher> GetAllEntropyHashers()
+        {
+            var hashers = new List<IEntropyHasher>();
+
+            // Add the .NET implementation of SHA256 and RNGCryptoServiceProvider
+            {
+                var rng = new SystemRng();
+                var hashWrapper = new HashAlgorithmWrapper(SHA256.Create());
+                hashers.Add(new EntropyHasher(rng, hashWrapper));
+            }
+
+            // Add the ThreadedSeedGeneratorRNG as entropy source, and chain SHA256 and RipeMD256 as hash algorithms
+            {
+                var rng = new ThreadedSeedGeneratorRng();
+                var hashWrappers = new List<IHashAlgorithmWrapper>
+                {
+                    new HashAlgorithmWrapper(SHA256.Create()),
+                    new HashAlgorithmWrapper(new RipeMD256Digest())
+                };
+                hashers.Add(new EntropyHasher(rng, hashWrappers));
+            }
+
+            // Add the ThreadSchedulerRNG as entropy source, and SHA256 as hash algorithm
+            {
+                var rng = new ThreadSchedulerRng();
+                var hashWrapper = new HashAlgorithmWrapper(new Sha256Digest());
+                hashers.Add(new EntropyHasher(rng, hashWrapper));
+            }
+            return hashers;
+        }
+
+
         private byte[] CombineByteArrays(List<byte[]> byteArrays)
         {
             if (byteArrays == null) throw new ArgumentNullException(nameof(byteArrays));
@@ -164,7 +164,6 @@ namespace SafeOrbit.Cryptography.Random.Common
             }
             return accumulator;
         }
-
         private bool CompareByteArrays(byte[] first, byte[] second)
         {
             if ((first == null) || (second == null))
@@ -176,7 +175,6 @@ namespace SafeOrbit.Cryptography.Random.Common
                     return false;
             return true;
         }
-
         public override void GetBytes(byte[] data)
         {
             if (data == null)
@@ -260,12 +258,12 @@ namespace SafeOrbit.Cryptography.Random.Common
         {
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.
             if (data == null) throw new ArgumentNullException(nameof(data));
-            if (data.Length == 0)  return;
+            if (data.Length == 0) return;
             var pos = 0;
             while (true)
             {
                 var tempData = new byte[(int) (1.05*(data.Length - pos))];
-                    // Request 5% more data than needed, to reduce the probability of repeating loop
+                // Request 5% more data than needed, to reduce the probability of repeating loop
                 GetBytes(tempData);
                 for (var i = 0; i < tempData.Length; i++)
                     if (tempData[i] != 0)
@@ -295,7 +293,7 @@ namespace SafeOrbit.Cryptography.Random.Common
                     foreach (var hasher in myHashers)
                         try
                         {
-                            ((IDisposable) hasher).Dispose();
+                            hasher.Dispose();
                         }
                         catch
                         {

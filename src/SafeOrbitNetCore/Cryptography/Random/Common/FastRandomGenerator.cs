@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -34,59 +33,61 @@ using SafeOrbit.Cryptography.Random.Common.Crypto.Prng;
 namespace SafeOrbit.Cryptography.Random.Common
 {
     /// <summary>
-    /// TinHatURandom returns cryptographically strong random data.  It uses a crypto prng to generate more bytes than
-    /// actually available in hardware entropy, so it's about 1,000 times faster than TinHatRandom.  For general purposes, 
-    /// TinHatURandom is recommended because of its performance characteristics, but for extremely strong keys and other
-    /// things that don't require a large number of bytes quickly, TinHatRandom is recommended instead.
+    ///     <p>
+    ///         <see cref="FastRandomGenerator" /> returns cryptographically strong random data.  It uses a crypto prng to
+    ///         generate more bytes than actually available in hardware entropy, so it's about 1,000 times faster than
+    ///         <see cref="SafeRandomGenerator" />.
+    ///     </p>
+    ///     <p>
+    ///         For general purposes, <see cref="FastRandomGenerator" /> is recommended because of its performance
+    ///         characteristics, but for extremely strong keys and other things that don't require a large number of bytes
+    ///         quickly,  <see cref="SafeRandomGenerator" /> is recommended instead.
+    ///     </p>
     /// </summary>
-    /// <remarks>
-    /// TinHatURandom returns cryptographically strong random data.  It uses a crypto prng to generate more bytes than
-    /// actually available in hardware entropy, so it's about 1,000 times faster than TinHatRandom.  For general purposes, 
-    /// TinHatURandom is recommended because of its performance characteristics, but for extremely strong keys and other
-    /// things that don't require a large number of bytes quickly, TinHatRandom is recommended instead.
-    /// </remarks>
-    /// <example><code>
-    /// using tinhat;
+    /// <example>
+    /// <code>
+    ///  using SafeOrbit.Cryptography.Random;
+    ///  
+    ///  static void Main(string[] args)
+    ///  {
+    ///      StartEarly.StartFillingEntropyPools();  // Start gathering entropy as early as possible
+    ///  
+    ///      var randomBytes = new byte[32];
     /// 
-    /// static void Main(string[] args)
-    /// {
-    ///     StartEarly.StartFillingEntropyPools();  // Start gathering entropy as early as possible
-    /// 
-    ///     var randomBytes = new byte[32];
-    ///
-    ///     // Performance is highly variable.  On my system, it generated 2.00MB(minimum)/3.04MB(avg)/3.91MB(max) per second
-    ///     // default TinHatURandom() constructor uses the TinHatRandom() default constructor, which uses:
-    ///     //     SystemRNGCryptoServiceProvider/SHA256, 
-    ///     //     ThreadedSeedGeneratorRNG/SHA256/RipeMD256Digest,
-    ///     //     (if available) EntropyFileRNG/SHA256
-    ///     TinHatURandom.StaticInstance.GetBytes(randomBytes);
-    /// }
-    /// </code></example>
+    ///      // Performance is highly variable.  On my system, it generated 2.00MB(minimum)/3.04MB(avg)/3.91MB(max) per second
+    ///      // default FastRandom() constructor uses the SafeRandom() default constructor, which uses:
+    ///      //     SystemRNGCryptoServiceProvider/SHA256, 
+    ///      //     ThreadedSeedGeneratorRNG/SHA256/RipeMD256Digest,
+    ///      FastRandomGenerator.StaticInstance.GetBytes(randomBytes);
+    ///  }
+    ///  </code>
+    /// </example>
     internal sealed class FastRandomGenerator : RandomNumberGenerator
     {
-        public static FastRandomGenerator StaticInstance = StaticInstanceLazy.Value;
-        private static readonly Lazy<FastRandomGenerator> StaticInstanceLazy = new Lazy<FastRandomGenerator>(
-            () => new FastRandomGenerator(SafeRandomGenerator.StaticInstance));
         // Interlocked cannot handle bools.  So using int as if it were bool.
         private const int TrueInt = 1;
         private const int FalseInt = 0;
-        private int _isDisposed = FalseInt;
+        private const int ReseedLocked = 1;
+        private const int ReseedUnlocked = 0;
+
+        private const int MaxBytesPerSeedSoft = 64*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
+        private const int MaxStateCounterHard = 1024*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
+        public static FastRandomGenerator StaticInstance = StaticInstanceLazy.Value;
+
+        private static readonly Lazy<FastRandomGenerator> StaticInstanceLazy = new Lazy<FastRandomGenerator>(
+            () => new FastRandomGenerator(SafeRandomGenerator.StaticInstance));
+
+        private readonly int _digestSize;
         private readonly DigestRandomGenerator _myPrng;
         private readonly SafeRandomGenerator _safeRandomGenerator;
         private readonly bool _safeRandomGeneratorIsMineExclusively;
         private readonly object _stateCounterLockObj = new object();
-        private const int ReseedLocked = 1;
-        private const int ReseedUnlocked = 0;
+        private int _isDisposed = FalseInt;
         private int _reseedLockInt = ReseedUnlocked;
-
-        private const int MaxBytesPerSeedSoft = 64*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
-        private const int MaxStateCounterHard = 1024*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
-
-        private readonly int _digestSize;
         private int _stateCounter = MaxStateCounterHard; // Guarantee to seed immediately on first call to GetBytes
 
         /// <summary>
-        /// Number of TinHatRandom bytes to use when reseeding prng
+        ///     Number of SafeRandomGenerator bytes to use when reseeding prng
         /// </summary>
         public int SeedSize;
 
@@ -123,7 +124,7 @@ namespace SafeOrbit.Cryptography.Random.Common
          * let's assume all digests are at least 4 bytes, and let's require new seed material every int.MaxValue/2.  This is basically 
          * 1 billion calls to NextBytes, so a few GB of random data or so.  Extremely safe and conservative.
          * 
-         * But let's squish it down even more than that.  TinHatURandom performs approx 1,000 times faster than TinHatRandom.  So to 
+         * But let's squish it down even more than that.  FastRandomGenerator performs approx 1,000 times faster than SafeRandomGenerator.  So to 
          * maximize the sweet spot between strong security and good performance, let's only stretch the entropy 1,000,000 times at hard 
          * maximum, and 64,000 times softly suggested.  Typically, for example with Sha256, this means we'll generate up to 2MB before 
          * requesting reseed, and up to 32MB before requiring reseed.
@@ -134,53 +135,53 @@ namespace SafeOrbit.Cryptography.Random.Common
 
         public FastRandomGenerator()
         {
-            this._safeRandomGenerator = new SafeRandomGenerator();
-            this._safeRandomGeneratorIsMineExclusively = true;
+            _safeRandomGenerator = new SafeRandomGenerator();
+            _safeRandomGeneratorIsMineExclusively = true;
             IDigest digest = new Sha512Digest();
-            this._myPrng = new DigestRandomGenerator(digest);
-            this._digestSize = digest.GetDigestSize();
-            this.SeedSize = this._digestSize;
+            _myPrng = new DigestRandomGenerator(digest);
+            _digestSize = digest.GetDigestSize();
+            SeedSize = _digestSize;
             Reseed();
         }
 
         public FastRandomGenerator(IDigest digest)
         {
-            this._safeRandomGenerator = new SafeRandomGenerator();
-            this._safeRandomGeneratorIsMineExclusively = true;
-            this._myPrng = new DigestRandomGenerator(digest);
-            this._digestSize = digest.GetDigestSize();
-            this.SeedSize = this._digestSize;
+            _safeRandomGenerator = new SafeRandomGenerator();
+            _safeRandomGeneratorIsMineExclusively = true;
+            _myPrng = new DigestRandomGenerator(digest);
+            _digestSize = digest.GetDigestSize();
+            SeedSize = _digestSize;
             Reseed();
         }
 
         public FastRandomGenerator(List<IEntropyHasher> entropyHashers, IDigest digest)
         {
-            this._safeRandomGenerator = new SafeRandomGenerator(entropyHashers);
-            this._safeRandomGeneratorIsMineExclusively = true;
-            this._myPrng = new DigestRandomGenerator(digest);
-            this._digestSize = digest.GetDigestSize();
-            this.SeedSize = this._digestSize;
+            _safeRandomGenerator = new SafeRandomGenerator(entropyHashers);
+            _safeRandomGeneratorIsMineExclusively = true;
+            _myPrng = new DigestRandomGenerator(digest);
+            _digestSize = digest.GetDigestSize();
+            SeedSize = _digestSize;
             Reseed();
         }
 
-        public FastRandomGenerator(SafeRandomGenerator myTinHatRandom)
+        public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator)
         {
-            this._safeRandomGenerator = myTinHatRandom;
-            this._safeRandomGeneratorIsMineExclusively = false;
+            _safeRandomGenerator = safeRandomGenerator;
+            _safeRandomGeneratorIsMineExclusively = false;
             IDigest digest = new Sha512Digest();
-            this._myPrng = new DigestRandomGenerator(digest);
-            this._digestSize = digest.GetDigestSize();
-            this.SeedSize = this._digestSize;
+            _myPrng = new DigestRandomGenerator(digest);
+            _digestSize = digest.GetDigestSize();
+            SeedSize = _digestSize;
             Reseed();
         }
 
-        public FastRandomGenerator(SafeRandomGenerator myTinHatRandom, IDigest digest)
+        public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator, IDigest digest)
         {
-            this._safeRandomGenerator = myTinHatRandom;
-            this._safeRandomGeneratorIsMineExclusively = false;
-            this._myPrng = new DigestRandomGenerator(digest);
-            this._digestSize = digest.GetDigestSize();
-            this.SeedSize = this._digestSize;
+            _safeRandomGenerator = safeRandomGenerator;
+            _safeRandomGeneratorIsMineExclusively = false;
+            _myPrng = new DigestRandomGenerator(digest);
+            _digestSize = digest.GetDigestSize();
+            SeedSize = _digestSize;
             Reseed();
         }
 
@@ -190,24 +191,17 @@ namespace SafeOrbit.Cryptography.Random.Common
             if (data.Length == 0) return;
             lock (_stateCounterLockObj)
             {
-                var newStateCounter = this._stateCounter + 1 + (data.Length/this._digestSize);
+                var newStateCounter = _stateCounter + 1 + data.Length/_digestSize;
                 if (newStateCounter > MaxStateCounterHard)
-                {
                     Reseed(); // Guarantees to reset stateCounter = 0
-                }
                 else if (newStateCounter > MaxBytesPerSeedSoft)
-                {
                     if (Interlocked.Exchange(ref _reseedLockInt, ReseedLocked) == ReseedUnlocked)
                         // If more than one thread race here, let the first one through, and others exit
-                    {
-                        // System.Console.Error.Write(".");
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(ReseedCallback));
-                    }
-                }
+                        ThreadPool.QueueUserWorkItem(ReseedCallback);
                 // Repeat the addition, instead of using newStateCounter, because the above Reseed() might have changed stateCounter
-                this._stateCounter += 1 + (data.Length/this._digestSize);
+                _stateCounter += 1 + data.Length/_digestSize;
                 _myPrng.NextBytes(data);
-                    // Internally, DigestRandomGenerator locks all operations, so reseeding cannot occur in the middle of NextBytes()
+                // Internally, DigestRandomGenerator locks all operations, so reseeding cannot occur in the middle of NextBytes()
             }
         }
 
@@ -221,10 +215,9 @@ namespace SafeOrbit.Cryptography.Random.Common
             while (true)
             {
                 var tempData = new byte[(int) (1.05*(data.Length - pos))];
-                    // Request 5% more data than needed, to reduce the probability of repeating loop
+                // Request 5% more data than needed, to reduce the probability of repeating loop
                 GetBytes(tempData);
                 for (var i = 0; i < tempData.Length; i++)
-                {
                     if (tempData[i] != 0)
                     {
                         data[pos] = tempData[i];
@@ -235,7 +228,6 @@ namespace SafeOrbit.Cryptography.Random.Common
                             return;
                         }
                     }
-                }
             }
         }
 #endif
@@ -249,9 +241,7 @@ namespace SafeOrbit.Cryptography.Random.Common
         {
             // If we were already disposed, it's nice to skip any attempt at GetBytes, etc.
             if (_isDisposed == TrueInt)
-            {
                 return;
-            }
             // Even though we just checked to see if we're disposed, somebody could call Dispose() while I'm in the middle
             // of the following code block.
             try
@@ -261,7 +251,7 @@ namespace SafeOrbit.Cryptography.Random.Common
                 lock (_stateCounterLockObj)
                 {
                     _myPrng.AddSeedMaterial(newSeed);
-                    this._stateCounter = 0;
+                    _stateCounter = 0;
                     _reseedLockInt = ReseedUnlocked;
                 }
             }
@@ -269,25 +259,16 @@ namespace SafeOrbit.Cryptography.Random.Common
             {
                 // If we threw any kind of exception after we were disposed, then just swallow it and go away quietly
                 if (_isDisposed == FalseInt)
-                {
                     throw;
-                }
             }
         }
 
         protected override void Dispose(bool disposing)
         {
             if (Interlocked.Exchange(ref _isDisposed, TrueInt) == TrueInt)
-            {
                 return;
-            }
             if (_safeRandomGeneratorIsMineExclusively)
-            {
-                // If myTinHatRandom is a private instance that I created, I no longer need it, and we can get rid of it.
-                // If myTinHatRandom was given to me by user in constructor (for example, if I'm the TinHatURandom.StaticInstance)
-                // then I don't want to dispose of it, as somebody else might be referencing it.
                 _safeRandomGenerator.Dispose();
-            }
             base.Dispose(disposing);
         }
 
@@ -295,6 +276,5 @@ namespace SafeOrbit.Cryptography.Random.Common
         {
             Dispose(false);
         }
-
     }
 }
