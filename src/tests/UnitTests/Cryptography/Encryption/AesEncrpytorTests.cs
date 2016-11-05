@@ -33,8 +33,10 @@ using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Cryptography.Encryption
 {
+    /// <seealso cref="ISafeEncryptor" />
+    /// <seealso cref="AesEncryptor" />
     [TestFixture]
-    public class AesEncrpytorTests : TestsFor<ISafeEncryptor>
+    public class AesEncryptorTests : TestsFor<ISafeEncryptor>
     {
         protected override ISafeEncryptor GetSut()
         {

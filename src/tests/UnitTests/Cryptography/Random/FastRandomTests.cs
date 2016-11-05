@@ -28,12 +28,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
-using SafeOrbit.Memory;
-using SafeOrbit.Random;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests.Random
+namespace SafeOrbit.Cryptography.Random
 {
+    /// <seealso cref="IFastRandom" />
+    /// <seealso cref="FastRandom" />
     [TestFixture]
     public class FastRandomTests : TestsFor<IFastRandom>
     {

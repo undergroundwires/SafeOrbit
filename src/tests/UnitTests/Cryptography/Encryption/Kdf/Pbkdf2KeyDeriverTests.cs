@@ -27,14 +27,13 @@ using NUnit.Framework;
 using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
 
-namespace SafeOrbit.Encryption.Kdf
+namespace SafeOrbit.Cryptography.Encryption.Kdf
 {
+    /// <seealso cref="IKeyDerivationFunction" />
+    /// <seealso cref="Pbkdf2KeyDeriver" />
     public class Pbkdf2KeyDeriverTests : TestsFor<IKeyDerivationFunction>
     {
-        protected override IKeyDerivationFunction GetSut()
-        {
-            return new Pbkdf2KeyDeriver();
-        }
+        protected override IKeyDerivationFunction GetSut() => new Pbkdf2KeyDeriver();
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.DifferentByteArrayPairs32Length))]

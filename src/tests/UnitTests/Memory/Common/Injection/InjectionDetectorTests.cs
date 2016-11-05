@@ -386,7 +386,7 @@ namespace SafeOrbit.Memory.Injection
             stateStamperMock.Setup((m) => m.GetStamp(It.IsAny<object>())).Returns(stateStampMock.Object);
             var codeStamperMock = new Mock<IStamper<Type>>();
             codeStamperMock.Setup((m) => m.GetStamp(It.IsAny<Type>())).Returns(codeStampMock.Object);
-            return new InjectionDetector(alerter ?? Mock.Of<IInjectionAlerter>(), new InstanceIdGenerator(), Stubs.Get<ITypeKeyGenerator>(), stateStamper ?? stateStamperMock.Object, codeStamper ?? codeStamperMock.Object, protectCode, protectState, channel);
+            return new InjectionDetector(alerter ?? Mock.Of<IInjectionAlerter>(), Stubs.Get<ITypeIdGenerator>(), stateStamper ?? stateStamperMock.Object, codeStamper ?? codeStamperMock.Object, protectCode, protectState, channel);
         }
     }
 }

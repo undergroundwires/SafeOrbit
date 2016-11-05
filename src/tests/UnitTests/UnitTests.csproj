@@ -50,23 +50,25 @@
       <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SafeOrbitNetCore">
-      <HintPath>..\..\SafeOrbitNetCore\bin\Debug\net46\SafeOrbitNetCore.dll</HintPath>
+    <Reference Include="SafeOrbit">
+      <HintPath>..\..\SafeOrbit\bin\Debug\net46\SafeOrbit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Extensions\IEnumerableExtensionsTests.cs" />
+    <Compile Include="Cryptography\Encryption\AesEncrpytorTests.cs" />
+    <Compile Include="Cryptography\Encryption\BlowfishEncryptorTests.cs" />
+    <Compile Include="Cryptography\Encryption\Kdf\Pbkdf2KeyDeriverTests.cs" />
+    <Compile Include="Cryptography\Hash\Murmur32Tests.cs" />
+    <Compile Include="Cryptography\Random\FastRandomTests.cs" />
     <Compile Include="Internal\Cases\InjectionCases.cs" />
     <Compile Include="Internal\Cases\InstanceCases.cs" />
     <Compile Include="Common\Exceptions\Base\SerializableExceptionTestsBase.cs" />
     <Compile Include="Common\Converters\IntToBytesConverter.cs" />
     <Compile Include="Common\Exceptions\DataLengthExceptionTests.cs" />
     <Compile Include="Common\Extensions\ByteArrayExtensionsTests.cs" />
-    <Compile Include="Encryption\AesEncrpytorTests.cs" />
-    <Compile Include="Encryption\BlowfishEncryptorTests.cs" />
-    <Compile Include="Encryption\Kdf\Pbkdf2KeyDeriverTests.cs" />
     <Compile Include="Common\Exceptions\UnexpectedEnumValueExceptionTests.cs" />
     <Compile Include="Internal\Cases\SafeContainerCases.cs" />
     <Compile Include="Internal\Helpers\AsyncHelper.cs" />
@@ -112,7 +114,6 @@
     <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotDependOnTransientRuleTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotImplementIDisposableTests.cs" />
     <Compile Include="Memory\SafeContainer\SafeContainerTests.cs" />
-    <Compile Include="Hash\Murmur32Tests.cs" />
     <Compile Include="Common\Reflection\TypeKeyGeneratorTests.cs" />
     <Compile Include="Memory\Common\Serializer\SerializerTests.cs" />
     <Compile Include="Internal\Cases\SafeObjectCases.cs" />
@@ -120,7 +121,6 @@
     <Compile Include="Memory\SafeString\SafeStringTests.cs" />
     <Compile Include="Memory\SafeString\SafeStringToStringMarshalerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Random\FastRandomTests.cs" />
     <Compile Include="Internal\Stubs\ByteIdGeneratorFaker.cs" />
     <Compile Include="Internal\Stubs\FastEncryptorFaker.cs" />
     <Compile Include="Internal\Stubs\FastHasherFaker.cs" />
@@ -150,6 +150,7 @@
     <None Include="packages.config" />
     <None Include="SafeOrbit.licenseheader" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

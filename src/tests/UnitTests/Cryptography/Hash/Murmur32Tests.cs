@@ -30,18 +30,16 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
-using SafeOrbit.Hash;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.UnitTests.Hash
+namespace SafeOrbit.Cryptography.Hashers
 {
+    /// <seealso cref="Murmur32" />
+    /// <seealso cref="IFastHasher" />
     [TestFixture]
     public class Murmur32Tests : TestsFor<Murmur32>
     {
-        protected override Murmur32 GetSut()
-        {
-            return new Murmur32();
-        }
+        protected override Murmur32 GetSut() => new Murmur32();
 
         [Test]
         public void ComputeBytesFast_VerifyTheVerificationKey_returnsTrue()

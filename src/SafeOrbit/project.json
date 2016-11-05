@@ -1,4 +1,8 @@
 {
+  "copyright": "MIT-licensed",
+  "language": "en",
+  "description": "SafeOrbit is easy-to-use and strong security toolkit for .NET",
+  "title": "SafeOrbit",
   //"frameworkAssemblies": {
   //  "mscorlib": "",
   //  "System": "",
