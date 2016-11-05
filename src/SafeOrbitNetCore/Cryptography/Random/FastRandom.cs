@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-using SafeOrbit.Cryptography.Random.Common;
+using SafeOrbit.Cryptography.Random.RandomGenerators;
 using SafeOrbit.Random;
 
 namespace SafeOrbit.Cryptography.Random

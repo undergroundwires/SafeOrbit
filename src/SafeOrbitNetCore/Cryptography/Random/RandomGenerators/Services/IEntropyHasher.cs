@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -22,16 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using SafeOrbit.Cryptography.Random.RandomGenerators;
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
-namespace SafeOrbit.Cryptography.Random
+namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
-    /// <summary>
-    ///     Abstracts fast and cryptographically secure random generator.
-    /// </summary>
-    /// <seealso cref="ICryptoRandom" />
-    /// <seealso cref="FastRandom"/>
-    public interface IFastRandom : ICryptoRandom 
+    internal interface IEntropyHasher : IDisposable
     {
+        RandomNumberGenerator Rng { get; }
+        IList<IHashAlgorithmWrapper> HashWrappers { get; }
     }
 }
