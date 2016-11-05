@@ -25,7 +25,7 @@ SOFTWARE.
 
 using System.Threading.Tasks;
 
-namespace SafeOrbit.Encryption
+namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
     ///     <p>

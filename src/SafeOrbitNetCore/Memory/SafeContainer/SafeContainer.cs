@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -26,15 +25,12 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SafeOrbit.Common;
 using SafeOrbit.Common.Reflection;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Interfaces;
-using SafeOrbit.Library;
-using SafeOrbit.Memory.Common;
+using SafeOrbit.Extensions;
+using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
-using SafeOrbit.Memory.SafeContainerServices;
 using SafeOrbit.Memory.SafeContainerServices.Instance;
 using SafeOrbit.Memory.SafeContainerServices.Instance.Providers;
 using SafeOrbit.Memory.SafeContainerServices.Instance.Validation;
@@ -46,23 +42,24 @@ namespace SafeOrbit.Memory
     /// </summary>
     /// <seealso cref="ISafeContainer" />
     /// <seealso cref="IServiceProvider" />
-    /// <seealso cref="IProtectionLevelSwitchProvider{TProtectionLevel}" />
+    /// <seealso cref="IProtectable{TProtectionLevel}" />
+    /// <seealso cref="ProtectableBase{TProtectionLevel}" />
     /// <seealso cref="SafeInstanceProviderBase{TImplementation}" />
     /// <seealso cref="InjectionDetector" />
     public class SafeContainer :
-        ProtectionLevelSwitchProviderBase<SafeContainerProtectionMode>,
+        ProtectableBase<SafeContainerProtectionMode>,
         ISafeContainer
     {
         private readonly IInstanceProviderFactory _instanceFactory;
         private readonly IInstanceValidator _instanceValidator;
         private readonly ISafeObjectFactory _safeObjectFactory;
-        private ISafeObject<Dictionary<string, IInstanceProvider>> _typeInstancesSafe;
-        private readonly ITypeKeyGenerator _typeKeyGenerator;
+        private readonly ITypeIdGenerator _typeIdGenerator;
         private InjectionAlertChannel _alertChannel;
         private bool _isVerified;
+        private ISafeObject<Dictionary<string, IInstanceProvider>> _typeInstancesSafe;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeContainer"/> class.
+        ///     Initializes a new instance of the <see cref="SafeContainer" /> class.
         /// </summary>
         public SafeContainer() : this(Defaults.ContainerProtectionMode)
         {
@@ -74,7 +71,7 @@ namespace SafeOrbit.Memory
         /// <param name="protectionMode">The protection level of the factory.</param>
         public SafeContainer(SafeContainerProtectionMode protectionMode)
             : this(
-                TypeKeyGenerator.StaticInstance,
+                TypeIdGenerator.StaticInstance,
                 InstanceProviderFactory.StaticInstance,
                 new InstanceValidator(),
                 SafeObjectFactory.StaticInstance, protectionMode)
@@ -82,23 +79,23 @@ namespace SafeOrbit.Memory
         }
 
         internal SafeContainer(
-            ITypeKeyGenerator typeKeyGenerator,
+            ITypeIdGenerator typeIdGenerator,
             IInstanceProviderFactory instanceFactory,
             IInstanceValidator instanceValidator,
             ISafeObjectFactory safeObjectFactory,
             SafeContainerProtectionMode protectionMode = Defaults.ContainerProtectionMode,
             InjectionAlertChannel alertChannel = Defaults.AlertChannel) : base(protectionMode)
         {
-            if (typeKeyGenerator == null) throw new ArgumentNullException(nameof(typeKeyGenerator));
+            if (typeIdGenerator == null) throw new ArgumentNullException(nameof(typeIdGenerator));
             if (instanceFactory == null) throw new ArgumentNullException(nameof(instanceFactory));
             if (instanceValidator == null) throw new ArgumentNullException(nameof(instanceValidator));
             if (safeObjectFactory == null) throw new ArgumentNullException(nameof(safeObjectFactory));
-            _typeKeyGenerator = typeKeyGenerator;
+            _typeIdGenerator = typeIdGenerator;
             _instanceFactory = instanceFactory;
             _instanceValidator = instanceValidator;
             _safeObjectFactory = safeObjectFactory;
             _alertChannel = alertChannel;
-            ChangeProtectionMode(new ProtectionLevelSwitchingContext<SafeContainerProtectionMode>(protectionMode));
+            ChangeProtectionMode(new ProtectionChangeContext<SafeContainerProtectionMode>(protectionMode));
             SetAlertChannelInternal(alertChannel);
         }
 
@@ -167,8 +164,8 @@ namespace SafeOrbit.Memory
         public object GetService(Type serviceType)
         {
             if (!_isVerified) throw new ArgumentException($"Please call {nameof(Verify)} before using the factory");
-            base.SpinUntilSecurityModeIsAvailable();
-            var key = _typeKeyGenerator.Generate(serviceType);
+            SpinUntilSecurityModeIsAvailable();
+            var key = _typeIdGenerator.Generate(serviceType);
             IInstanceProvider instanceProvider;
             var success = _typeInstancesSafe.Object.TryGetValue(key, out instanceProvider);
             if (!success) throw new KeyNotFoundException($"{serviceType.FullName} is not registered.");
@@ -192,11 +189,37 @@ namespace SafeOrbit.Memory
             RegisterInstanceInternal<TComponent>(instance);
         }
 
+        /// <summary>
+        ///     Gets or sets the alert channel for the inner <see cref="IInjectionDetector" />.
+        /// </summary>
+        /// <seealso cref="IAlerts" />
+        /// <seealso cref="IInjectionDetector" />
+        /// <seealso cref="CanAlert" />
+        /// <value>The alert channel.</value>
+        public virtual InjectionAlertChannel AlertChannel
+        {
+            get { return _alertChannel; }
+            set
+            {
+                if (_alertChannel == value) return;
+                SetAlertChannelInternal(value);
+            }
+        }
+
+        /// <summary>
+        ///     Gets if this instance is allowed to alert via <see cref="AlertChannel" />.
+        /// </summary>
+        /// <seealso cref="IAlerts" />
+        /// <seealso cref="IInjectionDetector" />
+        /// <seealso cref="AlertChannel" />
+        /// <value>If this instance is allowed to alert.</value>
+        public bool CanAlert => CurrentProtectionMode != SafeContainerProtectionMode.NonProtection;
+
         private void RegisterInstanceInternal<TComponent>(IInstanceProvider instance) where TComponent : class
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
-            var key = _typeKeyGenerator.Generate<TComponent>();
-            base.SpinUntilSecurityModeIsAvailable();
+            var key = _typeIdGenerator.Generate<TComponent>();
+            SpinUntilSecurityModeIsAvailable();
             if (_typeInstancesSafe.Object.ContainsKey(key))
                 throw new ArgumentException($"{typeof(TComponent).FullName} is already registered.");
             _typeInstancesSafe.ApplyChanges(dic => { dic.Add(key, instance); });
@@ -219,13 +242,25 @@ namespace SafeOrbit.Memory
             return result;
         }
 
-        #region [IProtectionLevelSwitchProvider]
+        private void SetAlertChannelInternal(InjectionAlertChannel value)
+        {
+            _alertChannel = value;
+            _typeInstancesSafe.AlertChannel = value;
+            var dict = _typeInstancesSafe.Object;
+            if (dict?.Values.Any(v => !v.AlertChannel.Equals(value)) == true)
+                _typeInstancesSafe.ApplyChanges(dic => dic?
+                    .Values
+                    .Where(c => !c.AlertChannel.Equals(value))
+                    .ForEach(instance => instance.AlertChannel = value));
+        }
+
+        #region [IProtectable]
 
         /// <summary>
-        /// Changes the protection mode of the inner dictionary and its values.
+        ///     Changes the protection mode of the inner dictionary and its values.
         /// </summary>
         protected sealed override void ChangeProtectionMode(
-            IProtectionLevelSwitchingContext<SafeContainerProtectionMode> context)
+            IProtectionChangeContext<SafeContainerProtectionMode> context)
         {
             Dictionary<string, IInstanceProvider> newDictionary = null;
             if (_typeInstancesSafe != null)
@@ -236,7 +271,7 @@ namespace SafeOrbit.Memory
                 _typeInstancesSafe.Dispose();
             }
             //re-create inner safe object
-            _typeInstancesSafe = CreateInnerDictionary(context.NewValue, this.AlertChannel, newDictionary);
+            _typeInstancesSafe = CreateInnerDictionary(context.NewValue, AlertChannel, newDictionary);
         }
 
         private static InstanceProtectionMode GetInnerInstanceProtectionMode(SafeContainerProtectionMode protectionMode)
@@ -268,45 +303,5 @@ namespace SafeOrbit.Memory
         }
 
         #endregion
-
-        /// <summary>
-        ///     Gets or sets the alert channel for the inner <see cref="IInjectionDetector" />.
-        /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="CanAlert" />
-        /// <value>The alert channel.</value>
-        public virtual InjectionAlertChannel AlertChannel
-        {
-            get { return _alertChannel; }
-            set
-            {
-                if (_alertChannel == value) return;
-                SetAlertChannelInternal(value);
-            }
-        }
-
-        /// <summary>
-        ///     Gets if this instance is allowed to alert via <see cref="AlertChannel" />.
-        /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="AlertChannel" />
-        /// <value>If this instance is allowed to alert.</value>
-        public bool CanAlert => CurrentProtectionMode != SafeContainerProtectionMode.NonProtection;
-
-        private void SetAlertChannelInternal(InjectionAlertChannel value)
-        {
-            _alertChannel = value;
-            _typeInstancesSafe.AlertChannel = value;
-            var dict = _typeInstancesSafe.Object;
-            if (dict?.Values.Any(v => !v.AlertChannel.Equals(value)) == true)
-            {
-                _typeInstancesSafe.ApplyChanges(dic => dic?
-                .Values
-                .Where(c=> !c.AlertChannel.Equals(value))
-                .ForEach(instance => instance.AlertChannel = value));
-            }
-        }
     }
 }

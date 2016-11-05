@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Encryption
+namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
     ///     Common interface for all encryption algorithms.

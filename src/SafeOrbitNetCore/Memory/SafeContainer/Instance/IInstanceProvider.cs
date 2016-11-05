@@ -24,14 +24,13 @@ SOFTWARE.
 */
 
 using System;
-using System.Diagnostics;
-using SafeOrbit.Memory.Common;
+using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance
 {
     internal interface IInstanceProvider :
-        IProtectionLevelSwitchProvider<InstanceProtectionMode>,
+        IProtectable<InstanceProtectionMode>,
         IAlerts        
     {
         Type ImplementationType { get; }

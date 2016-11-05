@@ -25,7 +25,8 @@ SOFTWARE.
 
 using System;
 using System.ComponentModel;
-using SafeOrbit.Memory.Common;
+using SafeOrbit.Exceptions;
+using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 
@@ -38,10 +39,10 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
     /// <seealso cref="InstanceProtectionMode" />
     /// <seealso cref="IInstanceProvider" />
     /// <seealso cref="IInjectionDetector" />
-    /// <seealso cref="IProtectionLevelSwitchProvider{TProtectionLevel}" />
-    /// <seealso cref="ProtectionLevelSwitchProviderBase{InstanceProtectionMode}" />
+    /// <seealso cref="IProtectable{TProtectionLevel}" />
+    /// <seealso cref="ProtectableBase{InstanceProtectionMode}" />
     internal abstract class SafeInstanceProviderBase<TImplementation> :
-        ProtectionLevelSwitchProviderBase<InstanceProtectionMode>, IInstanceProvider
+        ProtectableBase<InstanceProtectionMode>, IInstanceProvider
     {
 
         private readonly IInjectionDetector _injectionDetector;
@@ -60,7 +61,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             LifeTime = lifeTime;
             AssemblyQualifiedName = typeof(TImplementation).AssemblyQualifiedName;
             this.AlertChannel = alertChannel;
-            this.ChangeProtectionMode(new ProtectionLevelSwitchingContext<InstanceProtectionMode>(protectionMode));
+            this.ChangeProtectionMode(new ProtectionChangeContext<InstanceProtectionMode>(protectionMode));
         }
 
 
@@ -93,7 +94,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         /// <seealso cref="IInjectionDetector.ScanState"/>
         /// <seealso cref="Provide"/>
         public virtual bool CanProtectState { get; } = true;
-        protected sealed override void ChangeProtectionMode(IProtectionLevelSwitchingContext<InstanceProtectionMode> context)
+        protected sealed override void ChangeProtectionMode(IProtectionChangeContext<InstanceProtectionMode> context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             switch (context.NewValue)
@@ -117,7 +118,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
                     _injectionDetector.ScanState = false;
                     break;
                 default:
-                    throw new InvalidEnumArgumentException(nameof(context.NewValue));
+                    throw new UnexpectedEnumValueException<InstanceProtectionMode>(context.NewValue);
             }
         }
         private void VerifyInstanceInternal(TImplementation instance)

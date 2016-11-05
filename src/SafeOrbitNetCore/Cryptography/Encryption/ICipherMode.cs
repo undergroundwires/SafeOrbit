@@ -23,34 +23,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-
-namespace SafeOrbit.Memory
+namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
-    ///     <see cref="IFactory{TInstance}" /> implementation, using <see cref="ISafeContainer" />.
+    /// Interface to be implemented by all of the cipher modes.
     /// </summary>
-    /// <typeparam name="TComponent">The type of the component.</typeparam>
-    /// <seealso cref="IFactory{TComponent}" />
-    internal class SafeContainerWrapper<TComponent> : IFactory<TComponent>
+    public interface ICipherMode
     {
-        private readonly ISafeContainer _safeContainer;
-
-        public SafeContainerWrapper() : this(LibraryManagement.Factory)
-        {
-        }
-
-        public SafeContainerWrapper(ISafeContainer safeContainer)
-        {
-            if (safeContainer == null) throw new ArgumentNullException(nameof(safeContainer));
-            _safeContainer = safeContainer;
-        }
-
-        public TComponent Create()
-        {
-            return _safeContainer.Get<TComponent>();
-        }
-
-        public static IFactory<TComponent> Wrap() => new SafeContainerWrapper<TComponent>();
+        
     }
 }

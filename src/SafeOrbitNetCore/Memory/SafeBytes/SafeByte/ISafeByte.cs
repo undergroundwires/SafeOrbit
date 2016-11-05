@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -25,32 +24,15 @@ SOFTWARE.
 
 using System;
 
-namespace SafeOrbit.Memory
+namespace SafeOrbit.Memory.SafeBytesServices
 {
-    /// <summary>
-    ///     <see cref="IFactory{TInstance}" /> implementation, using <see cref="ISafeContainer" />.
-    /// </summary>
-    /// <typeparam name="TComponent">The type of the component.</typeparam>
-    /// <seealso cref="IFactory{TComponent}" />
-    internal class SafeContainerWrapper<TComponent> : IFactory<TComponent>
+    internal interface ISafeByte : IDisposable,
+        IEquatable<ISafeByte>, IEquatable<byte>,
+        IDeepCloneable<ISafeByte>
     {
-        private readonly ISafeContainer _safeContainer;
-
-        public SafeContainerWrapper() : this(LibraryManagement.Factory)
-        {
-        }
-
-        public SafeContainerWrapper(ISafeContainer safeContainer)
-        {
-            if (safeContainer == null) throw new ArgumentNullException(nameof(safeContainer));
-            _safeContainer = safeContainer;
-        }
-
-        public TComponent Create()
-        {
-            return _safeContainer.Get<TComponent>();
-        }
-
-        public static IFactory<TComponent> Wrap() => new SafeContainerWrapper<TComponent>();
+        int Id { get; }
+        bool IsByteSet { get; }
+        void Set(byte b);
+        byte Get();
     }
 }

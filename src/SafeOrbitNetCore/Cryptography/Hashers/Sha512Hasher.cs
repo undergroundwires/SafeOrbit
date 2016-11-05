@@ -41,6 +41,10 @@ namespace SafeOrbit.Cryptography.Hashers
 
         private readonly HashAlgorithm _algorithm;
 
+        public Sha512Hasher() : this(SHA512.Create())
+        {
+            
+        }
         internal Sha512Hasher(HashAlgorithm algorithm)
         {
             if (algorithm == null) throw new ArgumentNullException(nameof(algorithm));

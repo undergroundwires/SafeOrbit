@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 using System;
-using SafeOrbit.Memory.Common;
+using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory
@@ -37,7 +37,7 @@ namespace SafeOrbit.Memory
     /// <seealso cref="SafeContainerProtectionMode" />
     public interface ISafeContainer :
         IAlerts,
-        IProtectionLevelSwitchProvider<SafeContainerProtectionMode>,
+        IProtectable<SafeContainerProtectionMode>,
         IServiceProvider
    {
         TComponent Get<TComponent>();

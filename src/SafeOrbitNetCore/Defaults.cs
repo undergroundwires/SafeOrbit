@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -28,15 +27,20 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit
 {
+    /// <summary>
+    ///     Default settings for SafeOrbit classes.
+    /// </summary>
     internal class Defaults
     {
         //SafeObject
         public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
-        public static IInitialSafeObjectSettings SafeObjectSettings => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, AlertChannel);
+
+        public static IInitialSafeObjectSettings SafeObjectSettings
+            => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, AlertChannel);
+
 
         //SafeContainer
-        //public const SafeContainerProtectionMode ContainerProtectionMode = SafeContainerProtectionMode.FullProtection;
-
+        public const SafeContainerProtectionMode ContainerProtectionMode = SafeContainerProtectionMode.FullProtection;
 
         //InjectionProtector
         public const InjectionAlertChannel AlertChannel = InjectionAlertChannel.ThrowException;
