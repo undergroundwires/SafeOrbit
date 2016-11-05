@@ -50,11 +50,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         private readonly IFastHasher _fastHasher;
         private readonly ISafeRandom _safeRandom;
         private readonly IByteArrayProtector _memoryProtector;
-        /// <exception cref="MemoryInjectionException">If the object has been changed outside of <see cref="LibraryManagement.Factory"/>.</exception>
+        /// <exception cref="MemoryInjectionException">If the object has been changed outside of <see cref="LibraryManagement.Current.Factory"/>.</exception>
         public HashedByteIdGenerator() : this(
-            LibraryManagement.Factory.Get<IFastHasher>(),
-            LibraryManagement.Factory.Get<ISafeRandom>(),
-            LibraryManagement.Factory.Get<IByteArrayProtector>())
+            LibraryManagement.Current.Factory.Get<IFastHasher>(),
+            LibraryManagement.Current.Factory.Get<ISafeRandom>(),
+            LibraryManagement.Current.Factory.Get<IByteArrayProtector>())
         {
 
         }

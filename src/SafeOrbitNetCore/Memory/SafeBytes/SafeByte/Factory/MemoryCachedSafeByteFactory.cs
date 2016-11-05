@@ -77,9 +77,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
 
         public MemoryCachedSafeByteFactory(SafeObjectProtectionMode innerDictionaryProtectionMode) :
             this(
-                LibraryManagement.Factory.Get<IByteIdGenerator>(),
-                LibraryManagement.Factory.Get<IFactory<ISafeByte>>(),
-                LibraryManagement.Factory.Get<ISafeObjectFactory>(),
+                LibraryManagement.Current.Factory.Get<IByteIdGenerator>(),
+                LibraryManagement.Current.Factory.Get<IFactory<ISafeByte>>(),
+                LibraryManagement.Current.Factory.Get<ISafeObjectFactory>(),
                 innerDictionaryProtectionMode)
         {
             

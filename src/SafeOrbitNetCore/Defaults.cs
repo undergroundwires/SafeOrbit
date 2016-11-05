@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using SafeOrbit.Library;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.InjectionServices;
 
@@ -36,7 +37,7 @@ namespace SafeOrbit
         public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
 
         public static IInitialSafeObjectSettings SafeObjectSettings
-            => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, AlertChannel);
+            => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, LibraryManagement.Current.AlertChannel);
 
 
         //SafeContainer

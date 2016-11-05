@@ -31,7 +31,8 @@
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
       },
       "frameworkAssemblies": {
-        "System.Xml": "4.0.0"
+        "System.Xml": "4.0.0",
+        "System.Security": "4.0.0"
       }
     }
   },

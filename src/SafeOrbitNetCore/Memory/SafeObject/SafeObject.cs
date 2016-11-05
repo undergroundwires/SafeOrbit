@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Reflection;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Library;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 
@@ -126,11 +127,6 @@ namespace SafeOrbit.Memory
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="injectionDetector">The injection protector.</param>
-        /// <param name="alertChannel">
-        ///     Gets or sets the alert channel for the internal <see cref="InjectionDetector" />.
-        ///     <seealso cref="InjectionDetector" />
-        ///     <seealso cref="_injectionDetector" />
-        /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="settings" /> is not null and <see cref="InitialSafeObjectSettings.InitialValue" /> is not a type
         ///     of <see cref="TObject" />.
@@ -139,7 +135,7 @@ namespace SafeOrbit.Memory
         ///     <p><paramref name="injectionDetector" /> is <see langword="null" />.</p>
         ///     <p>Initial object value from <see cref="settings" /> is null or cannot be casted to <see cref="TObject" /></p>
         /// </exception>
-        internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector, InjectionAlertChannel alertChannel)
+        internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector)
             : base(settings.ProtectionMode)
         {
             if (injectionDetector == null) throw new ArgumentNullException(nameof(injectionDetector));

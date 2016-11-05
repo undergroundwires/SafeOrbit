@@ -54,6 +54,7 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="SafeOrbit.Cryptography.Encryption.IFastEncryptor" />
     public class BlowfishEncryptor : EncryptorBase, IFastEncryptor
     {
+        public static IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
         public const BlowfishCipherMode DefaultCipherMode = BlowfishCipherMode.Cbc;
 
         /// <summary>

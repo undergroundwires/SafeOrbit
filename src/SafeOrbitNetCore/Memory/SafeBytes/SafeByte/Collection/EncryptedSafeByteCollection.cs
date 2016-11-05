@@ -61,10 +61,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     Initializes a new instance of the <see cref="EncryptedSafeByteCollection" /> class.
         /// </summary>
         public EncryptedSafeByteCollection() : this(
-            LibraryManagement.Factory.Get<IFastEncryptor>(),
-            LibraryManagement.Factory.Get<IByteArrayProtector>(),
-            LibraryManagement.Factory.Get<IFastRandom>(),
-            LibraryManagement.Factory.Get<ISafeByteFactory>()
+            LibraryManagement.Current.Factory.Get<IFastEncryptor>(),
+            LibraryManagement.Current.Factory.Get<IByteArrayProtector>(),
+            LibraryManagement.Current.Factory.Get<IFastRandom>(),
+            LibraryManagement.Current.Factory.Get<ISafeByteFactory>()
         )
         {
         }

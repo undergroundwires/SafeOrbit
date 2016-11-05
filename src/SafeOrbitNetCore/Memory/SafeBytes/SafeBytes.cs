@@ -41,10 +41,10 @@ namespace SafeOrbit.Memory
 
         [DebuggerHidden]
         public SafeBytes() : this(
-            LibraryManagement.Factory.Get<IFastRandom>(),
-            LibraryManagement.Factory.Get<ISafeByteFactory>(),
-            LibraryManagement.Factory.Get<IFactory<ISafeBytes>>(),
-            LibraryManagement.Factory.Get<IFactory<ISafeByteCollection>>())
+            LibraryManagement.Current.Factory.Get<IFastRandom>(),
+            LibraryManagement.Current.Factory.Get<ISafeByteFactory>(),
+            LibraryManagement.Current.Factory.Get<IFactory<ISafeBytes>>(),
+            LibraryManagement.Current.Factory.Get<IFactory<ISafeByteCollection>>())
         {
         }
 

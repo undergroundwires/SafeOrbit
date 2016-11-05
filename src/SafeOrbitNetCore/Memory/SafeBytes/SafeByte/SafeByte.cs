@@ -72,10 +72,10 @@ namespace SafeOrbit.Memory.SafeBytesServices
         ///     Initializes a new instance of the <see cref="SafeByte" /> class.
         /// </summary>
         /// <exception cref="MemoryInjectionException">If the object has been modified outside of the application scope.</exception>
-        public SafeByte() : this(LibraryManagement.Factory.Get<IFastEncryptor>(),
-            LibraryManagement.Factory.Get<IFastRandom>(),
-            LibraryManagement.Factory.Get<IByteIdGenerator>(),
-            LibraryManagement.Factory.Get<IByteArrayProtector>()
+        public SafeByte() : this(LibraryManagement.Current.Factory.Get<IFastEncryptor>(),
+            LibraryManagement.Current.Factory.Get<IFastRandom>(),
+            LibraryManagement.Current.Factory.Get<IByteIdGenerator>(),
+            LibraryManagement.Current.Factory.Get<IByteArrayProtector>()
         )
         {
         }

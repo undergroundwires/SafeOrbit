@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -34,31 +33,17 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Library
 {
-    /// <summary>
-    ///     Singleton class to access core utility methods.
-    /// </summary>
     public class LibraryManagement
     {
         public const SafeContainerProtectionMode DefaultInnerFactoryProtectionMode =
             SafeContainerProtectionMode.FullProtection;
 
-        public static EventHandler<IInjectionMessage> LibraryInjected;
-     
-        public static void EnableInjectionProtection(InjectionAlertChannel channel)
-        {
-            if (Factory.CurrentProtectionMode != SafeContainerProtectionMode.FullProtection)
-            {
-                Factory.SetProtectionMode(SafeContainerProtectionMode.FullProtection);
-            }
-        }
+        /// <summary>
+        ///     Returns the current <see cref="LibraryManagement" /> class for running SafeOrbit.
+        /// </summary>
+        public static LibraryManagement Current = new LibraryManagement();
 
-        public static void DisableInjectionProtection()
-        {
-            if (Factory.CurrentProtectionMode != SafeContainerProtectionMode.NonProtection)
-            {
-                Factory.SetProtectionMode(SafeContainerProtectionMode.NonProtection);
-            }
-        }
+        public static EventHandler<IInjectionMessage> LibraryInjected;
 
 
         /// <summary>
@@ -67,19 +52,15 @@ namespace SafeOrbit.Library
         private static readonly Lazy<ISafeContainer> FactoryLazy = new Lazy<ISafeContainer>(SetupFactory);
 
         /// <summary>
-        ///     Use static <see cref="Factory" /> property instead.
+        ///     Use static <see cref="Current" /> property instead.
         /// </summary>
         internal LibraryManagement()
         {
         }
 
-        /// <summary>
-        ///     Gets the factory thread safe.
-        /// </summary>
-        /// <value>Factory for the assembly</value>
-        public static ISafeContainer Factory => FactoryLazy.Value;
+        public ISafeContainer Factory => FactoryLazy.Value;
 
-        public static SafeContainerProtectionMode ProtectionMode
+        public SafeContainerProtectionMode ProtectionMode
         {
             get { return Factory.CurrentProtectionMode; }
             set
@@ -88,10 +69,20 @@ namespace SafeOrbit.Library
             }
         }
 
-        public static void StartEarly(
+        public InjectionAlertChannel AlertChannel
+        {
+            get { return Factory.AlertChannel; }
+            set
+            {
+               Factory.AlertChannel = value;
+            }
+        }
+
+        public void StartEarly(
             SafeContainerProtectionMode protectionMode = SafeContainerProtectionMode.NonProtection)
         {
-            var tasks = GetAllStartEarlyTasks(); //get all tasks
+            var factory = this.Factory;
+            var tasks = GetAllStartEarlyTasks(factory); //get all tasks
             var actions = tasks.Select(t => new Action(t.Prepare)).ToArray(); //convert them into actions
             Parallel.Invoke(actions); //run them in parallel
         }
@@ -104,9 +95,9 @@ namespace SafeOrbit.Library
             return result;
         }
 
-        private static IEnumerable<IStartEarlyTask> GetAllStartEarlyTasks()
+        private static IEnumerable<IStartEarlyTask> GetAllStartEarlyTasks(ISafeContainer container)
         {
-            yield return new SafeByteFactoryInitializer(Factory); //initializes Factory as well.
+            yield return new SafeByteFactoryInitializer(container);
             yield return new StartFillingEntropyPoolsStartEarlyTask();
         }
     }

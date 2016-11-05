@@ -84,11 +84,11 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         private readonly IKeyDerivationFunction _keyDeriver;
 
-        public AesEncryptor() : this(LibraryManagement.Factory.Get<IKeyDerivationFunction>())
+        public AesEncryptor() : this(LibraryManagement.Current.Factory.Get<IKeyDerivationFunction>())
         {
         }
 
-        public AesEncryptor(IKeyDerivationFunction keyDeriver) : base(LibraryManagement.Factory.Get<IFastRandom>())
+        public AesEncryptor(IKeyDerivationFunction keyDeriver) : base(LibraryManagement.Current.Factory.Get<IFastRandom>())
         {
             if (keyDeriver == null) throw new ArgumentNullException(nameof(keyDeriver));
             _keyDeriver = keyDeriver;
