@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{63D4E26A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApi", "tests\TestApi\TestApi.csproj", "{1E69549B-D6A5-42BA-8BD7-B3370731C59A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SafeOrbit", "SafeOrbitNetCore\SafeOrbit.xproj", "{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SafeOrbit", "SafeOrbit\SafeOrbit.xproj", "{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB127857-A060-4285-8768-C094A0A2B5CE}"
 	ProjectSection(SolutionItems) = preProject

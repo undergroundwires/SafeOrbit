@@ -25,7 +25,7 @@ SOFTWARE.
 
 using System;
 using NUnit.Framework;
-using SafeOrbit.Encryption;
+using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;

@@ -23,14 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using SafeOrbit.Exceptions.SerializableException;
+
+#if NET46
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using SafeOrbit.Exceptions.SerializableException;
+#endif
 
 namespace SafeOrbit.Exceptions
 {
-    [Serializable]
+    /// <summary>
+    /// This type of exception is thrown if the key size was given wrong to complete the cryptologic operation.
+    /// </summary>
+#if NET46
+   [Serializable]
+#endif
     public class KeySizeException : SafeOrbitException
     {
         public int MinSize { get; set; }
@@ -43,15 +51,18 @@ namespace SafeOrbit.Exceptions
             MaxSize = maxSize;
         }
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public KeySizeException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
         protected override void ConfigureSerialize(ISerializationContext serializationContext)
         {
             serializationContext.Add(() => MinSize);
             serializationContext.Add(() => MaxSize);
             base.ConfigureSerialize(serializationContext);
         }
+
+#if NET46
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public KeySizeException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+#endif
     }
 }

@@ -25,7 +25,7 @@ SOFTWARE.
 
 using System.Linq;
 using Moq;
-using SafeOrbit.Encryption;
+using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.UnitTests

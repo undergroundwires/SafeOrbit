@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 using Moq;
-using SafeOrbit.Encryption.Kdf;
+using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.UnitTests

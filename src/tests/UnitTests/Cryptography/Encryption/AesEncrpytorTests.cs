@@ -25,13 +25,13 @@ SOFTWARE.
 
 using System;
 using NUnit.Framework;
-using SafeOrbit.Encryption.Kdf;
+using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
 using SafeOrbit.UnitTests;
 
-namespace SafeOrbit.Encryption
+namespace SafeOrbit.Cryptography.Encryption
 {
     [TestFixture]
     public class AesEncrpytorTests : TestsFor<ISafeEncryptor>

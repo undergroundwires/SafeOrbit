@@ -24,9 +24,12 @@ SOFTWARE.
 */
 
 using System;
+using SafeOrbit.Exceptions.SerializableException;
+
+#if NET46
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using SafeOrbit.Exceptions.SerializableException;
+#endif
 
 namespace SafeOrbit.Exceptions
 {
@@ -36,7 +39,9 @@ namespace SafeOrbit.Exceptions
     /// <typeparam name="TEnum">Type of the enum</typeparam>
     /// <seealso cref="SafeOrbitException" />
     /// <seealso cref="SerializableExceptionBase" />
-    [Serializable]
+#if NET46
+   [Serializable]
+#endif
     public class UnexpectedEnumValueException<TEnum> : SafeOrbitException where TEnum: IComparable, IFormattable, IConvertible
     {
         public TEnum Value { get; set; }
@@ -50,9 +55,11 @@ namespace SafeOrbit.Exceptions
         {
             Value = value;
         }
+#if NET46
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         private UnexpectedEnumValueException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
     }
 }

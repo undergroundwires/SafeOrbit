@@ -23,21 +23,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#if NET46
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+#endif
 
 namespace SafeOrbit.Exceptions
 {
+    /// <summary>
+    /// This type of exception is thrown when trying to modify an object with only read only access.
+    /// </summary>
+    /// <remarks>
+    /// TODO: rename this class.
+    /// </remarks>
+#if NET46
     [Serializable]
+#endif
     public class ReadOnlyAccessForbiddenException : SafeOrbitException
     {
         public ReadOnlyAccessForbiddenException(string message) : base(message)
         {
         }
+
+#if NET46
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public ReadOnlyAccessForbiddenException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
     }
 }

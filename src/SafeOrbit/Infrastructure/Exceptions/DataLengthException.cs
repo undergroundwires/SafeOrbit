@@ -23,26 +23,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
+
+#if NET46
 using System.Runtime.Serialization;
+using System;
 using System.Security.Permissions;
+#endif
 
 namespace SafeOrbit.Exceptions
 {
     /// <summary>
     ///     This exception is thrown if a buffer that is meant to have output copied into it turns out to be too short, or if
-    ///     we've been given insufficient input.
+    ///     insufficient input was given..
     /// </summary>
-    [Serializable]
+#if NET46
+  [Serializable]
+#endif
     public class DataLengthException : SafeOrbitException
     {
         public DataLengthException(string argumentName, string message) : base(argumentName, message)
         {
         }
 
+#if NET46
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public DataLengthException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
     }
 }
