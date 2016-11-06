@@ -59,16 +59,16 @@ namespace SafeOrbit.Memory
         /// <remarks>
         ///     <p>The object must be validated by application using <see cref="NotifyChanges" /> before calling this method.</p>
         /// </remarks>
-        /// <param name="obj">The object to validate.</param>
+        /// <param name="object">Object that this instance has been notified by <see cref="NotifyChanges"/></param>
         /// <exception cref="MemoryInjectionException">
         ///     If the state or code of the object has been changed without
         ///     <see cref="NotifyChanges" /> method being called.
         /// </exception>
-        void AlertUnnotifiedChanges(object obj);
+        void AlertUnnotifiedChanges(object @object);
         /// <summary>
         /// Verifies the latest changes to the object.
         /// </summary>
-        /// <param name="object">Any C# <see cref="object"/>.</param>
+        /// <param name="object">Object that this instance scans/tracks.</param>
         void NotifyChanges(object @object);
     }
 }

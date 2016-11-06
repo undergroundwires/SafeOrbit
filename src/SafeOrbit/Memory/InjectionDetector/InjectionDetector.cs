@@ -104,28 +104,32 @@ namespace SafeOrbit.Memory.Injection
         ///     Saves the state and/or the code  of the object.
         ///     Use <see cref="AlertUnnotifiedChanges" /> method to check if the state has been injected.
         /// </summary>
-        public void NotifyChanges(object obj)
+        /// <param name="object">Object that this instance scans/tracks.</param>
+        public void NotifyChanges(object @object)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (@object == null) throw new ArgumentNullException(nameof(@object));
             if (ScanState)
-                SaveStateStamp(obj);
+                SaveStateStamp(@object);
             if (ScanCode)
-                SaveCodeStampFor(obj.GetType());
+                SaveCodeStampFor(@object.GetType());
         }
 
         /// <summary>
         ///     Alerts when any unnotified changes are detected any <see cref="CanAlert" /> is true.
         /// </summary>
+        /// <param name="object">Object that this instance has been notified by <see cref="NotifyChanges"/></param>
+        /// <exception cref="ArgumentNullException"><paramref name="object"/> is <see langword="NULL"/></exception>
         /// <seealso cref="IAlerts" />
-        public void AlertUnnotifiedChanges(object obj)
+        public void AlertUnnotifiedChanges(object @object)
         {
+            if (@object == null) throw new ArgumentNullException(nameof(@object));
             //get validation results
-            var isStateValid = ScanState ? IsStateValid(obj) : true;
-            var isCodeValid = ScanCode ? IsCodeValid(obj) : true;
+            var isStateValid = ScanState ? IsStateValid(@object) : true;
+            var isCodeValid = ScanCode ? IsCodeValid(@object) : true;
             //alert
             if (isStateValid && isCodeValid) return;
             if (!CanAlert) return;
-            var message = new InjectionMessage(!isStateValid, !isCodeValid, obj);
+            var message = new InjectionMessage(!isStateValid, !isCodeValid, @object);
             _alerter.Alert(message, AlertChannel);
         }
 
