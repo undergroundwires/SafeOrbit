@@ -24,8 +24,11 @@ SOFTWARE.
 */
 
 using System;
+using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption.Kdf;
+using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Fakes;
 using SafeOrbit.Tests;
@@ -36,11 +39,11 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="ISafeEncryptor" />
     /// <seealso cref="AesEncryptor" />
     [TestFixture]
-    public class AesEncryptorTests : TestsFor<ISafeEncryptor>
+    public class AesEncryptorTests
     {
-        protected override ISafeEncryptor GetSut()
+        protected ISafeEncryptor GetSut(IKeyDerivationFunction kdf = null, IFastRandom random = null)
         {
-            return new AesEncryptor(Stubs.Get<IKeyDerivationFunction>());
+            return new AesEncryptor(kdf ?? Stubs.Get<IKeyDerivationFunction>(), random ?? Stubs.Get<IFastRandom>());
         }
 
         /// <summary>
@@ -50,7 +53,13 @@ namespace SafeOrbit.Cryptography.Encryption
         public void Encrypt_SameSalt_returnsDifferentResults(byte[] input, byte[] key, byte[] salt)
         {
             //Arrange
-            var sut = GetSut();
+            var ivSize = 16;
+            var randomMock = new Mock<IFastRandom>();
+            randomMock.SetupSequence(r => r.GetBytes(It.Is<int>(i => i.Equals(ivSize))))
+                .Returns(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                .Returns(new byte[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1})
+                .Returns(new byte[] {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2});
+            var sut = GetSut(random: randomMock.Object);
             //Act
             var result1 = sut.Encrypt(input, key, salt);
             var result2 = sut.Encrypt(input, key, salt);

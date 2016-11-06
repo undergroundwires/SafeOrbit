@@ -56,12 +56,15 @@ namespace SafeOrbit.Memory.Injection
 
         private IStamp<int> _lastStateStamp;
 
-        public InjectionDetector(bool justCode = true, bool justState = true,
+        public InjectionDetector(
+            bool justCode = true, bool justState = true,
             InjectionAlertChannel alertChannel = Defaults.AlertChannel) : this
         (
             InjectionAlerter.StaticInstance,
             TypeIdGenerator.StaticInstance,
-            StateStamper.StaticInstance, IlCodeStamper.StaticInstance, justCode, justState, alertChannel)
+            StateStamper.StaticInstance,
+            IlCodeStamper.StaticInstance,
+            justCode, justState, alertChannel)
         {
         }
 
