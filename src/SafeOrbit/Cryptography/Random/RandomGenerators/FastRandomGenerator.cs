@@ -72,7 +72,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 
         private const int MaxBytesPerSeedSoft = 64*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
         private const int MaxStateCounterHard = 1024*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
-        public static FastRandomGenerator StaticInstance = StaticInstanceLazy.Value;
+        public static FastRandomGenerator StaticInstance => StaticInstanceLazy.Value;
 
         private static readonly Lazy<FastRandomGenerator> StaticInstanceLazy = new Lazy<FastRandomGenerator>(
             () => new FastRandomGenerator(SafeRandomGenerator.StaticInstance));
