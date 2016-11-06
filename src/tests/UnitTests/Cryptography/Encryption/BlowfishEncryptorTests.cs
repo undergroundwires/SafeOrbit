@@ -24,7 +24,9 @@ SOFTWARE.
 
 using System;
 using NUnit.Framework;
+using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
+using SafeOrbit.Fakes;
 using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
 
@@ -33,10 +35,10 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="IFastEncryptor" />
     /// <seealso cref="BlowfishEncryptor" />
     [TestFixture]
-    public class BlowfishEncryptorTests : TestsFor<IFastEncryptor>
+    public class BlowfishEncryptorTests
     {
-        protected override IFastEncryptor GetSut() => new BlowfishEncryptor();
-        private IFastEncryptor GetSut(BlowfishCipherMode cipherMode) => new BlowfishEncryptor(cipherMode);
+        protected IFastEncryptor GetSut(ICryptoRandom random = null) => new BlowfishEncryptor(random ?? Stubs.Get<IFastRandom>());
+        private IFastEncryptor GetSut(BlowfishCipherMode cipherMode) => new BlowfishEncryptor(cipherMode, Stubs.Get<IFastRandom>());
 
 
         [Test]

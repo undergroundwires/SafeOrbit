@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="Common\Text\EncodingVectors.cs" />
     <Compile Include="Common\Text\TextServiceTests.cs" />
-    <Compile Include="Cryptography\Encryption\AesEncryptorTests.cs" />
     <Compile Include="Encryption\AesTests.cs" />
     <Compile Include="Encryption\BlowfishTests.cs" />
     <Compile Include="Memory\SafeBytes\SafeBytesTests.cs" />
@@ -75,6 +74,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Cryptography\" />
     <Folder Include="Memory\Common\" />
     <Folder Include="Memory\SafeBytes\SafeByte\Collection\" />
   </ItemGroup>

@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -58,8 +57,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public static IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class. Uses <see cref="DefaultCipherMode" /> for
-        ///     encryption.
+        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class.
         /// </summary>
         public BlowfishEncryptor() : base(FastRandom.StaticInstance)
         {
@@ -67,23 +65,48 @@ namespace SafeOrbit.Cryptography.Encryption
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
-        ///     <see cref="BlowfishCipherMode" />.
+        ///     <see cref="ICryptoRandom" />.
+        /// </summary>
+        /// <param name="random">The random generator to be used for creation of IV's.</param>
+        public BlowfishEncryptor(ICryptoRandom random) : base(random)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
+        ///     <see cref="BlowfishCipherMode" /> and <see cref="ICryptoRandom" />.
         /// </summary>
         /// <param name="chiperMode">The chiper mode.</param>
-        /// <exception cref="InvalidEnumArgumentException">
-        ///     <paramref name="chiperMode" /> is not defined in
-        ///     <see cref="BlowfishCipherMode" />.
+        /// <param name="random">The random generator to be used for creation of IV's.</param>
+        /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}">
+        ///     <paramref name="chiperMode" /> is not defined in <see cref="BlowfishCipherMode" />.
         /// </exception>
         /// <seealso cref="BlowfishCipherMode" />
         /// <seealso cref="IvSize" />
-        public BlowfishEncryptor(BlowfishCipherMode chiperMode) : this()
+        /// <seealso cref="ICryptoRandom" />
+        public BlowfishEncryptor(BlowfishCipherMode chiperMode, ICryptoRandom random) : base(random)
         {
             if (((int) chiperMode != 0) && ((int) chiperMode != 1))
                 throw new UnexpectedEnumValueException<BlowfishCipherMode>(chiperMode);
             CipherMode = chiperMode;
         }
 
-        public BlowfishCipherMode CipherMode { get; } = BlowfishCipherMode.Cbc;
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
+        ///     <see cref="BlowfishCipherMode" />.
+        /// </summary>
+        /// <param name="chiperMode">The chiper mode.</param>
+        /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}">
+        ///     <paramref name="chiperMode" /> is not defined in
+        ///     <see cref="BlowfishCipherMode" />.
+        /// </exception>
+        /// <seealso cref="BlowfishCipherMode" />
+        /// <seealso cref="IvSize" />
+        public BlowfishEncryptor(BlowfishCipherMode chiperMode) : this(chiperMode, FastRandom.StaticInstance)
+        {
+        }
+
+        public BlowfishCipherMode CipherMode { get; } = DefaultCipherMode;
         public override int MinKeySize { get; } = 32;
         public override int MaxKeySize { get; } = 448;
         public override int IvSize { get; } = 8;
