@@ -37,45 +37,19 @@ namespace SafeOrbit.Memory.InjectionServices
     /// <seealso cref="IAlerter"/>
     internal class InjectionAlerter : IInjectionAlerter
     {
-        public static IInjectionAlerter StaticInstance = new InjectionAlerter(
-            new RaiseEventAlerter(SafeOrbitCore.Current), new ThrowExceptionAlerter(), new DebugFailAlerter(), new DebugWriteAlerter());
+        private readonly IAlerterFactory _alerterFactory;
 
-        private readonly IAlerter _raiseEventAlerter;
-        private readonly IAlerter _throwExceptionAlerter;
-        private readonly IAlerter _debugFailAlerter;
-        private readonly IAlerter _debugWriteAlerter;
-
-        internal InjectionAlerter(IAlerter raiseEventAlerter, IAlerter throwExceptionAlerter, IAlerter debugFailAlerter,
-            IAlerter debugWriteAlerter)
+        public static readonly IInjectionAlerter StaticInstance = new InjectionAlerter(new AlerterFactory());
+        internal InjectionAlerter(IAlerterFactory alerterFactory)
         {
-            if (raiseEventAlerter == null) throw new ArgumentNullException(nameof(raiseEventAlerter));
-            if (throwExceptionAlerter == null) throw new ArgumentNullException(nameof(throwExceptionAlerter));
-            if (debugFailAlerter == null) throw new ArgumentNullException(nameof(debugFailAlerter));
-            _raiseEventAlerter = raiseEventAlerter;
-            _throwExceptionAlerter = throwExceptionAlerter;
-            _debugFailAlerter = debugFailAlerter;
-            _debugWriteAlerter = debugWriteAlerter;
+            if (alerterFactory == null) throw new ArgumentNullException(nameof(alerterFactory));
+            _alerterFactory = alerterFactory;
         }
 
         public void Alert(IInjectionMessage info, InjectionAlertChannel channel)
         {
-            switch (channel)
-            {
-                case InjectionAlertChannel.RaiseEvent:
-                    _raiseEventAlerter.Alert(info);
-                    break;
-                case InjectionAlertChannel.ThrowException:
-                    _throwExceptionAlerter.Alert(info);
-                    break;
-                case InjectionAlertChannel.DebugFail:
-                    _debugFailAlerter.Alert(info);
-                    break;
-                case InjectionAlertChannel.DebugWrite:
-                    _debugWriteAlerter.Alert(info);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(channel), channel, null);
-            }
+            var alerter = _alerterFactory.Get(channel);
+            alerter.Alert(info);
         }
     }
 }

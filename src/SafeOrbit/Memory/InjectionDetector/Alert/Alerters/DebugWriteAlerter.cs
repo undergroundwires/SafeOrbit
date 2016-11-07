@@ -30,6 +30,7 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
 {
     internal class DebugWriteAlerter : IAlerter
     {
+        public static IAlerter GetInstance() => new DebugWriteAlerter();
         public InjectionAlertChannel Channel { get; } = InjectionAlertChannel.DebugWrite;
 
         public void Alert(IInjectionMessage info)
