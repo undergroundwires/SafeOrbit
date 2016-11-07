@@ -38,7 +38,6 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
         public InjectionAlertChannel Channel { get; } = InjectionAlertChannel.RaiseEvent;
         public RaiseEventAlerter(EventHandler<IInjectionMessage> eventHandler)
         {
-            if (eventHandler == null) throw new ArgumentNullException(nameof(eventHandler));
             _eventHandler = eventHandler;
         }
         public void Alert(IInjectionMessage info)

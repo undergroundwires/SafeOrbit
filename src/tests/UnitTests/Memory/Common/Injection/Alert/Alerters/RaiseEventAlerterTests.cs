@@ -35,14 +35,14 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     [TestFixture]
     internal class RaiseEventAlerterTests : AlerterTestsBase<RaiseEventAlerter>
     {
-        private EventHandler<IInjectionMessage> _injectedEvent;
-        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter(_injectedEvent);
+        private EventHandler<IInjectionMessage> _injectionEventHandler;
+        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter(_injectionEventHandler);
         public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.RaiseEvent;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
             object sender = null;
             IInjectionMessage args = null;
-            _injectedEvent += (s, e) =>
+            _injectionEventHandler += (s, e) =>
             {
                 sender = s;
                 args = e;
