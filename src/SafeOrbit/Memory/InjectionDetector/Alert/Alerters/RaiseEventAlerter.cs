@@ -34,15 +34,15 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     /// </summary>
     internal class RaiseEventAlerter : IAlerter
     {
-        private readonly EventHandler<IInjectionMessage> _eventHandler;
+        private readonly LibraryManagement _libraryManagement;
         public InjectionAlertChannel Channel { get; } = InjectionAlertChannel.RaiseEvent;
-        public RaiseEventAlerter(EventHandler<IInjectionMessage> eventHandler)
+        public RaiseEventAlerter(LibraryManagement libraryManagement)
         {
-            _eventHandler = eventHandler;
+            _libraryManagement = libraryManagement;
         }
         public void Alert(IInjectionMessage info)
         {
-            _eventHandler.Invoke(info.InjectedObject, info);
+            _libraryManagement.AlertInjection(info.InjectedObject, info); 
         }
     }
 }

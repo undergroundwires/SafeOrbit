@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using SafeOrbit.Library;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices.Alerters;
 
@@ -37,7 +38,7 @@ namespace SafeOrbit.Memory.InjectionServices
     internal class InjectionAlerter : IInjectionAlerter
     {
         public static IInjectionAlerter StaticInstance = new InjectionAlerter(
-            new RaiseEventAlerter(null), new ThrowExceptionAlerter(), new DebugFailAlerter(), new DebugWriteAlerter());
+            new RaiseEventAlerter(LibraryManagement.Current), new ThrowExceptionAlerter(), new DebugFailAlerter(), new DebugWriteAlerter());
 
         private readonly IAlerter _raiseEventAlerter;
         private readonly IAlerter _throwExceptionAlerter;

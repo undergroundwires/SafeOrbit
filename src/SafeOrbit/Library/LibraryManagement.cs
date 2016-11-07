@@ -33,7 +33,7 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Library
 {
-    public class LibraryManagement
+    public class LibraryManagement : ILibraryManagement
     {
         public const SafeContainerProtectionMode DefaultInnerFactoryProtectionMode =
             SafeContainerProtectionMode.FullProtection;
@@ -43,8 +43,7 @@ namespace SafeOrbit.Library
         /// </summary>
         public static LibraryManagement Current = new LibraryManagement();
 
-        public static EventHandler<IInjectionMessage> LibraryInjected;
-
+        public event EventHandler<IInjectionMessage> LibraryInjected;
 
         /// <summary>
         ///     Static holder for <see cref="Factory" />
@@ -85,6 +84,12 @@ namespace SafeOrbit.Library
             var tasks = GetAllStartEarlyTasks(factory); //get all tasks
             var actions = tasks.Select(t => new Action(t.Prepare)).ToArray(); //convert them into actions
             Parallel.Invoke(actions); //run them in parallel
+        }
+
+        internal void AlertInjection(object @object, IInjectionMessage info)
+        {
+            var localCopy = LibraryInjected;
+            localCopy?.Invoke(@object, info);
         }
 
         private static ISafeContainer SetupFactory()

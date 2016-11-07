@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using Moq;
 using NUnit.Framework;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.Injection;
@@ -35,14 +36,14 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     [TestFixture]
     internal class RaiseEventAlerterTests : AlerterTestsBase<RaiseEventAlerter>
     {
-        private EventHandler<IInjectionMessage> _injectionEventHandler;
-        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter(_injectionEventHandler);
+        private readonly Mock<LibraryManagement> _libraryManagementMock = new Mock<LibraryManagement>();
+        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter(_libraryManagementMock.Object);
         public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.RaiseEvent;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
             object sender = null;
             IInjectionMessage args = null;
-            _injectionEventHandler += (s, e) =>
+            _libraryManagementMock.Object.LibraryInjected += (s, e) =>
             {
                 sender = s;
                 args = e;
