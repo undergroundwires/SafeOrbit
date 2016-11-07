@@ -69,6 +69,7 @@
     <Compile Include="Infrastructure\Exceptions\UnexpectedEnumValueExceptionTests.cs" />
     <Compile Include="Infrastructure\Extensions\ByteArrayExtensionsTests.cs" />
     <Compile Include="Infrastructure\Extensions\IEnumerableExtensionsTests.cs" />
+    <Compile Include="Infrastructure\Reflection\MethodInfoHelperTests.cs" />
     <Compile Include="Infrastructure\Reflection\TypeIdGeneratorTests.cs" />
     <Compile Include="Infrastructure\Text\TextServiceTests.cs" />
     <Compile Include="Infrastructure\Utilities\FastTests.cs" />

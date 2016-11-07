@@ -23,10 +23,10 @@ SOFTWARE.
 */
 
 using System;
-using SafeOrbit.Cryptography.Hashers;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 using SafeOrbit.Common.Reflection;
+using SafeOrbit.Cryptography.Hashers;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {
@@ -52,8 +52,12 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
         protected override byte[] GetSerializedBytes(Type @object)
         {
             var methods = @object.GetMethods();
-            var bytes = methods.SelectMany(m => m.GetIlBytes());
-            return bytes.ToArray();
+            var bytes = methods.Select(m => m.GetIlBytes()) //get all
+                .Where(b=> b != null) //remove nulls
+                .SelectMany(b=> b) //merge
+                .ToArray();
+            if ((bytes == null) || !bytes.Any()) return new byte[16]; //return bulk bytes
+            return bytes;
         }
     }
 }

@@ -135,14 +135,7 @@ namespace SafeOrbit.Memory.Injection
             //assert
             codeStamperMock.Verify(stamper => stamper.GetStamp(It.IsAny<Type>()), Times.Never);
         }
-        [Test]
-        public void AlertUnnotifiedChanges_WhenObjectParameterIsNull_throwsArgumentNullException()
-        {
-            var sut = GetSut();
-            var nullObject = (object)null;
-            TestDelegate invokingWithNullObject = () => sut.AlertUnnotifiedChanges(nullObject);
-            Assert.That(invokingWithNullObject, Throws.ArgumentNullException);
-        }
+
         [Test]
         public void AlertUnnotifiedChanges_WhenObjectParameterIsNull_throwsArgumentNullException()
         {
