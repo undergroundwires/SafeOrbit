@@ -44,7 +44,7 @@ namespace SafeOrbit.Memory
         public void ToByteArray_For_100_Bytes_Takes_Less_Than_3000ms()
         {
             //arrange
-            LibraryManagement.StartEarly();
+            SafeOrbitCore.StartEarly();
             var sut = GetSut();
             var expectedHigherLimit = 3000;
             for (var i = 0; i < 100; i++)
@@ -61,7 +61,7 @@ namespace SafeOrbit.Memory
         public void Adding_100_Bytes_Takes_Less_Than_100ms()
         {
             //arrange
-            LibraryManagement.StartEarly();
+            SafeOrbitCore.StartEarly();
             var sut = GetSut();
             var expectedHigherLimit = 100;
             //act

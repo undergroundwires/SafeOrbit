@@ -37,7 +37,7 @@ namespace SafeOrbit.Memory
     {
         private readonly ISafeContainer _safeContainer;
 
-        public SafeContainerWrapper() : this(LibraryManagement.Current.Factory)
+        public SafeContainerWrapper() : this(SafeOrbitCore.Current.Factory)
         {
         }
 

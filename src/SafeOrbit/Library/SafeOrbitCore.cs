@@ -33,52 +33,37 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Library
 {
-    public class LibraryManagement : ILibraryManagement
+    public class SafeOrbitCore : ISafeOrbitCore
     {
         public const SafeContainerProtectionMode DefaultInnerFactoryProtectionMode =
             SafeContainerProtectionMode.FullProtection;
 
         /// <summary>
-        ///     Returns the current <see cref="LibraryManagement" /> class for running SafeOrbit.
+        ///     Returns the current <see cref="SafeOrbitCore" /> class for running SafeOrbit.
         /// </summary>
-        public static LibraryManagement Current = new LibraryManagement();
-
+        public static SafeOrbitCore Current => CurrentLazy.Value;
+        private static readonly Lazy<SafeOrbitCore> CurrentLazy = new Lazy<SafeOrbitCore>(() => new SafeOrbitCore());
         public event EventHandler<IInjectionMessage> LibraryInjected;
-
-        /// <summary>
-        ///     Static holder for <see cref="Factory" />
-        /// </summary>
-        private static readonly Lazy<ISafeContainer> FactoryLazy = new Lazy<ISafeContainer>(SetupFactory);
+        private readonly ISafeContainer _factory;
 
         /// <summary>
         ///     Use static <see cref="Current" /> property instead.
         /// </summary>
-        internal LibraryManagement()
+        internal SafeOrbitCore()
         {
+            _factory = SetupFactory();
         }
 
-        public ISafeContainer Factory => FactoryLazy.Value;
-
-        public SafeContainerProtectionMode ProtectionMode
-        {
-            get { return Factory.CurrentProtectionMode; }
-            set
-            {
-                if (value != Factory.CurrentProtectionMode) Factory.SetProtectionMode(value);
-            }
-        }
 
         public InjectionAlertChannel AlertChannel
         {
             get { return Factory.AlertChannel; }
-            set
-            {
-               Factory.AlertChannel = value;
-            }
+            set { Factory.AlertChannel = value;}
         }
 
-        public void StartEarly(
-            SafeContainerProtectionMode protectionMode = SafeContainerProtectionMode.NonProtection)
+        public ISafeContainer Factory => _factory;
+
+        public void StartEarly()
         {
             var factory = this.Factory;
             var tasks = GetAllStartEarlyTasks(factory); //get all tasks

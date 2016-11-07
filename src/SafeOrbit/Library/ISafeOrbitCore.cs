@@ -5,12 +5,11 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Library
 {
-    public interface ILibraryManagement
+    public interface ISafeOrbitCore
     {
         InjectionAlertChannel AlertChannel { get; set; }
         ISafeContainer Factory { get; }
-        SafeContainerProtectionMode ProtectionMode { get; set; }
-        void StartEarly(SafeContainerProtectionMode protectionMode = SafeContainerProtectionMode.NonProtection);
+        void StartEarly();
         event EventHandler<IInjectionMessage> LibraryInjected;
     }
 }

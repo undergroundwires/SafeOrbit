@@ -37,7 +37,7 @@ namespace SafeOrbit
         public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
 
         public static IInitialSafeObjectSettings SafeObjectSettings
-            => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, LibraryManagement.Current.AlertChannel);
+            => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, SafeOrbitCore.Current.AlertChannel);
 
 
         //SafeContainer

@@ -32,7 +32,7 @@ namespace SafeOrbit.Memory.InjectionServices
     public enum InjectionAlertChannel
     {
         /// <summary>
-        /// Raises the <see cref="LibraryManagement.LibraryInjected"/>
+        /// Raises the <see cref="SafeOrbitCore.LibraryInjected"/>
         /// </summary>
         /// <seealso cref="RaiseEventAlerter"/>
         RaiseEvent,

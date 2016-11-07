@@ -36,14 +36,14 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
     [TestFixture]
     internal class RaiseEventAlerterTests : AlerterTestsBase<RaiseEventAlerter>
     {
-        private readonly Mock<LibraryManagement> _libraryManagementMock = new Mock<LibraryManagement>();
-        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter(_libraryManagementMock.Object);
+        private readonly Mock<SafeOrbitCore> _SafeOrbitCoreMock = new Mock<SafeOrbitCore>();
+        protected override RaiseEventAlerter GetSut() => new RaiseEventAlerter(_SafeOrbitCoreMock.Object);
         public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.RaiseEvent;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
             object sender = null;
             IInjectionMessage args = null;
-            _libraryManagementMock.Object.LibraryInjected += (s, e) =>
+            _SafeOrbitCoreMock.Object.LibraryInjected += (s, e) =>
             {
                 sender = s;
                 args = e;

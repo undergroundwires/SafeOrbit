@@ -56,7 +56,7 @@ namespace SafeOrbit.Text
         /// <summary>
         ///     Initializes a new instance of the <see cref="TextService" /> class.
         /// </summary>
-        public TextService() : this(LibraryManagement.Current.Factory.Get<IFactory<ISafeString>>())
+        public TextService() : this(SafeOrbitCore.Current.Factory.Get<IFactory<ISafeString>>())
         {
         }
 

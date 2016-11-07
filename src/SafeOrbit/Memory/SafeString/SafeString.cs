@@ -43,7 +43,7 @@ namespace SafeOrbit.Memory
         /// <summary>
         ///     Initializes a new instance of the <see cref="SafeString" /> class.
         /// </summary>
-        public SafeString() : this(LibraryManagement.Current.Factory.Get<ITextService>(),
+        public SafeString() : this(SafeOrbitCore.Current.Factory.Get<ITextService>(),
             SafeContainerWrapper<ISafeString>.Wrap(),
             SafeContainerWrapper<ISafeBytes>.Wrap())
         {
