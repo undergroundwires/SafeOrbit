@@ -24,7 +24,7 @@ SOFTWARE.
 
 using System;
 
-namespace SafeOrbit.Common.Reflection
+namespace SafeOrbit.Infrastructure.Reflection
 {
     /// <summary>
     ///     Abstract a service that can generate unique identifiers for a type.

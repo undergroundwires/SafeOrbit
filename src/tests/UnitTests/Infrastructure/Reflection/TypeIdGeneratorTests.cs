@@ -28,7 +28,7 @@ using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Tests;
 
-namespace SafeOrbit.Common.Reflection
+namespace SafeOrbit.Infrastructure.Reflection
 {
     /// <seealso cref="ITypeIdGenerator" />
     /// <seealso cref="TypeIdGeneratorTests" />

@@ -25,7 +25,7 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SafeOrbit.Common.Reflection;
+using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
 using SafeOrbit.Infrastructure.Protectable;

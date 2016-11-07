@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using SafeOrbit.Common;
+using SafeOrbit.Infrastructure;
 using SafeOrbit.Extensions;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation

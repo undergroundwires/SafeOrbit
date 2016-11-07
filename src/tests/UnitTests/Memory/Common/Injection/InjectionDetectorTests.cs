@@ -26,7 +26,7 @@ SOFTWARE.
 using System;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Common.Reflection;
+using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Stampers;

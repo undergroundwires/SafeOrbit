@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 using System;
-using SafeOrbit.Common.Reflection;
+using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes

@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Common.Reflection;
+using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
 using SafeOrbit.Memory.InjectionServices;

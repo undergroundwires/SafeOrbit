@@ -24,7 +24,7 @@ SOFTWARE.
 
 using System;
 using System.Collections.Concurrent;
-using SafeOrbit.Common.Reflection;
+using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Stampers;
 

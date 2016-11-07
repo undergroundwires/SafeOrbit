@@ -8,7 +8,7 @@ using System.Reflection.PortableExecutable;
 
 #endif
 
-namespace SafeOrbit.Common.Reflection
+namespace SafeOrbit.Infrastructure.Reflection
 {
     public static class MethodInfoHelper
     {

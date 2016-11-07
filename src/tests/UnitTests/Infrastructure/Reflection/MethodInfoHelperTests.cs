@@ -2,7 +2,7 @@
 using System.Reflection;
 using NUnit.Framework;
 
-namespace SafeOrbit.Common.Reflection
+namespace SafeOrbit.Infrastructure.Reflection
 {
     /// <seealso cref="MethodInfoHelper"/>
     [TestFixture]

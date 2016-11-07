@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using SafeOrbit.Common;
+using SafeOrbit.Infrastructure;
 using SafeOrbit.Extensions;
 
 namespace SafeOrbit.Memory

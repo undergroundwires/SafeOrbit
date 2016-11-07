@@ -25,7 +25,7 @@ SOFTWARE.
 using System;
 using System.Diagnostics;
 
-namespace SafeOrbit.Common.Reflection
+namespace SafeOrbit.Infrastructure.Reflection
 {
     /// <summary>
     ///     Generates a key/id for each type
