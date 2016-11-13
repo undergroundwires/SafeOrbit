@@ -92,12 +92,21 @@ namespace SafeOrbit.Memory.InjectionServices
             IAlerter debugFailAlerter = null,
             IAlerter throwExceptionAlerter = null)
         {
-            return new InjectionAlerter(
-                debugWriteAlerter: debugWriteAlerter ?? Mock.Of<IAlerter>(),
-                raiseEventAlerter: raiseEventAlerter ?? Mock.Of<IAlerter>(),
-                debugFailAlerter: debugFailAlerter ?? Mock.Of<IAlerter>(),
-                throwExceptionAlerter: throwExceptionAlerter ?? Mock.Of<IAlerter>()
-                );
+            var mock = new Mock<IAlerterFactory>();
+            //Mock the factory
+            if (raiseEventAlerter != null || debugWriteAlerter != null || debugFailAlerter != null ||
+                throwExceptionAlerter != null)
+            {
+                if (raiseEventAlerter != null)
+                    mock.Setup(m => m.Get(InjectionAlertChannel.RaiseEvent)).Returns(raiseEventAlerter);
+                if (debugWriteAlerter != null)
+                    mock.Setup(m => m.Get(InjectionAlertChannel.DebugWrite)).Returns(debugWriteAlerter);
+                if (debugFailAlerter != null)
+                    mock.Setup(m => m.Get(InjectionAlertChannel.DebugFail)).Returns(debugFailAlerter);
+                if (throwExceptionAlerter != null)
+                    mock.Setup(m => m.Get(InjectionAlertChannel.ThrowException)).Returns(throwExceptionAlerter);
+            }
+            return new InjectionAlerter(mock.Object);
         }
 
         private static IEnumerable<IInjectionMessage> MessageCases
