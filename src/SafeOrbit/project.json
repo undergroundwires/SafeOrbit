@@ -3,11 +3,23 @@
   "language": "en",
   "description": "SafeOrbit is easy-to-use and strong security toolkit for .NET",
   "title": "SafeOrbit",
-  //"frameworkAssemblies": {
-  //  "mscorlib": "",
-  //  "System": "",
-  //  "System.Security": ""
-  //},
+  "configurations": {
+    "debug": {
+      "buildOptions": {
+        "define": ["DEBUG", "TRACE"]
+      }
+    },
+    "release": {
+      "buildOptions": {
+        "define": ["RELEASE", "TRACE"],
+        "optimize": true,
+        /* assembly sign */
+        "delaySign": true,
+        "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk",
+        "strongName": true
+      }
+    }
+  },
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50",
@@ -25,14 +37,12 @@
         "System.ComponentModel": "4.0.1"
       },
       "buildOptions": {
-        "define": [ "NETCORE" ],
-        "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
+        "define": ["NETCORE"]
       }
     },
     "net46": {
       "buildOptions": {
-        "define": [ "NET46" ],
-        "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk"
+        "define": ["NET46"]
       },
       "frameworkAssemblies": {
         "System.Xml": "4.0.0",
