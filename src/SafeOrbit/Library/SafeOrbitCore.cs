@@ -44,14 +44,13 @@ namespace SafeOrbit.Library
         public static SafeOrbitCore Current => CurrentLazy.Value;
         private static readonly Lazy<SafeOrbitCore> CurrentLazy = new Lazy<SafeOrbitCore>(() => new SafeOrbitCore());
         public event EventHandler<IInjectionMessage> LibraryInjected;
-        private readonly ISafeContainer _factory;
 
         /// <summary>
         ///     Use static <see cref="Current" /> property instead.
         /// </summary>
         internal SafeOrbitCore()
         {
-            _factory = SetupFactory();
+            Factory = SetupFactory();
         }
 
 
@@ -61,7 +60,7 @@ namespace SafeOrbit.Library
             set { Factory.AlertChannel = value;}
         }
 
-        public ISafeContainer Factory => _factory;
+        public ISafeContainer Factory { get; }
 
         public void StartEarly()
         {
@@ -70,8 +69,12 @@ namespace SafeOrbit.Library
             var actions = tasks.Select(t => new Action(t.Prepare)).ToArray(); //convert them into actions
             Parallel.Invoke(actions); //run them in parallel
         }
-
-        internal void AlertInjection(object @object, IInjectionMessage info)
+        /// <summary>
+        /// Internal method to alert an injection. It's virtual for testability.
+        /// </summary>
+        /// <param name="object">The injected object.</param>
+        /// <param name="info">The information.</param>
+        internal virtual void AlertInjection(object @object, IInjectionMessage info)
         {
             var localCopy = LibraryInjected;
             localCopy?.Invoke(@object, info);
