@@ -36,10 +36,7 @@ namespace SafeOrbit.Cryptography.Encryption
     [TestFixture]
     public class BlowfishTests : TestsFor<IFastEncryptor>
     {
-        protected override IFastEncryptor GetSut()
-        {
-            return new BlowfishEncryptor();
-        }
+        protected override IFastEncryptor GetSut() => new BlowfishEncryptor();
 
         public void Encrypt_KeySizeIs0_CanEncrypt()
         {

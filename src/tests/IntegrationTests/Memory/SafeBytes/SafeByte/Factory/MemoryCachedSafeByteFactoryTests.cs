@@ -25,10 +25,8 @@ SOFTWARE.
 
 using NUnit.Framework;
 using SafeOrbit.Library;
-using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Tests.Cases;
-using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Factory
 {

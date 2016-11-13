@@ -33,17 +33,18 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Library
 {
-    public class SafeOrbitCore : ISafeOrbitCore
+    /// <summary>
+    ///     The class where you control the current library behavior.
+    /// </summary>
+    /// <seealso cref="Current" />
+    /// <seealso cref="ISafeOrbitCore" />
+    /// <seealso cref="IAlerts" />
+    public class SafeOrbitCore : ISafeOrbitCore, IAlerts
     {
         public const SafeContainerProtectionMode DefaultInnerFactoryProtectionMode =
             SafeContainerProtectionMode.FullProtection;
 
-        /// <summary>
-        ///     Returns the current <see cref="SafeOrbitCore" /> class for running SafeOrbit.
-        /// </summary>
-        public static SafeOrbitCore Current => CurrentLazy.Value;
         private static readonly Lazy<SafeOrbitCore> CurrentLazy = new Lazy<SafeOrbitCore>(() => new SafeOrbitCore());
-        public event EventHandler<IInjectionMessage> LibraryInjected;
 
         /// <summary>
         ///     Use static <see cref="Current" /> property instead.
@@ -53,24 +54,33 @@ namespace SafeOrbit.Library
             Factory = SetupFactory();
         }
 
+        /// <summary>
+        ///     Returns the current <see cref="SafeOrbitCore" /> class for running SafeOrbit.
+        /// </summary>
+        public static SafeOrbitCore Current => CurrentLazy.Value;
+
 
         public InjectionAlertChannel AlertChannel
         {
             get { return Factory.AlertChannel; }
-            set { Factory.AlertChannel = value;}
+            set { Factory.AlertChannel = value; }
         }
+
+        public bool CanAlert => Factory.CanAlert;
+        public event EventHandler<IInjectionMessage> LibraryInjected;
 
         public ISafeContainer Factory { get; }
 
         public void StartEarly()
         {
-            var factory = this.Factory;
+            var factory = Factory;
             var tasks = GetAllStartEarlyTasks(factory); //get all tasks
             var actions = tasks.Select(t => new Action(t.Prepare)).ToArray(); //convert them into actions
             Parallel.Invoke(actions); //run them in parallel
         }
+
         /// <summary>
-        /// Internal method to alert an injection. It's virtual for testability.
+        ///     Internal method to alert an injection. It's virtual for testability.
         /// </summary>
         /// <param name="object">The injected object.</param>
         /// <param name="info">The information.</param>

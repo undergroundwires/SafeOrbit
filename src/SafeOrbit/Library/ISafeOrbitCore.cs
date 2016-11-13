@@ -5,9 +5,11 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Library
 {
+    /// <summary>
+    ///     Abstracts the class to access inner library behavior.
+    /// </summary>
     public interface ISafeOrbitCore
     {
-        InjectionAlertChannel AlertChannel { get; set; }
         ISafeContainer Factory { get; }
         void StartEarly();
         event EventHandler<IInjectionMessage> LibraryInjected;

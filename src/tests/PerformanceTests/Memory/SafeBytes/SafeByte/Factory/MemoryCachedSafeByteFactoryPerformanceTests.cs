@@ -56,7 +56,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         public void GetById_Takes_Less_Than_2ms()
         {
             const double expectedMax = 50;
-            var idGenerator = SafeOrbitCore.Factory.Get<IByteIdGenerator>();
+            var idGenerator = SafeOrbitCore.Current.Factory.Get<IByteIdGenerator>();
             var id = idGenerator.Generate(5);
             var actual = base.Measure(() => _sut.GetById(id));
             Assert.That(actual, Is.LessThan(expectedMax));
