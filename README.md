@@ -34,8 +34,6 @@ Feel free to contribute by joining the coding process or opening [issues](https:
 
 It means that you're free to use **SafeOrbit** freely in any application, copy, and modify its code.
 
-It's much appreciated if you name the library in credits section of your application.
-
 # Documentation
 
 * [Visit wiki for full documentation](https://github.com/undergroundwires/SafeOrbit/wiki)
