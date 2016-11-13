@@ -6,12 +6,12 @@
   "configurations": {
     "debug": {
       "buildOptions": {
-        "define": ["DEBUG", "TRACE"]
+        "define": [ "DEBUG", "TRACE" ]
       }
     },
     "release": {
       "buildOptions": {
-        "define": ["RELEASE", "TRACE"],
+        "define": [ "RELEASE", "TRACE" ],
         "optimize": true,
         /* assembly sign */
         "delaySign": true,
@@ -37,12 +37,12 @@
         "System.ComponentModel": "4.0.1"
       },
       "buildOptions": {
-        "define": ["NETCORE"]
+        "define": [ "NETCORE" ]
       }
     },
     "net46": {
       "buildOptions": {
-        "define": ["NET46"]
+        "define": [ "NET46" ]
       },
       "frameworkAssemblies": {
         "System.Xml": "4.0.0",
@@ -51,5 +51,16 @@
     }
   },
   "buildOptions": { "allowUnsafe": true },
+  "packOptions": {
+    "projectUrl": "https://github.com/undergroundwires/SafeOrbit",
+    "iconUrl": "https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_16x16.png",
+    "licenseUrl": "https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/LICENSE",
+    "requireLicenseAcceptance": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/undergroundwires/SafeOrbit"
+    },
+    "summary": "SafeOrbit is easy-to-use and strong security toolkit for .NET"
+  },
   "version": "0.2.0-*"
 }
