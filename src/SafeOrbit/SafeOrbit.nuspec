@@ -18,14 +18,12 @@
 	</description>
     <releaseNotes>
 	------0.2------
-	- [Security] FastRandom generates secure numbers.
 	-.NET Core is supported.
-    - More/better documentations for the code.
-	- Refactorings, small changes.
-	- More tests
+	- [Security] FastRandom generates secure numbers.
+    - More tests, more/better documentations and refactorings.
 	</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>.net security protect safe orbit c# encryption hash safestring memory protection injection detection Asynchronous encryption</tags>
+    <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
   </metadata>
   <files>
     <file src="..\..\README.md" />
