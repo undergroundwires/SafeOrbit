@@ -13,7 +13,7 @@
       "buildOptions": {
         "define": [ "RELEASE", "TRACE" ],
         "optimize": true,
-        /* assembly sign */
+        // Sign the assembly
         "delaySign": true,
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk",
         "strongName": true
@@ -53,7 +53,7 @@
   "buildOptions": { "allowUnsafe": true },
   "packOptions": {
     "projectUrl": "https://github.com/undergroundwires/SafeOrbit",
-    "iconUrl": "https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_16x16.png",
+    "iconUrl": "https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png",
     "licenseUrl": "https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/LICENSE",
     "requireLicenseAcceptance": false,
     "repository": {
