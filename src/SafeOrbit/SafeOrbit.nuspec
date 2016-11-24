@@ -8,7 +8,7 @@
     <owners>$author$</owners>
     <licenseUrl>https://github.com/undergroundwires/SafeOrbit/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/undergroundwires/SafeOrbit</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png</iconUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
 	While SafeOrbit's primarly focus is strong memory protection. SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashers and random. 
