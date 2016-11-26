@@ -36,9 +36,7 @@ namespace SafeOrbit.Library.StartEarly
         public abstract void Prepare();
 
         /// <summary>
-        ///     Invokes the static constructor for
-        ///     <typeparam name="TStatic" />
-        ///     .
+        ///     Invokes the static constructor for <typeparamref name="TStatic" />.
         ///     Guarantees that the static constructor is only called once, regardless how many times the method is called.
         /// </summary>
         /// <remarks>

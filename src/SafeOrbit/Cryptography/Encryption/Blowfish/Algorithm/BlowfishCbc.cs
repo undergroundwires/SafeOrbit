@@ -30,16 +30,12 @@ using SafeOrbit.Exceptions;
 namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
-    ///     Default blowfish implementation with CBC cipher mode.
+    ///     Blowfish implementation with <see cref="CipherMode.CBC"/>
     /// </summary>
-    /// <remarks>
-    ///     CBC mode encrypts each block of data in succession so that any changes in the data will result in a completly
-    ///     different ciphertext. Also, an IV is used so that encrypting the same data with the same key will result in a
-    ///     different ciphertext. CBC mode is the most popular mode of operation.
-    ///     Read more : http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation
-    /// </remarks>
-    /// <exception cref="iv"></exception>
     /// <seealso cref="ICryptoTransform" />
+    /// <seealso cref="CipherMode.CBC"/>
+    /// <seealso cref="BlowfishEcb"/>
+    /// <seealso cref="BlowfishEncryptor"/>
     public class BlowfishCbc : BlowfishEcb
     {
         /// <summary>

@@ -152,7 +152,7 @@ namespace SafeOrbit.Memory
         }
 
         /// <summary>
-        ///     Reads from the buffer and deletes the read data from the <see cref="buffer" />.
+        ///     Reads from the buffer and deletes the read data from the <paramref name="buffer" />.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>

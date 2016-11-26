@@ -64,7 +64,6 @@ namespace SafeOrbit.Memory
         /// <summary>
         ///     Verifies the last changes on the object.
         /// </summary>
-        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <see cref="TObject" /> is marked as ReadOnly.</exception>
         /// <seealso cref="IsReadOnly" />
         /// <param name="modification">The modification.</param>
         void ApplyChanges(Action<TObject> modification);

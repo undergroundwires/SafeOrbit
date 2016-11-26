@@ -29,15 +29,13 @@ using SafeOrbit.Exceptions;
 namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
-    ///     Default blowfish implementation with ECB cipher mode.
-    /// </summary>
-    /// <remarks>
+    ///     Blowfish implementation with <see cref="CipherMode.ECB"/>.
     ///     <b>ECB</b> mode encrypts each block of data with the same key, so patterns in a large set of data will be visible.
-    ///     Encrypting the same data with the same key will result in the same cipher text. This mode should <b>NOT</b> be used
-    ///     unless necessary.
-    ///     Read more : http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation
-    /// </remarks>
+    /// </summary>
     /// <seealso cref="ICryptoTransform" />
+    /// <seealso cref="CipherMode.ECB"/>
+    /// <seealso cref="BlowfishCbc"/>
+    /// <seealso cref="BlowfishEncryptor"/>
     public class BlowfishEcb : ICryptoTransform
     {
         /// <summary>

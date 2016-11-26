@@ -44,7 +44,7 @@ namespace SafeOrbit.Cryptography.Encryption
     ///     <p>Use this class when you prefer the security over performance. </p>
     ///     <p>
     ///         It's stronger than <see cref="IFastEncryptor{TResult,TInput,TKey}" /> because it takes more to decrypt and
-    ///         it uses an additional <see cref="TSalt" />.
+    ///         it uses an additional <typeparamref name="TSalt" />.
     ///     </p>
     ///     <p>
     ///         For faster and cryptographically strong operations prefer
@@ -65,7 +65,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
-        /// <returns>Encrypted <see cref="TResult" /></returns>
+        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="EncryptAsync"/>
         TResult Encrypt(TInput input, TKey key, TSalt salt);
 
@@ -75,7 +75,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
-        /// <returns>Encrypted <see cref="TResult" /></returns>
+        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="DecryptAsync"/>
         TResult Decrypt(TInput input, TKey key, TSalt salt);
 
@@ -85,7 +85,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
-        /// <returns>A <see cref="Task"/> for encrypted <see cref="TResult" /></returns>
+        /// <returns>A <see cref="Task"/> for encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="Encrypt"/>
         Task<TResult> EncryptAsync(TInput input, TKey key, TSalt salt);
 
@@ -95,7 +95,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
-        /// <returns>A <see cref="Task"/> for encrypted <see cref="TResult" /></returns>
+        /// <returns>A <see cref="Task"/> for encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="Decrypt"/>
         Task<TResult> DecryptAsync(TInput input, TKey key, TSalt salt);
     }

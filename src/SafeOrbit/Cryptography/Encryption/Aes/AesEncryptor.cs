@@ -232,10 +232,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <summary>
         ///     Derives the <paramref name="key" /> and gets the cryptographic algorithm.
         /// </summary>
-        /// <typeparam name="TAlgorithm">The type of the algorithm.</typeparam>
         /// <param name="key">The key that'll be derived.</param>
-        /// <param name="keySize">The number of bits in a key used by a cryptographic algorithm</param>
-        /// <returns>The symmetric-key algorithm.</returns>
         /// <seealso cref="Padding" />
         /// <seealso cref="Mode" />
         /// <seealso cref="KeySize" />

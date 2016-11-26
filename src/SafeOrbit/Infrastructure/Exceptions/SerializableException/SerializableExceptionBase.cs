@@ -32,6 +32,7 @@ using System.Runtime.Serialization;
 
 namespace SafeOrbit.Exceptions.SerializableException
 {
+#pragma warning disable 587
     /// <summary>
     ///     An abstract base for serializable classes.
     /// </summary>
@@ -44,6 +45,7 @@ namespace SafeOrbit.Exceptions.SerializableException
 /// <seealso cref="SerializableAttribute"/>
     [Serializable]
 #endif
+#pragma warning restore 587
     public abstract class SerializableExceptionBase : Exception
     {
         protected SerializableExceptionBase()

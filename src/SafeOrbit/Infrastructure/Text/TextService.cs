@@ -135,7 +135,7 @@ namespace SafeOrbit.Text
         /// <returns>A byte array containing the results of encoding the given character.</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Throws if
-        ///     <param name="char" />
+        ///     <paramref name="char" />
         ///     is less than zero.
         /// </exception>
         /// <exception cref="System.Text.EncoderFallbackException">
@@ -144,7 +144,7 @@ namespace SafeOrbit.Text
         ///     <see cref="T:System.Text.EncoderExceptionFallback" />.
         /// </exception>
         /// <exception cref="ArgumentNullException">
-        ///     <param name="char" />
+        ///     <paramref name="char" />
         ///     is <see langword="null" />.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">

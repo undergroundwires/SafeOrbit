@@ -64,7 +64,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
-        /// <returns>Encrypted <see cref="TResult" /></returns>
+        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="EncryptAsync" />
         TResult Encrypt(TInput input, TKey key);
 
@@ -73,7 +73,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
-        /// <returns>Encrypted <see cref="TResult" /></returns>
+        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="DecryptAsync" />
         TResult Decrypt(TInput input, TKey key);
 
@@ -82,7 +82,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
-        /// <returns>A <see cref="Task" /> for encrypted <see cref="TResult" /></returns>
+        /// <returns>A <see cref="Task" /> for encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="Encrypt" />
         Task<TResult> EncryptAsync(TInput input, TKey key);
 
@@ -91,7 +91,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
-        /// <returns>A <see cref="Task" /> for encrypted <see cref="TResult" /></returns>
+        /// <returns>A <see cref="Task" /> for encrypted <typeparamref name="TResult" /></returns>
         /// <seealso cref="Decrypt" />
         Task<TResult> DecryptAsync(TInput input, TKey key);
     }

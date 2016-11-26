@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -23,42 +22,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using SafeOrbit.Cryptography.Hashers;
+using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
-using SafeOrbit.Utilities;
-using System;
-using SafeOrbit.Cryptography.Hashers;
-using SafeOrbit.Cryptography.Random;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Id
 {
     /// <summary>
-    /// Creates a unique <see cref="int" /> values for each <see cref="byte"/>.
-    /// The class is stateless but session-based. <see cref="SessionSalt"/> is different values each time the application is loaded.
+    ///     Creates a unique <see cref="int" /> values for each <see cref="byte" />.
+    ///     The class is stateless but session-based. <see cref="SessionSalt" /> is different values each time the application
+    ///     is loaded.
     /// </summary>
-    /// <seealso cref="SessionSalt"/>
+    /// <seealso cref="SessionSalt" />
     /// <seealso cref="IByteIdGenerator" />
     internal class HashedByteIdGenerator : IByteIdGenerator
     {
-        private bool _isSaltEncrypted;
         private const int SaltLength = 16;
-        public byte[] SessionSalt => _sessionSalt = _sessionSalt ?? GenerateSessionSalt();
         private static byte[] _sessionSalt;
         private readonly IFastHasher _fastHasher;
-        private readonly ISafeRandom _safeRandom;
         private readonly IByteArrayProtector _memoryProtector;
-        /// <exception cref="MemoryInjectionException">If the object has been changed outside of <see cref="SafeOrbitCore.Current.Factory"/>.</exception>
+        private readonly ISafeRandom _safeRandom;
+        private bool _isSaltEncrypted;
+
+        /// <exception cref="MemoryInjectionException">The object has been injected.</exception>
         public HashedByteIdGenerator() : this(
             SafeOrbitCore.Current.Factory.Get<IFastHasher>(),
             SafeOrbitCore.Current.Factory.Get<ISafeRandom>(),
             SafeOrbitCore.Current.Factory.Get<IByteArrayProtector>())
         {
-
         }
-        internal HashedByteIdGenerator(IFastHasher fastHasher, ISafeRandom safeRandom, IByteArrayProtector memoryProtector)
+
+        internal HashedByteIdGenerator(IFastHasher fastHasher, ISafeRandom safeRandom,
+            IByteArrayProtector memoryProtector)
         {
             if (fastHasher == null) throw new ArgumentNullException(nameof(fastHasher));
             if (safeRandom == null) throw new ArgumentNullException(nameof(safeRandom));
@@ -67,12 +67,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             _safeRandom = safeRandom;
             _memoryProtector = memoryProtector;
         }
+
+        public byte[] SessionSalt => _sessionSalt = _sessionSalt ?? GenerateSessionSalt();
+        public int Generate(byte b) => GenerateInternal(b, SessionSalt, ref _isSaltEncrypted);
+
         /// <summary>
-        /// Clears the session salt. A new session salt will created lazily upon request. Please keep in my that requesting
-        /// a new session salt will break all of the SafeOrbit instances and should never be used at all.
+        ///     Clears the session salt. A new session salt will created lazily upon request. Please keep in my that requesting
+        ///     a new session salt will break all of the SafeOrbit instances and should never be used at all.
         /// </summary>
         internal static void ClearSessionSalt() => _sessionSalt = null;
-        public int Generate(byte b) => GenerateInternal(b, SessionSalt, ref _isSaltEncrypted);
+
         private int GenerateInternal(byte b, byte[] salt, ref bool isSaltEncrypted, bool doNotEncrypt = false)
         {
             var byteBuffer = new byte[salt.Length + 1];
@@ -104,22 +108,20 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         }
 
         /// <summary>
-        /// Recursive method that generates and returns a validated session salt.
+        ///     Recursive method that generates and returns a validated session salt.
         /// </summary>
-        /// <seealso cref="IsSaltValid"/>
+        /// <seealso cref="IsSaltValid" />
         private byte[] GenerateSessionSalt()
         {
             var salt = _safeRandom.GetBytes(SaltLength);
-            if (IsSaltValid(salt))
-            {
-                _memoryProtector.Protect(salt);
-                _isSaltEncrypted = true;
-                return salt;
-            }
-            return GenerateSessionSalt(); //try with a new random value
+            if (!IsSaltValid(salt)) return GenerateSessionSalt(); //try until it's valid
+            _memoryProtector.Protect(salt);
+            _isSaltEncrypted = true;
+            return salt;
         }
+
         /// <summary>
-        /// Determines if all byte id's will have different result with the given salt.
+        ///     Determines if all byte id's will have different result with the given salt.
         /// </summary>
         private bool IsSaltValid(byte[] salt)
         {
@@ -131,12 +133,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             return totalUniqueHashes == totalBytes;
         }
 
-        private int[] GetHashesForAllBytes(byte[] salt, bool isEncrypted)
+        private IEnumerable<int> GetHashesForAllBytes(byte[] salt, bool isEncrypted)
         {
             const int totalBytes = 256;
             var byteHashes = new int[totalBytes];
             //Fast.For(0, totalBytes, (i) => byteHashes[i] = this.GenerateInternal((byte)i, salt, ref isEncrypted));
-            for (var i = 0; i < 256; i++) byteHashes[i] = GenerateInternal((byte)i, salt, ref isEncrypted, true);
+            for (var i = 0; i < 256; i++) byteHashes[i] = GenerateInternal((byte) i, salt, ref isEncrypted, true);
             return byteHashes;
         }
     }
