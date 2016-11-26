@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -46,20 +45,29 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <param name="cipherKey">The cipher key.</param>
         /// <param name="forEncryption">if set to <c>true</c> then the blocks will be encrypted; otherwise: they'll be decrypted.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="cipherKey" /> is <see langword="null" />.</exception>>
-        /// <exception cref="KeySizeException"><paramref name="cipherKey" /> is must be between 32 bits (4 bytes) and 488 bits (56) size.</exception>>
+        /// <exception cref="ArgumentNullException"><paramref name="cipherKey" /> is <see langword="null" />.</exception>
+        /// >
+        /// <exception cref="KeySizeException">
+        ///     <paramref name="cipherKey" /> is must be between 32 bits (4 bytes) and 488 bits (56)
+        ///     size.
+        /// </exception>
+        /// >
         public BlowfishEcb(byte[] cipherKey, bool forEncryption)
         {
             if (cipherKey == null) throw new ArgumentNullException(nameof(cipherKey));
-            if (cipherKey.Length < 4 /* 32 bits */  || cipherKey.Length > 56 /* 488 bits */ ) throw new KeySizeException(minSize: 32, maxSize: 488, actual: cipherKey.Length);
+            if ((cipherKey.Length < 4) /* 32 bits */|| (cipherKey.Length > 56) /* 488 bits */)
+                throw new KeySizeException(minSize: 32, maxSize: 488, actual: cipherKey.Length);
             ForEncryption = forEncryption;
             SetupKey(cipherKey);
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is configured for encryption or decryption.
+        /// </summary>
+        /// <value><c>true</c> if for encryption;  <c>false</c> if for decryption.</value>
         public bool ForEncryption { get; }
 
         #region "Global variables and constants"
-
         private const int ROUNDS = 16;
         //standard is 16, to increase the number of rounds, bf_P needs to be equal to the number of rouds. Use digits of PI.
 
@@ -79,14 +87,15 @@ namespace SafeOrbit.Cryptography.Encryption
         private uint xl_par;
         private uint xr_par;
 
-        //Initialization Vector for CBC and CTR mode
-        private byte[] _initVector;
-        private bool IVSet;
 
         //For compatibility with the javascript crypto library:
         //  http://etherhack.co.uk/symmetric/blowfish/blowfish.html
-        private bool nonStandardMethod;
-
+        private bool _nonStandardMethod;
+        public bool NonStandard
+        {
+            get { return _nonStandardMethod; }
+            set { _nonStandardMethod = value; }
+        }
         #endregion
 
         #region [ICryptoTransform]
@@ -105,10 +114,17 @@ namespace SafeOrbit.Cryptography.Encryption
                 Array.Clear(bf_s3, 0, bf_s3.Length);
             if (bf_P != null)
                 Array.Clear(bf_P, 0, bf_P.Length);
-            if (_initVector != null)
-                Array.Clear(_initVector, 0, _initVector.Length);
         }
 
+        /// <summary>
+        ///     Encrypt/decrypts the block.
+        /// </summary>
+        /// <param name="inputBuffer">The input buffer.</param>
+        /// <param name="inputOffset">The input offset.</param>
+        /// <param name="inputCount">The input count.</param>
+        /// <param name="outputBuffer">The output buffer.</param>
+        /// <param name="outputOffset">The output offset.</param>
+        /// <returns>The length of the processed bytes.</returns>
         public virtual int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer,
             int outputOffset)
         {
@@ -122,26 +138,29 @@ namespace SafeOrbit.Cryptography.Encryption
             return inputCount;
         }
 
+        /// <summary>
+        ///     Transforms the final block.
+        /// </summary>
+        /// <param name="inputBuffer">The input buffer.</param>
+        /// <param name="inputOffset">The input offset.</param>
+        /// <param name="inputCount">The input count.</param>
+        /// <returns>System.Byte[].</returns>
         public virtual byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
         {
             var outputLength = OutputBlockSize;
             var inputLength = InputBlockSize;
-            var resultLen = (inputCount % outputLength == 0
+            var resultLen = inputCount%outputLength == 0
                 ? inputCount
-                : inputCount + outputLength - (inputCount % outputLength));
+                : inputCount + outputLength - inputCount%outputLength;
             var result = new byte[resultLen];
             for (var i = 0; i < resultLen; i += inputLength) //each block
             {
                 var block = new byte[outputLength];
                 Buffer.BlockCopy(inputBuffer, inputOffset + i, block, 0, inputLength);
                 if (ForEncryption)
-                {
                     BlockEncrypt(ref block);
-                }
                 else
-                {
                     BlockDecrypt(ref block);
-                }
                 Buffer.BlockCopy(block, 0, result, i, block.Length);
             }
             return result;
@@ -151,6 +170,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public int OutputBlockSize { get; } = 8;
         public bool CanTransformMultipleBlocks { get; } = false;
         public bool CanReuseTransform { get; } = true;
+
         #endregion
 
         #region [Api]
@@ -250,7 +270,7 @@ namespace SafeOrbit.Cryptography.Encryption
             Buffer.BlockCopy(block, 0, block1, 0, 4);
             Buffer.BlockCopy(block, 4, block2, 0, 4);
             //split the block
-            if (nonStandardMethod)
+            if (_nonStandardMethod)
             {
                 xr_par = BitConverter.ToUInt32(block1, 0);
                 xl_par = BitConverter.ToUInt32(block2, 0);
@@ -273,7 +293,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             var block1 = new byte[4];
             var block2 = new byte[4];
-            if (nonStandardMethod)
+            if (_nonStandardMethod)
             {
                 block1 = BitConverter.GetBytes(xr_par);
                 block2 = BitConverter.GetBytes(xl_par);

@@ -255,7 +255,11 @@ namespace SafeOrbit.Memory
         /// <summary>
         /// Closes the instance. The reader may read up to the number of bytes available, and subsequent calls to <see cref="SafeMemoryStream.Read(byte[], int,int)" /> will return <c>0</c>.
         /// </summary>
+#if NET46
         public override void Close() => _closed = true;
+#else
+        public void Close() => _closed = true;
+#endif
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
         public void EnsureReadOrWriteParameters(byte[] buffer, int offset, int count)
