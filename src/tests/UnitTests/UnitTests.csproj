@@ -139,9 +139,9 @@
     <Compile Include="Internal\Fakes\TypeIdGeneratorFaker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestApi\TestApi.csproj">
+    <ProjectReference Include="..\TestApi\Infrastructure.csproj">
       <Project>{1e69549b-d6a5-42ba-8bd7-b3370731c59a}</Project>
-      <Name>TestApi</Name>
+      <Name>Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
