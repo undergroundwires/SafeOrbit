@@ -12,5 +12,15 @@
     "netstandard1.6": {
       "imports": "dnxcore50"
     }
+  },
+
+  "configurations": {
+    "release": {
+      "buildOptions": {
+        // Sign the assembly
+        "keyFile": "../../docs/signature_keys/private/UnitTests-key.snk",
+        "strongName": true
+      }
+    }
   }
 }

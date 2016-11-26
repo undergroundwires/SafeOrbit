@@ -77,10 +77,6 @@
       <Project>{1e69549b-d6a5-42ba-8bd7-b3370731c59a}</Project>
       <Name>Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UnitTests\UnitTests.csproj">
-      <Project>{66F3EA86-ED04-4007-931D-CBEDF060AE49}</Project>
-      <Name>UnitTests</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
