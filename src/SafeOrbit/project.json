@@ -3,6 +3,7 @@
   "language": "en",
   "description": "SafeOrbit is easy-to-use and strong security toolkit for .NET",
   "title": "SafeOrbit",
+  "authors":  ["Erkin Ekici"], 
   "configurations": {
     "debug": {
       "buildOptions": {
@@ -50,7 +51,11 @@
       }
     }
   },
-  "buildOptions": { "allowUnsafe": true },
+  "buildOptions": {
+    "allowUnsafe": true,
+    "warningsAsErrors": true,
+    "xmlDoc": true
+  },
   "packOptions": {
     "projectUrl": "https://github.com/undergroundwires/SafeOrbit",
     "iconUrl": "https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png",
