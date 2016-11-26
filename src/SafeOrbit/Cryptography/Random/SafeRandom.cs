@@ -45,6 +45,10 @@ namespace SafeOrbit.Cryptography.Random
     public class SafeRandom : RandomBase, ISafeRandom
     {
         /// <summary>
+        ///     Gets the static instance of <see cref="SafeRandom"/>.
+        /// </summary>
+        public static ISafeRandom StaticInstance = new SafeRandom();
+        /// <summary>
         ///     Initializes a new instance of the <see cref="FastRandom" /> class.
         /// </summary>
         public SafeRandom() : base(SafeRandomGenerator.StaticInstance)

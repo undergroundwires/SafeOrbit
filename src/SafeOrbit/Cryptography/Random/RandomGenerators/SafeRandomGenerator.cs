@@ -66,7 +66,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
         }
 
-        internal SafeRandomGenerator(List<IEntropyHasher> entropyHashers)
+        internal SafeRandomGenerator(IReadOnlyList<IEntropyHasher> entropyHashers)
         {
             _entropyHashers = entropyHashers;
             CtorSanityCheck();
