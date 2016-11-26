@@ -53,7 +53,10 @@
     }
   },
   "buildOptions": {
-    "allowUnsafe": true
+    "allowUnsafe": true,
+    "xmlDoc": true,
+    "warningsAsErrors": true,
+    "nowarn": [ "1591" ]
   },
   "packOptions": {
     "projectUrl": "https://github.com/undergroundwires/SafeOrbit",
