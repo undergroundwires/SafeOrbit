@@ -25,6 +25,8 @@ SOFTWARE.
 
 using System;
 using NUnit.Framework;
+using SafeOrbit.Fakes;
+using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
 {
