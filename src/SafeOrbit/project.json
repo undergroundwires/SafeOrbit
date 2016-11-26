@@ -17,7 +17,6 @@
         "xmlDoc": true,
         "nowarn": [ "1591" /* missing documentation */ ],
         // Sign the assembly
-        "delaySign": true,
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk",
         "strongName": true
       }
@@ -36,7 +35,7 @@
         "System.Threading.ThreadPool": "4.0.10",
         "System.Security.Cryptography.Algorithms": "4.2.0",
         "System.Xml.ReaderWriter": "4.0.11",
-        "System.Reflection.Metadata": "1.4.1-beta-24322-03",
+        "System.Reflection.Metadata": "1.4.1",
         "System.ComponentModel": "4.0.1"
       },
       "buildOptions": {

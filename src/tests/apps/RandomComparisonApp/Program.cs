@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-using SafeOrbit;
+using System.Threading;
+using Org.BouncyCastle.Crypto.Prng;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Cryptography.Random.RandomGenerators;
 
@@ -22,7 +20,7 @@ namespace RandomComparisonApp
             DateTime after;
             RandomResult result;
 
-            const int randBytesLength = 8 * 1024;
+            const int randBytesLength = 8*1024;
 
             var results = new List<RandomResult>();
 
@@ -45,12 +43,12 @@ namespace RandomComparisonApp
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
             results.Add(result);
-            System.Console.WriteLine((after - before).ToString());
+            Console.WriteLine((after - before).ToString());
 
             //RNGCryptoServiceProvider
             result = new RandomResult();
             result.AlgorithmName = "RNGCryptoServiceProvider";
-            System.Console.Write(result.AlgorithmName + " ");
+            Console.Write(result.AlgorithmName + " ");
             before = DateTime.Now;
             using (var rng = RandomNumberGenerator.Create())
             {
@@ -60,12 +58,12 @@ namespace RandomComparisonApp
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
             results.Add(result);
-            System.Console.WriteLine((after - before).ToString());
+            Console.WriteLine((after - before).ToString());
 
             //ThreadedSeedGeneratorRng
             result = new RandomResult();
             result.AlgorithmName = "ThreadedSeedGeneratorRng";
-            System.Console.Write(result.AlgorithmName + " ");
+            Console.Write(result.AlgorithmName + " ");
             before = DateTime.Now;
             var myThreadedSeedGeneratorRng = new ThreadedSeedGeneratorRng();
             myThreadedSeedGeneratorRng.GetBytes(randBytes);
@@ -73,19 +71,19 @@ namespace RandomComparisonApp
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
             results.Add(result);
-            System.Console.WriteLine((after - before).ToString());
-            System.Console.Write("Sleeping to allow pool to fill...");
-            System.Threading.Thread.Sleep(3000);    // Should be enough time for its pool to fill up, so it won't slow down next:
-            System.Console.WriteLine("  Done.");
+            Console.WriteLine((after - before).ToString());
+            Console.Write("Sleeping to allow pool to fill...");
+            Thread.Sleep(3000); // Should be enough time for its pool to fill up, so it won't slow down next:
+            Console.WriteLine("  Done.");
 
             //ThreadedSeedGenerator(fast)
             result = new RandomResult();
             result.AlgorithmName = "ThreadedSeedGenerator(fast)";
-            System.Console.Write(result.AlgorithmName + " ");
-            var myThreadedSeedGenerator = new Org.BouncyCastle.Crypto.Prng.ThreadedSeedGenerator();
+            Console.Write(result.AlgorithmName + " ");
+            var myThreadedSeedGenerator = new ThreadedSeedGenerator();
             Array.Clear(randBytes, 0, randBytesLength);
             before = DateTime.Now;
-            randBytes = myThreadedSeedGenerator.GenerateSeed(randBytesLength, fast: true);
+            randBytes = myThreadedSeedGenerator.GenerateSeed(randBytesLength, true);
             after = DateTime.Now;
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
@@ -95,20 +93,20 @@ namespace RandomComparisonApp
             //ThreadedSeedGenerator(slow)
             result = new RandomResult();
             result.AlgorithmName = "ThreadedSeedGenerator(slow)";
-            System.Console.Write(result.AlgorithmName + " ");
+            Console.Write(result.AlgorithmName + " ");
             Array.Clear(randBytes, 0, randBytesLength);
             before = DateTime.Now;
-            randBytes = myThreadedSeedGenerator.GenerateSeed(randBytesLength, fast: false);
+            randBytes = myThreadedSeedGenerator.GenerateSeed(randBytesLength, false);
             after = DateTime.Now;
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
             results.Add(result);
-            System.Console.WriteLine((after - before).ToString());
+            Console.WriteLine((after - before).ToString());
 
             //ThreadSchedulerRNG(slow)
             result = new RandomResult();
             result.AlgorithmName = "ThreadSchedulerRng";
-            System.Console.Write(result.AlgorithmName + " ");
+            Console.Write(result.AlgorithmName + " ");
             before = DateTime.Now;
             var myThreadSchedulerRNG = new ThreadSchedulerRng();
             myThreadSchedulerRNG.GetBytes(randBytes);
@@ -116,14 +114,14 @@ namespace RandomComparisonApp
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
             results.Add(result);
-            System.Console.WriteLine((after - before).ToString());
+            Console.WriteLine((after - before).ToString());
 
             const int numResults = 14;
-            System.Console.Write("ticks bit positions ");
+            Console.Write("ticks bit positions ");
             before = DateTime.Now;
             var ticksResults = new RandomResult[numResults];
             var ticksResultsBytes = new byte[numResults][];
-            for (int i = 0; i < numResults; i++)
+            for (var i = 0; i < numResults; i++)
             {
                 ticksResults[i] = new RandomResult
                 {
@@ -131,103 +129,100 @@ namespace RandomComparisonApp
                 };
                 ticksResultsBytes[i] = new byte[randBytesLength];
             }
-            for (int i = 0; i < randBytesLength; i++)
-            {
-                for (int j = 0; j < 8; j++)
+            for (var i = 0; i < randBytesLength; i++)
+                for (var j = 0; j < 8; j++)
                 {
-                    long ticks = DateTime.Now.Ticks;
-                    for (int bitPos = 0; bitPos < numResults; bitPos++)
+                    var ticks = DateTime.Now.Ticks;
+                    for (var bitPos = 0; bitPos < numResults; bitPos++)
                     {
                         ticksResultsBytes[bitPos][i] <<= 1;
-                        ticksResultsBytes[bitPos][i] += (byte)(ticks % 2);
+                        ticksResultsBytes[bitPos][i] += (byte) (ticks%2);
                         ticks >>= 1;
                     }
-                    System.Threading.Thread.Sleep(1);
+                    Thread.Sleep(1);
                 }
-            }
             after = DateTime.Now;
-            for (int i = 0; i < numResults; i++)
+            for (var i = 0; i < numResults; i++)
             {
                 ticksResults[i].TimeSpan = after - before;
                 ticksResults[i].CompressionRatio = CompressionUtility.GetCompressionRatio(ticksResultsBytes[i]);
                 results.Add(ticksResults[i]);
             }
-            System.Console.WriteLine((after - before).ToString());
-            System.Console.Write("Sleeping to allow pool to fill...");
-            System.Threading.Thread.Sleep(15000);    // Should be enough time for its pool to fill up, so it won't slow down next:
-            System.Console.WriteLine("  Done.");
+            Console.WriteLine((after - before).ToString());
+            Console.Write("Sleeping to allow pool to fill...");
+            Thread.Sleep(15000); // Should be enough time for its pool to fill up, so it won't slow down next:
+            Console.WriteLine("  Done.");
 
             // I want to test each of the ThreadedSeedGeneratorRng and ThreadSchedulerRng prior to doing TinHatRandom
             // or TinHatURandom, because otherwise, TinHatRandom will create static instances of them, which race, etc.
             // thus throwing off my benchmark results.
 
-            result = new RandomResult();
-            result.AlgorithmName = "TinHatRandom";
-            System.Console.Write(result.AlgorithmName + " ");
+            //SafeRandom
+            result = new RandomResult {AlgorithmName = "SafeRandom"};
+            Console.Write(result.AlgorithmName + " ");
             before = DateTime.Now;
             randBytes = SafeRandom.StaticInstance.GetBytes(randBytes.Length);
             after = DateTime.Now;
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
             results.Add(result);
-            System.Console.WriteLine((after - before).ToString());
-            System.Console.Write("Sleeping to allow pool to fill...");
-            System.Threading.Thread.Sleep(15000);    // Should be enough time for its pool to fill up, so it won't slow down next:
-            System.Console.WriteLine("  Done.");
+            Console.WriteLine((after - before).ToString());
+            Console.Write("Sleeping to allow pool to fill...");
+            Thread.Sleep(15000); // Should be enough time for its pool to fill up, so it won't slow down next:
+            Console.WriteLine("  Done.");
 
-            result = new RandomResult();
-            result.AlgorithmName = "TinHatURandom";
-            System.Console.Write(result.AlgorithmName + " ");
+            result = new RandomResult {AlgorithmName = "FastRandom" };
+            Console.Write(result.AlgorithmName + " ");
             before = DateTime.Now;
             randBytes = FastRandom.StaticInstance.GetBytes(randBytes.Length);
             after = DateTime.Now;
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
             results.Add(result);
-            System.Console.WriteLine((after - before).ToString());
-            System.Console.Write("Sleeping to allow pool to fill...");
-            System.Threading.Thread.Sleep(15000);    // Should be enough time for its pool to fill up, so it won't slow down next:
-            System.Console.WriteLine("  Done.");
+            Console.WriteLine((after - before).ToString());
+            Console.Write("Sleeping to allow pool to fill...");
+            Thread.Sleep(15000); // Should be enough time for its pool to fill up, so it won't slow down next:
+            Console.WriteLine("  Done.");
 
-            System.Console.WriteLine("");
+            Console.WriteLine("");
 
-            double maxCompressionRatio = double.MinValue;
-            double minCompressionRatio = double.MaxValue;
-            int longestName = 0;
+            var maxCompressionRatio = double.MinValue;
+            var minCompressionRatio = double.MaxValue;
+            var longestName = 0;
             foreach (var theResult in results)
             {
                 if (theResult.AlgorithmName.Length > longestName) longestName = theResult.AlgorithmName.Length;
                 if (theResult.CompressionRatio < minCompressionRatio) minCompressionRatio = theResult.CompressionRatio;
                 if (theResult.CompressionRatio > maxCompressionRatio) maxCompressionRatio = theResult.CompressionRatio;
             }
-            System.Console.WriteLine("AlgorithmName".PadLeft(longestName) + " : bits per bit : elapsed sec : effective rate");
+            Console.WriteLine("AlgorithmName".PadLeft(longestName) + " : bits per bit : elapsed sec : effective rate");
             foreach (var theResult in results)
             {
-                double bitsPerBit = (theResult.CompressionRatio - minCompressionRatio) / (maxCompressionRatio - minCompressionRatio);
+                var bitsPerBit = (theResult.CompressionRatio - minCompressionRatio)/
+                                 (maxCompressionRatio - minCompressionRatio);
                 double byteRate;
                 string byteRateString;
                 if (theResult.TimeSpan.TotalSeconds == 0)
                 {
                     if (theResult.CompressionRatio == minCompressionRatio)
-                    {
                         byteRateString = "0";
-                    }
                     else
-                    {
                         byteRateString = "infinity";
-                    }
                 }
                 else
                 {
-                    byteRate = bitsPerBit * randBytesLength / theResult.TimeSpan.TotalSeconds;
+                    byteRate = bitsPerBit*randBytesLength/theResult.TimeSpan.TotalSeconds;
                     if (byteRate > 1000000)
-                        byteRateString = (byteRate / 1000000).ToString("F2") + " MiB/sec";
+                        byteRateString = (byteRate/1000000).ToString("F2") + " MiB/sec";
                     else if (byteRate > 1000)
-                        byteRateString = (byteRate / 1000).ToString("F2") + " KiB/sec";
+                        byteRateString = (byteRate/1000).ToString("F2") + " KiB/sec";
                     else
                         byteRateString = byteRate.ToString("F2") + " B/sec";
                 }
-                System.Console.WriteLine(theResult.AlgorithmName.PadLeft(longestName) + " : " + bitsPerBit.ToString("0.000").PadLeft(12) + " : " + theResult.TimeSpan.TotalSeconds.ToString("0.000").PadLeft(11) + " : " + byteRateString.PadLeft(14));
+                Console.WriteLine(theResult.AlgorithmName.PadLeft(longestName) + " : " +
+                                  bitsPerBit.ToString("0.000").PadLeft(12) + " : " +
+                                  theResult.TimeSpan.TotalSeconds.ToString("0.000").PadLeft(11) + " : " +
+                                  byteRateString.PadLeft(14));
             }
 
             Console.WriteLine("");

@@ -28,7 +28,6 @@ namespace SafeOrbit.Infrastructure.Reflection
 #else
             //.NET Core implementation is based on https://gist.github.com/nguerrera/72444715c7ea0b40addb
             var metadataToken = methodInfo.GetMetadataToken();
-
             using (var stream = File.OpenRead(methodInfo.DeclaringType.GetTypeInfo().Assembly.Location))
             {
                 using (var peReader = new PEReader(stream))
