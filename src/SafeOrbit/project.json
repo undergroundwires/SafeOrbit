@@ -14,6 +14,7 @@
       "buildOptions": {
         "define": [ "RELEASE", "TRACE" ],
         "optimize": true,
+        "xmlDoc": true,
         // Sign the assembly
         "delaySign": true,
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk",
@@ -52,8 +53,7 @@
     }
   },
   "buildOptions": {
-    "allowUnsafe": true,
-    "xmlDoc": true
+    "allowUnsafe": true
   },
   "packOptions": {
     "projectUrl": "https://github.com/undergroundwires/SafeOrbit",
