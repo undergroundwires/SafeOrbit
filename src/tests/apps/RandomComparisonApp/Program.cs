@@ -165,7 +165,7 @@ namespace RandomComparisonApp
             result.AlgorithmName = "TinHatRandom";
             System.Console.Write(result.AlgorithmName + " ");
             before = DateTime.Now;
-            //SafeRandom.StaticInstance.GetBytes(randBytes);
+            randBytes = SafeRandom.StaticInstance.GetBytes(randBytes.Length);
             after = DateTime.Now;
             result.TimeSpan = after - before;
             result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
