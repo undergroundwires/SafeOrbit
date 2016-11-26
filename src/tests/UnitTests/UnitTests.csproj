@@ -49,8 +49,9 @@
       <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SafeOrbit">
-      <HintPath>..\..\SafeOrbit\bin\Debug\net46\SafeOrbit.dll</HintPath>
+    <Reference Include="SafeOrbit, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SafeOrbit\bin\Debug\netstandard1.6\SafeOrbit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -61,10 +62,6 @@
     <Compile Include="Cryptography\Encryption\Kdf\Pbkdf2KeyDeriverTests.cs" />
     <Compile Include="Cryptography\Hash\Murmur32Tests.cs" />
     <Compile Include="Cryptography\Random\FastRandomTests.cs" />
-    <Compile Include="Infrastructure\Exceptions\Base\SerializableExceptionTestsBase.cs" />
-    <Compile Include="Infrastructure\Exceptions\DataLengthExceptionTests.cs" />
-    <Compile Include="Infrastructure\Exceptions\MemoryInjectionExceptionTests.cs" />
-    <Compile Include="Infrastructure\Exceptions\UnexpectedEnumValueExceptionTests.cs" />
     <Compile Include="Infrastructure\Extensions\ByteArrayExtensionsTests.cs" />
     <Compile Include="Infrastructure\Extensions\IEnumerableExtensionsTests.cs" />
     <Compile Include="Infrastructure\Reflection\MethodInfoHelperTests.cs" />
@@ -111,7 +108,6 @@
     <Compile Include="Memory\SafeContainer\Instance\Providers\Factory\InstanceProviderFactoryTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Providers\SingletonInstanceProviderTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Providers\TransientInstanceProviderTests.cs" />
-    <Compile Include="Memory\SafeContainer\Instance\Validation\InstanceValidationExceptionTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotDependOnTransientRuleTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\Rules\SingletonShouldNotImplementIDisposableTests.cs" />
     <Compile Include="Memory\SafeContainer\SafeContainerTests.cs" />
@@ -139,17 +135,17 @@
     <Compile Include="Internal\Fakes\TypeIdGeneratorFaker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestApi\Infrastructure.csproj">
-      <Project>{1e69549b-d6a5-42ba-8bd7-b3370731c59a}</Project>
-      <Name>Infrastructure</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
     <None Include="SafeOrbit.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{1e69549b-d6a5-42ba-8bd7-b3370731c59a}</Project>
+      <Name>Infrastructure</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

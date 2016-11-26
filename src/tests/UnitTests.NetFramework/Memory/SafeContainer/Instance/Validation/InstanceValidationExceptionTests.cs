@@ -23,16 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
-using System.Reflection;
-using NUnit.Framework;
+using System;
+using SafeOrbit.Exceptions;
+using SafeOrbit.Memory;
 
-namespace SafeOrbit.Exceptions
+namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
-    /// <seealso cref="DataLengthException" />
-    [TestFixture]
-    public class DataLengthExceptionTests : SerializableExceptionTestsBase<DataLengthException>
+    /// <seealso cref="SerializableExceptionTestsBase{InstanceValidationException}" />
+    /// <seealso cref="InstanceValidationException" />
+    public class InstanceValidationExceptionTests : SerializableExceptionTestsBase<InstanceValidationException>
     {
-        protected override DataLengthException GetSutForSerialization() => new DataLengthException("argumentName", "message");
+        protected override InstanceValidationException GetSutForSerialization()
+            => new InstanceValidationException("message", new Exception("foo"));
     }
 }
