@@ -69,7 +69,7 @@
     },
     "summary": "SafeOrbit is easy-to-use and strong security toolkit for .NET"
   },
-  "version": "0.2.0-*",
+  "version": "0.2.1",
   "scripts": {
     //Nuget release
     "postcompile": [
