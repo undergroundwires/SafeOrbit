@@ -1,0 +1,16 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "InfrastructureCore": "1.0.0-*",
+    "Moq": "4.6.38-alpha",
+    "NETStandard.Library": "1.6.0",
+    "NUnit": "3.5.0",
+    "SafeOrbit": "0.2.1"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}
