@@ -80,7 +80,7 @@ namespace SafeOrbit.Cryptography.Encryption
         private uint xr_par;
 
         //Initialization Vector for CBC and CTR mode
-        private byte[] InitVector;
+        private byte[] _initVector;
         private bool IVSet;
 
         //For compatibility with the javascript crypto library:
@@ -105,8 +105,8 @@ namespace SafeOrbit.Cryptography.Encryption
                 Array.Clear(bf_s3, 0, bf_s3.Length);
             if (bf_P != null)
                 Array.Clear(bf_P, 0, bf_P.Length);
-            if (InitVector != null)
-                Array.Clear(InitVector, 0, InitVector.Length);
+            if (_initVector != null)
+                Array.Clear(_initVector, 0, _initVector.Length);
         }
 
         public virtual int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer,

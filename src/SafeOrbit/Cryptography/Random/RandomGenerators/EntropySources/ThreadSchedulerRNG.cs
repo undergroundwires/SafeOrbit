@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -24,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
 using SafeOrbit.Memory;
@@ -31,63 +31,61 @@ using SafeOrbit.Memory;
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
     /// <summary>
-    /// In a multitasking OS, each individual thread never knows when it's going to be granted execution time,
-    /// as many processes and threads compete for CPU cycles.  The granularity of time to wake up from sleep is
-    /// something like +/- a few ms, while the granularity of DateTime.Now is Ticks, 10million per second.  Although
-    /// the OS scheduler is surely deterministic, there should be a fair amount of entropy in the least significant
-    /// bits of DateTime.Now.Ticks upon thread waking.  But since the OS scheduler is surely deterministic, it is
-    /// not recommended to use ThreadSchedulerRNG as your only entropy source.  It is recommended to use this
-    /// class ONLY in addition to other entropy sources.
+    ///     In a multitasking OS, each individual thread never knows when it's going to be granted execution time,
+    ///     as many processes and threads compete for CPU cycles.  The granularity of time to wake up from sleep is
+    ///     something like +/- a few ms, while the granularity of DateTime.Now is Ticks, 10million per second.  Although
+    ///     the OS scheduler is surely deterministic, there should be a fair amount of entropy in the least significant
+    ///     bits of DateTime.Now.Ticks upon thread waking.  But since the OS scheduler is surely deterministic, it is
+    ///     not recommended to use ThreadSchedulerRNG as your only entropy source.  It is recommended to use this
+    ///     class ONLY in addition to other entropy sources.
     /// </summary>
     public sealed class ThreadSchedulerRng : RandomNumberGenerator
     {
         /// <summary>
-        /// By putting the core into its own class, it makes it easy for us to create a single instance of it, referenced 
-        /// by a static member of ThreadSchedulerRNG, without any difficulty of finalizing & disposing etc.
+        ///     By putting the core into its own class, it makes it easy for us to create a single instance of it, referenced
+        ///     by a static member of ThreadSchedulerRNG, without any difficulty of finalizing or disposing etc.
         /// </summary>
         private class ThreadSchedulerRngCore
         {
             private const int MaxPoolSize = 4096;
-            private readonly object _fifoStreamLock = new object();
-            private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
-            private Thread _mainThread;
-            private AutoResetEvent _mainThreadLoopAre = new AutoResetEvent(false);
-            private AutoResetEvent _bytesAvailableAre = new AutoResetEvent(false);
 
             // Interlocked cannot handle bools.  So using int as if it were bool.
             private const int TrueInt = 1;
             private const int FalseInt = 0;
-            private int _disposed = FalseInt;
 
             private const int ChunkSize = 16;
-            private byte[] _chunk;
-            private int _chunkByteIndex = 0;
-            private int _chunkBitIndex = 0;
+            private readonly object _fifoStreamLock = new object();
+            private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
+            private readonly AutoResetEvent _bytesAvailableAre = new AutoResetEvent(false);
+            private readonly byte[] _chunk;
+            private int _chunkBitIndex;
+            private int _chunkByteIndex;
+            private int _disposed = FalseInt;
+            private readonly Thread _mainThread;
+            private readonly AutoResetEvent _mainThreadLoopAre = new AutoResetEvent(false);
 
             public ThreadSchedulerRngCore()
             {
                 _chunk = new byte[ChunkSize];
-                _mainThread = new Thread(new ThreadStart(MainThreadLoop));
+                _mainThread = new Thread(MainThreadLoop);
                 _mainThread.IsBackground = true; // Don't prevent application from dying if it wants to.
                 _mainThread.Start();
             }
 
             public int Read(byte[] buffer, int offset, int count)
             {
-                int pos = offset;
+                var pos = offset;
                 try
                 {
                     lock (_fifoStreamLock)
                     {
                         while (pos < offset + count)
                         {
-                            long readCount = _safeStream.Length; // All the available bytes
+                            var readCount = _safeStream.Length; // All the available bytes
                             if (pos + readCount >= offset + count)
-                            {
                                 readCount = offset + count - pos; // Don't try to read more than we need
-                            }
-                            int bytesRead = -1;
-                            while (readCount > 0 && bytesRead != 0)
+                            var bytesRead = -1;
+                            while ((readCount > 0) && (bytesRead != 0))
                             {
                                 bytesRead = _safeStream.Read(buffer, pos, (int) readCount);
                                 _mainThreadLoopAre.Set();
@@ -95,9 +93,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                                 pos += bytesRead;
                             }
                             if (pos < offset + count)
-                            {
                                 _bytesAvailableAre.WaitOne();
-                            }
                         }
                         return count;
                     }
@@ -105,13 +101,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 catch
                 {
                     if (_disposed == TrueInt)
-                    {
-                        throw new System.IO.IOException("Read() interrupted by Dispose()");
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                        throw new IOException("Read() interrupted by Dispose()");
+                    throw;
                 }
             }
 
@@ -119,8 +110,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             {
                 try
                 {
-                    while (this._disposed == FalseInt)
-                    {
+                    while (_disposed == FalseInt)
                         if (_safeStream.Length < MaxPoolSize)
                         {
                             // While running in this tight loop, consumes approx 0% cpu time.  Cannot even measure with Task Manager
@@ -148,9 +138,9 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                              * should be a really good quality entropy bit.
                              */
 
-                            long ticks = DateTime.Now.Ticks;
+                            var ticks = DateTime.Now.Ticks;
                             byte newBit = 0;
-                            for (int i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
+                            for (var i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
                             {
                                 newBit ^= (byte) (ticks%2);
                                 ticks >>= 1;
@@ -162,28 +152,21 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                         {
                             _mainThreadLoopAre.WaitOne();
                         }
-                    }
                 }
                 catch
                 {
                     if (_disposed == FalseInt) // If we caught an exception after being disposed, just swallow it.
-                    {
                         throw;
-                    }
                 }
             }
 
             private void GotBit(byte bitByte)
             {
                 if (bitByte > 1)
-                {
                     throw new ArgumentException("bitByte must be equal to 0 or 1");
-                }
                 _chunk[_chunkByteIndex] <<= 1; // << operator discards msb's and zero-fills lsb's, never causes overflow
                 if (bitByte == 1)
-                {
                     _chunk[_chunkByteIndex]++; // By incrementing, we are setting the lsb to 1.
-                }
                 _chunkBitIndex++;
                 if (_chunkBitIndex > 7)
                 {
@@ -201,9 +184,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             private void Dispose(bool disposing)
             {
                 if (Interlocked.Exchange(ref _disposed, TrueInt) == TrueInt)
-                {
                     return;
-                }
                 _mainThreadLoopAre.Set();
                 _mainThreadLoopAre.Dispose();
                 _bytesAvailableAre.Set();
@@ -219,13 +200,17 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 
         private static readonly ThreadSchedulerRngCore Core = new ThreadSchedulerRngCore();
 
+        /// <summary>
+        ///     Gets the bytes.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <exception cref="CryptographicException">Failed to return requested number of bytes</exception>
         public override void GetBytes(byte[] data)
         {
             if (Core.Read(data, 0, data.Length) != data.Length)
-            {
                 throw new CryptographicException("Failed to return requested number of bytes");
-            }
         }
+
 #if !NETCORE
         public override void GetNonZeroBytes(byte[] data)
         {
@@ -248,10 +233,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             }
         }
 #endif
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
 
         ~ThreadSchedulerRng()
         {
