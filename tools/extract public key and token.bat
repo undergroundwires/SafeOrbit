@@ -3,6 +3,7 @@
 @color 0a
 @cls
 
+
 REM Fill the following
 set outputSnkName=REM IntegrationTests-public-key.snk
 set outputTxtName=REM IntegrationTests-public-key.txt
