@@ -29,7 +29,7 @@ using SafeOrbit.Memory.InjectionServices;
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
     /// <summary>
-    ///     Provides the same instance of <see cref="TImplementation" />.
+    ///     Provides the same instance of <typeparamref name="TImplementation" />.
     /// </summary>
     /// <see cref="LifeTime.Singleton"/>
     /// <seealso cref="TransientInstanceProvider{TImplementation}"/>
@@ -40,7 +40,6 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
     {
         private TImplementation _instance;
         public SingletonInstanceProvider(InstanceProtectionMode initialProtectionMode) : base(LifeTime.Singleton, initialProtectionMode) { }
-        [DebuggerHidden]
         public override TImplementation GetInstance()
         {
             if(_instance == null) _instance = new TImplementation();

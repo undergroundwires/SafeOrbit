@@ -36,7 +36,7 @@ namespace SafeOrbit.Utilities
         /// <param name="startIndex">The start index.</param>
         /// <param name="endIndex">The end index.</param>
         /// <param name="delegate">The delegate.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="@delegate" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="delegate" /> is <see langword="null" />.</exception>
         public static void For(int startIndex, int endIndex, Action<int> @delegate)
         {
             if (@delegate == null) throw new ArgumentNullException(nameof(@delegate));

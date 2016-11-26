@@ -56,7 +56,7 @@
     "allowUnsafe": true,
     "xmlDoc": true,
     "warningsAsErrors": true,
-    "nowarn": [ "1591" ]
+    "nowarn": ["1591" /* missing documentation */]
   },
   "packOptions": {
     "projectUrl": "https://github.com/undergroundwires/SafeOrbit",

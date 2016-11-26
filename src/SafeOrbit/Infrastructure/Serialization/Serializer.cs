@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -43,12 +42,13 @@ namespace SafeOrbit.Infrastructure.Serialization
         /// </summary>
         /// <value>Value of inner <seealso cref="Lazy{Serializer}" /> instance.</value>
         public static Serializer StaticInstance => StaticInstanceLazy.Value;
+
         /// <summary>
-        /// Serializes the specified object to a byte array.
+        ///     Serializes the specified object to a byte array.
         /// </summary>
         /// <param name="object">The object to serialize.</param>
         /// <returns>Byte array for the serialization of the object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="@object" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="object" /> is <see langword="null" />.</exception>
         public byte[] Serialize(object @object)
         {
             if (@object == null) throw new ArgumentNullException(nameof(@object));
@@ -58,8 +58,9 @@ namespace SafeOrbit.Infrastructure.Serialization
                 return mStream.ToArray();
             }
         }
+
         /// <summary>
-        /// Deserializes the specified byte array to an object.
+        ///     Deserializes the specified byte array to an object.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="byteArray">The byte array to deserialize.</param>
@@ -70,7 +71,7 @@ namespace SafeOrbit.Infrastructure.Serialization
             if (byteArray == null) throw new ArgumentNullException(nameof(byteArray));
             using (var mStream = new MemoryStream(byteArray))
             {
-                return (T)BinarySerializer.Deserialize(mStream);
+                return (T) BinarySerializer.Deserialize(mStream);
             }
         }
     }

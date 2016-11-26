@@ -39,7 +39,7 @@ namespace SafeOrbit.Memory
     /// <summary>
     ///     <p>
     ///         <see cref="SafeObject{TObject}" /> uses <seealso cref="InjectionDetector" /> and tracks any outside
-    ///         modifications of the <see cref="TObject" />.
+    ///         modifications of the <typeparamref name="TObject" />.
     ///     </p>
     ///     <p>
     ///         Provides thread safe access to its inner object.
@@ -129,11 +129,11 @@ namespace SafeOrbit.Memory
         /// <param name="injectionDetector">The injection protector.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="settings" /> is not null and <see cref="InitialSafeObjectSettings.InitialValue" /> is not a type
-        ///     of <see cref="TObject" />.
+        ///     of <typeparamref name="TObject" />.
         /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     <p><paramref name="injectionDetector" /> is <see langword="null" />.</p>
-        ///     <p>Initial object value from <see cref="settings" /> is null or cannot be casted to <see cref="TObject" /></p>
+        ///     <p>Initial object value from <paramref name="settings" /> is null or cannot be casted to <typeparamref name="TObject" /></p>
         /// </exception>
         internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector)
             : base(settings.ProtectionMode)
@@ -198,7 +198,7 @@ namespace SafeOrbit.Memory
         ///     Verifies the changes to the state and code of the instance.
         ///     The object should only be modified with this method to authorize the modification.
         /// </summary>
-        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <see cref="TObject" /> is marked as ReadOnly.</exception>
+        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <typeparamref name="TObject" /> is marked as ReadOnly.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="modification" /> is <see langword="null" /> </exception>
         /// <seealso cref="IsReadOnly" />
         public void ApplyChanges(Action<TObject> modification)
@@ -258,7 +258,7 @@ namespace SafeOrbit.Memory
             return _object;
         }
 
-        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <see cref="TObject" /> is marked as ReadOnly.</exception>
+        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <typeparamref name="TObject" /> is marked as ReadOnly.</exception>
         private void ThrowIfReadOnly()
         {
             if (IsReadOnly)
@@ -276,7 +276,7 @@ namespace SafeOrbit.Memory
 
 
         /// <exception cref="NotSupportedException">
-        ///     <see cref="TObject" />is a dictionary. Code protection for dictionary types are
+        ///     <typeparamref name="TObject" />is a dictionary. Code protection for dictionary types are
         ///     not yet supported.
         /// </exception>
         protected sealed override void ChangeProtectionMode(

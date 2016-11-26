@@ -28,7 +28,7 @@ using System.Diagnostics;
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
     /// <summary>
-    ///     Provides a new instance of <see cref="TImplementation" /> every time.
+    ///     Provides a new instance of <typeparamref name="TImplementation" /> every time.
     /// </summary>
     /// <seealso cref="LifeTime.Transient"/>
     /// <seealso cref="SingletonInstanceProvider{TImplementation}"/>
@@ -38,7 +38,6 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
     internal class TransientInstanceProvider<TImplementation> : SafeInstanceProviderBase<TImplementation> where TImplementation : new()
     {
         public TransientInstanceProvider(InstanceProtectionMode protectionMode) : base(LifeTime.Transient, protectionMode) { }
-        [DebuggerHidden]
         public override TImplementation GetInstance()
         {
             return new TImplementation();

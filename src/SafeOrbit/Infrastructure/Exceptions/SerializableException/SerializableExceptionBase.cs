@@ -32,7 +32,7 @@ using System.Runtime.Serialization;
 
 namespace SafeOrbit.Exceptions.SerializableException
 {
-#pragma warning disable 587
+#pragma warning disable 1587
     /// <summary>
     ///     An abstract base for serializable classes.
     /// </summary>

@@ -25,10 +25,10 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
 using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.SafeContainerServices.Instance;
@@ -99,15 +99,25 @@ namespace SafeOrbit.Memory
             SetAlertChannelInternal(alertChannel);
         }
 
+        /// <summary>
+        ///     Gets the requested component/service.
+        /// </summary>
+        /// <typeparam name="TComponent">The type of the the component.</typeparam>
+        /// <returns>Requested component.</returns>
         /// <exception cref="ArgumentException"><see cref="Verify" /> is not called.</exception>
         /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
         /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="KeyNotFoundException">If the <see cref="TComponent" /> is not registered.</exception>
+        /// <exception cref="KeyNotFoundException">If the <typeparamref name="TComponent" /> is not registered.</exception>
         public TComponent Get<TComponent>()
         {
             return (TComponent) GetService(typeof(TComponent));
         }
 
+        /// <summary>
+        ///     Registers the specified life time.
+        /// </summary>
+        /// <typeparam name="TImplementation">The type of the t implementation.</typeparam>
+        /// <param name="lifeTime">The life time.</param>
         public void Register<TImplementation>(LifeTime lifeTime = LifeTime.Transient)
             where TImplementation : class, new()
         {
@@ -160,7 +170,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentException"><see cref="Verify" /> is not called.</exception>
         /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
         /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="KeyNotFoundException">If the <see cref="serviceType" /> is not registered.</exception>
+        /// <exception cref="KeyNotFoundException">If the <paramref name="serviceType" /> is not registered.</exception>
         public object GetService(Type serviceType)
         {
             if (!_isVerified) throw new ArgumentException($"Please call {nameof(Verify)} before using the factory");

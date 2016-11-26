@@ -1,4 +1,3 @@
-
 /*
 MIT License
 
@@ -26,23 +25,25 @@ SOFTWARE.
 namespace SafeOrbit.Infrastructure.Protectable
 {
     /// <summary>
-    /// An interface representing the event arguments when the protection level switch is requested.
+    ///     An interface representing the event arguments when the protection level switch is requested.
     /// </summary>
     /// <typeparam name="TProtectionLevel">The type of the protection level.</typeparam>
     public interface IProtectionChangeContext<out TProtectionLevel>
     {
         /// <summary>
-        /// Gets the old value of the <see cref="TProtectionLevel"/>.
+        ///     Gets the old value of the <typeparamref name="TProtectionLevel" />.
         /// </summary>
-        /// <value>The old value of the <see cref="TProtectionLevel"/>.</value>
+        /// <value>The old value of the <typeparamref name="TProtectionLevel" />.</value>
         TProtectionLevel OldValue { get; }
+
         /// <summary>
-        /// Gets the new value of the <see cref="TProtectionLevel"/>. This is the value that's requested to be set.
+        ///     Gets the new value of the <typeparamref name="TProtectionLevel" />. This is the value that's requested to be set.
         /// </summary>
-        /// <value>The new value of the <see cref="TProtectionLevel"/> that's requested to be set.</value>
+        /// <value>The new value of the <typeparamref name="TProtectionLevel" /> that's requested to be set.</value>
         TProtectionLevel NewValue { get; }
+
         /// <summary>
-        /// Gets or sets a value indicating whether the protection level switching is canceled.
+        ///     Gets or sets a value indicating whether the protection level switching is canceled.
         /// </summary>
         /// <value><c>true</c> if this protection level switching is canceled; otherwise, <c>false</c>.</value>
         bool IsCanceled { get; set; }

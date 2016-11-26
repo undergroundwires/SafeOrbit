@@ -184,30 +184,26 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Serializi
 
         /// <summary>
         ///     Fills the <see cref="InternalTypeInfo.KeyType" /> and <see cref="InternalTypeInfo.ElementType" /> properties
-        ///     to target <see cref="target" /> from <see cref="source" />.
+        ///     to target <see paramref="target" /> from <paramref name="source" />.
         /// </summary>
         /// <returns><c>TRUE</c> if the key and value definition was found, otherwise <c>FALSE</c></returns>
         private static bool FillKeyAndElementType(InternalTypeInfo source, Type target)
         {
             var targetInfo = target.GetTypeInfo();
-            if (targetInfo.IsGenericType)
+            if (!targetInfo.IsGenericType) return false;
+            var arguments = target.GetGenericArguments();
+            if (source.IsDictionary)
             {
-                var arguments = target.GetGenericArguments();
-
-                if (source.IsDictionary)
-                {
-                    // in Dictionary there are keys and values
-                    source.KeyType = arguments[0];
-                    source.ElementType = arguments[1];
-                }
-                else
-                {
-                    // In Collection there are only items
-                    source.ElementType = arguments[0];
-                }
-                return arguments.Length > 0;
+                // in Dictionary there are keys and values
+                source.KeyType = arguments[0];
+                source.ElementType = arguments[1];
             }
-            return false;
+            else
+            {
+                // In Collection there are only items
+                source.ElementType = arguments[0];
+            }
+            return arguments.Length > 0;
         }
     }
 }

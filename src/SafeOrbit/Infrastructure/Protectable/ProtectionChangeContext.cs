@@ -55,15 +55,15 @@ namespace SafeOrbit.Infrastructure.Protectable
         }
 
         /// <summary>
-        ///     Gets the old value of the <see cref="TProtectionLevel" />.
+        ///     Gets the old value of the <typeparamref name="TProtectionLevel" />.
         /// </summary>
-        /// <value>The old value of the <see cref="TProtectionLevel" />.</value>
+        /// <value>The old value of the <typeparamref name="TProtectionLevel" />.</value>
         public TProtectionLevel OldValue { get; }
 
         /// <summary>
-        ///     Gets the new value of the <see cref="TProtectionLevel" />. This is the value that's requested to be set.
+        ///     Gets the new value of the <typeparamref name="TProtectionLevel" />. This is the value that's requested to be set.
         /// </summary>
-        /// <value>The new value of the <see cref="TProtectionLevel" /> that's requested to be set.</value>
+        /// <value>The new value of the <typeparamref name="TProtectionLevel" /> that's requested to be set.</value>
         public TProtectionLevel NewValue { get; }
 
         /// <summary>
