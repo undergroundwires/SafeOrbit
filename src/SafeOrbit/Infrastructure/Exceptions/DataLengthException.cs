@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 
-#if NET46
+#if NETFRAMEWORK
 using System.Runtime.Serialization;
 using System;
 using System.Security.Permissions;
@@ -36,7 +36,7 @@ namespace SafeOrbit.Exceptions
     ///     This exception is thrown if a buffer that is meant to have output copied into it turns out to be too short, or if
     ///     insufficient input was given..
     /// </summary>
-#if NET46
+#if NETFRAMEWORK
   [Serializable]
 #endif
     public class DataLengthException : SafeOrbitException
@@ -45,7 +45,7 @@ namespace SafeOrbit.Exceptions
         {
         }
 
-#if NET46
+#if NETFRAMEWORK
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public DataLengthException(SerializationInfo info, StreamingContext context) : base(info, context)
         {

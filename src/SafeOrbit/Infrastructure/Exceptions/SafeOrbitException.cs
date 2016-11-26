@@ -27,7 +27,7 @@ using System;
 using System.Runtime.Serialization;
 using SafeOrbit.Exceptions.SerializableException;
 
-#if NET46
+#if NETFRAMEWORK
 using System.Security.Permissions;
 #endif
 
@@ -37,7 +37,7 @@ namespace SafeOrbit.Exceptions
     ///     An abstract class for all of special exceptions that SafeOrbit throws.
     /// </summary>
     /// <seealso cref="SerializableExceptionBase"/>
-#if NET46
+#if NETFRAMEWORK
     [Serializable]
 #endif
     public abstract class SafeOrbitException : SerializableExceptionBase
@@ -63,7 +63,7 @@ namespace SafeOrbit.Exceptions
         {
         }
 
-#if NET46
+#if NETFRAMEWORK
     [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected SafeOrbitException(SerializationInfo info, StreamingContext context) : base(info, context)
         {

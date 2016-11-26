@@ -25,14 +25,14 @@ SOFTWARE.
 using System;
 using SafeOrbit.Exceptions;
 
-#if NET46
+#if NETFRAMEWORK
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
-#if NET46
+#if NETFRAMEWORK
     [Serializable]
 #endif
     public class InstanceValidationException : SafeOrbitException
@@ -41,7 +41,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
         {
         }
 
-#if NET46
+#if NETFRAMEWORK
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public InstanceValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
