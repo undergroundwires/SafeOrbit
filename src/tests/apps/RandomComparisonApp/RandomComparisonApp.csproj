@@ -38,10 +38,6 @@
       <HintPath>..\..\..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SafeOrbit, Version=0.2.0.0, Culture=neutral, PublicKeyToken=bb96809731729604, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\SafeOrbit.0.2.0\lib\net46\SafeOrbit.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="SharpCompress, Version=0.14.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\SharpCompress.0.14.0\lib\net45\SharpCompress.dll</HintPath>
       <Private>True</Private>

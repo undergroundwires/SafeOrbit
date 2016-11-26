@@ -15,6 +15,7 @@
         "define": [ "RELEASE", "TRACE" ],
         "optimize": true,
         "xmlDoc": true,
+        "nowarn": [ "1591" /* missing documentation */ ],
         // Sign the assembly
         "delaySign": true,
         "keyFile": "../../docs/signature_keys/private/SafeOrbit-key.snk",
@@ -54,9 +55,7 @@
   },
   "buildOptions": {
     "allowUnsafe": true,
-    "xmlDoc": true,
-    "warningsAsErrors": true,
-    "nowarn": ["1591" /* missing documentation */]
+    "warningsAsErrors": true
   },
   "packOptions": {
     "projectUrl": "https://github.com/undergroundwires/SafeOrbit",
@@ -73,7 +72,7 @@
   "scripts": {
     //Nuget release
     "postcompile": [
-      "makeNuget.cmd %compile:Configuration% Release %project:Name%"
+      "makeNuget.cmd %compile:Configuration% Release \"../../versions/packages/\""
     ]
   }
 }
