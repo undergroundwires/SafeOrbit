@@ -127,9 +127,10 @@ namespace SafeOrbit.Memory.Injection
         {
             //arrange
             const int testObject = 5;
-            const bool JustCode = false;
             var codeStamperMock = new Mock<IStamper<Type>>();
-            var sut = GetSut(codeStamper: codeStamperMock.Object);
+            var sut = GetSut(
+                codeStamper: codeStamperMock.Object,
+                protectState:false);
             //act
             sut.NotifyChanges(testObject);
             //assert
