@@ -47,7 +47,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-	<Reference Include="Infrastructure">
+    <Reference Include="Infrastructure">
       <HintPath>..\Infrastructure\bin\$(Configuration)\net46\Infrastructure.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -75,8 +75,10 @@
     <Folder Include="Memory\SafeBytes\SafeByte\Collection\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\SafeOrbit.licenseheader">
+      <Link>SafeOrbit.licenseheader</Link>
+    </None>
     <None Include="packages.config" />
-    <None Include="SafeOrbit.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

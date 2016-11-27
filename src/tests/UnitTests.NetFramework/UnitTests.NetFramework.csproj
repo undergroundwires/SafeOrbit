@@ -73,6 +73,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\SafeOrbit.licenseheader">
+      <Link>SafeOrbit.licenseheader</Link>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

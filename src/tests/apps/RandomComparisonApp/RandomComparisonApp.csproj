@@ -63,6 +63,9 @@
     <Compile Include="RandomResult.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\SafeOrbit.licenseheader">
+      <Link>SafeOrbit.licenseheader</Link>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
