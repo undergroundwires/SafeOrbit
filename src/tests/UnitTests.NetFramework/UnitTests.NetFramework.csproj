@@ -46,6 +46,9 @@
     <Reference Include="SafeOrbit">
       <HintPath>..\..\SafeOrbit\bin\Debug\net46\SafeOrbit.dll</HintPath>
     </Reference>
+    <Reference Include="Infrastructure">
+      <HintPath>..\Infrastructure\bin\$(Configuration)\net46\Infrastructure.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

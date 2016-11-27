@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "InfrastructureCore": "1.0.0-*",
+    "Infrastructure": "1.0.0-*",
     "Moq": "4.6.38-alpha",
     "SafeOrbit": "0.2.1",
     //nunit

@@ -50,14 +50,14 @@ namespace SafeOrbit.Tests
         public void RegisterAll(Assembly assembly)
         {
             var allStubProviderTypes = from type in assembly.GetTypes()
-                                       where typeof(IStubProvider).IsAssignableFrom(type)
+                                       where typeof(IStubProvider).GetTypeInfo().IsAssignableFrom(type)
                                        select type;
             foreach (var instanceProdiverType in allStubProviderTypes)
             {
                 var instanceProvider = Activator.CreateInstance(instanceProdiverType) as IStubProvider;
                 var stubType = instanceProdiverType
                     .GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IStubProvider<>))
+                    .Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IStubProvider<>))
                     .SelectMany(i => i.GetGenericArguments())
                     .FirstOrDefault();
                 this.Register(stubType, instanceProvider);

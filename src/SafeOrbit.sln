@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{526754B4-B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomComparisonApp", "tests\apps\RandomComparisonApp\RandomComparisonApp.csproj", "{5A9F48D4-BDF2-43D8-8E29-6D0CBC4318ED}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Infrastructure", "InfrastructureCore\Infrastructure.xproj", "{300DB885-91FF-4FBC-8C57-F9285EB252E7}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Infrastructure", "tests\Infrastructure\Infrastructure.xproj", "{300DB885-91FF-4FBC-8C57-F9285EB252E7}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "UnitTests", "tests\UnitTests\UnitTests.xproj", "{166C105B-F7FC-4FFD-AE47-E72EB09E8AC4}"
 EndProject
