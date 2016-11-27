@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Utilities;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests

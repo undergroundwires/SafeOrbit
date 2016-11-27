@@ -11,7 +11,7 @@
     <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png</iconUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-	While SafeOrbit's primarly focus is strong memory protection. SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashers and random. 
+	While SafeOrbit's primarly focus is strong memory protection, SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random. 
 	
 	Source code : https://github.com/undergroundwires/safeOrbit
 	Wiki : https://github.com/undergroundwires/safeOrbit/wiki
@@ -19,7 +19,7 @@
     <releaseNotes>
 	- [.NET CORE] Bug fix :  Not being able to read IL-bytes
 	- Minor bug fixes
-	- Xml documentation are included
+	- Xml documentation are included in nuget package.
 	</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
