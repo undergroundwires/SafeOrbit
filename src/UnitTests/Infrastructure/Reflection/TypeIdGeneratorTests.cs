@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using SafeOrbit.Tests;
 
@@ -41,8 +42,8 @@ namespace SafeOrbit.Infrastructure.Reflection
         public void AllClassesInSutAndTestAssemblies_HaveUniqueKeys()
         {
             //arrange
-            var sutAssembly = typeof(TypeIdGenerator).Assembly;
-            var testAssembly = typeof(TypeIdGeneratorTests).Assembly;
+            var sutAssembly = typeof(TypeIdGenerator).GetTypeInfo().Assembly;
+            var testAssembly = typeof(TypeIdGeneratorTests).GetTypeInfo().Assembly;
             var allTypes = sutAssembly.GetTypes().Concat(testAssembly.GetTypes());
             var expected = allTypes.Count();
             var sut = GetSut();

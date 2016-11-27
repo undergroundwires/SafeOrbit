@@ -28,7 +28,7 @@ using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes
 {
-    public static class Stubs
+    public class Stubs
     {
         private static StubFactory _factory;
 
@@ -49,7 +49,8 @@ namespace SafeOrbit.Fakes
         private static StubFactory GetFactory()
         {
             var factory = new StubFactory();
-            factory.RegisterAll(Assembly.GetExecutingAssembly());
+            var currentAssembly = typeof(Stubs).GetTypeInfo().Assembly;
+            factory.RegisterAll(currentAssembly);
             return factory;
         }
     }
