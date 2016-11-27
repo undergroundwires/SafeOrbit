@@ -50,7 +50,7 @@ namespace SafeOrbit.Tests
         public void RegisterAll(Assembly assembly)
         {
             var allStubProviderTypes = from type in assembly.GetTypes()
-                                       where typeof(IStubProvider).GetTypeInfo().IsSubclassOf(type)
+                                       where typeof(IStubProvider).GetTypeInfo().IsAssignableFrom(type)
                                        select type;
             foreach (var instanceProdiverType in allStubProviderTypes)
             {
