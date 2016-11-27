@@ -59,11 +59,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\UnitTests\Infrastructure\Reflection\MethodInfoHelperTests.cs">
+      <Link>Infrastructure\Reflection\MethodInfoHelperTests.cs</Link>
+    </Compile>
     <Compile Include="Exceptions\Base\SerializableExceptionTestsBase.cs" />
     <Compile Include="Exceptions\DataLengthExceptionTests.cs" />
     <Compile Include="Exceptions\MemoryInjectionExceptionTests.cs" />
     <Compile Include="Exceptions\UnexpectedEnumValueExceptionTests.cs" />
-    <Compile Include="Infrastructure\Reflection\MethodInfoHelperTests.cs" />
     <Compile Include="Internal\Fakes\SafeStringFaker.cs" />
     <Compile Include="Internal\Helpers\SafeStringHelper.cs" />
     <Compile Include="Internal\Stubs.cs" />

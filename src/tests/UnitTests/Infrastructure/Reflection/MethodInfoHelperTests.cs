@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -37,7 +38,7 @@ namespace SafeOrbit.Infrastructure.Reflection
         public void GetIlBytes_ArgumentIsNull_throwsArgumentNullException()
         {
             //arrange
-            var nullArgument = (MethodInfo) null;
+            var nullArgument = (MethodInfo)null;
             //act
             TestDelegate callingWithNull = () => nullArgument.GetIlBytes();
             //assert
@@ -49,8 +50,8 @@ namespace SafeOrbit.Infrastructure.Reflection
             //arrange
             var type = typeof(string);
             //act
-            var expected = type.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
-            var actual = type.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
+            var expected = GetIlBytes(type);
+            var actual = GetIlBytes(type);
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -61,10 +62,20 @@ namespace SafeOrbit.Infrastructure.Reflection
             var type = typeof(string);
             var differentType = typeof(int);
             //act
-            var expected = type.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
-            var actual = differentType.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
+            var expected = GetIlBytes(type);
+            var actual = GetIlBytes(differentType);
             //assert
             Assert.That(actual, Is.Not.EqualTo(expected));
+        }
+
+        private static byte[] GetIlBytes(Type type)
+        {
+            return type.GetMethods()
+                .Where(m => m != null)
+                .Select(m => m.GetIlBytes())
+                .Where(arrays => arrays != null)
+                .SelectMany(arrays => arrays) //merge arrays
+                .ToArray();
         }
     }
 }
