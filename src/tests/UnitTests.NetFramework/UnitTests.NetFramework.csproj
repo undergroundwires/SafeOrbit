@@ -62,13 +62,19 @@
     <Compile Include="..\UnitTests\Infrastructure\Reflection\MethodInfoHelperTests.cs">
       <Link>Infrastructure\Reflection\MethodInfoHelperTests.cs</Link>
     </Compile>
+    <Compile Include="..\UnitTests\Internal\Fakes\SafeStringFaker.cs">
+      <Link>Internal\Fakes\SafeStringFaker.cs</Link>
+    </Compile>
+    <Compile Include="..\UnitTests\Internal\Helpers\SafeStringHelper.cs">
+      <Link>Internal\Helpers\SafeStringHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\UnitTests\Internal\Stubs.cs">
+      <Link>Internal\Stubs.cs</Link>
+    </Compile>
     <Compile Include="Exceptions\Base\SerializableExceptionTestsBase.cs" />
     <Compile Include="Exceptions\DataLengthExceptionTests.cs" />
     <Compile Include="Exceptions\MemoryInjectionExceptionTests.cs" />
     <Compile Include="Exceptions\UnexpectedEnumValueExceptionTests.cs" />
-    <Compile Include="Internal\Fakes\SafeStringFaker.cs" />
-    <Compile Include="Internal\Helpers\SafeStringHelper.cs" />
-    <Compile Include="Internal\Stubs.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\InstanceValidationExceptionTests.cs" />
     <Compile Include="Memory\SafeMemoryStreamTests.cs" />
     <Compile Include="Memory\SafeString\SafeStringToStringMarshalerTests.cs" />
