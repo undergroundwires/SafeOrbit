@@ -28,15 +28,21 @@ namespace SafeOrbit.Infrastructure.Reflection
 #else
             //.NET Core implementation is based on https://gist.github.com/nguerrera/72444715c7ea0b40addb
             var metadataToken = methodInfo.GetMetadataToken();
-            using (var stream = File.OpenRead(methodInfo.DeclaringType.GetTypeInfo().Assembly.Location))
+            var assemblyLocation = methodInfo.DeclaringType.GetTypeInfo().Assembly.Location;
+            using (var stream = File.OpenRead(assemblyLocation))
+            using (var peReader = new PEReader(stream))
             {
-                using (var peReader = new PEReader(stream))
+                var metadataReader = peReader.GetMetadataReader();
+                var methodHandle = MetadataTokens.MethodDefinitionHandle(metadataToken);
+                var methodDef = metadataReader.GetMethodDefinition(methodHandle);
+                try
                 {
-                    var metadataReader = peReader.GetMetadataReader();
-                    var methodHandle = MetadataTokens.MethodDefinitionHandle(metadataToken);
-                    var methodDef = metadataReader.GetMethodDefinition(methodHandle);
                     var methodBody = peReader.GetMethodBody(methodDef.RelativeVirtualAddress);
                     return methodBody.GetILBytes();
+                }
+                catch (BadImageFormatException) //method body is null
+                {
+                    return null;
                 }
             }
 #endif

@@ -24,8 +24,8 @@ namespace SafeOrbit.Infrastructure.Reflection
             //arrange
             var type = typeof(string);
             //act
-            var expected = type.GetMethods().Select(m => m.GetIlBytes());
-            var actual = type.GetMethods().Select(m => m.GetIlBytes());
+            var expected = type.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
+            var actual = type.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -36,8 +36,8 @@ namespace SafeOrbit.Infrastructure.Reflection
             var type = typeof(string);
             var differentType = typeof(int);
             //act
-            var expected = type.GetMethods().Select(m => m.GetIlBytes());
-            var actual = differentType.GetMethods().Select(m => m.GetIlBytes());
+            var expected = type.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
+            var actual = differentType.GetMethods().SelectMany(m => m.GetIlBytes()).ToArray();
             //assert
             Assert.That(actual, Is.Not.EqualTo(expected));
         }
