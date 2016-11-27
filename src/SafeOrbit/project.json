@@ -1,9 +1,10 @@
 {
+  "version": "0.2.2",
   "copyright": "MIT-licensed",
   "language": "en",
   "description": "SafeOrbit is easy-to-use and strong security toolkit for .NET and .NET Core.",
   "title": "SafeOrbit",
-  "authors":  ["Erkin Ekici"], 
+  "authors": [ "Erkin Ekici" ],
   "configurations": {
     "debug": {
       "buildOptions": {
@@ -50,6 +51,42 @@
         "System.Xml": "4.0.0",
         "System.Security": "4.0.0"
       }
+    },
+    "net461": {
+      "buildOptions": {
+        "define": [ "NETFRAMEWORK" ]
+      },
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0",
+        "System.Security": "4.0.0"
+      }
+    },
+    "net452": {
+      "buildOptions": {
+        "define": [ "NETFRAMEWORK" ]
+      },
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0",
+        "System.Security": "4.0.0"
+      }
+    },
+    "net451": {
+      "buildOptions": {
+        "define": [ "NETFRAMEWORK" ]
+      },
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0",
+        "System.Security": "4.0.0"
+      }
+    },
+    "net45": {
+      "buildOptions": {
+        "define": [ "NETFRAMEWORK" ]
+      },
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0",
+        "System.Security": "4.0.0"
+      }
     }
   },
   "buildOptions": {
@@ -67,7 +104,6 @@
     },
     "summary": "SafeOrbit is easy-to-use and strong security toolkit for .NET"
   },
-  "version": "0.2.1",
   "scripts": {
     //Nuget release
     "postcompile": [
