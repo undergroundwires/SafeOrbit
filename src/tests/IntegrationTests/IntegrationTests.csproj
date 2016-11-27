@@ -66,12 +66,6 @@
     <Compile Include="Vectors\BlowfishVectors.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
-      <Project>{1e69549b-d6a5-42ba-8bd7-b3370731c59a}</Project>
-      <Name>Infrastructure</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Cryptography\" />
     <Folder Include="Memory\Common\" />
     <Folder Include="Memory\SafeBytes\SafeByte\Collection\" />

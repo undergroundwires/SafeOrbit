@@ -36,7 +36,7 @@ namespace SafeOrbit.Fakes
         {
             var fake = new Mock<ITextService>();
             var safeStringFactory = Stubs.GetFactory<ISafeString>();
-            var encoding = System.Text.Encoding.Default;
+            var encoding = System.Text.Encoding.Unicode;
             fake.Setup(x => x.GetBytes(It.IsAny<char>(), It.IsAny<Encoding>())).Returns(
                 (char ch, Encoding e) => encoding.GetBytes(new[] { ch }));
             fake.Setup(x => x.GetBytes(It.IsAny<string>(), It.IsAny<Encoding>())).Returns(
