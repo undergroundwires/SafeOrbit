@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<package >
+
+<package>
   <metadata>
     <id>$id$</id>
     <version>0.2.1</version>
@@ -9,23 +10,25 @@
     <licenseUrl>https://github.com/undergroundwires/SafeOrbit/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/undergroundwires/SafeOrbit</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png</iconUrl>
-	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-	While SafeOrbit's primarly focus is strong memory protection, SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random. 
-	
-	Source code : https://github.com/undergroundwires/safeOrbit
-	Wiki : https://github.com/undergroundwires/safeOrbit/wiki
-	</description>
+      SafeOrbit is easy-to-use and strong security toolkit for .NET and .NET Core.
+
+      While SafeOrbit's primarly focus is strong memory protection, SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.
+
+      Source code : https://github.com/undergroundwires/safeOrbit
+      Wiki : https://github.com/undergroundwires/safeOrbit/wiki
+    </description>
     <releaseNotes>
-	- [.NET CORE] Bug fix :  Not being able to read IL-bytes
-	- Minor bug fixes
-	- Xml documentation are included in nuget package.
-	</releaseNotes>
+      - [.NET CORE] Bug fix :  Not being able to read IL-bytes
+      - Minor bug fixes
+      - Xml documentation are included in nuget package.
+    </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
   </metadata>
   <files>
     <file src="..\..\README.md" />
-	<file src="..\..\LICENSE" />
+    <file src="..\..\LICENSE" />
   </files>
 </package>
