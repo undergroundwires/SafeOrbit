@@ -8,7 +8,7 @@
 > -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
 
 <img align="left" src="https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png"> 
-## SafeOrbit is easy-to-use and strong security toolkit for `.NET` and `.NET CORE`
+## SafeOrbit is easy-to-use and strong security toolkit for `.NET` and `.NET CORE`.
 
 ### The nuget package  [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/)
 
