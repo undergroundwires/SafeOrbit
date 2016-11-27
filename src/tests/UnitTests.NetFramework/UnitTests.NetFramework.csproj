@@ -74,6 +74,9 @@
     <Compile Include="..\UnitTests\Internal\Stubs.cs">
       <Link>Internal\Stubs.cs</Link>
     </Compile>
+    <Compile Include="..\UnitTests\Memory\SafeBytes\SafeByte\DataProtection\MemoryProtectorTests.cs">
+      <Link>Memory\SafeBytes\SafeByte\DataProtection\MemoryProtectorTests.cs</Link>
+    </Compile>
     <Compile Include="..\UnitTests\Memory\SafeMemoryStreamTests.cs">
       <Link>Memory\SafeMemoryStreamTests.cs</Link>
     </Compile>
