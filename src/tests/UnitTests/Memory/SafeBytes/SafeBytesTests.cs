@@ -29,7 +29,6 @@ using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
-using SafeOrbit.Random;
 using SafeOrbit.Tests;
 using SafeOrbit.UnitTests;
 
