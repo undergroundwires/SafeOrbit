@@ -79,7 +79,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             _encryptor = encryptor;
             _memoryProtector = memoryProtector;
             _safeByteFactory = safeByteFactory;
-            _encryptionKey = fastRandom.GetBytes(_memoryProtector.BlockSize);
+            _encryptionKey = fastRandom.GetBytes(_memoryProtector.BlockSizeInBytes);
             memoryProtector.Protect(_encryptionKey);
         }
 

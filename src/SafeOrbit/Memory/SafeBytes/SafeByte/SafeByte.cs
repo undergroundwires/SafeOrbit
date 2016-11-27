@@ -285,7 +285,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         /// </summary>
         private byte[] GetMemoryProtectableSizedBytes(byte[] byteArray)
         {
-            var multipleOfRule = _memoryProtector.BlockSize;
+            var multipleOfRule = _memoryProtector.BlockSizeInBytes;
             var length = byteArray.Length;
             var fixedLength = length - length%multipleOfRule + multipleOfRule;
             var result = new byte[fixedLength];
