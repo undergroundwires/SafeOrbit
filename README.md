@@ -16,7 +16,7 @@
 |--------------------------|-----------|-----------|
 |            Full security |     ✔     |     ✔    |
 |  Exception serialization |     ✖     |     ✔    |
-|  GetNonZeroBytes(length) |     ✖     |     ✔    |
+|   Non zero bytes randoms |     ✖     |     ✔    |
 
 While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security). SafeOrbit can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#). It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for [encryption, hashers and random](#cryptography). 
 
@@ -76,7 +76,7 @@ You can as well change the inner security settings of library. [Read more on wik
 
 You can detect injections for the state (data in the memory), and/or code of any `.NET` class. 
 
-Internal protection for `SafeOrbit` library be **enabled as default**. You can disable it to gain more performance [by changing SafeOrbit's security settings](#change-security-settings).
+Internal protection for `SafeOrbit` library be **enabled as default**. You can disable it to gain more performance [by changing SafeOrbit's security settings](https://github.com/undergroundwires/SafeOrbit/wiki/Library-settings#change-security-settings).
 
 ### SafeObject [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject)
 An object that can detect memory injections to itself.
