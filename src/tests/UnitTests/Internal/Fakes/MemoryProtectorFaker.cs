@@ -35,7 +35,7 @@ namespace SafeOrbit.Fakes
         public override IByteArrayProtector Provide()
         {
             var fake = new Mock<IByteArrayProtector>();
-            fake.Setup(x => x.BlockSize).Returns(16);
+            fake.Setup(x => x.BlockSizeInBytes).Returns(16);
             return fake.Object;
         }
     }

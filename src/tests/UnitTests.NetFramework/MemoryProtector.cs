@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -24,24 +25,38 @@ SOFTWARE.
 
 using System;
 using SafeOrbit.Cryptography.Encryption;
-using SafeOrbit.Cryptography.Random;
-
-#if NETFRAMEWORK
+#if NET46
 using System.Security.Cryptography;
 #endif
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
     /// <summary>
-    ///     Encrypts/decrypt a byte array using <see cref="BlowfishEcb"/>.
+    ///     A wrapper for <see cref="ProtectedMemory" />.
     /// </summary>
     /// <seealso cref="IByteArrayProtector" />
-    public partial class MemoryProtector
+    /// <seealso cref="ProtectedMemory" />
+    public class MemoryProtector : IByteArrayProtector
     {
-        private void EnsureParameter(byte[] userData)
+        public int BlockSize => 16;
+
+        public void Protect(byte[] userData)
         {
             if (userData == null) throw new ArgumentNullException(nameof(userData));
-            if (userData.Length% BlockSizeInBytes != 0)
+            if (userData.Length%BlockSize != 0)
                 throw new ArgumentOutOfRangeException($"Size of {nameof(userData)} must be {BlockSize}");
+#if NET46
+            ProtectedMemory.Protect(userData, MemoryProtectionScope.SameProcess);
+#endif
+        }
+
+        public void Unprotect(byte[] encryptedData)
+        {
+            if (encryptedData == null) throw new ArgumentNullException(nameof(encryptedData));
+            if (encryptedData.Length%BlockSize != 0)
+                throw new ArgumentOutOfRangeException($"Size of {nameof(encryptedData)} must be {BlockSize}");
+       #if NET46
+     ProtectedMemory.Unprotect(encryptedData, MemoryProtectionScope.SameProcess);
+#endif
         }
     }
 }

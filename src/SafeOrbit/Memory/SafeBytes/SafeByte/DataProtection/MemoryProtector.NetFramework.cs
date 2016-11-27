@@ -22,26 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using SafeOrbit.Cryptography.Encryption;
-using SafeOrbit.Cryptography.Random;
-
 #if NETFRAMEWORK
+using System;
 using System.Security.Cryptography;
-#endif
+
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
-    /// <summary>
-    ///     Encrypts/decrypt a byte array using <see cref="BlowfishEcb"/>.
-    /// </summary>
-    /// <seealso cref="IByteArrayProtector" />
-    public partial class MemoryProtector
+    public partial class MemoryProtector : IByteArrayProtector
     {
-        private void EnsureParameter(byte[] userData)
+        public int BlockSizeInBytes => 16;
+
+        public void Protect(byte[] userData)
         {
-            if (userData == null) throw new ArgumentNullException(nameof(userData));
-            if (userData.Length% BlockSizeInBytes != 0)
-                throw new ArgumentOutOfRangeException($"Size of {nameof(userData)} must be {BlockSize}");
+            EnsureParameter(userData);
+            ProtectedMemory.Protect(userData, MemoryProtectionScope.SameProcess);
+        }
+
+        public void Unprotect(byte[] encryptedData)
+        {
+            EnsureParameter(encryptedData);
+            ProtectedMemory.Unprotect(encryptedData, MemoryProtectionScope.SameProcess);
         }
     }
 }
+#endif

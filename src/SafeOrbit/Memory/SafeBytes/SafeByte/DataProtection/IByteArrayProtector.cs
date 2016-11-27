@@ -34,7 +34,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         /// Gets the size of the blocks for encryption to function.
         /// </summary>
         /// <value>The size of the blocks.</value>
-        int BlockSize { get; }
+        int BlockSizeInBytes { get; }
         /// <summary>
         /// Encrypts the specified user data.
         /// </summary>
