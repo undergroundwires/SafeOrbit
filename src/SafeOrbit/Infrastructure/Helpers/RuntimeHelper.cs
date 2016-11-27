@@ -24,12 +24,11 @@ SOFTWARE.
 */
 
 using System;
-#if NET46
+#if NETFRAMEWORK
 using System.Runtime.CompilerServices;
-
 #endif
 
-namespace SafeOrbit.Utilities
+namespace SafeOrbit.Helpers
 {
     public class RuntimeHelper
     {
@@ -38,7 +37,7 @@ namespace SafeOrbit.Utilities
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (cleanup == null) throw new ArgumentNullException(nameof(cleanup));
 
-#if NET46
+#if NETFRAMEWORK
             RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
             delegate
                 {

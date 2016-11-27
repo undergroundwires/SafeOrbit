@@ -25,10 +25,9 @@ SOFTWARE.
 
 using System;
 using System.Security.Cryptography;
-using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Cryptography.Random.RandomGenerators;
 
-namespace SafeOrbit.Random
+namespace SafeOrbit.Cryptography.Random
 {
     /// <summary>
     /// Helper methods for the implementations.
@@ -70,7 +69,7 @@ namespace SafeOrbit.Random
             return (int)scale;
         }
 
-#if NET46
+#if NETFRAMEWORK
         public byte[] GetNonZeroBytes(int length)
         {
             var data = new byte[length];

@@ -33,7 +33,7 @@ using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
 using SafeOrbit.Library;
-using SafeOrbit.Utilities;
+using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Cryptography.Encryption
 {

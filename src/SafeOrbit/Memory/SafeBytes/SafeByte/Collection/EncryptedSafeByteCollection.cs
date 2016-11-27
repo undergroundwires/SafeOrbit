@@ -32,7 +32,7 @@ using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
-using SafeOrbit.Utilities;
+using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {

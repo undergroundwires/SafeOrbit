@@ -33,8 +33,7 @@ using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Random;
-using SafeOrbit.Utilities;
+using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {

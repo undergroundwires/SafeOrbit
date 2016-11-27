@@ -27,7 +27,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SafeOrbit.Utilities
+namespace SafeOrbit.Helpers
 {
     internal static class AsyncHelper
     {

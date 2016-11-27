@@ -27,7 +27,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace SafeOrbit.Utilities
+namespace SafeOrbit.Helpers
 {
     public class Fast
     {

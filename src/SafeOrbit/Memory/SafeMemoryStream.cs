@@ -256,7 +256,7 @@ namespace SafeOrbit.Memory
         /// <summary>
         /// Closes the instance. The reader may read up to the number of bytes available, and subsequent calls to <see cref="SafeMemoryStream.Read(byte[], int,int)" /> will return <c>0</c>.
         /// </summary>
-#if NET46
+#if NETFRAMEWORK
         public override void Close() => _closed = true;
 #else
         public void Close() => _closed = true;

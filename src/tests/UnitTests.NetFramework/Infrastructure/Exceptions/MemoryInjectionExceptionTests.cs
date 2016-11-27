@@ -24,37 +24,27 @@ SOFTWARE.
 */
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
-using SafeOrbit.Tests;
-using SafeOrbit.Utilities;
+using SafeOrbit.Memory;
 
-namespace SafeOrbit.UnitTests.Utilities
+namespace SafeOrbit.Exceptions
 {
+    /// <seealso cref="MemoryInjectionException" />
     [TestFixture]
-    public class FastTests : TestsBase
+    public class MemoryInjectionExceptionTests : SerializableExceptionTestsBase<MemoryInjectionException>
     {
-        [Test]
-        public void FastFor_1000Factorials_FasterThanForLoop()
+        protected override MemoryInjectionException GetSutForSerialization()
         {
-            //arrange
-            var iterations = 1000;
-            Func<int, int> factorial = n => n == 0 ? 1 :
-                Enumerable.Range(1, n).Aggregate((acc, x) => acc * x);
-            var expectedMax = base.Measure(() =>
-            {
-                for (int i = 0; i < iterations; i++)
-                {
-                    factorial.Invoke(i);
-                }
-            });
-            //act
-            var actual = base.Measure(() =>
-            {
-                Fast.For(0, iterations, (i) => factorial.Invoke(i));
-            });
-            //assert
-            Assert.That(actual, Is.LessThan(expectedMax));
+            return new MemoryInjectionException(InjectionType.CodeAndVariableInjection, "aq", new Exception("foo"));
+        }
+
+        protected override IEnumerable<PropertyInfo> GetExpectedPropertiesForSerialization()
+        {
+            yield return GetPropertyFromExpression(e => e.InjectionType);
+            yield return GetPropertyFromExpression(e => e.DetectionTime);
+            yield return GetPropertyFromExpression(e => e.InjectedObject);
         }
     }
 }

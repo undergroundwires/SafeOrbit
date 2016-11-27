@@ -23,22 +23,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Cryptography.Random
-{
-    /// <summary>
-    ///     Abstracts cryptographically secure random generator.
-    /// </summary>
-    /// <seealso cref="ICryptoRandom" />
-    public interface ISafeRandom : ICryptoRandom
-    {
-#if NETFRAMEWORK
+using System.Collections.Generic;
+using System.Reflection;
+using NUnit.Framework;
+using SafeOrbit.Exceptions;
 
-        /// <summary>
-        /// Gets the non zero bytes.
-        /// </summary>
-        /// <param name="length">The length.</param>
-        /// <returns>System.Byte[].</returns>
-        byte[] GetNonZeroBytes(int length);
-#endif
+namespace SafeOrbit.Exceptions
+{
+    [TestFixture]
+    public class UnexpectedEnumValueExceptionTests : SerializableExceptionTestsBase<UnexpectedEnumValueException<UnexpectedEnumValueExceptionTests.TestEnum>>
+    {
+        protected override UnexpectedEnumValueException<TestEnum> GetSutForSerialization()
+        {
+            return new UnexpectedEnumValueException<TestEnum>(TestEnum.Val1);
+        }
+
+        protected override IEnumerable<PropertyInfo> GetExpectedPropertiesForSerialization()
+        {
+            yield return base.GetPropertyFromExpression(e => e.Value);
+        }
+
+        public enum TestEnum
+        {
+            Val1, Val2
+        }
     }
 }

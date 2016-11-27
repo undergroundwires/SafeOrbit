@@ -59,6 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\UnitTests\Infrastructure\Helpers\RuntimeHelperTests.cs">
+      <Link>Infrastructure\Helpers\RuntimeHelperTests.cs</Link>
+    </Compile>
     <Compile Include="..\UnitTests\Infrastructure\Reflection\MethodInfoHelperTests.cs">
       <Link>Infrastructure\Reflection\MethodInfoHelperTests.cs</Link>
     </Compile>
@@ -71,13 +74,18 @@
     <Compile Include="..\UnitTests\Internal\Stubs.cs">
       <Link>Internal\Stubs.cs</Link>
     </Compile>
-    <Compile Include="Exceptions\Base\SerializableExceptionTestsBase.cs" />
-    <Compile Include="Exceptions\DataLengthExceptionTests.cs" />
-    <Compile Include="Exceptions\MemoryInjectionExceptionTests.cs" />
-    <Compile Include="Exceptions\UnexpectedEnumValueExceptionTests.cs" />
+    <Compile Include="..\UnitTests\Memory\SafeMemoryStreamTests.cs">
+      <Link>Memory\SafeMemoryStreamTests.cs</Link>
+    </Compile>
+    <Compile Include="..\UnitTests\Memory\SafeString\SafeStringToStringMarshalerTests.cs">
+      <Link>Memory\SafeString\SafeStringToStringMarshalerTests.cs</Link>
+    </Compile>
+    <Compile Include="Cryptography\Random\RandomBaseTests.cs" />
+    <Compile Include="Infrastructure\Exceptions\Base\SerializableExceptionTestsBase.cs" />
+    <Compile Include="Infrastructure\Exceptions\DataLengthExceptionTests.cs" />
+    <Compile Include="Infrastructure\Exceptions\MemoryInjectionExceptionTests.cs" />
+    <Compile Include="Infrastructure\Exceptions\UnexpectedEnumValueExceptionTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\InstanceValidationExceptionTests.cs" />
-    <Compile Include="Memory\SafeMemoryStreamTests.cs" />
-    <Compile Include="Memory\SafeString\SafeStringToStringMarshalerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

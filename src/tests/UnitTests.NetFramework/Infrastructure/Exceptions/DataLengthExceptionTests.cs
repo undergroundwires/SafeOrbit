@@ -23,22 +23,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace SafeOrbit.Cryptography.Random
-{
-    /// <summary>
-    ///     Abstracts cryptographically secure random generator.
-    /// </summary>
-    /// <seealso cref="ICryptoRandom" />
-    public interface ISafeRandom : ICryptoRandom
-    {
-#if NETFRAMEWORK
+using System.Collections.Generic;
+using System.Reflection;
+using NUnit.Framework;
 
-        /// <summary>
-        /// Gets the non zero bytes.
-        /// </summary>
-        /// <param name="length">The length.</param>
-        /// <returns>System.Byte[].</returns>
-        byte[] GetNonZeroBytes(int length);
-#endif
+namespace SafeOrbit.Exceptions
+{
+    /// <seealso cref="DataLengthException" />
+    [TestFixture]
+    public class DataLengthExceptionTests : SerializableExceptionTestsBase<DataLengthException>
+    {
+        protected override DataLengthException GetSutForSerialization() => new DataLengthException("argumentName", "message");
     }
 }
