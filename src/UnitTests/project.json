@@ -1,19 +1,26 @@
-﻿{
+{
   "version": "1.0.0-*",
 
   "dependencies": {
     "InfrastructureCore": "1.0.0-*",
     "Moq": "4.6.38-alpha",
-    "NETStandard.Library": "1.6.0",
+    "SafeOrbit": "0.2.1",
+    //nunit
     "NUnit": "3.5.0",
-    "SafeOrbit": "0.2.1"
+    "dotnet-test-nunit": "3.4.0-beta-3"
   },
+  "testRunner": "nunit",
   "frameworks": {
-    "netstandard1.6": {
-      "imports": "dnxcore50"
+    "netcoreapp1.0": {
+      "imports": "portable-net45+win8",
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "version": "1.0.0-*",
+          "type": "platform"
+        }
+      }
     }
   },
-
   "configurations": {
     "release": {
       "buildOptions": {
