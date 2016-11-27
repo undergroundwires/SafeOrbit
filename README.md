@@ -48,9 +48,9 @@ It means that you're free to use **SafeOrbit** freely in any application, copy, 
 ## Quick documentation
 **For better performance**, it's **highly recommended** to start the application early in your application start with this line :
 ```C#
- LibraryManagement.StartEary();
+ SafeOrbitCore.Current.StartEary();
 ```
-You can as well change the inner security settings of library. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/LibraryManagement#change-security-settings).
+You can as well change the inner security settings of library. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Library-settings#change-security-settings).
 
 ## Memory security
 
