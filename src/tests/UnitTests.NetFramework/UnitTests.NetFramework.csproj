@@ -43,8 +43,12 @@
       <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SafeOrbit">
+    <Reference Include="SafeOrbit" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
       <HintPath>..\..\SafeOrbit\bin\Debug\net46\SafeOrbit.dll</HintPath>
+    </Reference>
+    <Reference Include="SafeOrbit, PublicKeyToken=bb96809731729604"
+               Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <HintPath>..\..\SafeOrbit\bin\Release\net46\SafeOrbit.dll</HintPath>
     </Reference>
     <Reference Include="Infrastructure">
       <HintPath>..\Infrastructure\bin\$(Configuration)\net46\Infrastructure.dll</HintPath>
