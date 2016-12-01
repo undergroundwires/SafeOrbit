@@ -18,6 +18,8 @@
 |  Exception serialization |     ✖     |     ✔    |
 |   Non zero bytes randoms |     ✖     |     ✔    |
 
+**Compability issues with different .NET Core will be fixed in next releases**
+
 While **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security). SafeOrbit can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect texts [and even more to protect your application against injections](#protect-your-classes#). It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for [encryption, hashers and random](#cryptography). 
 
 **SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (v0.1).
