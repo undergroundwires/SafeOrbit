@@ -7,8 +7,8 @@
     <ProjectGuid>{2F706E0C-CA13-4CB7-A472-7F3E57BBF4DB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UnitTests.NetFramework</RootNamespace>
-    <AssemblyName>UnitTests.NetFramework</AssemblyName>
+    <RootNamespace>SafeOrbit</RootNamespace>
+    <AssemblyName>UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -46,8 +46,7 @@
     <Reference Include="SafeOrbit" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
       <HintPath>..\..\SafeOrbit\bin\Debug\net46\SafeOrbit.dll</HintPath>
     </Reference>
-    <Reference Include="SafeOrbit, PublicKeyToken=bb96809731729604"
-               Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Reference Include="SafeOrbit, PublicKeyToken=bb96809731729604" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
       <HintPath>..\..\SafeOrbit\bin\Release\net46\SafeOrbit.dll</HintPath>
     </Reference>
     <Reference Include="Infrastructure">
