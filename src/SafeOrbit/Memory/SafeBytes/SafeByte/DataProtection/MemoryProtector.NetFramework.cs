@@ -28,6 +28,11 @@ using System.Security.Cryptography;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
+    /// <summary>
+    ///     .NET Framework implementation of <see cref="IByteArrayProtector" />.
+    ///     Wrapper for <see cref="ProtectedMemory" />.
+    /// </summary>
+    /// <seealso cref="IByteArrayProtector" />
     public partial class MemoryProtector : IByteArrayProtector
     {
         public int BlockSizeInBytes => 16;
