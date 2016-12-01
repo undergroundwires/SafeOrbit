@@ -34,13 +34,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
         public void Protect(byte[] userData)
         {
-            EnsureParameter(userData);
+            if (userData == null) throw new ArgumentNullException(nameof(userData));
             ProtectedMemory.Protect(userData, MemoryProtectionScope.SameProcess);
         }
 
         public void Unprotect(byte[] encryptedData)
         {
-            EnsureParameter(encryptedData);
+            if (encryptedData == null) throw new ArgumentNullException(nameof(encryptedData));
             ProtectedMemory.Unprotect(encryptedData, MemoryProtectionScope.SameProcess);
         }
     }

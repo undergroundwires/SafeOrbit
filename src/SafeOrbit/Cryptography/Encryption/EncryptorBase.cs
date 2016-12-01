@@ -33,6 +33,8 @@ namespace SafeOrbit.Cryptography.Encryption
     ///     Base class for the encryptors.
     /// </summary>
     /// <seealso cref="IEncryptor" />
+    /// <seealso cref="AesEncryptor"/>
+    /// <seealso cref="BlowfishEncryptor"/>
     public abstract class EncryptorBase : IEncryptor
     {
         private readonly ICryptoRandom _random;
@@ -48,6 +50,13 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <value>The minimum size of the key.</value>
         public abstract int MinKeySize { get; }
+
+        /// <summary>
+        /// Gets the size of the block in bits.
+        /// </summary>
+        /// <value>The size of the block in bits.</value>
+        /// <remarks>https://en.wikipedia.org/wiki/Block_size_(cryptography)</remarks>
+        public abstract int BlockSize { get; }
 
         /// <summary>
         ///     Maximum size of key in bits for algorithm to function.

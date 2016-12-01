@@ -32,9 +32,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
     public partial class MemoryProtector : IByteArrayProtector
     {
-        public int BlockSizeInBytes => Encryptor.MinKeySize;
+        public int BlockSizeInBytes => Encryptor.BlockSize;
 
-        private static readonly IFastEncryptor Encryptor = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
+        private static readonly IFastEncryptor Encryptor = new BlowfishEncryptor(BlowfishCipherMode.Ecb);
         private readonly IFastEncryptor _encryptor;
         private readonly byte[] _key;
 
@@ -47,7 +47,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
         public void Protect(byte[] userData)
         {
-            EnsureParameter(userData);
+            if (userData == null) throw new ArgumentNullException(nameof(userData));
+                EnsureParameter(userData);
             var encryptedBytes = _encryptor.Encrypt(userData, _key);
             SetBytesToByteArray(
                 source:encryptedBytes,
@@ -56,7 +57,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
         public void Unprotect(byte[] encryptedData)
         {
-            EnsureParameter(encryptedData);
+            if (encryptedData == null) throw new ArgumentNullException(nameof(encryptedData));
             var decryptedBytes = _encryptor.Decrypt(encryptedData, _key);
             SetBytesToByteArray(
                   source: decryptedBytes,
