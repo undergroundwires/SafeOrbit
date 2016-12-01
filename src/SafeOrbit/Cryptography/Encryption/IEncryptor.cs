@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -47,5 +46,12 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <value>The size of the iv bytes that's created for crypto.</value>
         int IvSize { get; }
+
+        /// <summary>
+        ///     Gets the size of the block in bits.
+        /// </summary>
+        /// <remarks>https://en.wikipedia.org/wiki/Block_size_(cryptography)</remarks>
+        /// <value>The size of the block in bits.</value>
+        int BlockSize { get; }
     }
 }

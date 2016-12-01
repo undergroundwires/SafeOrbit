@@ -110,6 +110,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public BlowfishCipherMode CipherMode { get; } = DefaultCipherMode;
         public override int MinKeySize { get; } = 32;
         public override int MaxKeySize { get; } = 448;
+        public override int BlockSize { get; } = 64;
         public override int IvSize => this.CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -32,8 +31,8 @@ using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
-using SafeOrbit.Library;
 using SafeOrbit.Helpers;
+using SafeOrbit.Library;
 
 namespace SafeOrbit.Cryptography.Encryption
 {
@@ -45,7 +44,7 @@ namespace SafeOrbit.Cryptography.Encryption
     ///         alternative.
     ///     </p>
     ///     <p>
-    ///         An implementation of AES 256 using a slow <see cref="IKeyDerivationFunction" /> so as to frustrate
+    ///         An implementation of AES 512 using a slow <see cref="IKeyDerivationFunction" /> so as to frustrate
     ///         brute-force attack or dictionary attack on the password or passphrase input value.
     ///     </p>
     /// </summary>
@@ -93,13 +92,15 @@ namespace SafeOrbit.Cryptography.Encryption
             keyDeriver,
             SafeOrbitCore.Current.Factory.Get<IFastRandom>())
         {
-      
         }
+
         public AesEncryptor(IKeyDerivationFunction keyDeriver, IFastRandom fastRandom) : base(fastRandom)
         {
             if (keyDeriver == null) throw new ArgumentNullException(nameof(keyDeriver));
             _keyDeriver = keyDeriver;
         }
+
+        public override int BlockSize { get; } = 512;
 
         /// <summary>
         ///     <see cref="AesEncryptor" /> can function with any positive integer as it uses <see cref="IKeyDerivationFunction" />
@@ -242,7 +243,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var algorithm = Aes.Create();
             algorithm.Mode = Mode;
             algorithm.Padding = Padding;
-            algorithm.BlockSize = 128;
+            algorithm.BlockSize = BlockSize;
             algorithm.KeySize = KeySize;
             algorithm.Key = key;
             return algorithm;
