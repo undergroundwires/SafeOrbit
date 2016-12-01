@@ -25,7 +25,7 @@
     "release": {
       "buildOptions": {
         // Sign the assembly
-        "keyFile": "../../docs/signature_keys/private/UnitTests-key.snk",
+        "keyFile": "../../../docs/signature_keys/private/UnitTests-key.snk",
         "strongName": true
       }
     }
