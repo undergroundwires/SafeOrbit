@@ -30,7 +30,9 @@ using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Cryptography.Encryption
 {
-    public class AesTests : TestsFor<ISafeEncryptor>
+    /// <seealso cref="ISafeEncryptor" />
+    /// <seealso cref="AesEncryptor" />
+    public class AesEncryptorTests : TestsFor<ISafeEncryptor>
     {
         protected override ISafeEncryptor GetSut() =>  new AesEncryptor();
 

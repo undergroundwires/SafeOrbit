@@ -52,8 +52,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\IntegrationTests\Cryptography\Encryption\AesTests.cs">
-      <Link>Cryptography\Encryption\AesTests.cs</Link>
+    <Compile Include="..\IntegrationTests\Cryptography\Encryption\AesEncryptorTests.cs">
+      <Link>Cryptography\Encryption\AesEncryptorTests.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationTests\Cryptography\Encryption\BlowfishTests.cs">
       <Link>Cryptography\Encryption\BlowfishTests.cs</Link>
