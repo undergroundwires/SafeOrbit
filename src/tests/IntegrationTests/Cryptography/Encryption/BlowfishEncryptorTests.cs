@@ -39,11 +39,6 @@ namespace SafeOrbit.Cryptography.Encryption
     {
         protected override IFastEncryptor GetSut() => new BlowfishEncryptor();
 
-        public void Encrypt_KeySizeIs0_CanEncrypt()
-        {
-            throw new NotImplementedException();
-        }
-
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.DifferentByteArrayPairs32Length))]
         public void Decrypt_Cbc_WhenDecryptedWithEncryptionKey_returnsInput(byte[] input, byte[] key)
