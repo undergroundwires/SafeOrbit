@@ -100,7 +100,13 @@ namespace SafeOrbit.Cryptography.Encryption
             _keyDeriver = keyDeriver;
         }
 
-        public override int BlockSize { get; } = 512;
+        /// <summary>
+        ///     <p>Gets the size of the block in bits.</p>
+        ///     <p>The block size for AES is always 128 bits.</p>
+        /// </summary>
+        /// <value>The size of the block in bits.</value>
+        /// <remarks>https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</remarks>
+        public override int BlockSize { get; } = 128;
 
         /// <summary>
         ///     <see cref="AesEncryptor" /> can function with any positive integer as it uses <see cref="IKeyDerivationFunction" />
