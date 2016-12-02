@@ -35,7 +35,7 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="IFastEncryptor" />
     /// <seealso cref="BlowfishEncryptor" />
     [TestFixture]
-    public class BlowfishTests : TestsFor<IFastEncryptor>
+    public class BlowfishEncryptorTests : TestsFor<IFastEncryptor>
     {
         protected override IFastEncryptor GetSut() => new BlowfishEncryptor();
 
