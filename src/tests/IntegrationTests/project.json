@@ -1,10 +1,9 @@
-{
+﻿{
   "version": "1.0.0-*",
 
   "dependencies": {
     "Infrastructure": "1.0.0-*",
     "SafeOrbit": "0.2.3",
-    "Moq": "4.6.38-alpha",
     //nunit
     "NUnit": "3.5.0",
     "dotnet-test-nunit": "3.4.0-beta-3"
@@ -25,7 +24,7 @@
     "release": {
       "buildOptions": {
         // Sign the assembly
-        "keyFile": "../../../docs/signature_keys/private/UnitTests-key.snk",
+        "keyFile": "../../../docs/signature_keys/private/IntegrationTests-key.snk",
         "strongName": true
       }
     }
