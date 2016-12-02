@@ -256,5 +256,17 @@ namespace SafeOrbit.Cryptography.Encryption
             //assert
             Assert.That(input, Is.EqualTo(plain));
         }
+
+        [Test]
+        public void BlockSize_Is_128()
+        {
+            // "Strictly speaking, the AES standard is a variant of Rijndael where the block size is restricted to 
+            // 128 bits" From : https://en.wikipedia.org/wiki/Advanced_Encryption_Standard
+            // So the block size is always 128.
+            const int expected = 128;
+            var sut = GetSut();
+            var actual = sut.BlockSize;
+            Assert.That(actual, Is.EqualTo(expected));
+        }
     }
 }
