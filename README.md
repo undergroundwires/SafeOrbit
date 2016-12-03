@@ -12,7 +12,7 @@
 
 ### The nuget package  [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/)
 
-|                 Platform | .NET Core | .NET 4.5+ |
+|                 Platform | .NET Core | .NET 4.0+ |
 |--------------------------|-----------|-----------|
 |            Full security |     ✔     |     ✔    |
 |  Exception serialization |     ✖     |     ✔    |
