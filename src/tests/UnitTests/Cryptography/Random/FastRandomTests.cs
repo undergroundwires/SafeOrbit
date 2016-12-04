@@ -23,10 +23,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SafeOrbit.Tests;
 
@@ -35,45 +37,9 @@ namespace SafeOrbit.Cryptography.Random
     /// <seealso cref="IFastRandom" />
     /// <seealso cref="FastRandom" />
     [TestFixture]
-    public class FastRandomTests : TestsFor<IFastRandom>
+    public class FastRandomTests : CommonRandomTests<IFastRandom>
     {
-        [Test]
-        public void StaticInstance_InMultipleThreads_CanBeAccessedAndConsumed()
-        {
-            var sut = FastRandom.StaticInstance;
-            var iterations = 100;
-            var bufferLength = 200; //high for collisions
-            var byteList = new ConcurrentBag<byte[]>();
-            var threads = new Thread[iterations];
-            for (var i = 0; i < iterations; i++)
-            {
-                threads[i] = new Thread(() =>
-                {
-                    var tempBytes = sut.GetBytes(bufferLength);
-                    Assert.That(tempBytes, Is.Not.Null);
-                    Assert.That(tempBytes, Is.Not.Empty);
-                    Assert.That(tempBytes, Has.Length.EqualTo(bufferLength));
-                    byteList.Add(tempBytes);
-                    var sutInThread = FastRandom.StaticInstance;
-                    tempBytes = sutInThread.GetBytes(100);
-                    Assert.That(tempBytes, Is.Not.Null);
-                    Assert.That(tempBytes, Is.Not.Empty);
-                    Assert.That(tempBytes, Has.Length.EqualTo(bufferLength));
-                });
-            }
-            for (int i = 0; i < iterations; i++)
-            {
-                threads[i].Start();
-            }
-            for (int i = 0; i < iterations; i++)
-            {
-                threads[i].Join();
-            }
-            Assert.That(byteList.Distinct().Count(), Is.EqualTo(iterations));
-        }
-        protected override IFastRandom GetSut()
-        {
-            return new FastRandom();
-        }
+        protected override IFastRandom GetStaticInstance() => FastRandom.StaticInstance;
+
     }
 }
