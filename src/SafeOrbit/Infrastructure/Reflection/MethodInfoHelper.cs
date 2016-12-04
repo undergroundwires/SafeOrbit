@@ -60,15 +60,10 @@ namespace SafeOrbit.Infrastructure.Reflection
                 var metadataReader = peReader.GetMetadataReader();
                 var methodHandle = MetadataTokens.MethodDefinitionHandle(metadataToken);
                 var methodDef = metadataReader.GetMethodDefinition(methodHandle);
-                try
-                {
-                    var methodBody = peReader.GetMethodBody(methodDef.RelativeVirtualAddress);
-                    return methodBody.GetILBytes();
-                }
-                catch (BadImageFormatException) //method body is null
-                {
-                    return null;
-                }
+                var virtualAddress = methodDef.RelativeVirtualAddress;
+                if (virtualAddress == 0) return null; //method not found
+                var methodBody = peReader.GetMethodBody(methodDef.RelativeVirtualAddress);
+                return methodBody.GetILBytes();
             }
 #endif
         }
