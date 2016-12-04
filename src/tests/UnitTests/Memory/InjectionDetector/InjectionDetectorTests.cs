@@ -123,14 +123,14 @@ namespace SafeOrbit.Memory.Injection
             stateStamperMock.Verify(stamper => stamper.GetStamp(It.IsAny<object>()), Times.Never);
         }
         [Test]
-        public void NotifyChanges_ProtectStateIsFalse_doesNotInvokeCodeStamper()
+        public void NotifyChanges_ProtectCodeIsFalse_doesNotInvokeCodeStamper()
         {
             //arrange
             const int testObject = 5;
             var codeStamperMock = new Mock<IStamper<Type>>();
             var sut = GetSut(
                 codeStamper: codeStamperMock.Object,
-                protectState:false);
+                protectCode:false);
             //act
             sut.NotifyChanges(testObject);
             //assert
