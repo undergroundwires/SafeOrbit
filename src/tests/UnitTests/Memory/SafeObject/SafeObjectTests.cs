@@ -29,16 +29,17 @@ using System.Threading;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Fakes;
+using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
 
 namespace SafeOrbit.Memory
 {
     /// <seealso cref="SafeObject{TObject}" />
     /// <seealso cref="ISafeObject{TObject}" />
     /// <seealso cref="SafeObjectProtectionMode" />
-    /// <seealso cref="IProtectionLevelSwitchProvider{SafeObjectProtectionMode}"/>
+    /// <seealso cref="IProtectable{TProtectionLevel}"/>
     [TestFixture]
     public class SafeObjectTests : ProtectableBaseTests<SafeObjectProtectionMode>
     {

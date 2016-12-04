@@ -29,7 +29,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory;
+using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
@@ -83,7 +85,11 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 
         private static TransientInstanceProvider<T> GetSut<T>() where T : new()
         {
-            return new TransientInstanceProvider<T>(InstanceProtectionMode.NoProtection);
+            return new TransientInstanceProvider<T>(
+                protectionMode : InstanceProtectionMode.NoProtection,
+                injectionDetector : Stubs.Get<IInjectionDetector>(),
+                alertChannel : InjectionAlertChannel.ThrowException
+                );
         }
     }
 }
