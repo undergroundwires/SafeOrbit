@@ -13,7 +13,7 @@ namespace SafeOrbit.Memory.Injection
         public void Alerts_OnStateInjection()
         {
             var obj = new Lines {Line1 = "1", Line2 = "2", Line3 = "3"};
-            var sut = GetSut(scanCode: true, scanState: false);
+            var sut = GetSut(scanCode: false, scanState: true);
             sut.AlertChannel = InjectionAlertChannel.ThrowException;
             sut.NotifyChanges(obj); //register
             obj.Line2 = "3"; //change but do not notify
@@ -25,8 +25,8 @@ namespace SafeOrbit.Memory.Injection
         public void Alerts_OnCodeInjection()
         {
             var obj = new Lines { Line1 = "1", Line2 = "2", Line3 = "3" };
-            var obj2 = GetSut(scanCode: false, scanState: true);
-            var sut = GetSut(false,false);
+            var obj2 = new InjectionDetectorTests(); //random different class
+            var sut = GetSut(scanCode: false, scanState: true);
             sut.AlertChannel = InjectionAlertChannel.ThrowException;
             sut.NotifyChanges(obj); //register
             var alert = new TestDelegate(() => sut.AlertUnnotifiedChanges(obj2));
