@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -57,18 +56,29 @@ namespace SafeOrbit.Memory.Injection
 
         private IStamp<int> _lastStateStamp;
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="InjectionDetector" /> class.
+        /// </summary>
+        /// <param name="scanCode">if set to <c>true</c> it'll scan and validate the code.</param>
+        /// <param name="scanState">if set to <c>true</c>  it'll scan and validate the state.</param>
+        /// <param name="alertChannel">The alert channel.</param>
+        /// <seealso cref="ScanCode" />
+        /// <seealso cref="ScanState" />
         public InjectionDetector(
-            bool justCode = true, bool justState = true,
+            bool scanCode = true, bool scanState = true,
             InjectionAlertChannel alertChannel = Defaults.AlertChannel) : this
         (
             InjectionAlerter.StaticInstance,
             TypeIdGenerator.StaticInstance,
             StateStamper.StaticInstance,
             IlCodeStamper.StaticInstance,
-            justCode, justState, alertChannel)
+            scanCode, scanState, alertChannel)
         {
         }
 
+        /// <summary>
+        ///     Internal constructor with all dependencies.
+        /// </summary>
         internal InjectionDetector(
             IInjectionAlerter alerter,
             ITypeIdGenerator typeIdGenerator,
@@ -90,14 +100,14 @@ namespace SafeOrbit.Memory.Injection
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether <see cref="InjectionDetector" /> will keep track of the state of the
-        ///     objects.
+        ///     Gets or sets a value indicating whether <see cref="InjectionDetector" /> will keep track of the
+        ///     state of the object.
         /// </summary>
         public bool ScanState { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether <see cref="InjectionDetector" /> will keep track of the code of the
-        ///     objects.
+        ///     Gets or sets a value indicating whether <see cref="InjectionDetector" /> will keep track of the
+        ///     code of the object.
         /// </summary>
         public bool ScanCode { get; set; }
 
@@ -118,8 +128,8 @@ namespace SafeOrbit.Memory.Injection
         /// <summary>
         ///     Alerts when any unnotified changes are detected any <see cref="CanAlert" /> is true.
         /// </summary>
-        /// <param name="object">Object that this instance has been notified by <see cref="NotifyChanges"/></param>
-        /// <exception cref="ArgumentNullException"><paramref name="object"/> is <see langword="NULL"/></exception>
+        /// <param name="object">Object that this instance has been notified by <see cref="NotifyChanges" /></param>
+        /// <exception cref="ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
         /// <seealso cref="IAlerts" />
         public void AlertUnnotifiedChanges(object @object)
         {
@@ -214,6 +224,7 @@ namespace SafeOrbit.Memory.Injection
         #endregion
 
         #region [IDisposable]
+
         private bool _isDisposed; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -236,6 +247,7 @@ namespace SafeOrbit.Memory.Injection
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 }
