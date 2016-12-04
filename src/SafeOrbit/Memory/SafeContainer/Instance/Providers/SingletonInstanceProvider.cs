@@ -40,6 +40,16 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
     {
         private TImplementation _instance;
         public SingletonInstanceProvider(InstanceProtectionMode initialProtectionMode) : base(LifeTime.Singleton, initialProtectionMode) { }
+
+        /// <summary>
+        ///     Internal constructor with all dependencies.
+        /// </summary>
+        internal SingletonInstanceProvider(IInjectionDetector injectionDetector, InstanceProtectionMode protectionMode,
+            InjectionAlertChannel alertChannel)
+            : base(LifeTime.Singleton, injectionDetector, protectionMode, alertChannel)
+        {
+        }
+
         public override TImplementation GetInstance()
         {
             if(_instance == null) _instance = new TImplementation();

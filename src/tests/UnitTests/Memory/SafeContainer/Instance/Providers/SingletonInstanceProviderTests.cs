@@ -25,7 +25,9 @@ SOFTWARE.
 
 using System;
 using NUnit.Framework;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory;
+using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
@@ -34,9 +36,6 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
     [TestFixture]
     public class SingletonInstanceProviderTests
     {
-        private static SingletonInstanceProvider<T> GetSut<T>(
-            InstanceProtectionMode protectionMode = InstanceProtectionMode.NoProtection) where T : new()
-        => new SingletonInstanceProvider<T>(protectionMode);
 
         [Test]
         public void GetInstance_Returns_Instance_Of_Argument()
@@ -83,6 +82,15 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             var actual = sut.LifeTime;
             //assert
             Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        private static SingletonInstanceProvider<T> GetSut<T>() where T : new()
+        {
+            return new SingletonInstanceProvider<T>(
+                protectionMode: InstanceProtectionMode.NoProtection,
+                injectionDetector: Stubs.Get<IInjectionDetector>(),
+                alertChannel: InjectionAlertChannel.ThrowException
+                );
         }
     }
 }

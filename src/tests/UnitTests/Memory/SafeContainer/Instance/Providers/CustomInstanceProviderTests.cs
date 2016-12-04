@@ -29,7 +29,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SafeOrbit.Fakes;
 using SafeOrbit.Memory;
+using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
@@ -102,10 +104,18 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         private static CustomInstanceProvider<T> GetSut<T>(Func<T> func, LifeTime? lifeTime = null) where T:new()
         {
             return
-                lifeTime.HasValue ?
-                new CustomInstanceProvider<T>(func, InstanceProtectionMode.NoProtection, lifeTime.Value)
-                :
-                new CustomInstanceProvider<T>(func, InstanceProtectionMode.NoProtection);
+                lifeTime.HasValue
+                    ? new CustomInstanceProvider<T>(
+                        lifeTime: lifeTime.Value,
+                        instanceGetter: func,
+                        protectionMode: InstanceProtectionMode.NoProtection,
+                        injectionDetector: Stubs.Get<IInjectionDetector>(),
+                        alertChannel: InjectionAlertChannel.ThrowException)
+                    : new CustomInstanceProvider<T>(
+                        instanceGetter: func,
+                        protectionMode: InstanceProtectionMode.NoProtection,
+                        injectionDetector: Stubs.Get<IInjectionDetector>(),
+                        alertChannel: InjectionAlertChannel.ThrowException);
         }
 
         private static IEnumerable<TestCaseData> LifeTime_Argument_Returns_CanProtectState

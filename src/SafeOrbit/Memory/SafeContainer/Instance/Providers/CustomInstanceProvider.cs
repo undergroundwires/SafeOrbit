@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
@@ -44,6 +45,21 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             if (instanceGetter == null) throw new ArgumentNullException(nameof(instanceGetter));
             _instanceGetter = instanceGetter;
         }
+
+        /// <summary>
+        ///     Internal constructor with all dependencies.
+        /// </summary>
+        internal CustomInstanceProvider(Func<TImplementation> instanceGetter,
+            IInjectionDetector injectionDetector,
+            InstanceProtectionMode protectionMode,
+            InjectionAlertChannel alertChannel,
+            LifeTime lifeTime = LifeTime.Unknown)
+            : base(lifeTime, injectionDetector, protectionMode, alertChannel)
+        {
+            if (instanceGetter == null) throw new ArgumentNullException(nameof(instanceGetter));
+            _instanceGetter = instanceGetter;
+        }
+
         /// <summary>
         /// Returns a service object given the specified instance.
         /// </summary>
