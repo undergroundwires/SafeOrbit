@@ -64,6 +64,9 @@
     <Compile Include="..\IntegrationTests\Infrastructure\Text\TextServiceTests.cs">
       <Link>Infrastructure\Text\TextServiceTests.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationTests\Memory\InjectionDetector\InjectionDetectorTests.cs">
+      <Link>Memory\InjectionDetector\InjectionDetectorTests.cs</Link>
+    </Compile>
     <Compile Include="..\IntegrationTests\Memory\SafeBytes\SafeBytesTests.cs">
       <Link>Memory\SafeBytes\SafeBytesTests.cs</Link>
     </Compile>
