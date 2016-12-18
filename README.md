@@ -52,7 +52,7 @@ It means that you're free to use **SafeOrbit** freely in any application, copy, 
 ```C#
  SafeOrbitCore.Current.StartEary();
 ```
-You can as well change the inner security settings of library. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Library-settings#change-security-settings).
+You can as well change the inner security settings of library. Memory injection is enabled as default. It's recommended on client side application, but on a protected server disabling the memory injection for more performance is recommended. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Library-settings#change-security-settings).
 
 ## Memory security
 
