@@ -62,6 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\UnitTests\Infrastructure\Helpers\FastTests.cs">
+      <Link>Infrastructure\Helpers\FastTests.cs</Link>
+    </Compile>
     <Compile Include="..\UnitTests\Infrastructure\Helpers\RuntimeHelperTests.cs">
       <Link>Infrastructure\Helpers\RuntimeHelperTests.cs</Link>
     </Compile>
