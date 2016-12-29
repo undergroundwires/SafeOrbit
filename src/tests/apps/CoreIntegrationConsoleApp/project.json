@@ -8,7 +8,7 @@
       "type": "platform",
       "version": "1.0.1"
     },
-    "SafeOrbit": "0.2.3"
+    "SafeOrbit": "0.2.2"
   },
   "frameworks": {
     "netcoreapp1.0": {

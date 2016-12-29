@@ -3,7 +3,7 @@
 
   "dependencies": {
     "Infrastructure": "1.0.0-*",
-    "SafeOrbit": "0.2.3",
+    "SafeOrbit": "0.2.2",
     //nunit
     "NUnit": "3.5.0",
     "dotnet-test-nunit": "3.4.0-beta-3"
