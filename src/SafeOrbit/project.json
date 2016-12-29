@@ -43,45 +43,50 @@
         "define": [ "NETCORE" ]
       }
     },
-    "net46": {
-      "buildOptions": {
-        "define": [ "NETFRAMEWORK" ]
-      },
-      "frameworkAssemblies": {
-        "System.Xml": "4.0.0",
-        "System.Security": "4.0.0"
-      }
-    },
+
     "net461": {
       "buildOptions": {
-        "define": [ "NETFRAMEWORK" ]
+        "define": [ "NETFRAMEWORK", "NET461" ]
       },
       "frameworkAssemblies": {
         "System.Xml": "4.0.0",
         "System.Security": "4.0.0"
       }
     },
+
+    "net46": {
+      "buildOptions": {
+        "define": [ "NETFRAMEWORK", "NET46" ]
+      },
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0",
+        "System.Security": "4.0.0"
+      }
+    },
+
     "net452": {
       "buildOptions": {
-        "define": [ "NETFRAMEWORK" ]
+        "define": [ "NETFRAMEWORK", "NET452" ]
       },
       "frameworkAssemblies": {
         "System.Xml": "4.0.0",
         "System.Security": "4.0.0"
       }
     },
+
     "net451": {
       "buildOptions": {
-        "define": [ "NETFRAMEWORK" ]
+        "define": [ "NETFRAMEWORK", "NET451" ]
       },
       "frameworkAssemblies": {
         "System.Xml": "4.0.0",
         "System.Security": "4.0.0"
       }
     },
+
     "net45": {
       "buildOptions": {
-        "define": [ "NETFRAMEWORK" ]
+        "define": [ "NETFRAMEWORK", "NET45" ]
       },
       "frameworkAssemblies": {
         "System.Xml": "4.0.0",
