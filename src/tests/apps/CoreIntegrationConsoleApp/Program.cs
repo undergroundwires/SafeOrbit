@@ -25,6 +25,7 @@ namespace CoreIntegrationConsoleApp
         {
             yield return new BlowfishEncryptorTest();
             yield return new SafeStringTest();
+            yield return new SafeStringToStringMarshalerTest();
         }
     }
 }

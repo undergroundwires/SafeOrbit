@@ -8,13 +8,17 @@ namespace CoreIntegrationConsoleApp.Tests
         public void RunTest()
         {
             Console.WriteLine($"Testing {nameof(SafeString)}");
-            var @string = "aAaa =)";
+            var @string = "aÄaa =)";
             var safeString = new SafeString();
+            Console.WriteLine("Instance created.");
             safeString.Append(@string);
-            using (var sm = new SafeStringToStringMarshaler())
+            Console.WriteLine($"{@string} is appended");
+            Console.Write("Retrieving chars (GetAsChar) :");
+            for (var i = 0; i < @string.Length; i++)
             {
-                Console.WriteLine(sm.String);
+                Console.Write($"{safeString.GetAsChar(i)}");
             }
+            Console.WriteLine();
         }
     }
 }
