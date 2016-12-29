@@ -50,7 +50,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             _key = random.GetBytes(Encryptor.MinKeySize);
         }
 
-        public int BlockSizeInBytes => Encryptor.BlockSize;
+        public int BlockSizeInBytes => _encryptor.BlockSize/4;
 
         public void Protect(byte[] userData)
         {
