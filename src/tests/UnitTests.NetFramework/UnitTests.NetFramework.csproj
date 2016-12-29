@@ -91,6 +91,7 @@
     <Compile Include="Infrastructure\Exceptions\DataLengthExceptionTests.cs" />
     <Compile Include="Infrastructure\Exceptions\MemoryInjectionExceptionTests.cs" />
     <Compile Include="Infrastructure\Exceptions\UnexpectedEnumValueExceptionTests.cs" />
+    <Compile Include="Library\Build\BuildInfoTests.cs" />
     <Compile Include="Memory\SafeContainer\Instance\Validation\InstanceValidationExceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SafeOrbit.Library.Build;
 using SafeOrbit.Library.StartEarly;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.Injection;
@@ -71,6 +72,9 @@ namespace SafeOrbit.Library
         public event EventHandler<IInjectionMessage> LibraryInjected;
 
         public ISafeContainer Factory { get; }
+
+        public IBuildInfo BuildInfo => new BuildInfo();
+
 
         public void StartEarly()
         {
