@@ -20,7 +20,7 @@
       Wiki : https://github.com/undergroundwires/safeOrbit/wiki
     </description>
     <releaseNotes>
-	  - All .NET platforms above 4.0 are supported : 4.0, 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1
+	    - All .NET platforms above 4.0 are supported : 4.0, 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1
       - [Security] Fixed MemoryProtector: MemoryProtector now uses different strategies to protect data depending on the platform.
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
