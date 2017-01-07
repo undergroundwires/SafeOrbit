@@ -33,13 +33,13 @@ namespace RandomComparisonApp
     public class CompressionUtility
     {
         /// <exception cref="ArgumentNullException">If <paramref name="data"/> is NULL.</exception>
-        public static double GetCompressionRatio(byte[] data)
+        public static async Task<double> GetCompressionRatio(byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             var length = data.Length;
             var lowerBound = GetCompressionRatioLowerBound(length);
             var upperBound = GetCompressionRatioUpperBound(length);
-            var outBytesLength = CountOutputBytes(data);
+            var outBytesLength = await CountOutputBytes(data);
             var compressionRatio = (outBytesLength - lowerBound) / (upperBound - lowerBound);
             // Because we used an envelope for both the upper and lower bound, the compression ratio is very unlikely
             // to exceed 1.0, but it's possible.  It will quite often be negative if the input is pure rubbish.

@@ -55,7 +55,7 @@ namespace RandomComparisonApp
             var randBytes = new byte[randBytesLength];
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
 
             //SystemRng
@@ -66,7 +66,7 @@ namespace RandomComparisonApp
             mySystemRngCryptoServiceProvider.GetBytes(randBytes);
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
 
@@ -81,7 +81,7 @@ namespace RandomComparisonApp
             }
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
 
@@ -94,7 +94,7 @@ namespace RandomComparisonApp
             myThreadedSeedGeneratorRng.GetBytes(randBytes);
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
             Console.Write("Sleeping to allow pool to fill...");
@@ -111,7 +111,7 @@ namespace RandomComparisonApp
             randBytes = myThreadedSeedGenerator.GenerateSeed(randBytesLength, true);
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
 
@@ -124,7 +124,7 @@ namespace RandomComparisonApp
             randBytes = myThreadedSeedGenerator.GenerateSeed(randBytesLength, false);
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
 
@@ -137,7 +137,7 @@ namespace RandomComparisonApp
             myThreadSchedulerRNG.GetBytes(randBytes);
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
 
@@ -170,7 +170,7 @@ namespace RandomComparisonApp
             for (var i = 0; i < numResults; i++)
             {
                 ticksResults[i].TimeSpan = after - before;
-                ticksResults[i].CompressionRatio = CompressionUtility.GetCompressionRatio(ticksResultsBytes[i]);
+                ticksResults[i].CompressionRatio = CompressionUtility.GetCompressionRatio(ticksResultsBytes[i]).Result;
                 results.Add(ticksResults[i]);
             }
             Console.WriteLine((after - before).ToString());
@@ -189,7 +189,7 @@ namespace RandomComparisonApp
             randBytes = SafeRandom.StaticInstance.GetBytes(randBytes.Length);
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
             Console.Write("Sleeping to allow pool to fill...");
@@ -202,7 +202,7 @@ namespace RandomComparisonApp
             randBytes = FastRandom.StaticInstance.GetBytes(randBytes.Length);
             after = DateTime.Now;
             result.TimeSpan = after - before;
-            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes);
+            result.CompressionRatio = CompressionUtility.GetCompressionRatio(randBytes).Result;
             results.Add(result);
             Console.WriteLine((after - before).ToString());
             Console.Write("Sleeping to allow pool to fill...");
