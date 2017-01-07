@@ -58,12 +58,12 @@ namespace SafeOrbit.Memory
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
         }
         [Test]
-        public void Adding_100_Bytes_Takes_Less_Than_100ms()
+        public void Adding_100_Bytes_Takes_Less_Than_200ms()
         {
             //arrange
             SafeOrbitCore.Current.StartEarly();
             var sut = GetSut();
-            var expectedHigherLimit = 100;
+            var expectedHigherLimit = 200;
             //act
             long actualPerformance = base.Measure(() =>
             {

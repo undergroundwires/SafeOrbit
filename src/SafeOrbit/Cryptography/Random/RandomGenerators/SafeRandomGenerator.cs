@@ -25,9 +25,12 @@ SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests;
+using SafeOrbit.Extensions;
+using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
@@ -56,12 +59,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     public sealed class SafeRandomGenerator : RandomNumberGenerator
     {
         // Interlocked cannot handle bools.  So using int as if it were bool.
-        private const int TrueInt = 1;
-        private const int FalseInt = 0;
         private static readonly Lazy<SafeRandomGenerator> StaticInstanceLazy = new Lazy<SafeRandomGenerator>();
         private IReadOnlyList<IEntropyHasher> _entropyHashers;
-        private int _hashLengthInBytes;
-        private int _isDisposed = FalseInt;
+        private readonly int _hashLengthInBytes;
+        private int _isDisposed = IntCondition.False;
 
         public SafeRandomGenerator() : this(GetAllEntropyHashers())
         {
@@ -69,44 +70,47 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 
         internal SafeRandomGenerator(IReadOnlyList<IEntropyHasher> entropyHashers)
         {
+            EnsureEntropyHashers(entropyHashers);
             _entropyHashers = entropyHashers;
-            CtorSanityCheck();
+            _hashLengthInBytes = GetHashLengthInBits(entropyHashers) / 8;
+        }
+
+        private int GetHashLengthInBits(IReadOnlyList<IEntropyHasher> entropyHashers)
+        {
+            var hashSizes =entropyHashers.SelectMany(e => e.HashWrappers).Select(w => w.HashSizeInBits);
+            if (!hashSizes.AreAllEqual())
+                throw new ArgumentException("Hash functions must all return the same size digest");
+            return hashSizes.First();
+        }
+
+        private static void EnsureEntropyHashers(IReadOnlyList<IEntropyHasher> entropyHashers)
+        {
+            if (entropyHashers == null) throw new ArgumentNullException(nameof(entropyHashers));
+            if (entropyHashers.Count < 1) throw new ArgumentException($"{nameof(entropyHashers.Count)} cannot be < 1");
+            lock (entropyHashers)
+            {
+
+                foreach (var eHasher in entropyHashers)
+                {
+                    EnsureEntropyHasher(eHasher);
+                }
+            }
+        }
+        private static void EnsureEntropyHasher(IEntropyHasher eHasher)
+        {
+            if (eHasher == null) throw new ArgumentNullException(nameof(eHasher));
+            if (eHasher.Rng == null)
+                throw new ArgumentException($"{nameof(eHasher.Rng)} property is null for the entropy hasher.");
+            if (eHasher.HashWrappers == null)
+                throw new ArgumentException($"{nameof(eHasher.HashWrappers)} property is null for the entropy hasher.");
+            if (eHasher.HashWrappers.Count < 1)
+                throw new ArgumentException($"{nameof(eHasher.HashWrappers)} property must at least have one element.");
         }
 
         public static SafeRandomGenerator StaticInstance => StaticInstanceLazy.Value;
 
 
-        private void CtorSanityCheck()
-        {
-            if (_entropyHashers == null)
-                throw new ArgumentNullException("_entropyHashers");
-            if (_entropyHashers.Count < 1)
-                throw new ArgumentException("EntropyHashers.Count cannot be < 1");
-            var hashLengthInBits = -1;
-            lock (_entropyHashers)
-            {
-                foreach (var eHasher in _entropyHashers)
-                {
-                    if (eHasher.Rng == null)
-                        throw new ArgumentException("RNG cannot be null");
-                    if (eHasher.HashWrappers == null)
-                        throw new ArgumentException("HashWrappers cannot be null");
-                    if (eHasher.HashWrappers.Count < 1)
-                        throw new ArgumentException("HashWrappers.Count cannot be < 1");
-                    foreach (var hashWrapper in eHasher.HashWrappers)
-                        if (hashLengthInBits == -1)
-                        {
-                            hashLengthInBits = hashWrapper.HashSizeInBits;
-                        }
-                        else
-                        {
-                            if (hashLengthInBits != hashWrapper.HashSizeInBits)
-                                throw new ArgumentException("Hash functions must all return the same size digest");
-                        }
-                }
-            }
-            _hashLengthInBytes = hashLengthInBits/8;
-        }
+
 
         private static List<IEntropyHasher> GetAllEntropyHashers()
         {
@@ -283,7 +287,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 
         protected override void Dispose(bool disposing)
         {
-            if (Interlocked.Exchange(ref _isDisposed, TrueInt) == TrueInt)
+            if (Interlocked.Exchange(ref _isDisposed, IntCondition.True) == IntCondition.True)
                 return;
             if (_entropyHashers != null)
             {

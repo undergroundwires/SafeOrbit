@@ -30,6 +30,7 @@ using System.Threading;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng;
+using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
@@ -65,9 +66,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     /// </example>
     internal sealed class FastRandomGenerator : RandomNumberGenerator
     {
-        // Interlocked cannot handle bools.  So using int as if it were bool.
-        private const int TrueInt = 1;
-        private const int FalseInt = 0;
+
         private const int ReseedLocked = 1;
         private const int ReseedUnlocked = 0;
 
@@ -83,12 +82,12 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         private readonly SafeRandomGenerator _safeRandomGenerator;
         private readonly bool _safeRandomGeneratorIsMineExclusively;
         private readonly object _stateCounterLockObj = new object();
-        private int _isDisposed = FalseInt;
+        private int _isDisposed = IntCondition.False;
         private int _reseedLockInt = ReseedUnlocked;
         private int _stateCounter = MaxStateCounterHard; // Guarantee to seed immediately on first call to GetBytes
 
         /// <summary>
-        ///     Number of SafeRandomGenerator bytes to use when reseeding prng
+        ///     Number of SafeRandomGenerator bytes to use when reseeding PRNG.
         /// </summary>
         public int SeedSize;
 
@@ -206,7 +205,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             }
         }
 
-#if !NETCORE
+#if NETFRAMEWORK
         public override void GetNonZeroBytes(byte[] data)
         {
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.
@@ -241,7 +240,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         private void Reseed()
         {
             // If we were already disposed, it's nice to skip any attempt at GetBytes, etc.
-            if (_isDisposed == TrueInt)
+            if (_isDisposed == IntCondition.True)
                 return;
             // Even though we just checked to see if we're disposed, somebody could call Dispose() while I'm in the middle
             // of the following code block.
@@ -259,14 +258,14 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             catch
             {
                 // If we threw any kind of exception after we were disposed, then just swallow it and go away quietly
-                if (_isDisposed == FalseInt)
+                if (_isDisposed == IntCondition.False)
                     throw;
             }
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (Interlocked.Exchange(ref _isDisposed, TrueInt) == TrueInt)
+            if (Interlocked.Exchange(ref _isDisposed, IntCondition.True) == IntCondition.True)
                 return;
             if (_safeRandomGeneratorIsMineExclusively)
                 _safeRandomGenerator.Dispose();

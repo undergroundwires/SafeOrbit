@@ -23,14 +23,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using SharpCompress.Compressors.LZMA;
 
 namespace RandomComparisonApp
 {
     public class CompressionUtility
     {
-        public static double GetCompressionRatioLowerBound(int length)
+        /// <exception cref="ArgumentNullException">If <paramref name="data"/> is NULL.</exception>
+        public static double GetCompressionRatio(byte[] data)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            var length = data.Length;
+            var lowerBound = GetCompressionRatioLowerBound(length);
+            var upperBound = GetCompressionRatioUpperBound(length);
+            var outBytesLength = CountOutputBytes(data);
+            var compressionRatio = (outBytesLength - lowerBound) / (upperBound - lowerBound);
+            // Because we used an envelope for both the upper and lower bound, the compression ratio is very unlikely
+            // to exceed 1.0, but it's possible.  It will quite often be negative if the input is pure rubbish.
+            if (compressionRatio > 1.0) compressionRatio = 1.0;
+            if (compressionRatio < 0) compressionRatio = 0;
+            return compressionRatio;
+        }
+        private static double GetCompressionRatioLowerBound(int length)
         {
             /* 
              * If we feed strings of all zero's into lzma, for various input lengths, here are the output lengths, to be 
@@ -77,8 +94,7 @@ namespace RandomComparisonApp
                 return 13.401 + 0.00358423*length;
             return 17.341 + 0.0029304*length;
         }
-
-        public static double GetCompressionRatioUpperBound(int length)
+        private static double GetCompressionRatioUpperBound(int length)
         {
             if (length < 9)
                 return 4.875 + 1.125*length;
@@ -101,32 +117,19 @@ namespace RandomComparisonApp
             return 16.94700013 + 1.012569651*length;
         }
 
-        public static double GetCompressionRatio(byte[] data)
+        private static async Task<long> CountOutputBytes(byte[] data)
         {
-            var length = data.Length;
-            var lowerBound = GetCompressionRatioLowerBound(length);
-            var upperBound = GetCompressionRatioUpperBound(length);
-
-            double compressionRatio;
             using (var outStream = new MemoryStream())
             {
                 using (var lzmaStream = new LzmaStream(new LzmaEncoderProperties(), false, outStream))
                 {
                     using (var inStream = new MemoryStream(data))
                     {
-                        inStream.CopyTo(lzmaStream);
+                        await inStream.CopyToAsync(lzmaStream);
                     }
                 }
-                var outBytes = outStream.ToArray();
-                compressionRatio = (outBytes.Length - lowerBound)/(upperBound - lowerBound);
-                // Because we used an envelope for both the upper and lower bound, the compression ratio is very unlikely
-                // to exceed 1.0, but it's possible.  It will quite often be negative if the input is pure rubbish.
-                if (compressionRatio > 1.0)
-                    compressionRatio = 1.0;
-                if (compressionRatio < 0)
-                    compressionRatio = 0;
+                return outStream.Length;
             }
-            return compressionRatio;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
@@ -24,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -60,6 +60,14 @@ namespace SafeOrbit.Extensions
         public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> iEnumerable)
         {
             return iEnumerable ?? Enumerable.Empty<T>();
+        }
+
+        /// <summary>
+        ///     Compares and returns if all elements equal to each other.
+        /// </summary>
+        public static bool AreAllEqual<T>(this IEnumerable<T> sequence)
+        {
+            return !sequence.Distinct().Any();
         }
     }
 }

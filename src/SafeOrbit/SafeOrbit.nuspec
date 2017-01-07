@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>$id$</id>
-    <version>0.2.2</version>
+    <version>0.3</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -20,8 +20,21 @@
       Wiki : https://github.com/undergroundwires/safeOrbit/wiki
     </description>
     <releaseNotes>
-	    - All .NET platforms above 4.0 are supported : 4.0, 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1
-      - [Security] Fixed MemoryProtector: MemoryProtector now uses different strategies to protect data depending on the platform.
+	- Add -
+		- SafeBinaryStorage :
+			* Safe your sensitive data that's never modified in SafeBinaryStorage.
+			* ByteArrayProtector is renamed to SafeBinaryStorage, ByteArrayProtector uses now disposable pattern.
+	
+	- Security -
+		- IFastRandom is now seeded with strong random data for most of the usages: .
+	
+	- Performance -
+	   - Caching types for reflection. MemoryProtector works faster.
+	  
+	- Bugs -
+	  //Run unit tests for .net core
+	  - [BUG] 
+	  - [BUG]
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
