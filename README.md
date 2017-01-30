@@ -17,7 +17,7 @@
 > -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
 
 
-**SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it can protect any data in the memory for you: you have SafeBytes](#safebytes#) to protect binaries, [SafeString](#safestring#) to protect strings, and even more to [and even more to protect your application against injections](#protect-your-classes#). **SafeOrbit** also provides a bunch of tools to implement strong and high performance algorithms for [encryption, hashers and random](#cryptography).
+**SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it can protect any data in the memory for you: you have SafeBytes](#safebytes#) to protect binaries, as well as [SafeString](#safestring#) to protect strings, [and even more to detect memory injections](#protect-your-classes#). **SafeOrbit** provides also bunch of tools to implement strong and high performance algorithms for [encryption, hashers and random](#cryptography).
 
 **SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (v0.1).
 
