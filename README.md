@@ -17,7 +17,7 @@
 > -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
 
 
-**SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it can protect any data in the memory for you: you have SafeBytes](#safebytes#) to protect binaries, as well as [SafeString](#safestring#) to protect strings, [and even more to detect memory injections](#protect-your-classes#). **SafeOrbit** provides also bunch of tools to implement strong and high performance algorithms for [encryption, hashers and random](#cryptography).
+**SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security), it can protect any data in the memory for you: you have [SafeBytes](#safebytes#) to protect binaries, as well as [SafeString](#safestring#) to protect strings, [and even more to detect memory injections](#protect-your-classes#). **SafeOrbit** provides also bunch of tools to implement strong and high performance algorithms for [encryption, hashers and random](#cryptography).
 
 **SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (v0.1).
 
@@ -45,7 +45,7 @@ It means that you're free to use **SafeOrbit** freely in any application, copy, 
 ## Quick documentation
 **For better performance**, it's **highly recommended** to start the application early in your application start with this line :
 ```C#
- SafeOrbitCore.Current.StartEary();
+ SafeOrbitCore.Current.StartEarly();
 ```
 Memory injection is enabled as default. It provides self security on client side applications, but on a protected server disabling the memory injection for more performance is recommended. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Library-settings#change-security-settings).
 
