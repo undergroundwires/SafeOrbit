@@ -47,8 +47,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         ///</summary>
         public PropertyCollection Items
         {
-            get { return _items ?? (_items = new PropertyCollection {Parent = this}); }
-            set { _items = value; }
+            get => _items ?? (_items = new PropertyCollection {Parent = this});
+            set => _items = value;
         }
 
         /// <summary>

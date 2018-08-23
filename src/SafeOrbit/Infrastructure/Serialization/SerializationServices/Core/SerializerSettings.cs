@@ -53,7 +53,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
                 if (_advancedSettings == default(T)) _advancedSettings = new T();
                 return _advancedSettings;
             }
-            set { _advancedSettings = value; }
+            set => _advancedSettings = value;
         }
 
         /// <summary>

@@ -608,10 +608,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
             byteCount = t.byteCount;
         }
 
-        public string AlgorithmName
-        {
-            get { return "Tiger"; }
-        }
+        public string AlgorithmName => "Tiger";
 
         public int GetDigestSize()
         {

@@ -49,8 +49,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         ///</summary>
         public IList<MultiDimensionalArrayItem> Items
         {
-            get { return _items ?? (_items = new List<MultiDimensionalArrayItem>()); }
-            set { _items = value; }
+            get => _items ?? (_items = new List<MultiDimensionalArrayItem>());
+            set => _items = value;
         }
 
         /// <summary>
@@ -58,8 +58,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         /// </summary>
         public IList<DimensionInfo> DimensionInfos
         {
-            get { return _dimensionInfos ?? (_dimensionInfos = new List<DimensionInfo>()); }
-            set { _dimensionInfos = value; }
+            get => _dimensionInfos ?? (_dimensionInfos = new List<DimensionInfo>());
+            set => _dimensionInfos = value;
         }
 
         /// <summary>

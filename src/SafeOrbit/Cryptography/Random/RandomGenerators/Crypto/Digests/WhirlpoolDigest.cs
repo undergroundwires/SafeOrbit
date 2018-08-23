@@ -187,10 +187,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
             Array.Copy(originalDigest._state, 0, _state, 0, _state.Length);
         }
 
-        public string AlgorithmName
-        {
-            get { return "Whirlpool"; }
-        }
+        public string AlgorithmName => "Whirlpool";
 
         public int GetDigestSize()
         {

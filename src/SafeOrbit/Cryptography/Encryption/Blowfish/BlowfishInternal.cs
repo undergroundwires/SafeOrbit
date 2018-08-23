@@ -259,7 +259,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         public byte[] IV
         {
-            get { return InitVector; }
+            get => InitVector;
             set
             {
                 if (value.Length == 8)
@@ -276,8 +276,8 @@ namespace SafeOrbit.Cryptography.Encryption
 
         public bool NonStandard
         {
-            get { return nonStandardMethod; }
-            set { nonStandardMethod = value; }
+            get => nonStandardMethod;
+            set => nonStandardMethod = value;
         }
 
         /// <summary>

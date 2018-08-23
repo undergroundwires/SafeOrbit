@@ -229,7 +229,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
                     if (_dimensionInfos == null) _dimensionInfos = new List<DimensionInfo>();
                     return _dimensionInfos;
                 }
-                set { _dimensionInfos = value; }
+                set => _dimensionInfos = value;
             }
         }
 }

@@ -157,8 +157,8 @@ namespace SafeOrbit.Memory
         /// <value>The alert channel.</value>
         public virtual InjectionAlertChannel AlertChannel
         {
-            get { return _injectionDetector.AlertChannel; }
-            set { _injectionDetector.AlertChannel = value; }
+            get => _injectionDetector.AlertChannel;
+            set => _injectionDetector.AlertChannel = value;
         }
 
         /// <summary>

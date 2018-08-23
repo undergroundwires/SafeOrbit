@@ -58,10 +58,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
         {
         }
 
-        public override string AlgorithmName
-        {
-            get { return "SHA-512"; }
-        }
+        public override string AlgorithmName => "SHA-512";
 
         public override int GetDigestSize()
         {

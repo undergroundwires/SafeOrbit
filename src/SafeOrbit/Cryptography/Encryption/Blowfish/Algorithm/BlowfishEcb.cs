@@ -92,8 +92,8 @@ namespace SafeOrbit.Cryptography.Encryption
         private bool _nonStandardMethod;
         public bool NonStandard
         {
-            get { return _nonStandardMethod; }
-            set { _nonStandardMethod = value; }
+            get => _nonStandardMethod;
+            set => _nonStandardMethod = value;
         }
         #endregion
 

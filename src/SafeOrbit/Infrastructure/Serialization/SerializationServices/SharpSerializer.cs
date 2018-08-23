@@ -93,7 +93,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
                 if (_propertyProvider == null) _propertyProvider = new PropertyProvider();
                 return _propertyProvider;
             }
-            set { _propertyProvider = value; }
+            set => _propertyProvider = value;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
                 if (_rootName == null) _rootName = "Root";
                 return _rootName;
             }
-            set { _rootName = value; }
+            set => _rootName = value;
         }
 
         private void Initialize(BinarySettings settings)

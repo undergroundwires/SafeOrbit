@@ -63,10 +63,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
             xOff = t.xOff;
         }
 
-        public override string AlgorithmName
-        {
-            get { return "RIPEMD128"; }
-        }
+        public override string AlgorithmName => "RIPEMD128";
 
         public override int GetDigestSize()
         {

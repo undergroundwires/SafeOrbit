@@ -61,10 +61,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
             xOff = t.xOff;
         }
 
-        public override string AlgorithmName
-        {
-            get { return "MD5"; }
-        }
+        public override string AlgorithmName => "MD5";
 
         public override int GetDigestSize()
         {

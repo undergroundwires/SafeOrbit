@@ -94,8 +94,8 @@ namespace SafeOrbit.Memory
         /// </exception>
         public override long Position
         {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         /// <exception cref="NotSupportedException">
@@ -110,7 +110,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentException" accessor="set">When <see cref="IoException" /> is set to true.</exception>
         public bool IoException
         {
-            get { return _ioException; }
+            get => _ioException;
             set
             {
                 if (!value)
@@ -136,29 +136,31 @@ namespace SafeOrbit.Memory
             throw new NotSupportedException();
         }
 
-        /// <exception cref="IOException">If <see cref="IoException" /> is true.</exception>
-        /// <exception cref="AbandonedMutexException">
+        /// <inheritdoc />
+        /// <exception cref="T:System.IO.IOException">If <see cref="P:SafeOrbit.Memory.SafeMemoryStream.IoException" /> is true.</exception>
+        /// <exception cref="T:System.Threading.AbandonedMutexException">
         ///     The wait completed because a thread exited without releasing a mutex. This
         ///     exception is not thrown on Windows 98 or Windows Millennium Edition.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
+        /// <exception cref="T:System.InvalidOperationException">
         ///     The current instance is a transparent proxy for a
         ///     <see cref="T:System.Threading.WaitHandle" /> in another application domain.
         /// </exception>
-        /// <exception cref="ObjectDisposedException">The current instance has been disposed. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The current instance has been disposed. </exception>
         public override void Flush()
         {
             while (_length > 0) _flushAutoResetEvent.WaitOne();
             EnsureThatIoExceptionIsNotTrue();
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Reads from the buffer and deletes the read data from the <paramref name="buffer" />.
         /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
-        /// <exception cref="IoException">If <see cref="IoException" /> is true.</exception>
-        /// <exception cref="ArgumentException">Condition.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
+        /// <exception cref="P:SafeOrbit.Memory.SafeMemoryStream.IoException">If <see cref="P:SafeOrbit.Memory.SafeMemoryStream.IoException" /> is true.</exception>
+        /// <exception cref="T:System.ArgumentException">Condition.</exception>
         public override void Write(byte[] buffer, int offset, int count)
         {
             EnsureReadOrWriteParameters(buffer, offset, count);
@@ -175,12 +177,13 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Reads from the buffer and deletes the read data from the buffer.
         /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
-        /// <exception cref="IoException">If <see cref="IoException" /> is true.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
+        /// <exception cref="P:SafeOrbit.Memory.SafeMemoryStream.IoException">If <see cref="P:SafeOrbit.Memory.SafeMemoryStream.IoException" /> is true.</exception>
         public override int Read(byte[] buffer, int offset, int count)
         {
             EnsureReadOrWriteParameters(buffer, offset, count);

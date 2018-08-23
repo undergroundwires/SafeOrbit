@@ -94,7 +94,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
         public ISafeString SafeString
         {
-            get { return _safeString; }
+            get => _safeString;
             set
             {
                 if (value == null) throw new ArgumentNullException(nameof(SafeString));

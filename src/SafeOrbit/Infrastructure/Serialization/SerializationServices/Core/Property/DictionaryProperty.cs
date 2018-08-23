@@ -53,7 +53,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
                 if (_items == null) _items = new List<KeyValueItem>();
                 return _items;
             }
-            set { _items = value; }
+            set => _items = value;
         }
 
         /// <summary>

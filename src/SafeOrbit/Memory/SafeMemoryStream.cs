@@ -94,8 +94,8 @@ namespace SafeOrbit.Memory
         /// </exception>
         public override long Position
         {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         /// <exception cref="NotSupportedException">
@@ -110,7 +110,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentException" accessor="set">When <see cref="IoException" /> is set to true.</exception>
         public bool IoException
         {
-            get { return _ioException; }
+            get => _ioException;
             set
             {
                 if (!value)

@@ -52,7 +52,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
                 if (_properties == null) _properties = new PropertyCollection {Parent = this};
                 return _properties;
             }
-            set { _properties = value; }
+            set => _properties = value;
         }
 
 

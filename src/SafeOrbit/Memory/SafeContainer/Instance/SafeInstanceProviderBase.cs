@@ -131,8 +131,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         }
         public InjectionAlertChannel AlertChannel
         {
-            get { return _injectionDetector.AlertChannel; }
-            set { _injectionDetector.AlertChannel = value; }
+            get => _injectionDetector.AlertChannel;
+            set => _injectionDetector.AlertChannel = value;
         }
         public bool CanAlert => CurrentProtectionMode != InstanceProtectionMode.NoProtection;
     }

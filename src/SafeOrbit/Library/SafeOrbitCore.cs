@@ -64,8 +64,8 @@ namespace SafeOrbit.Library
 
         public InjectionAlertChannel AlertChannel
         {
-            get { return Factory.AlertChannel; }
-            set { Factory.AlertChannel = value; }
+            get => Factory.AlertChannel;
+            set => Factory.AlertChannel = value;
         }
 
         public bool CanAlert => Factory.CanAlert;
