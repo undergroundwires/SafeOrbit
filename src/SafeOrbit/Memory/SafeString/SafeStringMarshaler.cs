@@ -44,7 +44,7 @@ namespace SafeOrbit.Memory
     /// <remarks>
     ///     <p>
     ///         Based on a marshaler for SecureString :
-    ///         https://sambapos.googlecode.com/hg/Samba.Infrastructure/SecureStringToStringMarshaller.cs
+    ///         https://github.com/hilalsaim/sambapos/blob/master/Samba.Infrastructure/SecureStringToStringMarshaller.cs
     ///     </p>
     /// </remarks>
     /// <example>
@@ -84,14 +84,15 @@ namespace SafeOrbit.Memory
             SafeString = safeString;
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets or sets the safe string. Setting a new SafeString will automatically update the String property.
         /// </summary>
         /// <value>
         ///     The safe string that should be converted to a string.
         /// </value>
-        /// <exception cref="ArgumentNullException" accessor="set"><paramref name="value" /> is <see langword="null" />.</exception>
-        /// <exception cref="ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
+        /// <exception cref="T:System.ArgumentNullException" accessor="set"><paramref name="value" /> is <see langword="null" />.</exception>
+        /// <exception cref="T:System.ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
         public ISafeString SafeString
         {
             get => _safeString;
@@ -128,6 +129,7 @@ namespace SafeOrbit.Memory
                 String = "";
                 return;
             }
+            Deallocate();
             unsafe
             {
                 String = new string('\0', SafeString.Length);
@@ -144,10 +146,8 @@ namespace SafeOrbit.Memory
                     // Pin our string, disallowing the garbage collector from moving it around.
                     _gch = GCHandle.Alloc(String, GCHandleType.Pinned);
                 }
-                // Create a CER (Constrained Execution Region)
-#if NETFRAMEWORK
-         RuntimeHelpers.PrepareConstrainedRegions();
-#endif
+   
+                // Copy the SafeString content to our pinned string
                 var pInsecureString = (char*) _gch.AddrOfPinnedObject();
                 for (var charIndex = 0; charIndex < SafeString.Length; charIndex++)
                     pInsecureString[charIndex] = SafeString.GetAsChar(charIndex);
