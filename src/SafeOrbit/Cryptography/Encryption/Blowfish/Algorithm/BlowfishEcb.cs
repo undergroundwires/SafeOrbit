@@ -2,7 +2,7 @@
 /*
 MIT License
 
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
+Copyright (c) 2018 Erkin Ekici - undergroundwires@safeorb.it
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

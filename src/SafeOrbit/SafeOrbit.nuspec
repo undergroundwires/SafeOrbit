@@ -18,6 +18,11 @@
 
       Source code : https://github.com/undergroundwires/safeOrbit
       Wiki : https://github.com/undergroundwires/safeOrbit/wiki
+
+      Supported platforms:
+      - .NET Framework 4.0+
+      - .NET Standard 1.6+
+      - .NET Core
     </description>
     <releaseNotes>
       - Compatibility -
