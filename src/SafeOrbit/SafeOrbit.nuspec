@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>$id$</id>
-    <version>0.2.3</version>
+    <version>0.3</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -20,10 +20,9 @@
       Wiki : https://github.com/undergroundwires/safeOrbit/wiki
     </description>
     <releaseNotes>
-      - Add -
-      - SafeBinaryStorage :
-      * Safe your sensitive data that's never modified in SafeBinaryStorage.
-      * ByteArrayProtector is renamed to SafeBinaryStorage, ByteArrayProtector uses now disposable pattern.
+      - Compatibility -
+      * Added support for netstandard2.0, net462, net47, net471, net472
+      * Updated DotNet dependencies to the latest available for different platforms
 
       - Security -
       * IFastRandom is now seeded with strong random data for most of the usages.
