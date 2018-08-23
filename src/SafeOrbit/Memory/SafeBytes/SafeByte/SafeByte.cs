@@ -85,14 +85,10 @@ namespace SafeOrbit.Memory.SafeBytesServices
             IByteIdGenerator byteIdGenerator,
             IByteArrayProtector memoryProtector)
         {
-            if (encryptor == null) throw new ArgumentNullException(nameof(encryptor));
-            if (fastRandom == null) throw new ArgumentNullException(nameof(fastRandom));
-            if (byteIdGenerator == null) throw new ArgumentNullException(nameof(fastRandom));
-            if (memoryProtector == null) throw new ArgumentNullException(nameof(memoryProtector));
-            _encryptor = encryptor;
-            _fastRandom = fastRandom;
-            _byteIdGenerator = byteIdGenerator;
-            _memoryProtector = memoryProtector;
+            _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
+            _fastRandom = fastRandom ?? throw new ArgumentNullException(nameof(fastRandom));
+            _byteIdGenerator = byteIdGenerator ?? throw new ArgumentNullException(nameof(fastRandom));
+            _memoryProtector = memoryProtector ?? throw new ArgumentNullException(nameof(memoryProtector));
         }
 
         /// <summary>

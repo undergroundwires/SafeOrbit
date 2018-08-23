@@ -73,12 +73,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         internal EncryptedSafeByteCollection(IFastEncryptor encryptor, IByteArrayProtector memoryProtector,
             IFastRandom fastRandom, ISafeByteFactory safeByteFactory)
         {
-            if (encryptor == null) throw new ArgumentNullException(nameof(encryptor));
-            if (memoryProtector == null) throw new ArgumentNullException(nameof(memoryProtector));
-            if (safeByteFactory == null) throw new ArgumentNullException(nameof(safeByteFactory));
-            _encryptor = encryptor;
-            _memoryProtector = memoryProtector;
-            _safeByteFactory = safeByteFactory;
+            _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
+            _memoryProtector = memoryProtector ?? throw new ArgumentNullException(nameof(memoryProtector));
+            _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
             _encryptionKey = fastRandom.GetBytes(_memoryProtector.BlockSizeInBytes);
             _memoryProtector.Protect(_encryptionKey);
         }
@@ -97,7 +94,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             _memoryProtector.Unprotect(_encryptionKey);
             var list = DecryptAndDeserialize(_encryptedCollection, _encryptionKey);
             list.Add(safeByte.Id);
-            _encryptedCollection = SerializeAndEncrypt(list, _encryptionKey);
+            _encryptedCollection = SerializeAndEncrypt(list.ToArray(), _encryptionKey);
             list.Clear();
             _memoryProtector.Protect(_encryptionKey);
             Length++;
@@ -190,20 +187,21 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             }
         }
 
-        private byte[] SerializeAndEncrypt(IEnumerable<int> safeByteIdList, byte[] encryptionKey)
+        private byte[] SerializeAndEncrypt(IReadOnlyCollection<int> safeByteIdList, byte[] encryptionKey)
         {
             var serialization = Serialize(safeByteIdList);
             var encrypted = _encryptor.Encrypt(serialization, encryptionKey);
             return encrypted;
         }
 
-        private static byte[] Serialize(IEnumerable<int> list)
+        private static byte[] Serialize(IReadOnlyCollection<int> list)
         {
+            if (!list.Any()) return new byte[0];
             using (var memoryStream = new MemoryStream())
             {
                 using (var writer = new BinaryWriter(memoryStream))
                 {
-                    writer.Write(list.Count());
+                    writer.Write(list.Count); /* First byte is the length of the list */
                     foreach (var i in list)
                         writer.Write(i);
                 }
@@ -213,11 +211,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
 
         private static IEnumerable<int> Deserialize(byte[] list)
         {
+            if (list.Length == 0) return Enumerable.Empty<int>();
             using (var memoryStream = new MemoryStream(list))
             {
                 using (var reader = new BinaryReader(memoryStream))
                 {
-                    var count = reader.ReadInt32();
+                    var count = reader.ReadInt32(); /* First byte tells the length of the list */
                     var result = new int[count];
                     for (var i = 0; i < count; i++)
                         result[i] = reader.ReadInt32();

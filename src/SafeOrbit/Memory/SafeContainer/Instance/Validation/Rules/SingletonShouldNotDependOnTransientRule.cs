@@ -40,8 +40,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
         /// <param name="registeredInstanceProviders">List of all of the registered instance providers.</param>
         public SingletonShouldNotDependOnTransientRule(IEnumerable<IInstanceProvider> registeredInstanceProviders)
         {
-            if (registeredInstanceProviders == null) throw new ArgumentNullException(nameof(registeredInstanceProviders));
-            _registeredInstanceProviders = registeredInstanceProviders;
+            _registeredInstanceProviders = registeredInstanceProviders ?? throw new ArgumentNullException(nameof(registeredInstanceProviders));
         }
         public bool IsSatisfiedBy(IInstanceProvider instance)
         {

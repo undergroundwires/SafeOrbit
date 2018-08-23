@@ -43,8 +43,7 @@ namespace SafeOrbit.Memory
 
         public SafeContainerWrapper(ISafeContainer safeContainer)
         {
-            if (safeContainer == null) throw new ArgumentNullException(nameof(safeContainer));
-            _safeContainer = safeContainer;
+            _safeContainer = safeContainer ?? throw new ArgumentNullException(nameof(safeContainer));
         }
 
         public TComponent Create()

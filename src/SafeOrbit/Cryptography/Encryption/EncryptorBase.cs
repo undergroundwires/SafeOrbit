@@ -41,8 +41,7 @@ namespace SafeOrbit.Cryptography.Encryption
 
         protected EncryptorBase(ICryptoRandom random)
         {
-            if (random == null) throw new ArgumentNullException(nameof(random));
-            _random = random;
+            _random = random ?? throw new ArgumentNullException(nameof(random));
         }
 
         /// <summary>

@@ -61,12 +61,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         internal HashedByteIdGenerator(IFastHasher fastHasher, ISafeRandom safeRandom,
             IByteArrayProtector memoryProtector)
         {
-            if (fastHasher == null) throw new ArgumentNullException(nameof(fastHasher));
-            if (safeRandom == null) throw new ArgumentNullException(nameof(safeRandom));
-            if (memoryProtector == null) throw new ArgumentNullException(nameof(memoryProtector));
-            _fastHasher = fastHasher;
-            _safeRandom = safeRandom;
-            _memoryProtector = memoryProtector;
+            _fastHasher = fastHasher ?? throw new ArgumentNullException(nameof(fastHasher));
+            _safeRandom = safeRandom ?? throw new ArgumentNullException(nameof(safeRandom));
+            _memoryProtector = memoryProtector ?? throw new ArgumentNullException(nameof(memoryProtector));
         }
 
         public byte[] SessionSalt => _sessionSalt = _sessionSalt ?? GenerateSessionSalt();

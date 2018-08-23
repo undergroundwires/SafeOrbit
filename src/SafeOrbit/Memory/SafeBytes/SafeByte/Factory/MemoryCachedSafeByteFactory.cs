@@ -88,10 +88,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         internal MemoryCachedSafeByteFactory(IByteIdGenerator byteIdGenerator, IFactory<ISafeByte> safeByteFactory,
             ISafeObjectFactory safeObjectFactory, SafeObjectProtectionMode protectionMode)
         {
-            if (byteIdGenerator == null) throw new ArgumentNullException(nameof(byteIdGenerator));
-            if (safeByteFactory == null) throw new ArgumentNullException(nameof(safeByteFactory));
-            _byteIdGenerator = byteIdGenerator;
-            _safeByteFactory = safeByteFactory;
+            _byteIdGenerator = byteIdGenerator ?? throw new ArgumentNullException(nameof(byteIdGenerator));
+            _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
             _safeObjectFactory = safeObjectFactory;
             InnerDictionaryProtectionMode = protectionMode;
         }

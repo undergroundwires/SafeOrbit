@@ -67,8 +67,7 @@ namespace SafeOrbit.Text
         /// <exception cref="ArgumentNullException"><paramref name="safeStringFactory" /> is <see langword="null" /></exception>
         internal TextService(IFactory<ISafeString> safeStringFactory)
         {
-            if (safeStringFactory == null) throw new ArgumentNullException(nameof(safeStringFactory));
-            _safeStringFactory = safeStringFactory;
+            _safeStringFactory = safeStringFactory ?? throw new ArgumentNullException(nameof(safeStringFactory));
         }
 
         /// <summary>

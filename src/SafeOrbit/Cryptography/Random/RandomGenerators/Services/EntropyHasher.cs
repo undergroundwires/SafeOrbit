@@ -35,17 +35,14 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         public IList<IHashAlgorithmWrapper> HashWrappers { get; private set; }
         public EntropyHasher(RandomNumberGenerator rng, HashAlgorithmWrapper hashWrapper)
         {
-            if (rng == null) throw new ArgumentNullException(nameof(rng));
             if (hashWrapper == null) throw new ArgumentNullException(nameof(hashWrapper));
-            this.Rng = rng;
+            this.Rng = rng ?? throw new ArgumentNullException(nameof(rng));
             this.HashWrappers = new List<IHashAlgorithmWrapper> {hashWrapper};
         }
         public EntropyHasher(RandomNumberGenerator rng, List<IHashAlgorithmWrapper> hashWrappers)
         {
-            if (rng == null) throw new ArgumentNullException(nameof(rng));
-            if (hashWrappers == null) throw new ArgumentNullException(nameof(hashWrappers));
-            this.Rng = rng;
-            this.HashWrappers = hashWrappers;
+            this.Rng = rng ?? throw new ArgumentNullException(nameof(rng));
+            this.HashWrappers = hashWrappers ?? throw new ArgumentNullException(nameof(hashWrappers));
         }
         public void Dispose()
         {

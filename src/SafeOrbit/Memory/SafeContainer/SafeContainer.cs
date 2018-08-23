@@ -87,14 +87,10 @@ namespace SafeOrbit.Memory
             SafeContainerProtectionMode protectionMode = Defaults.ContainerProtectionMode,
             InjectionAlertChannel alertChannel = Defaults.AlertChannel) : base(protectionMode)
         {
-            if (typeIdGenerator == null) throw new ArgumentNullException(nameof(typeIdGenerator));
-            if (instanceFactory == null) throw new ArgumentNullException(nameof(instanceFactory));
-            if (instanceValidator == null) throw new ArgumentNullException(nameof(instanceValidator));
-            if (safeObjectFactory == null) throw new ArgumentNullException(nameof(safeObjectFactory));
-            _typeIdGenerator = typeIdGenerator;
-            _instanceFactory = instanceFactory;
-            _instanceValidator = instanceValidator;
-            _safeObjectFactory = safeObjectFactory;
+            _typeIdGenerator = typeIdGenerator ?? throw new ArgumentNullException(nameof(typeIdGenerator));
+            _instanceFactory = instanceFactory ?? throw new ArgumentNullException(nameof(instanceFactory));
+            _instanceValidator = instanceValidator ?? throw new ArgumentNullException(nameof(instanceValidator));
+            _safeObjectFactory = safeObjectFactory ?? throw new ArgumentNullException(nameof(safeObjectFactory));
             _alertChannel = alertChannel;
             ChangeProtectionMode(new ProtectionChangeContext<SafeContainerProtectionMode>(protectionMode));
             SetAlertChannelInternal(alertChannel);

@@ -45,8 +45,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         /// <exception cref="ArgumentNullException"><paramref name="systemRngProvider" /> is <see langword="null" />.</exception>
         internal SystemRng(RandomNumberGenerator systemRngProvider)
         {
-            if (systemRngProvider == null) throw new ArgumentNullException(nameof(systemRngProvider));
-            _systemRngProvider = systemRngProvider;
+            _systemRngProvider = systemRngProvider ?? throw new ArgumentNullException(nameof(systemRngProvider));
         }
 
         public override void GetBytes(byte[] data)

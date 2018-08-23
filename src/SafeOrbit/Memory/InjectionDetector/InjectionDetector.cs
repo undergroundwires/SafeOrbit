@@ -87,13 +87,10 @@ namespace SafeOrbit.Memory.Injection
             bool scanCode, bool scanState,
             InjectionAlertChannel alertChannel)
         {
-            if (alerter == null) throw new ArgumentNullException(nameof(alerter));
-            if (stateStamper == null) throw new ArgumentNullException(nameof(stateStamper));
-            if (codeStamper == null) throw new ArgumentNullException(nameof(codeStamper));
-            _alerter = alerter;
+            _alerter = alerter ?? throw new ArgumentNullException(nameof(alerter));
             _typeIdGenerator = typeIdGenerator;
-            _stateStamper = stateStamper;
-            _codeStamper = codeStamper;
+            _stateStamper = stateStamper ?? throw new ArgumentNullException(nameof(stateStamper));
+            _codeStamper = codeStamper ?? throw new ArgumentNullException(nameof(codeStamper));
             _alertChannel = alertChannel;
             ScanCode = scanCode;
             ScanState = scanState;

@@ -138,8 +138,7 @@ namespace SafeOrbit.Memory
         internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector)
             : base(settings.ProtectionMode)
         {
-            if (injectionDetector == null) throw new ArgumentNullException(nameof(injectionDetector));
-            _injectionDetector = injectionDetector;
+            _injectionDetector = injectionDetector ?? throw new ArgumentNullException(nameof(injectionDetector));
             _injectionDetector.AlertChannel = settings.AlertChannel;
             SetInitialValue(settings.InitialValue, ref _object);
             ChangeProtectionMode(new ProtectionChangeContext<SafeObjectProtectionMode>(settings.ProtectionMode));

@@ -96,8 +96,7 @@ namespace SafeOrbit.Cryptography.Encryption
 
         public AesEncryptor(IKeyDerivationFunction keyDeriver, IFastRandom fastRandom) : base(fastRandom)
         {
-            if (keyDeriver == null) throw new ArgumentNullException(nameof(keyDeriver));
-            _keyDeriver = keyDeriver;
+            _keyDeriver = keyDeriver ?? throw new ArgumentNullException(nameof(keyDeriver));
         }
 
         /// <summary>

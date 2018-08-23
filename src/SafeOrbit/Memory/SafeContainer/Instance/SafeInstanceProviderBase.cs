@@ -56,8 +56,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         internal SafeInstanceProviderBase(LifeTime lifeTime, IInjectionDetector injectionDetector, InstanceProtectionMode protectionMode, InjectionAlertChannel alertChannel)
             : base(protectionMode)
         {
-            if (injectionDetector == null) throw new ArgumentNullException(nameof(injectionDetector));
-            _injectionDetector = injectionDetector;
+            _injectionDetector = injectionDetector ?? throw new ArgumentNullException(nameof(injectionDetector));
             LifeTime = lifeTime;
             AssemblyQualifiedName = typeof(TImplementation).AssemblyQualifiedName;
             this.AlertChannel = alertChannel;

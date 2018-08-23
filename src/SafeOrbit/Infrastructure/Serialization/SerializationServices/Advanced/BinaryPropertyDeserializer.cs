@@ -53,8 +53,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced
 
         public BinaryPropertyDeserializer(IBinaryReader reader)
         {
-            if (reader == null) throw new ArgumentNullException(nameof(reader));
-            _reader = reader;
+            _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
         #region IPropertyDeserializer Members

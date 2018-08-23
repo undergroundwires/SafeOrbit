@@ -51,8 +51,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced
         /// <param name="writer"></param>
         public BinaryPropertySerializer(IBinaryWriter writer)
         {
-            if (writer == null) throw new ArgumentNullException(nameof(writer));
-            _writer = writer;
+            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         /// <summary>

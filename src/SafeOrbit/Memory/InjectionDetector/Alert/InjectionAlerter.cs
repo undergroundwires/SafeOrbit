@@ -42,8 +42,7 @@ namespace SafeOrbit.Memory.InjectionServices
         public static readonly IInjectionAlerter StaticInstance = new InjectionAlerter(new AlerterFactory());
         internal InjectionAlerter(IAlerterFactory alerterFactory)
         {
-            if (alerterFactory == null) throw new ArgumentNullException(nameof(alerterFactory));
-            _alerterFactory = alerterFactory;
+            _alerterFactory = alerterFactory ?? throw new ArgumentNullException(nameof(alerterFactory));
         }
 
         public void Alert(IInjectionMessage info, InjectionAlertChannel channel)

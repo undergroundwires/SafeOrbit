@@ -40,8 +40,7 @@ namespace SafeOrbit.Library.StartEarly
 
         public SafeByteFactoryInitializer(ISafeContainer container)
         {
-            if (container == null) throw new ArgumentNullException(nameof(container));
-            _container = container;
+            _container = container ?? throw new ArgumentNullException(nameof(container));
         }
 
         public override void Prepare()

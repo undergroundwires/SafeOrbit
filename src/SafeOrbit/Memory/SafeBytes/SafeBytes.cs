@@ -55,12 +55,9 @@ namespace SafeOrbit.Memory
             IFactory<ISafeBytes> safeBytesFactory,
             IFactory<ISafeByteCollection> safeByteCollectionFactory)
         {
-            if (fastRandom == null) throw new ArgumentNullException(nameof(fastRandom));
-            if (safeByteFactory == null) throw new ArgumentNullException(nameof(safeByteFactory));
-            if (safeBytesFactory == null) throw new ArgumentNullException(nameof(safeBytesFactory));
-            _fastRandom = fastRandom;
-            _safeByteFactory = safeByteFactory;
-            _safeBytesInstantiator = safeBytesFactory;
+            _fastRandom = fastRandom ?? throw new ArgumentNullException(nameof(fastRandom));
+            _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
+            _safeBytesInstantiator = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
             _safeByteCollection = safeByteCollectionFactory.Create();
         }
 

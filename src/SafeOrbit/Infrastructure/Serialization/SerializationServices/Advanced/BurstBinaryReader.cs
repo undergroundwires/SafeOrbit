@@ -50,10 +50,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Advanced
         ///<exception cref = "ArgumentNullException"></exception>
         public BurstBinaryReader(ITypeNameConverter typeNameConverter, Encoding encoding)
         {
-            if (typeNameConverter == null) throw new ArgumentNullException(nameof(typeNameConverter));
-            if (encoding == null) throw new ArgumentNullException(nameof(encoding));
-            _typeNameConverter = typeNameConverter;
-            _encoding = encoding;
+            _typeNameConverter = typeNameConverter ?? throw new ArgumentNullException(nameof(typeNameConverter));
+            _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
         }
 
         #region IBinaryReader Members

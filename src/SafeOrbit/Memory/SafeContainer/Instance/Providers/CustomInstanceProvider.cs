@@ -42,8 +42,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         public CustomInstanceProvider(Func<TImplementation> instanceGetter, InstanceProtectionMode protectionMode, LifeTime lifeTime = LifeTime.Unknown)
             : base(lifeTime, protectionMode)
         {
-            if (instanceGetter == null) throw new ArgumentNullException(nameof(instanceGetter));
-            _instanceGetter = instanceGetter;
+            _instanceGetter = instanceGetter ?? throw new ArgumentNullException(nameof(instanceGetter));
         }
 
         /// <summary>
@@ -56,8 +55,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             LifeTime lifeTime = LifeTime.Unknown)
             : base(lifeTime, injectionDetector, protectionMode, alertChannel)
         {
-            if (instanceGetter == null) throw new ArgumentNullException(nameof(instanceGetter));
-            _instanceGetter = instanceGetter;
+            _instanceGetter = instanceGetter ?? throw new ArgumentNullException(nameof(instanceGetter));
         }
 
         /// <summary>

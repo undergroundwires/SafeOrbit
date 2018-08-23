@@ -55,12 +55,9 @@ namespace SafeOrbit.Memory
             IFactory<ISafeString> safeStringFactory,
             IFactory<ISafeBytes> safeBytesFactory)
         {
-            if (textService == null) throw new ArgumentNullException(nameof(textService));
-            if (safeStringFactory == null) throw new ArgumentNullException(nameof(safeStringFactory));
-            if (safeBytesFactory == null) throw new ArgumentNullException(nameof(safeBytesFactory));
-            _textService = textService;
-            _safeStringFactory = safeStringFactory;
-            _safeBytesFactory = safeBytesFactory;
+            _textService = textService ?? throw new ArgumentNullException(nameof(textService));
+            _safeStringFactory = safeStringFactory ?? throw new ArgumentNullException(nameof(safeStringFactory));
+            _safeBytesFactory = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
             _charBytesList = new List<ISafeBytes>();
         }
 

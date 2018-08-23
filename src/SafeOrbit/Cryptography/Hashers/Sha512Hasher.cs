@@ -48,8 +48,7 @@ namespace SafeOrbit.Cryptography.Hashers
         }
         internal Sha512Hasher(HashAlgorithm algorithm)
         {
-            if (algorithm == null) throw new ArgumentNullException(nameof(algorithm));
-            _algorithm = algorithm;
+            _algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
         }
 
         public byte[] Compute(byte[] input)
