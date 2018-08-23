@@ -24,6 +24,8 @@ SOFTWARE.
 */
 
 using System;
+using System.Runtime.CompilerServices;
+
 #if NETFRAMEWORK
 using System.Runtime.CompilerServices;
 #endif
@@ -58,6 +60,16 @@ namespace SafeOrbit.Helpers
             {
                 cleanup.Invoke();
             }
+#endif
+        }
+
+        /// <summary>
+        /// Create a CER (Constrained Execution Region)
+        /// </summary>
+        public static void PrepareConstrainedRegions()
+        {
+#if !NETCORE
+            RuntimeHelpers.PrepareConstrainedRegions();
 #endif
         }
     }

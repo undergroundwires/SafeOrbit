@@ -33,6 +33,7 @@ Here's how you use the class:
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Memory
 {
@@ -134,23 +135,25 @@ namespace SafeOrbit.Memory
             {
                 String = new string('\0', SafeString.Length);
                 _gch = new GCHandle();
-#if NETFRAMEWORK
-                // Create a CER (Constrained Execution Region)
-                RuntimeHelpers.PrepareConstrainedRegions();
-#endif
-                try
-                {
-                }
+
+                RuntimeHelper.PrepareConstrainedRegions();
+                try { }
                 finally
                 {
                     // Pin our string, disallowing the garbage collector from moving it around.
                     _gch = GCHandle.Alloc(String, GCHandleType.Pinned);
                 }
-   
-                // Copy the SafeString content to our pinned string
-                var pInsecureString = (char*) _gch.AddrOfPinnedObject();
-                for (var charIndex = 0; charIndex < SafeString.Length; charIndex++)
-                    pInsecureString[charIndex] = SafeString.GetAsChar(charIndex);
+
+
+                RuntimeHelper.PrepareConstrainedRegions();
+                try { }
+                finally
+                {
+                    // Copy the SafeString content to our pinned string
+                    var pInsecureString = (char*)_gch.AddrOfPinnedObject();
+                    for (var charIndex = 0; charIndex < SafeString.Length; charIndex++)
+                        pInsecureString[charIndex] = SafeString.GetAsChar(charIndex);
+                }
             }
         }
 
