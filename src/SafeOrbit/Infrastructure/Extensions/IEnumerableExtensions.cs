@@ -67,7 +67,7 @@ namespace SafeOrbit.Extensions
         /// </summary>
         public static bool AreAllEqual<T>(this IEnumerable<T> sequence)
         {
-            return !sequence.Distinct().Any();
+            return !sequence.Any() || sequence.Distinct().Count() == 1;
         }
     }
 }

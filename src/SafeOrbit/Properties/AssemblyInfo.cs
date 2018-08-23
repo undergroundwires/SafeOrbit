@@ -36,7 +36,7 @@ using SafeOrbit.Library;
 [assembly: AssemblyTitle("SafeOrbit")]
 [assembly: AssemblyCompany("undergroundwires")]
 [assembly: AssemblyDescription("SafeOrbit is easy-to-use and strong security toolkit for .NET")]
-[assembly: AssemblyCopyright("Copyright undergroundwires ©  2016")]
+[assembly: AssemblyCopyright("Copyright undergroundwires ©  2016-2018")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from

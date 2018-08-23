@@ -37,7 +37,7 @@
       * Fixed optimization problems in SafeStringToStringMarshaler
 
       - Bugs -
-      //Run unit tests for .net core
+      * Fixed sanity check hash size function returning wrong value
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
