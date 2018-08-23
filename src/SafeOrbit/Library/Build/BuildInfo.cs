@@ -9,7 +9,9 @@
         private static Platform GetTargetPlatform()
         {
 #if NETCORE
-            return Platform.NetCore;
+            return Platform.NetStandard;
+#elif NETCORE2
+            return Platform.NetStandard2;
 #elif NET461
             return Platform.Net461;
 #elif NET46

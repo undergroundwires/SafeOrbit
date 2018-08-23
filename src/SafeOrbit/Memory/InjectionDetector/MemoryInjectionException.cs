@@ -75,8 +75,8 @@ namespace SafeOrbit.Exceptions
             InjectionType = injectionType;
         }
 
-#if !NETCORE
-      [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+#if !(NETCORE || NETCORE2)
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public MemoryInjectionException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
