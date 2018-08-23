@@ -1,36 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{526754B4-B0E0-4D47-90C7-73A170A84C9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helpers", "helpers", "{606FBD51-2C64-4722-A296-0883BDF7B2AE}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.NetFramework", "tests\IntegrationTests.NetFramework\IntegrationTests.NetFramework.csproj", "{F9A2DDF3-D3D9-4133-B8E1-D3893ABEA2E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceTests", "tests\PerformanceTests\PerformanceTests.csproj", "{26608A1A-0CCE-4D06-9011-F455A9095594}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SafeOrbit", "SafeOrbit\SafeOrbit.xproj", "{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB127857-A060-4285-8768-C094A0A2B5CE}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SafeOrbit", "SafeOrbit\SafeOrbit.csproj", "{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests.NetFramework", "tests\UnitTests.NetFramework\UnitTests.NetFramework.csproj", "{2F706E0C-CA13-4CB7-A472-7F3E57BBF4DB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{526754B4-B0E0-4D47-90C7-73A170A84C9B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomComparisonApp", "tests\apps\RandomComparisonApp\RandomComparisonApp.csproj", "{5A9F48D4-BDF2-43D8-8E29-6D0CBC4318ED}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Infrastructure", "tests\Infrastructure\Infrastructure.xproj", "{300DB885-91FF-4FBC-8C57-F9285EB252E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "tests\Infrastructure\Infrastructure.csproj", "{300DB885-91FF-4FBC-8C57-F9285EB252E7}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "UnitTests", "tests\UnitTests\UnitTests.xproj", "{166C105B-F7FC-4FFD-AE47-E72EB09E8AC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{166C105B-F7FC-4FFD-AE47-E72EB09E8AC4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helpers", "helpers", "{606FBD51-2C64-4722-A296-0883BDF7B2AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.csproj", "{6F3183BB-60D8-47A6-BF50-0640FF701498}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.xproj", "{6F3183BB-60D8-47A6-BF50-0640FF701498}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CoreIntegrationConsoleApp", "tests\apps\CoreIntegrationConsoleApp\CoreIntegrationConsoleApp.xproj", "{E49C508C-FA8E-4183-A00E-D4ABCBF13DF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreIntegrationConsoleApp", "tests\apps\CoreIntegrationConsoleApp\CoreIntegrationConsoleApp.csproj", "{E49C508C-FA8E-4183-A00E-D4ABCBF13DF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,15 +74,18 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{526754B4-B0E0-4D47-90C7-73A170A84C9B} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
+		{606FBD51-2C64-4722-A296-0883BDF7B2AE} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
 		{F9A2DDF3-D3D9-4133-B8E1-D3893ABEA2E6} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
 		{26608A1A-0CCE-4D06-9011-F455A9095594} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
 		{2F706E0C-CA13-4CB7-A472-7F3E57BBF4DB} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
-		{526754B4-B0E0-4D47-90C7-73A170A84C9B} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
 		{5A9F48D4-BDF2-43D8-8E29-6D0CBC4318ED} = {526754B4-B0E0-4D47-90C7-73A170A84C9B}
 		{300DB885-91FF-4FBC-8C57-F9285EB252E7} = {606FBD51-2C64-4722-A296-0883BDF7B2AE}
 		{166C105B-F7FC-4FFD-AE47-E72EB09E8AC4} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
-		{606FBD51-2C64-4722-A296-0883BDF7B2AE} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
 		{6F3183BB-60D8-47A6-BF50-0640FF701498} = {63D4E26A-7775-4BCE-AB32-62AEBB61BFF8}
 		{E49C508C-FA8E-4183-A00E-D4ABCBF13DF5} = {526754B4-B0E0-4D47-90C7-73A170A84C9B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E937B969-EF93-4041-98B1-8A4424B4DE0E}
 	EndGlobalSection
 EndGlobal

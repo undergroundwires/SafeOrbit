@@ -259,7 +259,7 @@ namespace SafeOrbit.Memory
 #if NETFRAMEWORK
         public override void Close() => _closed = true;
 #else
-        public override void Close() => _closed = true;
+        public void Close() => _closed = true;
 #endif
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
