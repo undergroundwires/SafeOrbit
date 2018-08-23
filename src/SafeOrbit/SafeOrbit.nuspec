@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>$id$</id>
-    <version>0.3</version>
+    <version>0.2.3</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -20,21 +20,20 @@
       Wiki : https://github.com/undergroundwires/safeOrbit/wiki
     </description>
     <releaseNotes>
-	- Add -
-		- SafeBinaryStorage :
-			* Safe your sensitive data that's never modified in SafeBinaryStorage.
-			* ByteArrayProtector is renamed to SafeBinaryStorage, ByteArrayProtector uses now disposable pattern.
-	
-	- Security -
-		- IFastRandom is now seeded with strong random data for most of the usages: .
-	
-	- Performance -
-	   - Caching types for reflection. MemoryProtector works faster.
-	  
-	- Bugs -
-	  //Run unit tests for .net core
-	  - [BUG] 
-	  - [BUG]
+      - Add -
+      - SafeBinaryStorage :
+      * Safe your sensitive data that's never modified in SafeBinaryStorage.
+      * ByteArrayProtector is renamed to SafeBinaryStorage, ByteArrayProtector uses now disposable pattern.
+
+      - Security -
+      * IFastRandom is now seeded with strong random data for most of the usages.
+
+      - Performance -
+      * Caching types for reflection. MemoryProtector works faster.
+      * Fixed optimization problems in SafeStringToStringMarshaler
+
+      - Bugs -
+      //Run unit tests for .net core
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
