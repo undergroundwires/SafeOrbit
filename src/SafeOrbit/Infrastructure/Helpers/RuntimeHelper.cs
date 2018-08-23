@@ -24,9 +24,8 @@ SOFTWARE.
 */
 
 using System;
-using System.Runtime.CompilerServices;
 
-#if NETFRAMEWORK
+#if !NETCORE
 using System.Runtime.CompilerServices;
 #endif
 
@@ -39,7 +38,7 @@ namespace SafeOrbit.Helpers
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (cleanup == null) throw new ArgumentNullException(nameof(cleanup));
 
-#if NETFRAMEWORK
+#if !NETCORE
             RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
             delegate
                 {

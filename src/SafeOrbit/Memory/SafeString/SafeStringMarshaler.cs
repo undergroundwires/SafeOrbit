@@ -106,6 +106,7 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets or sets the string representation of the SafeString object.
         ///     This string will be cleared from the memory when the class is disposed.
@@ -115,10 +116,7 @@ namespace SafeOrbit.Memory
         /// </value>
         public string String { get; protected set; }
 
-        public void Dispose()
-        {
-            Deallocate();
-        }
+        public void Dispose() => Deallocate();
 
         /// <summary>
         ///     Updates the string value from previously set SafeString.

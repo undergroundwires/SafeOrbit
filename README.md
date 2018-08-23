@@ -9,11 +9,11 @@
 
 ### The nuget package  [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/)
 
-|                 Platform | .NET Core | .NET 4.0+ |
-|--------------------------|-----------|-----------|
-|            Full security |     ✔     |     ✔    |
-|  Exception serialization |     ✖     |     ✔    |
-|   Non zero bytes randoms |     ✖     |     ✔    |
+|                 Platform | .NET Std 1.6 | .NET Std 2.0 | .NET 4.0+ |
+|--------------------------|--------------|--------------|-----------|
+|            Full security |     ✔        |       ✔      |     ✔     |
+|  Exception serialization |     ✖        |       ✖      |     ✔     |
+|   Non zero bytes randoms |     ✖        |       ✔      |     ✔     |
 
 > It must not be required to be secret, and it must be able to fall into the hands of the enemy without inconvenience.
 > -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
