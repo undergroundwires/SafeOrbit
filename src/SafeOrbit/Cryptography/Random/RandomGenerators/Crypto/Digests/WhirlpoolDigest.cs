@@ -201,7 +201,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
 
             for (int i = 0; i < 8; i++)
             {
-                convertLongToByteArray(_hash[i], output, outOff + (i * 8));
+                ConvertLongToByteArray(_hash[i], output, outOff + (i * 8));
             }
 
             Reset();
@@ -252,7 +252,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
             return rv;
         }
 
-        private static void convertLongToByteArray(long inputLong, byte[] outputArray, int offSet)
+        private static void ConvertLongToByteArray(long inputLong, byte[] outputArray, int offSet)
         {
             for (int i = 0; i < 8; i++)
             {

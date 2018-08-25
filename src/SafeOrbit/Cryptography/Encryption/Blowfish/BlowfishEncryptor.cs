@@ -113,49 +113,52 @@ namespace SafeOrbit.Cryptography.Encryption
         public override int BlockSize { get; } = 64;
         public override int IvSize => this.CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Encrypts the specified input using <see cref="CipherMode" />.
+        ///     Encrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
         /// </summary>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="T:System.ArgumentNullException">
         ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
         ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
         /// </exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
+        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="UnexpectedEnumValueException{TEnum}"><see cref="CipherMode" /> is not defined or supported.</exception>
-        /// <seealso cref="EncryptAsync" />
-        public byte[] Encrypt(byte[] input, byte[] key) => AsyncHelper.RunSync(() => EncryptAsync(input, key));
+        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
+        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.EncryptAsync(System.Byte[],System.Byte[])" />
+        public byte[] Encrypt(byte[] input, byte[] key) => EncryptAsync(input, key).RunSync();
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Decrypts the specified input using <see cref="CipherMode" />.
+        ///     Decrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
         /// </summary>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="T:System.ArgumentNullException">
         ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
         ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
         /// </exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
+        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="UnexpectedEnumValueException{TEnum}"><see cref="CipherMode" /> is not defined or supported.</exception>
-        /// <seealso cref="DecryptAsync" />
-        public byte[] Decrypt(byte[] input, byte[] key) => AsyncHelper.RunSync(() => DecryptAsync(input, key));
+        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
+        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.DecryptAsync(System.Byte[],System.Byte[])" />
+        public byte[] Decrypt(byte[] input, byte[] key) => DecryptAsync(input, key).RunSync();
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Encrypts the specified input using <see cref="CipherMode" />.
+        ///     Encrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
         /// </summary>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="T:System.ArgumentNullException">
         ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
         ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
         /// </exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
+        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="UnexpectedEnumValueException{TEnum}"><see cref="CipherMode" /> is not defined or supported.</exception>
-        /// <seealso cref="Encrypt" />
+        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
+        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.Encrypt(System.Byte[],System.Byte[])" />
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
@@ -170,19 +173,20 @@ namespace SafeOrbit.Cryptography.Encryption
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Decrypts the specified input using <see cref="CipherMode" />.
+        ///     Decrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
         /// </summary>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="T:System.ArgumentNullException">
         ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
         ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
         /// </exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
+        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="UnexpectedEnumValueException{TEnum}"><see cref="CipherMode" /> is not defined or supported.</exception>
-        /// <seealso cref="Decrypt" />
+        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
+        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.Decrypt(System.Byte[],System.Byte[])" />
         public Task<byte[]> DecryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
@@ -213,7 +217,7 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
 
-        private async Task<byte[]> InternalCryptEcbAsync(byte[] input, byte[] key, bool forEncryption)
+        private static async Task<byte[]> InternalCryptEcbAsync(byte[] input, byte[] key, bool forEncryption)
         {
             using (var ms = new MemoryStream())
             {

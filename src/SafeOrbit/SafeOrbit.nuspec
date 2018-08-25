@@ -31,12 +31,13 @@
 
       - Security -
       * IFastRandom is now seeded with strong random data for most of the usages.
+      * Fixed memory leak problem in SafeStringToStringMarshaler.
 
       - Performance -
-      * Caching types for reflection. MemoryProtector works faster.
-      * Fixed optimization problems in SafeStringToStringMarshaler
+      * Caching types for reflection. Memory protection works faster.
+      * Optimized serialization & encryption with faster async operations
 
-      - Bugs -
+      - Other -
       * Fixed sanity check hash size function returning wrong value
     </releaseNotes>
     <copyright>Copyright 2016</copyright>

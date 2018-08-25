@@ -131,7 +131,7 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     <see cref="MaxKeySize" /> values.
         /// </exception>
         public byte[] Encrypt(byte[] input, byte[] key, byte[] salt)
-            => AsyncHelper.RunSync(() => EncryptAsync(input, key, salt));
+            => EncryptAsync(input, key, salt).RunSync();
 
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
@@ -141,7 +141,7 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     <see cref="MaxKeySize" /> values.
         /// </exception>
         public byte[] Decrypt(byte[] input, byte[] key, byte[] salt)
-            => AsyncHelper.RunSync(() => DecryptAsync(input, key, salt));
+            => DecryptAsync(input, key, salt).RunSync();
 
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>

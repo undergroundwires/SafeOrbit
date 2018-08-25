@@ -31,10 +31,11 @@ using System.Security.Cryptography;
 #endif
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     Encrypts/decrypt a byte array using <see cref="BlowfishEcb"/>.
+    ///     Encrypts/decrypt a byte array using <see cref="T:SafeOrbit.Cryptography.Encryption.BlowfishEcb" />.
     /// </summary>
-    /// <seealso cref="IByteArrayProtector" />
+    /// <seealso cref="T:SafeOrbit.Memory.SafeBytesServices.DataProtection.IByteArrayProtector" />
     public partial class MemoryProtector
     {
         private void EnsureParameter(byte[] userData)

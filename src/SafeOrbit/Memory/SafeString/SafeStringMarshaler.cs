@@ -2,7 +2,7 @@
 /*
 MIT License
 
-Copyright (c) 2016-2018 Erkin Ekici - undergroundwires@safeorb.it
+Copyright (c) 2018 Erkin Ekici - undergroundwires@safeorb.it
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -147,10 +147,11 @@ namespace SafeOrbit.Memory
                 try { }
                 finally
                 {
-                    // Copy the SafeString content to our pinned string
                     var pInsecureString = (char*)_gch.AddrOfPinnedObject();
-                    for (var charIndex = 0; charIndex < SafeString.Length; charIndex++)
-                        pInsecureString[charIndex] = SafeString.GetAsChar(charIndex);
+                    // Copy the SafeString content to our pinned string
+                    Fast.For(0, SafeString.Length, charIndex =>
+                        pInsecureString[charIndex] = SafeString.GetAsChar(charIndex)
+                    );
                 }
             }
         }

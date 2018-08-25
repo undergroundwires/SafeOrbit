@@ -142,8 +142,7 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             var clone = _safeBytesInstantiator.Create();
-            var asSafeBytes = clone as SafeBytes;
-            if (asSafeBytes != null)
+            if (clone is SafeBytes asSafeBytes)
             {
                 //If it's the known SafeBytes then it reveals nothing in the memory
                 for (var i = 0; i < Length; i++)

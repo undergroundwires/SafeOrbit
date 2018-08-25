@@ -61,6 +61,7 @@ namespace SafeOrbit.Library
             safeContainer.Register<ISafeByte, SafeByte>();
             safeContainer.Register<ISafeByteFactory, MemoryCachedSafeByteFactory>(LifeTime.Singleton);
             safeContainer.Register<IByteArrayProtector, MemoryProtector>(LifeTime.Transient);
+            safeContainer.Register<IByteIdListSerializer<int>, ByteIdListSerializer>(LifeTime.Singleton);
             safeContainer.Register<IByteIdGenerator, HashedByteIdGenerator>(LifeTime.Singleton);
             safeContainer.Register<ISafeByteCollection, EncryptedSafeByteCollection>();
             safeContainer.Register<IFactory<ISafeBytes>, SafeContainerWrapper<ISafeBytes>>();
