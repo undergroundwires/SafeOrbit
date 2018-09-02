@@ -22,7 +22,7 @@
       Supported platforms:
       - .NET Framework 4.0+
       - .NET Standard 1.6+
-      - .NET Core
+      - .NET Core 2.0+
     </description>
     <releaseNotes>
       - Compatibility -
