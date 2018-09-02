@@ -65,6 +65,7 @@ Memory injection is enabled as default. It provides self security on client side
 |      Safely character remove |       ✖     |     ✔      |
 |                Safely equals |       ✖     |     ✔      |
 |              Safely retrieve |       ✖     |     ✔      |
+|      Reveal only single char |       ✖     |     ✔      |
 |         Unlimited characters |       ✖     |     ✔      |
 
 
@@ -81,11 +82,11 @@ Internal protection for `SafeOrbit` library be **enabled as default**. You can d
 An object that can detect memory injections to itself.
 
 ```C#
-            var safeObject = new SafeObject<Customer>();
-            //each change to the object's state or code must be using ApplyChanges
-            safeObject.ApplyChanges((customer) => customer.SensitiveInfo = "I'm protected!");
-            //retrieve safe data
-            var semsotoveOmfp = safeObject.Object.SensitiveInfo; //returns "I'm protected!" or alerts if any injection is detected
+    var safeObject = new SafeObject<Customer>();
+    //each change to the object's state or code must be using ApplyChanges
+    safeObject.ApplyChanges((customer) => customer.SensitiveInfo = "I'm protected!");
+    //retrieve safe data
+    var safeInfo = safeObject.Object.SensitiveInfo; //returns "I'm protected!" or alerts if any injection is detected
 ```
 
 ### SafeContainer [(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/SafeContainer)
