@@ -35,7 +35,7 @@
 
       - Performance -
       * Caching types for reflection. Memory protection works faster.
-      * Optimized serialization & encryption with faster async operations
+      * Optimized serialization and encryption with faster async operations
       * Small optimizations in random generators
 
       - Other -
