@@ -28,10 +28,11 @@ using System.Diagnostics;
 
 namespace SafeOrbit.Infrastructure.Reflection
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Generates a key/id for each type
     /// </summary>
-    /// <seealso cref="ITypeIdGenerator" />
+    /// <seealso cref="T:SafeOrbit.Infrastructure.Reflection.ITypeIdGenerator" />
     public class TypeIdGenerator : ITypeIdGenerator
     {
         private static readonly Lazy<TypeIdGenerator> StaticInstanceLazy = new Lazy<TypeIdGenerator>();
@@ -42,6 +43,7 @@ namespace SafeOrbit.Infrastructure.Reflection
         /// <value>The static instance.</value>
         public static ITypeIdGenerator StaticInstance => StaticInstanceLazy.Value;
 
+        /// <inheritdoc />
         /// <summary>
         /// Generates a new id for the type.
         /// </summary>
@@ -49,6 +51,7 @@ namespace SafeOrbit.Infrastructure.Reflection
         /// <returns>The id.</returns>
         public string Generate<T>() => typeof(T).AssemblyQualifiedName;
 
+        /// <inheritdoc />
         /// <summary>
         /// Generates a new id for the type.
         /// </summary>
