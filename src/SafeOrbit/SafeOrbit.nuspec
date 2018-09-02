@@ -40,7 +40,7 @@
       - Other -
       * Fixed sanity check hash size function returning wrong value
     </releaseNotes>
-    <copyright>Copyright 2016</copyright>
+    <copyright>Copyright 2016 - 2018</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
   </metadata>
   <files>
