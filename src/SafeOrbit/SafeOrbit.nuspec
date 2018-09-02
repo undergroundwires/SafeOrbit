@@ -27,7 +27,7 @@
     <releaseNotes>
       - Compatibility -
       * Added support for netstandard2.0, net462, net47, net471, net472
-      * Updated DotNet dependencies to the latest available for different platforms
+      * Updated framework dependencies to the latest available for different platforms
 
       - Security -
       * IFastRandom is now seeded with strong random data.
