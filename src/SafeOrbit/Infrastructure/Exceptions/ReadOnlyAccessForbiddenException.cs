@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#if NETFRAMEWORK
+#if !NETCORE
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -37,7 +37,7 @@ namespace SafeOrbit.Exceptions
     /// <remarks>
     /// TODO: rename this class.
     /// </remarks>
-#if NETFRAMEWORK
+#if !NETCORE
     [Serializable]
 #endif
     public class ReadOnlyAccessForbiddenException : SafeOrbitException
@@ -46,7 +46,7 @@ namespace SafeOrbit.Exceptions
         {
         }
 
-#if NETFRAMEWORK
+#if !NETCORE
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public ReadOnlyAccessForbiddenException(SerializationInfo info, StreamingContext context) : base(info, context)
         {

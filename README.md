@@ -12,7 +12,7 @@
 |                 Platform | .NET Std 1.6 | .NET Std 2.0 | .NET 4.0+ |
 |--------------------------|--------------|--------------|-----------|
 |            Full security |     ✔        |       ✔      |     ✔     |
-|  Exception serialization |     ✖        |       ✖      |     ✔     |
+|  Exception serialization |     ✖        |       ✔      |     ✔     |
 |   Non zero bytes randoms |     ✖        |       ✔      |     ✔     |
 
 > It must not be required to be secret, and it must be able to fall into the hands of the enemy without inconvenience.

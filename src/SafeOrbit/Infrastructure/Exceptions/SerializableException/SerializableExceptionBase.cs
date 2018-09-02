@@ -25,7 +25,7 @@ SOFTWARE.
 
 using System;
 
-#if NETFRAMEWORK
+#if !NETCORE
 using System.Security.Permissions;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -42,7 +42,7 @@ namespace SafeOrbit.Exceptions.SerializableException
     /// </remarks>
     /// <seealso cref="Exception"/>
     /// <seealso cref="ConfigureSerialize"/>
-#if NETFRAMEWORK
+#if !NETCORE
 /// <seealso cref="SerializableAttribute"/>
     [Serializable]
 #endif
@@ -66,7 +66,7 @@ namespace SafeOrbit.Exceptions.SerializableException
         {
         }
 
-#if NETFRAMEWORK
+#if !NETCORE
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected SerializableExceptionBase(SerializationInfo info, StreamingContext context) : base(info, context)
         {
@@ -83,7 +83,7 @@ namespace SafeOrbit.Exceptions.SerializableException
             serializationContext.Add(() => ResourceReferenceProperty);
         }
 
-#if NETFRAMEWORK
+#if !NETCORE
 
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -103,7 +103,7 @@ namespace SafeOrbit.Exceptions.SerializableException
             return serializationContext;
         }
 
-#if NETFRAMEWORK
+#if !NETCORE
         private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
         {
             var propertiesToSerialize = serializationContext.PropertyInfos;
