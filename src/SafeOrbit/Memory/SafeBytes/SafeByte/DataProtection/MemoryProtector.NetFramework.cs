@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#if NETFRAMEWORK
+#if !NETCORE
 using System;
 using System.Security.Cryptography;
 

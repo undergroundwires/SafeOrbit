@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#if (NETCORE || NETCORE2)
+#if (NETCORE)
 using System;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;
