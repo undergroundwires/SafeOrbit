@@ -47,10 +47,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         protected override ISafeByteCollection GetSut()
         {
             return new EncryptedSafeByteCollection(
-                Stubs.Get<IFastEncryptor>(),
-                Stubs.Get<IByteArrayProtector>(),
-                Stubs.Get<IFastRandom>(),
-                Stubs.Get<ISafeByteFactory>());
+                encryptor: Stubs.Get<IFastEncryptor>(),
+                memoryProtector: Stubs.Get<IByteArrayProtector>(),
+                fastRandom: Stubs.Get<IFastRandom>(),
+                safeByteFactory: Stubs.Get<ISafeByteFactory>(),
+                serializer: Stubs.Get<IByteIdListSerializer<int>>());
         }
 
         //** Append **//

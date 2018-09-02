@@ -39,7 +39,7 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
         public void InjectionType_Returns_CodeInjection()
         {
             //arrange
-            var expected = InjectionType.CodeInjection;
+            const InjectionType expected = InjectionType.CodeInjection;
             var sut = GetSut();
             //act
             var actual = sut.InjectionType;
