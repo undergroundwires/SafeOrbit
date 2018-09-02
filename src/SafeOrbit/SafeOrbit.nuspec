@@ -36,7 +36,7 @@
       - Performance -
       * Caching types for reflection. Memory protection works faster.
       * Optimized serialization & encryption with faster async operations
-      * Small optimizations in randoms
+      * Small optimizations in random generators
 
       - Other -
       * Fixed sanity check hash size function returning wrong value
