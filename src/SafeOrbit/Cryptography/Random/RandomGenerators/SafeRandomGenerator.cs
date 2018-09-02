@@ -34,16 +34,16 @@ using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     <see cref="SafeRandomGenerator" /> returns cryptographically strong random data, never to exceed the number of
+    ///     <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" /> returns cryptographically strong random data, never to exceed the number of
     ///     bytes available from the specified entropy sources.  This can cause slow generation, and is recommended only for
     ///     generating extremely strong keys and other things that don't require a large number of bytes quickly.  This is CPU
-    ///     intensive. For general purposes, see <see cref="FastRandomGenerator" /> instead.
+    ///     intensive. For general purposes, see <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> instead.
     /// </summary>
     /// <example>
     ///     <code>
     ///           using SafeOrbit.Cryptography.Random.RandomGenerators;
-    ///  
     ///           static void Main(string[] args)
     ///           {
     ///           StartEarly.StartFillingEntropyPools();  // Start gathering entropy as early as possible
@@ -58,128 +58,22 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     /// </example>
     public sealed class SafeRandomGenerator : RandomNumberGenerator
     {
-        // Interlocked cannot handle bools.  So using int as if it were bool.
+        public static SafeRandomGenerator StaticInstance => StaticInstanceLazy.Value;
         private static readonly Lazy<SafeRandomGenerator> StaticInstanceLazy = new Lazy<SafeRandomGenerator>();
-        private IReadOnlyList<IEntropyHasher> _entropyHashers;
+        private IReadOnlyCollection<IEntropyHasher> _entropyHashers;
         private readonly int _hashLengthInBytes;
-        private int _isDisposed = IntCondition.False;
-
-        public SafeRandomGenerator() : this(GetAllEntropyHashers())
+        private int _isDisposed = IntCondition.False; // Interlocked cannot handle bools. So using int as if it were bool.
+        public SafeRandomGenerator() : this(GetEntropyHashers().ToArray())
         {
         }
-
-        internal SafeRandomGenerator(IReadOnlyList<IEntropyHasher> entropyHashers)
+        internal SafeRandomGenerator(IReadOnlyCollection<IEntropyHasher> entropyHashers)
         {
-            EnsureEntropyHashers(entropyHashers);
+            ValidateEntropyHashers(entropyHashers);
             _entropyHashers = entropyHashers;
             _hashLengthInBytes = GetHashLengthInBits(entropyHashers) / 8;
         }
+        ~SafeRandomGenerator() => Dispose(false);
 
-        private int GetHashLengthInBits(IReadOnlyList<IEntropyHasher> entropyHashers)
-        {
-            var hashSizes =entropyHashers.SelectMany(e => e.HashWrappers).Select(w => w.HashSizeInBits);
-            if (!hashSizes.AreAllEqual())
-                throw new ArgumentException("Hash functions must all return the same size digest");
-            return hashSizes.First();
-        }
-
-        private static void EnsureEntropyHashers(IReadOnlyList<IEntropyHasher> entropyHashers)
-        {
-            if (entropyHashers == null) throw new ArgumentNullException(nameof(entropyHashers));
-            if (entropyHashers.Count < 1) throw new ArgumentException($"{nameof(entropyHashers.Count)} cannot be < 1");
-            lock (entropyHashers)
-            {
-
-                foreach (var eHasher in entropyHashers)
-                {
-                    EnsureEntropyHasher(eHasher);
-                }
-            }
-        }
-        private static void EnsureEntropyHasher(IEntropyHasher eHasher)
-        {
-            if (eHasher == null) throw new ArgumentNullException(nameof(eHasher));
-            if (eHasher.Rng == null)
-                throw new ArgumentException($"{nameof(eHasher.Rng)} property is null for the entropy hasher.");
-            if (eHasher.HashWrappers == null)
-                throw new ArgumentException($"{nameof(eHasher.HashWrappers)} property is null for the entropy hasher.");
-            if (eHasher.HashWrappers.Count < 1)
-                throw new ArgumentException($"{nameof(eHasher.HashWrappers)} property must at least have one element.");
-        }
-
-        public static SafeRandomGenerator StaticInstance => StaticInstanceLazy.Value;
-
-
-
-
-        private static List<IEntropyHasher> GetAllEntropyHashers()
-        {
-            var hashers = new List<IEntropyHasher>();
-
-            // Add the .NET implementation of SHA256 and RNGCryptoServiceProvider
-            {
-                var rng = new SystemRng();
-                var hashWrapper = new HashAlgorithmWrapper(SHA256.Create());
-                hashers.Add(new EntropyHasher(rng, hashWrapper));
-            }
-
-            // Add the ThreadedSeedGeneratorRNG as entropy source, and chain SHA256 and RipeMD256 as hash algorithms
-            {
-                var rng = new ThreadedSeedGeneratorRng();
-                var hashWrappers = new List<IHashAlgorithmWrapper>
-                {
-                    new HashAlgorithmWrapper(SHA256.Create()),
-                    new HashAlgorithmWrapper(new RipeMD256Digest())
-                };
-                hashers.Add(new EntropyHasher(rng, hashWrappers));
-            }
-
-            // Add the ThreadSchedulerRNG as entropy source, and SHA256 as hash algorithm
-            {
-                var rng = new ThreadSchedulerRng();
-                var hashWrapper = new HashAlgorithmWrapper(new Sha256Digest());
-                hashers.Add(new EntropyHasher(rng, hashWrapper));
-            }
-            return hashers;
-        }
-
-
-        private byte[] CombineByteArrays(List<byte[]> byteArrays)
-        {
-            if (byteArrays == null) throw new ArgumentNullException(nameof(byteArrays));
-            if (byteArrays.Count < 1) throw new ArgumentException("byteArrays.Count < 1");
-
-            var accumulator = new byte[_hashLengthInBytes];
-            if (byteArrays.Count == 1)
-            {
-                if (byteArrays[0].Length != _hashLengthInBytes)
-                    throw new ArgumentException("byteArray.Length != HashLengthInBytes");
-                Array.Copy(byteArrays[0], accumulator, _hashLengthInBytes);
-            }
-            else // if (byteArrays.Count > 1)
-            {
-                Array.Clear(accumulator, 0, accumulator.Length); // Should be unnecessary, but just to make sure.
-                foreach (var byteArray in byteArrays)
-                {
-                    if (byteArray.Length != _hashLengthInBytes)
-                        throw new ArgumentException("byteArray.Length != HashLengthInBytes");
-                    for (var i = 0; i < _hashLengthInBytes; i++)
-                        accumulator[i] ^= byteArray[i];
-                }
-            }
-            return accumulator;
-        }
-        private bool CompareByteArrays(byte[] first, byte[] second)
-        {
-            if ((first == null) || (second == null))
-                throw new CryptographicException("null byte array in allByteArraysThatMustBeUnique");
-            if ((first.Length != _hashLengthInBytes) || (second.Length != _hashLengthInBytes))
-                throw new CryptographicException("byte array in allByteArraysThatMustBeUnique with wrong length");
-            for (var i = 0; i < _hashLengthInBytes; i++)
-                if (first[i] != second[i])
-                    return false;
-            return true;
-        }
         public override void GetBytes(byte[] data)
         {
             if (data == null)
@@ -267,7 +161,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             var pos = 0;
             while (true)
             {
-                var tempData = new byte[(int) (1.05*(data.Length - pos))];
+                var tempData = new byte[(int)(1.05 * (data.Length - pos))];
                 // Request 5% more data than needed, to reduce the probability of repeating loop
                 GetBytes(tempData);
                 for (var i = 0; i < tempData.Length; i++)
@@ -285,6 +179,45 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         }
 #endif
 
+
+        private byte[] CombineByteArrays(List<byte[]> byteArrays)
+        {
+            if (byteArrays == null) throw new ArgumentNullException(nameof(byteArrays));
+            if (byteArrays.Count < 1) throw new ArgumentException("byteArrays.Count < 1");
+
+            var accumulator = new byte[_hashLengthInBytes];
+            if (byteArrays.Count == 1)
+            {
+                if (byteArrays[0].Length != _hashLengthInBytes)
+                    throw new ArgumentException("byteArray.Length != HashLengthInBytes");
+                Array.Copy(byteArrays[0], accumulator, _hashLengthInBytes);
+            }
+            else // if (byteArrays.Count > 1)
+            {
+                Array.Clear(accumulator, 0, accumulator.Length); // Should be unnecessary, but just to make sure.
+                foreach (var byteArray in byteArrays)
+                {
+                    if (byteArray.Length != _hashLengthInBytes)
+                        throw new ArgumentException("byteArray.Length != HashLengthInBytes");
+                    for (var i = 0; i < _hashLengthInBytes; i++)
+                        accumulator[i] ^= byteArray[i];
+                }
+            }
+            return accumulator;
+        }
+        private bool CompareByteArrays(byte[] first, byte[] second)
+        {
+            if ((first == null) || (second == null))
+                throw new CryptographicException("null byte array in allByteArraysThatMustBeUnique");
+            if ((first.Length != _hashLengthInBytes) || (second.Length != _hashLengthInBytes))
+                throw new CryptographicException("byte array in allByteArraysThatMustBeUnique with wrong length");
+            for (var i = 0; i < _hashLengthInBytes; i++)
+                if (first[i] != second[i])
+                    return false;
+            return true;
+        }
+        
+
         protected override void Dispose(bool disposing)
         {
             if (Interlocked.Exchange(ref _isDisposed, IntCondition.True) == IntCondition.True)
@@ -300,20 +233,60 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                         {
                             hasher.Dispose();
                         }
-                        catch
-                        {
-                        }
+                        catch { /* Swallow */ }
                 }
-                catch
-                {
-                }
+                catch { /* Swallow */ }
             }
             base.Dispose(disposing);
         }
-
-        ~SafeRandomGenerator()
+        private static IEnumerable<IEntropyHasher> GetEntropyHashers()
         {
-            Dispose(false);
+            yield return GetHasher(
+                rng: new SystemRng(),
+                algorithms: new HashAlgorithmWrapper(SHA256.Create()));
+            yield return GetHasher(
+                new ThreadedSeedGeneratorRng(),
+                /* Algorithms */
+                new HashAlgorithmWrapper(SHA256.Create()),
+                new HashAlgorithmWrapper(new RipeMD256Digest()));
+            yield return GetHasher(
+                new ThreadSchedulerRng(),
+                /* Algorithms */
+                new HashAlgorithmWrapper(new Sha256Digest()));
+            IEntropyHasher GetHasher(RandomNumberGenerator rng, params IHashAlgorithmWrapper[] algorithms)
+                => new EntropyHasher(rng, algorithms);
+        }
+        private static int GetHashLengthInBits(IEnumerable<IEntropyHasher> entropyHashers)
+        {
+            var hashSizes = entropyHashers
+                .SelectMany(e => e.HashWrappers)
+                .Select(w => w.HashSizeInBits)
+                .ToArray();
+            if (!hashSizes.AreAllEqual())
+                throw new ArgumentException("Hash functions must all return the same size digest");
+            return hashSizes.First();
+        }
+        private static void ValidateEntropyHashers(IReadOnlyCollection<IEntropyHasher> entropyHashers)
+        {
+            if (entropyHashers == null) throw new ArgumentNullException(nameof(entropyHashers));
+            if (entropyHashers.Count < 1) throw new ArgumentException($"{nameof(entropyHashers.Count)} cannot be < 1");
+            lock (entropyHashers)
+            {
+                foreach (var hasher in entropyHashers)
+                {
+                    ValidateEntropyHasher(hasher);
+                }
+            }
+        }
+        private static void ValidateEntropyHasher(IEntropyHasher eHasher)
+        {
+            if (eHasher == null) throw new ArgumentNullException(nameof(eHasher));
+            if (eHasher.Rng == null)
+                throw new ArgumentException($"{nameof(eHasher.Rng)} property is null for the entropy hasher.");
+            if (eHasher.HashWrappers == null)
+                throw new ArgumentException($"{nameof(eHasher.HashWrappers)} property is null for the entropy hasher.");
+            if (eHasher.HashWrappers.Count < 1)
+                throw new ArgumentException($"{nameof(eHasher.HashWrappers)} property must at least have one element.");
         }
     }
 }

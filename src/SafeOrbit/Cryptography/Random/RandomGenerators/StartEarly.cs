@@ -43,33 +43,13 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         /// </summary>
         public static void StartFillingEntropyPools()
         {
-            /* We could instantiate each of these individually - as we formerly did - 
-             * But we could also just instantiate SafeRandomGenerator() once, which will instantiate SafeRandomGenerator, 
-             * which will instantiate everything else that it uses by default.
-             * So let's do that.
-             * 
-            var threadRNG = new EntropySources.ThreadSchedulerRNG();
-            threadRNG.Dispose();
-            var threadedSeedRNG = new EntropySources.ThreadedSeedGeneratorRNG();
-            threadedSeedRNG.Dispose();
-            var systemRNG = new EntropySources.SystemRNGCryptoServiceProvider();
-            systemRNG.Dispose();
-            // Also by referencing SafeRandomGenerator.StaticInstance once, we force it to be created
-            var junkString = SafeRandomGenerator.StaticInstance.ToString();
-             */
-
-            // Just do anything that references StaticInstance, in order to make StaticInstance run through its
-            // static constructor stuff
             InvokeStaticConstructorFor<FastRandomGenerator>();
+            InvokeStaticConstructorFor<ThreadedSeedGeneratorRng>();
+            InvokeStaticConstructorFor<ThreadSchedulerRng>();
+            // Initializing FastRandomGenerator, initializes also SafeRandomGenerator
+            var junk = FastRandomGenerator.StaticInstance.ToString();
         }
-
         private static void InvokeStaticConstructorFor<T>()
-        {
-            var type = typeof(T);
-            // guarantees that the static constructor is only called once,
-            // regardless how many times the method is called
-            //https://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.runtimehelpers.runclassconstructor%28v=vs.110%29.aspx
-            RuntimeHelpers.RunClassConstructor(type.TypeHandle);
-        }
+            => RuntimeHelpers.RunClassConstructor(typeof(T).TypeHandle);
     }
 }

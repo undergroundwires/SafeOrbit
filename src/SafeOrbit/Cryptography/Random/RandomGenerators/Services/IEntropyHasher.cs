@@ -32,6 +32,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     internal interface IEntropyHasher : IDisposable
     {
         RandomNumberGenerator Rng { get; }
-        IList<IHashAlgorithmWrapper> HashWrappers { get; }
+        IReadOnlyCollection<IHashAlgorithmWrapper> HashWrappers { get; }
     }
 }

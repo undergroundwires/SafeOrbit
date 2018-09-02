@@ -32,14 +32,14 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     internal sealed class EntropyHasher : IEntropyHasher
     {
         public RandomNumberGenerator Rng { get; private set; }
-        public IList<IHashAlgorithmWrapper> HashWrappers { get; private set; }
-        public EntropyHasher(RandomNumberGenerator rng, HashAlgorithmWrapper hashWrapper)
+        public IReadOnlyCollection<IHashAlgorithmWrapper> HashWrappers { get; private set; }
+        public EntropyHasher(RandomNumberGenerator rng, IHashAlgorithmWrapper hashWrapper)
         {
             if (hashWrapper == null) throw new ArgumentNullException(nameof(hashWrapper));
             this.Rng = rng ?? throw new ArgumentNullException(nameof(rng));
-            this.HashWrappers = new List<IHashAlgorithmWrapper> {hashWrapper};
+            this.HashWrappers = new []{ hashWrapper};
         }
-        public EntropyHasher(RandomNumberGenerator rng, List<IHashAlgorithmWrapper> hashWrappers)
+        public EntropyHasher(RandomNumberGenerator rng, IReadOnlyCollection<IHashAlgorithmWrapper> hashWrappers)
         {
             this.Rng = rng ?? throw new ArgumentNullException(nameof(rng));
             this.HashWrappers = hashWrappers ?? throw new ArgumentNullException(nameof(hashWrappers));
@@ -57,27 +57,23 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                     catch { }
                     Rng = null;
                 }
-                if (HashWrappers != null)
+                if (HashWrappers == null)
+                    return;
+                try
                 {
-                    try
+                    foreach (var hashWrapper in HashWrappers)
                     {
-                        foreach (HashAlgorithmWrapper hashWrapper in HashWrappers)
+                        try
                         {
-                            try
-                            {
-                                hashWrapper.Dispose();
-                            }
-                            catch { }
+                            hashWrapper.Dispose();
                         }
+                        catch { }
                     }
-                    catch { }
-                    HashWrappers = null;
                 }
+                catch { }
+                HashWrappers = null;
             }
         }
-        ~EntropyHasher()
-        {
-            Dispose();
-        }
+        ~EntropyHasher() => Dispose();
     }
 }

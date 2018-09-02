@@ -35,13 +35,13 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng
     internal class DigestRandomGenerator
         : IRandomGenerator
     {
-        private const long CYCLE_COUNT = 10;
+        private const long CycleCount = 10;
 
-        private long stateCounter;
-        private long seedCounter;
-        private IDigest digest;
-        private byte[] state;
-        private byte[] seed;
+        private long _stateCounter;
+        private long _seedCounter;
+        private readonly IDigest digest;
+        private readonly byte[] state;
+        private readonly byte[] seed;
 
         public DigestRandomGenerator(
             IDigest digest)
@@ -49,10 +49,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng
             this.digest = digest;
 
             this.seed = new byte[digest.GetDigestSize()];
-            this.seedCounter = 1;
+            this._seedCounter = 1;
 
             this.state = new byte[digest.GetDigestSize()];
-            this.stateCounter = 1;
+            this._stateCounter = 1;
         }
 
         public void AddSeedMaterial(
@@ -90,12 +90,12 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng
         {
             lock (this)
             {
-                int stateOff = 0;
+                var stateOff = 0;
 
                 GenerateState();
 
-                int end = start + len;
-                for (int i = start; i < end; ++i)
+                var end = start + len;
+                for (var i = start; i < end; ++i)
                 {
                     if (stateOff == state.Length)
                     {
@@ -110,18 +110,18 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng
         private void CycleSeed()
         {
             DigestUpdate(seed);
-            DigestAddCounter(seedCounter++);
+            DigestAddCounter(_seedCounter++);
             DigestDoFinal(seed);
         }
 
         private void GenerateState()
         {
-            DigestAddCounter(stateCounter++);
+            DigestAddCounter(_stateCounter++);
             DigestUpdate(state);
             DigestUpdate(seed);
             DigestDoFinal(state);
 
-            if ((stateCounter % CYCLE_COUNT) == 0)
+            if ((_stateCounter % CycleCount) == 0)
             {
                 CycleSeed();
             }
@@ -129,7 +129,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng
 
         private void DigestAddCounter(long seedVal)
         {
-            ulong seed = (ulong)seedVal;
+            var seed = (ulong)seedVal;
             for (int i = 0; i != 8; i++)
             {
                 digest.Update((byte)seed);
