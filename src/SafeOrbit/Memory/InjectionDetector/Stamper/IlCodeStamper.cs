@@ -25,31 +25,27 @@ SOFTWARE.
 
 using System;
 using System.Linq;
-using System.Reflection;
 using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Cryptography.Hashers;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     Stamps <see cref="Type" /> of an object by serializing its IL-code.
+    ///     Stamps <see cref="T:System.Type" /> of an object by serializing its IL-code.
     /// </summary>
-    /// <seealso cref="StamperBase{Type}" />
-    /// <seealso cref="IStamper{Type}" />
+    /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.Stampers.StamperBase`1" />
+    /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.Stampers.IStamper`1" />
     internal class IlCodeStamper : StamperBase<Type>
     {
         public static IlCodeStamper StaticInstance = new IlCodeStamper();
-
         public IlCodeStamper() : this(Murmur32.StaticInstance)
         {
         }
-
         internal IlCodeStamper(IFastHasher fastHasher) : base(fastHasher)
         {
         }
-
         public override InjectionType InjectionType { get; } = InjectionType.CodeInjection;
-
         protected override byte[] GetSerializedBytes(Type @object)
         {
             var methods = @object.GetMethods();

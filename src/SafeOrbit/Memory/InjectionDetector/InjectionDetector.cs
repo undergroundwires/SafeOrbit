@@ -108,9 +108,10 @@ namespace SafeOrbit.Memory.Injection
         /// </summary>
         public bool ScanCode { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Saves the state and/or the code  of the object.
-        ///     Use <see cref="AlertUnnotifiedChanges" /> method to check if the state has been injected.
+        ///     Use <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.AlertUnnotifiedChanges(System.Object)" /> method to check if the state has been injected.
         /// </summary>
         /// <param name="object">Object that this instance scans/tracks.</param>
         public void NotifyChanges(object @object)
@@ -122,12 +123,13 @@ namespace SafeOrbit.Memory.Injection
                 SaveCodeStampFor(@object.GetType());
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Alerts when any unnotified changes are detected any <see cref="CanAlert" /> is true.
+        ///     Alerts when any unnotified changes are detected any <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.CanAlert" /> is true.
         /// </summary>
-        /// <param name="object">Object that this instance has been notified by <see cref="NotifyChanges" /></param>
-        /// <exception cref="ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
-        /// <seealso cref="IAlerts" />
+        /// <param name="object">Object that this instance has been notified by <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.NotifyChanges(System.Object)" /></param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
         public void AlertUnnotifiedChanges(object @object)
         {
             if (@object == null) throw new ArgumentNullException(nameof(@object));
@@ -180,8 +182,7 @@ namespace SafeOrbit.Memory.Injection
         private IStamp<int> GetLastCodeStampFor(Type type)
         {
             var id = GetCodeId(type);
-            IStamp<int> stamp;
-            var valueExists = CodeStampsDictionary.TryGetValue(id, out stamp);
+            var valueExists = CodeStampsDictionary.TryGetValue(id, out var stamp);
             if (!valueExists)
                 throw new ArgumentException(
                     $"Please validate the object using {nameof(NotifyChanges)} method before requesting a code stamp.");
@@ -195,12 +196,13 @@ namespace SafeOrbit.Memory.Injection
 
         private InjectionAlertChannel _alertChannel;
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets or sets the alert channel.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="CanAlert" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.Injection.InjectionDetector.CanAlert" />
         /// <value>The alert channel.</value>
         public virtual InjectionAlertChannel AlertChannel
         {
@@ -208,43 +210,33 @@ namespace SafeOrbit.Memory.Injection
             set => _alertChannel = value;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Returns whether this <see cref="InjectionDetector" /> instance tracks objects (see: <see cref="ScanCode" />,
-        ///     <see cref="ScanState" />)
+        ///     Returns whether this <see cref="T:SafeOrbit.Memory.Injection.InjectionDetector" /> instance tracks objects (see: <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.ScanCode" />,
+        ///     <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.ScanState" />)
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="AlertChannel" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.Injection.InjectionDetector.AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert => ScanCode || ScanState;
 
         #endregion
 
         #region [IDisposable]
-
-        private bool _isDisposed; // To detect redundant calls
-
+        private bool _isDisposed;
         protected virtual void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
-                _lastStateStamp = null;
-                _isDisposed = true;
-            }
+            if (_isDisposed) return;
+            _lastStateStamp = null;
+            _isDisposed = true;
         }
-
-        ~InjectionDetector()
-        {
-            Dispose(false);
-        }
-
-        // This code added to correctly implement the disposable pattern.
+        ~InjectionDetector() => Dispose(false);
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
         #endregion
     }
 }
