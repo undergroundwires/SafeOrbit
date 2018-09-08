@@ -16,7 +16,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
     /// <seealso cref="IByteIdGenerator" />
     internal class MemoryCachedSafeByteFactory : ISafeByteFactory
     {
-        private static object SyncRoot = new object();
+        private static readonly object SyncRoot = new object();
         public const SafeObjectProtectionMode DefaultInnerDictionaryProtection = SafeObjectProtectionMode.JustState;
         /// <summary>
         ///     Returns if the factory instances are cached in the memory.

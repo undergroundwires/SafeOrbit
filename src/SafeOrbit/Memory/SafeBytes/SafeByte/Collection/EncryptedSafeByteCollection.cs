@@ -156,7 +156,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             if (encryptedCollection == null)
                 return new List<int>();
-            var decryptedBytes = _encryptor.Decrypt(encryptedCollection, encryptionKey);
+            var decryptedBytes = await _encryptor.DecryptAsync(encryptedCollection, encryptionKey);
             try
             {
                 var deserializedBytes = await _serializer.DeserializeAsync(decryptedBytes);
