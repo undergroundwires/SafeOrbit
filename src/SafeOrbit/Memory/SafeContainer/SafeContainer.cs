@@ -148,9 +148,8 @@ namespace SafeOrbit.Memory
             if (!_isVerified) throw new ArgumentException($"Please call {nameof(Verify)} before using the factory");
             SpinUntilSecurityModeIsAvailable();
             var key = _typeIdGenerator.Generate(serviceType);
-            IInstanceProvider instanceProvider;
-            var success = _typeInstancesSafe.Object.TryGetValue(key, out instanceProvider);
-            if (!success) throw new KeyNotFoundException($"{serviceType.FullName} is not registered.");
+            if(!_typeInstancesSafe.Object.TryGetValue(key, out var instanceProvider))
+                throw new KeyNotFoundException($"{serviceType.FullName} is not registered.");
             var result = instanceProvider.Provide();
             return result;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace SafeOrbit.Infrastructure.Protectable
@@ -39,7 +40,7 @@ namespace SafeOrbit.Infrastructure.Protectable
             if (protectionMode.Equals(CurrentProtectionMode)) return;
             InternalSetMode(protectionMode);
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void SpinUntilSecurityModeIsAvailable()
         {
             if (_isSettingMode)

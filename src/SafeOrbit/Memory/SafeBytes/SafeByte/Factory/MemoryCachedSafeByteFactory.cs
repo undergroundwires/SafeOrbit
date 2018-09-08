@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.SafeBytesServices.Id;
@@ -15,31 +16,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
     /// <seealso cref="IByteIdGenerator" />
     internal class MemoryCachedSafeByteFactory : ISafeByteFactory
     {
+        private static object SyncRoot = new object();
         public const SafeObjectProtectionMode DefaultInnerDictionaryProtection = SafeObjectProtectionMode.JustState;
         /// <summary>
         ///     Returns if the factory instances are cached in the memory.
         /// </summary>
         /// <seealso cref="_safeBytesDictionary" />
         private bool _isCached;
-
-        /// <summary>
-        ///     Protected dictionary that holds <see cref="int" /> keys and <see cref="ISafeByte" /> instances.
-        /// </summary>
-        /// <seealso cref="SafeObject{Dictionary}" />
         private ISafeObject<Dictionary<int, ISafeByte>> _safeBytesDictionary;
-
-        /// <summary>
-        ///     The byte identifier generator.
-        /// </summary>
-        /// <seealso cref="HashedByteIdGenerator" />
         private readonly IByteIdGenerator _byteIdGenerator;
-
-        /// <summary>
-        ///     The safe byte factory.
-        /// </summary>
-        /// <seealso cref="MemoryCachedSafeByteFactory" />
         private readonly IFactory<ISafeByte> _safeByteFactory;
-
         private readonly ISafeObjectFactory _safeObjectFactory;
 
         /// <summary>
@@ -49,7 +35,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         {
             
         }
-
         public MemoryCachedSafeByteFactory(SafeObjectProtectionMode innerDictionaryProtectionMode) :
             this(
                 SafeOrbitCore.Current.Factory.Get<IByteIdGenerator>(),
@@ -59,7 +44,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         {
             
         }
-
         internal MemoryCachedSafeByteFactory(IByteIdGenerator byteIdGenerator, IFactory<ISafeByte> safeByteFactory,
             ISafeObjectFactory safeObjectFactory, SafeObjectProtectionMode protectionMode)
         {
@@ -83,21 +67,22 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         /// </remarks>
         public virtual void Initialize()
         {
-            if (_isCached) return;
-            var dictionary = new Dictionary<int, ISafeByte>();
-            //Allocate place
-            var safeBytes = GetAllSafeBytes();
-            foreach (var safeByte in safeBytes) //faster than ToDictionary
-                dictionary.Add(safeByte.Id, safeByte);
-            var settings = new InitialSafeObjectSettings
+            lock (SyncRoot)
+            {
+                if (_isCached) return;
+                //Allocate place
+                var safeBytes = GetAllSafeBytes();
+                var dictionary = safeBytes.ToDictionary(safeByte => safeByte.Id);
+                var settings = new InitialSafeObjectSettings
                 (
                     protectionMode: SafeObjectProtectionMode.JustState, /* code protection is broken for dictionary as of v0.1 */
                     initialValue: dictionary, /* set our dictionary */
                     isReadOnly: true, /* the dictionary will not be modifiable after initialization */
                     alertChannel: InjectionAlertChannel.ThrowException //**TODO : FIx here by implementing Ialerts for the class**/
                 );
-            _safeBytesDictionary = _safeObjectFactory.Get<Dictionary<int, ISafeByte>>(settings);
-            _isCached = true;
+                _safeBytesDictionary = _safeObjectFactory.Get<Dictionary<int, ISafeByte>>(settings);
+                _isCached = true;
+            }
         }
         /// <summary>
         /// Returns the cached <see cref="ISafeByte" /> for the specified <see cref="byte" />.

@@ -25,10 +25,6 @@
       - .NET Core 2.0+
     </description>
     <releaseNotes>
-      - Compatibility -
-      * Added support for netstandard2.0, net462, net47, net471, net472
-      * Updated framework dependencies to the latest available for different platforms
-
       - Security -
       * IFastRandom is now seeded with strong random data.
       * Fixed memory leak problem in SafeStringToStringMarshaler.
@@ -38,7 +34,12 @@
       * Small optimizations in random generators
 
       - Other -
-      * Fixed sanity check hash size function returning wrong value
+      * Fixed sanity check hash size function returning wrong value.
+      * Thread safe byte manipulations: Problems when managing more than one safebytes/safestring is solved.
+
+      - Compatibility -
+      * Added support for netstandard2.0, net462, net47, net471, net472
+      * Updated framework dependencies to the latest available for different platforms
     </releaseNotes>
     <copyright>Copyright 2016 - 2018</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
