@@ -124,9 +124,13 @@ namespace SafeOrbit.Memory
                 {
                     var pInsecureString = (char*)_gch.AddrOfPinnedObject();
                     // Copy the SafeString content to our pinned string
-                    Fast.For(0, SafeString.Length, charIndex =>
-                        pInsecureString[charIndex] = SafeString.GetAsChar(charIndex)
-                    );
+                    //Fast.For(0, SafeString.Length, charIndex =>
+                    //    pInsecureString[charIndex] = SafeString.GetAsChar(charIndex)
+                    //);
+                    for(var i = 0; i < SafeString.Length; i++)
+                    {
+                        pInsecureString[i] = SafeString.GetAsChar(i);
+                    }
                 }
             }
         }

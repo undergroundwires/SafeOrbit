@@ -16,19 +16,23 @@ namespace SafeOrbit.Helpers
         public static void For(int startIndex, int endIndex, Action<int> @delegate)
         {
             if (@delegate == null) throw new ArgumentNullException(nameof(@delegate));
-#if NETFRAMEWORK
-            var partitioner = Partitioner.Create(0, endIndex);
-            Parallel.ForEach(partitioner, range =>
-            {
-                for (var i = range.Item1; i < range.Item2; i++)
-                    @delegate.Invoke(i);
-            });
-#elif NETCORE
             for (var i = startIndex; i < endIndex; i++)
             {
                 @delegate.Invoke(i);
             }
-#endif
+//#if NETFRAMEWORK
+//            var partitioner = Partitioner.Create(0, endIndex);
+//            Parallel.ForEach(partitioner, range =>
+//            {
+//                for (var i = range.Item1; i < range.Item2; i++)
+//                    @delegate.Invoke(i);
+//            });
+//#elif NETCORE
+//            for (var i = startIndex; i < endIndex; i++)
+//            {
+//                @delegate.Invoke(i);
+//            }
+//#endif
         }
     }
 }
