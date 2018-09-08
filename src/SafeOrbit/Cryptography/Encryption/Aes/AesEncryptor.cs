@@ -35,46 +35,14 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="ISafeEncryptor" />
     public class AesEncryptor : EncryptorBase, ISafeEncryptor
     {
-        /// <summary>
-        ///     Gets the padding to apply when the message data block is shorter than the full number of bytes needed for a
-        ///     cryptographic
-        ///     operation.
-        /// </summary>
+        /// <summary> Gets the padding to apply when the message data block is shorter than the full number of bytes needed for a cryptographic operation. </summary>
         public const PaddingMode Padding = PaddingMode.PKCS7;
-
-        /// <summary>
-        ///     Gets the mode of the encryption operation.
-        /// </summary>
+        /// <summary> Gets the mode of the encryption operation. </summary>
         public const CipherMode Mode = CipherMode.CBC;
-
-        /// <summary>
-        ///     Gets or sets the size, in bits, of the secret key.
-        /// </summary>
-        /// <remarks>
-        ///     The minimum size of the key is 128 bits, and the maximum size is 256 bits.
-        /// </remarks>
+        /// <summary> Gets or sets the size, in bits, of the secret key. </summary>
+        /// <remarks> The minimum size of the key is 128 bits, and the maximum size is 256 bits. </remarks>
         public const int KeySize = 256;
-
-        /// <summary>
-        ///     The key derivation function to strengthen the key.
-        /// </summary>
-        private readonly IKeyDerivationFunction _keyDeriver;
-
-        public AesEncryptor() : this(SafeOrbitCore.Current.Factory.Get<IKeyDerivationFunction>())
-        {
-        }
-
-        public AesEncryptor(IKeyDerivationFunction keyDeriver) : this(
-            keyDeriver,
-            SafeOrbitCore.Current.Factory.Get<IFastRandom>())
-        {
-        }
-
-        public AesEncryptor(IKeyDerivationFunction keyDeriver, IFastRandom fastRandom) : base(fastRandom)
-        {
-            _keyDeriver = keyDeriver ?? throw new ArgumentNullException(nameof(keyDeriver));
-        }
-
+        /// <inheritdoc />
         /// <summary>
         ///     <p>Gets the size of the block in bits.</p>
         ///     <p>The block size for AES is always 128 bits.</p>
@@ -82,23 +50,25 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <value>The size of the block in bits.</value>
         /// <remarks>https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</remarks>
         public override int BlockSize { get; } = 128;
-
-        /// <summary>
-        ///     <see cref="AesEncryptor" /> can function with any positive integer as it uses <see cref="IKeyDerivationFunction" />
-        ///     to generate a key with length of <see cref="KeySize" />.
-        /// </summary>
-        /// <value>The minimum size of the key.</value>
         public override int MinKeySize { get; } = 8;
-
-        /// <summary>
-        ///     <see cref="AesEncryptor" /> can function with any positive integer as it uses <see cref="IKeyDerivationFunction" />
-        ///     to generate a key with length of <see cref="KeySize" />.
-        /// </summary>
-        /// <value>The maximum size of the key.</value>
         public override int MaxKeySize { get; } = int.MaxValue;
-
         public override int IvSize { get; } = 16;
-
+        /// <summary>
+        ///     The key derivation function to strengthen the key.
+        /// </summary>
+        private readonly IKeyDerivationFunction _keyDeriver;
+        public AesEncryptor() : this(SafeOrbitCore.Current.Factory.Get<IKeyDerivationFunction>())
+        {
+        }
+        public AesEncryptor(IKeyDerivationFunction keyDeriver) : this(
+            keyDeriver,
+            SafeOrbitCore.Current.Factory.Get<IFastRandom>())
+        {
+        }
+        public AesEncryptor(IKeyDerivationFunction keyDeriver, IFastRandom fastRandom) : base(fastRandom)
+        {
+            _keyDeriver = keyDeriver ?? throw new ArgumentNullException(nameof(keyDeriver));
+        }
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
@@ -107,7 +77,7 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     <see cref="MaxKeySize" /> values.
         /// </exception>
         public byte[] Encrypt(byte[] input, byte[] key, byte[] salt)
-            => EncryptAsync(input, key, salt).RunSync();
+            => TaskContext.RunSync(() => EncryptAsync(input, key, salt));
 
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
@@ -117,32 +87,33 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     <see cref="MaxKeySize" /> values.
         /// </exception>
         public byte[] Decrypt(byte[] input, byte[] key, byte[] salt)
-            => DecryptAsync(input, key, salt).RunSync();
+            => TaskContext.RunSync(() => DecryptAsync(input, key, salt));
 
-        /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        /// <inheritdoc />
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
+        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MinKeySize" /> and
+        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MaxKeySize" /> values.
         /// </exception>
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key, byte[] salt)
         {
-            EnsureKeyParameter(key);
-            EnsureParameters(input, key, salt);
+            ValidateParameters(input, key, salt);
             return InternalEncryptAsync(input, key, salt);
         }
 
-        /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        /// <inheritdoc />
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
+        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MinKeySize" /> and
+        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MaxKeySize" /> values.
         /// </exception>
         public Task<byte[]> DecryptAsync(byte[] input, byte[] key, byte[] salt)
         {
-            EnsureParameters(input, key, salt);
+            ValidateParameters(input, key, salt);
             return InternalDecryptAsync(input, key, salt);
         }
 
@@ -156,12 +127,12 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
         ///     <see cref="MaxKeySize" /> values.
         /// </exception>
-        private void EnsureParameters(byte[] input, byte[] key, byte[] salt)
+        private void ValidateParameters(byte[] input, byte[] key, byte[] salt)
         {
-            if ((key == null) || !key.Any()) throw new ArgumentNullException(nameof(key));
-            if ((salt == null) || !salt.Any()) throw new ArgumentNullException(nameof(salt));
-            if ((input == null) || !input.Any()) throw new ArgumentNullException(nameof(input));
-            EnsureKeyParameter(key);
+            if (key.IsNullOrEmpty()) throw new ArgumentNullException(nameof(key));
+            if (salt.IsNullOrEmpty()) throw new ArgumentNullException(nameof(salt));
+            if (input.IsNullOrEmpty()) throw new ArgumentNullException(nameof(input));
+            ValidateKey(key);
         }
 
         private async Task<byte[]> InternalEncryptAsync(byte[] input, byte[] key, byte[] salt)

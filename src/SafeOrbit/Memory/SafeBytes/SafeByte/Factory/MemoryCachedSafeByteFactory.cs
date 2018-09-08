@@ -59,6 +59,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         /// <value>The dictionary protection mode.</value>
         public SafeObjectProtectionMode InnerDictionaryProtectionMode { get; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Initializes the service by caching all instances in the memory.
         /// </summary>
@@ -107,8 +108,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
 
         private IEnumerable<ISafeByte> GetAllSafeBytes()
         {
-            var safeBytes = new ISafeByte[256];
-            for (var i = 0; i < 256; i++)
+            const int totalBytes = 256;
+            var safeBytes = new ISafeByte[totalBytes];
+            for (var i = 0; i < totalBytes; i++)
             {
                 var @byte = (byte) i;
                 safeBytes[i] = _safeByteFactory.Create();

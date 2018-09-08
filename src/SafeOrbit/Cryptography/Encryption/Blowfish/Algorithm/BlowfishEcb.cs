@@ -102,6 +102,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public virtual int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer,
             int outputOffset)
         {
+            if (inputCount == 0) return 0;
             var block = new byte[inputCount];
             Buffer.BlockCopy(inputBuffer, inputOffset, block, 0, inputCount);
             if (ForEncryption)

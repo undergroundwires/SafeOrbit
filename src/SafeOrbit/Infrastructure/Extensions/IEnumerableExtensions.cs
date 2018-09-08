@@ -27,6 +27,8 @@ namespace SafeOrbit.Extensions
                 action(item);
         }
 
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable)
+            => iEnumerable == null || !iEnumerable.Any();
         /// <summary>
         ///     Returns an empty <see cref="IEnumerable{T}" /> if the caller is <see langword="null" />
         /// </summary>

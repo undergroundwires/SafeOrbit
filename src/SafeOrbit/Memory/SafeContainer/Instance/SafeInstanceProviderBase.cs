@@ -42,10 +42,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         public string AssemblyQualifiedName { get; }
         public Type ImplementationType => typeof(TImplementation);
         public LifeTime LifeTime { get; set; }
-
         public object Provide()
         {
-
             var instance = GetInstance();
             if (_isFirstTime)
             {
@@ -61,7 +59,6 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             return instance;
         }
         public abstract TImplementation GetInstance();
-
         /// <summary>
         /// Determines whether this instance provider's instance is allowed be protected against state injections. Default: <c>TRUE</c>
         /// </summary>

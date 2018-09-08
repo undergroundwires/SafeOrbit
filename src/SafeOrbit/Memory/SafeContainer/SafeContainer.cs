@@ -139,10 +139,11 @@ namespace SafeOrbit.Memory
             RegisterInstanceInternal<TComponent>(instance);
         }
 
-        /// <exception cref="ArgumentException"><see cref="Verify" /> is not called.</exception>
-        /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="KeyNotFoundException">If the <paramref name="serviceType" /> is not registered.</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:System.ArgumentException"><see cref="M:SafeOrbit.Memory.SafeContainer.Verify" /> is not called.</exception>
+        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
+        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
+        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">If the <paramref name="serviceType" /> is not registered.</exception>
         public object GetService(Type serviceType)
         {
             if (!_isVerified) throw new ArgumentException($"Please call {nameof(Verify)} before using the factory");
@@ -154,13 +155,14 @@ namespace SafeOrbit.Memory
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Registers a component with a custom <see cref="Func{TImplementation}" />.
+        ///     Registers a component with a custom <see cref="T:System.Func`1" />.
         /// </summary>
         /// <typeparam name="TComponent">The type of the component.</typeparam>
         /// <param name="instanceInitializer">The instance getter.</param>
         /// <param name="lifeTime">The life time.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="instanceInitializer" /> is <see langword="null" />.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="instanceInitializer" /> is <see langword="null" />.</exception>
         public void Register<TComponent>(Func<TComponent> instanceInitializer, LifeTime lifeTime = LifeTime.Unknown)
             where TComponent : class
         {
@@ -187,12 +189,13 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets if this instance is allowed to alert via <see cref="AlertChannel" />.
+        ///     Gets if this instance is allowed to alert via <see cref="P:SafeOrbit.Memory.SafeContainer.AlertChannel" />.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="AlertChannel" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeContainer.AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert => CurrentProtectionMode != SafeContainerProtectionMode.NonProtection;
 
@@ -225,6 +228,7 @@ namespace SafeOrbit.Memory
 
         private void SetAlertChannelInternal(InjectionAlertChannel value)
         {
+            if (!Enum.IsDefined(typeof(InjectionAlertChannel), value)) throw new ArgumentOutOfRangeException(nameof(value), "Value should be defined in the InjectionAlertChannel enum.");
             _alertChannel = value;
             _typeInstancesSafe.AlertChannel = value;
             var dict = _typeInstancesSafe.Object;

@@ -14,17 +14,25 @@ namespace SafeOrbit.Helpers
             if (cleanup == null) throw new ArgumentNullException(nameof(cleanup));
 
 #if !NETCORE
-            RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
-            delegate
-                {
-                    action.Invoke();
-                }
-                ,
-            delegate
+            //RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
+            //delegate
+            //    {
+            //        action.Invoke();
+            //    }
+            //    ,
+            //delegate
+            //{
+            //    cleanup.Invoke();
+            //},
+            //    null);
+            try
+            {
+                action.Invoke();
+            }
+            finally
             {
                 cleanup.Invoke();
-            },
-                null);
+            }
 #else
             try
             {

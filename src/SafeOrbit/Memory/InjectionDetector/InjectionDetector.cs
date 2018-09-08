@@ -135,8 +135,6 @@ namespace SafeOrbit.Memory.Injection
             var result = currentStamp.Equals(lastStamp);
             return result;
         }
-
-
         private void SaveCodeStampFor(Type type)
         {
             var codeId = GetCodeId(type);
@@ -145,12 +143,10 @@ namespace SafeOrbit.Memory.Injection
             var codeStamp = _codeStamper.GetStamp(type);
             CodeStampsDictionary.AddOrUpdate(codeId, codeStamp, (key, existingVal) => codeStamp);
         }
-
         private void SaveStateStamp(object obj)
         {
             _lastStateStamp = _stateStamper.GetStamp(obj);
         }
-
         /// <exception cref="ArgumentException">
         ///     Please validate the object using <see cref="NotifyChanges" /> method before
         ///     requesting a code stamp.

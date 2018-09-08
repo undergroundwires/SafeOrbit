@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SafeOrbit.Library.Build;
-using SafeOrbit.Library.StartEarly;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
+using SafeOrbit.Memory.SafeBytesServices.Factory;
 
 namespace SafeOrbit.Library
 {
@@ -53,10 +51,14 @@ namespace SafeOrbit.Library
 
         public void StartEarly()
         {
-            var factory = Factory;
-            var tasks = GetAllStartEarlyTasks(factory); //get all tasks
-            var actions = tasks.Select(t => new Action(t.Prepare)).ToArray(); //convert them into actions
-            Parallel.Invoke(actions); //run them in parallel
+            /* Initializes FastRandomGenerator, that initializes SafeRandomGnerator and needed entropy sources :
+                - ThreadSchedulerRng
+                - ThreadedSeedGeneratorRng
+                - SystemRng
+            We could instantiate each of these individually but FastRandomGenerator will initializes all of them as default.
+        */
+            var factory = Factory.Get<ISafeByteFactory>();
+            factory.Initialize();
         }
 
         /// <summary>
@@ -76,12 +78,6 @@ namespace SafeOrbit.Library
             FactoryBootstrapper.Bootstrap(result);
             result.Verify();
             return result;
-        }
-
-        private static IEnumerable<IStartEarlyTask> GetAllStartEarlyTasks(ISafeContainer container)
-        {
-            yield return new SafeByteFactoryInitializer(container);
-            yield return new StartFillingEntropyPoolsStartEarlyTask();
         }
     }
 }

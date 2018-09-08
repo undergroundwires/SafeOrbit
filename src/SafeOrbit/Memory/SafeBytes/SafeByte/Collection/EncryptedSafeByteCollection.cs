@@ -71,9 +71,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             EnsureNotDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
             _memoryProtector.Unprotect(_encryptionKey);
-            var list = DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey).RunSync();
+            var list = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey));
             list.Add(safeByte.Id);
-            _encryptedCollection = SerializeAndEncryptAsync(list.ToArray(), _encryptionKey).RunSync();
+            _encryptedCollection = TaskContext.RunSync(() => SerializeAndEncryptAsync(list.ToArray(), _encryptionKey));
             list.Clear();
             _memoryProtector.Protect(_encryptionKey);
             Length++;
@@ -97,7 +97,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             EnsureNotDisposed();
             EnsureNotEmpty();
             _memoryProtector.Unprotect(_encryptionKey);
-            var list = DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey).RunSync();
+            var list = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey));
             _memoryProtector.Protect(_encryptionKey);
             var id = list.ElementAt(index);
             var safeByte = _safeByteFactory.GetById(id);
@@ -117,10 +117,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             EnsureNotEmpty();
             EnsureNotDisposed();
             _memoryProtector.Unprotect(_encryptionKey);
-            var safeBytesList =
-                DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey).RunSync()
-                .Select(id => _safeByteFactory.GetById(id));
-            var decryptedBytes = GetAllAndMerge(safeBytesList);
+            var safeBytesIds = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey));
+            if (safeBytesIds.IsNullOrEmpty()) return new byte[0];
+            var safeBytes = safeBytesIds.Select(id => _safeByteFactory.GetById(id));
+            var decryptedBytes = GetAllAndMerge(safeBytes);
             return decryptedBytes;
         }
 

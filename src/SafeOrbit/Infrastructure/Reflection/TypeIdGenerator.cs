@@ -24,7 +24,7 @@ namespace SafeOrbit.Infrastructure.Reflection
         /// </summary>
         /// <typeparam name="T">The type that the id will be returned for.</typeparam>
         /// <returns>The id.</returns>
-        public string Generate<T>() => typeof(T).AssemblyQualifiedName;
+        public string Generate<T>() => Generate(typeof(T));
 
         /// <inheritdoc />
         /// <summary>
@@ -33,6 +33,6 @@ namespace SafeOrbit.Infrastructure.Reflection
         /// <param name="type">The type that the id will be returned for.</param>
         /// <returns>The id.</returns>
         [DebuggerHidden]
-        public string Generate(Type type) => type.AssemblyQualifiedName;
+        public string Generate(Type type) => type.AssemblyQualifiedName.Replace(" ", "");
     }
 }

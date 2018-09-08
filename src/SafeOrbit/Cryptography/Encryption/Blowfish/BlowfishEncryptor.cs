@@ -102,7 +102,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </exception>
         /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
         /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.EncryptAsync(System.Byte[],System.Byte[])" />
-        public byte[] Encrypt(byte[] input, byte[] key) => EncryptAsync(input, key).RunSync();
+        public byte[] Encrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => EncryptAsync(input, key));
 
         /// <inheritdoc />
         /// <summary>
@@ -118,7 +118,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </exception>
         /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
         /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.DecryptAsync(System.Byte[],System.Byte[])" />
-        public byte[] Decrypt(byte[] input, byte[] key) => DecryptAsync(input, key).RunSync();
+        public byte[] Decrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => DecryptAsync(input, key));
 
         /// <inheritdoc />
         /// <summary>
@@ -188,7 +188,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             if ((input == null) || !input.Any()) throw new ArgumentNullException(nameof(input));
             if ((key == null) || !key.Any()) throw new ArgumentNullException(nameof(key));
-            EnsureKeyParameter(key);
+            ValidateKey(key);
         }
 
 
@@ -235,7 +235,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             byte[] iv = null;
             byte[] encryptedContent = null;
-            using (var ms = new MemoryStream())
+            using (var ms = new MemoryStream(input))
             {
                 iv = GetIv();
                 using (var blowfish = new BlowfishCbc(key, iv, true))
@@ -243,6 +243,7 @@ namespace SafeOrbit.Cryptography.Encryption
                     using (var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write))
                     {
                         await cs.WriteAsync(input, 0, input.Length);
+                        if(encryptedContent != null) {await cs.WriteAsync(input, 0, input.Length);}
                     }
                 }
                 encryptedContent = ms.ToArray();

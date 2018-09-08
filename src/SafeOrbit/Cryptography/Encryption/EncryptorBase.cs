@@ -52,7 +52,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </exception>
         /// <seealso cref="MinKeySize" />
         /// <seealso cref="MaxKeySize" />
-        protected void EnsureKeyParameter(byte[] key)
+        protected void ValidateKey(byte[] key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             if ((key.Length < MinKeySize/8) || (key.Length > MaxKeySize))

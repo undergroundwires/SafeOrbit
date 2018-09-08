@@ -4,49 +4,25 @@ using System.Threading.Tasks;
 
 namespace SafeOrbit.Extensions
 {
+    /// <summary>
+    /// Stephen Cleary approved
+    /// http://stackoverflow.com/questions/15428604/how-to-run-a-task-on-a-custom-taskscheduler-using-await
+    /// </summary>
     internal static class TaskExtensions
     {
-        private static readonly TaskFactory MyTaskFactory = new
+        private static readonly TaskFactory TaskFactory = new
             TaskFactory(CancellationToken.None,
-                TaskCreationOptions.None,
+                TaskCreationOptions.DenyChildAttach,
                 TaskContinuationOptions.None,
                 TaskScheduler.Default);
-
-        public static TResult RunSync<TResult>(this Func<Task<TResult>> func)
+        internal static Task RunOnDefaultScheduler(this Func<Task> func)
         {
-            if (func == null) throw new ArgumentNullException(nameof(func));
-            return MyTaskFactory
-                .StartNew(func)
-                .Unwrap()
-                .GetAwaiter()
-                .GetResult();
+            return TaskFactory.StartNew(func).Unwrap();
         }
 
-        public static void RunSync(this Func<Task> func)
+        internal static Task<T> RunOnDefaultScheduler<T>(this Func<Task<T>> func)
         {
-            if (func == null) throw new ArgumentNullException(nameof(func));
-            MyTaskFactory
-                .StartNew(func)
-                .Unwrap()
-                .GetAwaiter()
-                .GetResult();
-        }
-
-        public static void RunSync(this Task task)
-        {
-            if (task == null) throw new ArgumentNullException(nameof(task));
-            task
-                .GetAwaiter()
-                .GetResult();
-        }
-
-        public static TResult RunSync<TResult>(this Task<TResult> task)
-        {
-            if (task == null) throw new ArgumentNullException(nameof(task));
-            return
-                task
-                    .GetAwaiter()
-                    .GetResult();
+            return TaskFactory.StartNew(func).Unwrap();
         }
     }
 }

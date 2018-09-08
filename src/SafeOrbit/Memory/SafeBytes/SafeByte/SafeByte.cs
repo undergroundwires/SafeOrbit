@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Exceptions;
@@ -228,11 +229,12 @@ namespace SafeOrbit.Memory.SafeBytesServices
                     //Get key
                     _encryptionKey = _fastRandom.GetBytes(KeySize);
                     //Encrypt
-                    var encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, _encryptionKey);
+                    var encryptedBuffer = default(byte[]);
                     RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
                         //Action
                         () =>
                         {
+                            encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, _encryptionKey);
                             //Add arbitrary bytes
                             _encryptedByteLength = encryptedBuffer.Length;
                             _encryptedByte = GetMemoryProtectableSizedBytes(encryptedBuffer);

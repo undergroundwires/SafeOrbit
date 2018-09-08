@@ -122,12 +122,13 @@ namespace SafeOrbit.Memory
         }
 
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets or sets the alert channel for the inner <see cref="IInjectionDetector" />.
+        ///     Gets or sets the alert channel for the inner <see cref="T:SafeOrbit.Memory.IInjectionDetector" />.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="CanAlert" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.CanAlert" />
         /// <value>The alert channel.</value>
         public virtual InjectionAlertChannel AlertChannel
         {
@@ -135,37 +136,42 @@ namespace SafeOrbit.Memory
             set => _injectionDetector.AlertChannel = value;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets if this instance is allowed to alert via <see cref="AlertChannel" />.
+        ///     Gets if this instance is allowed to alert via <see cref="P:SafeOrbit.Memory.SafeObject`1.AlertChannel" />.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="AlertChannel" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert
             => (CurrentProtectionMode != SafeObjectProtectionMode.NoProtection) && _injectionDetector.CanAlert;
 
-        /// <exception cref="MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
         public TObject Object => GetObjectInternal(true);
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets a value indicating whether this instance is modifiable.
         /// </summary>
         /// <value><c>true</c> if this instance is modifiable; otherwise, <c>false</c>.</value>
-        /// <seealso cref="MakeReadOnly" />
+        /// <seealso cref="M:SafeOrbit.Memory.SafeObject`1.MakeReadOnly" />
         public bool IsReadOnly { get; private set; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Closes this instance to any kind of changes.
         /// </summary>
-        /// <seealso cref="IsReadOnly" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.IsReadOnly" />
         public void MakeReadOnly()
         {
-            if (!IsReadOnly)
-                lock (_syncRoot)
-                {
-                    IsReadOnly = true;
-                }
+            lock (_syncRoot)
+            {
+                if (IsReadOnly)
+                return;
+                IsReadOnly = true;
+            }
         }
 
         /// <summary>

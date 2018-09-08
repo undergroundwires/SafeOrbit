@@ -4,13 +4,14 @@ using SafeOrbit.Exceptions;
 
 namespace SafeOrbit.Cryptography.Encryption
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     Blowfish implementation with <see cref="CipherMode.CBC"/>
+    ///     Blowfish implementation with <see cref="F:System.Security.Cryptography.CipherMode.CBC" />
     /// </summary>
-    /// <seealso cref="ICryptoTransform" />
-    /// <seealso cref="CipherMode.CBC"/>
-    /// <seealso cref="BlowfishEcb"/>
-    /// <seealso cref="BlowfishEncryptor"/>
+    /// <seealso cref="T:System.Security.Cryptography.ICryptoTransform" />
+    /// <seealso cref="F:System.Security.Cryptography.CipherMode.CBC" />
+    /// <seealso cref="T:SafeOrbit.Cryptography.Encryption.BlowfishEcb" />
+    /// <seealso cref="T:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor" />
     public class BlowfishCbc : BlowfishEcb
     {
         /// <summary>
