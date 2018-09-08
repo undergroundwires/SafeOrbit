@@ -235,7 +235,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             byte[] iv = null;
             byte[] encryptedContent = null;
-            using (var ms = new MemoryStream(input))
+            using (var ms = new MemoryStream())
             {
                 iv = GetIv();
                 using (var blowfish = new BlowfishCbc(key, iv, true))
