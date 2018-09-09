@@ -31,10 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SafeOrbit" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Reference Include="SafeOrbit" Condition=" '$(Configuration)' == 'Debug' ">
       <HintPath>..\..\SafeOrbit\bin\Debug\net46\SafeOrbit.dll</HintPath>
     </Reference>
-    <Reference Include="SafeOrbit, PublicKeyToken=bb96809731729604" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Reference Include="SafeOrbit, PublicKeyToken=bb96809731729604" Condition=" '$(Configuration)' == 'Release' ">
       <HintPath>..\..\SafeOrbit\bin\Release\net46\SafeOrbit.dll</HintPath>
     </Reference>
     <Reference Include="Infrastructure">
