@@ -19,7 +19,6 @@ namespace SafeOrbit.Extensions
         {
             return TaskFactory.StartNew(func).Unwrap();
         }
-
         internal static Task<T> RunOnDefaultScheduler<T>(this Func<Task<T>> func)
         {
             return TaskFactory.StartNew(func).Unwrap();
