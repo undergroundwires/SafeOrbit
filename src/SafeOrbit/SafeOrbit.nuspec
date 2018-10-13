@@ -14,7 +14,7 @@
     <description>
       SafeOrbit is easy-to-use and strong security toolkit for .NET and .NET Core.
 
-      While SafeOrbit's primarly focus is strong memory protection, SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.
+      While SafeOrbit's primarily focus is strong memory protection, SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.
 
       Source code : https://github.com/undergroundwires/safeOrbit
       Wiki : https://github.com/undergroundwires/safeOrbit/wiki
@@ -30,12 +30,13 @@
       * Fixed memory leak problem in SafeStringToStringMarshaler.
 
       - Performance -
-      * Optimized serialization and encryption with faster async operations
-      * Small optimizations in random generators
+      * Optimized serialization and encryption with faster async operations.
+      * Small optimizations in random generators.
+      * More parallel implementation: Many sync methods are replaced with async variants.
 
       - Other -
       * Fixed sanity check hash size function returning wrong value.
-      * Fixed dead lcok in async encryptions algorithms.
+      * Fixed dead lock in async encryption algorithms.
       * Removed unnecessary code from StartEarly
       * (Not done yet) Thread safe byte manipulations: Problems when managing more than one safebytes/safestring is solved.
 
