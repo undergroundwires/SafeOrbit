@@ -79,25 +79,27 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             Length++;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets the byte as <see cref="ISafeByte" /> for the specified index.
+        ///     Gets the byte as <see cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" /> for the specified index asynchronously.
         /// </summary>
         /// <param name="index">The position of the byte.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
         ///     <paramref name="index" /> is lower than zero or higher/equals to the
-        ///     <see cref="Length" />.
+        ///     <see cref="P:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection.Length" />.
         /// </exception>
-        /// <exception cref="InvalidOperationException"><see cref="EncryptedSafeByteCollection" /> instance is empty.</exception>
-        /// <exception cref="ObjectDisposedException"><see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
-        /// <seealso cref="ISafeByte" />
-        public ISafeByte Get(int index)
+        /// <exception cref="T:System.InvalidOperationException"><see cref="T:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection" /> instance is empty.</exception>
+        /// <exception cref="T:System.ObjectDisposedException"><see cref="T:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection" /> instance is disposed</exception>
+        /// <seealso cref="M:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection.Get(System.Int32)" />
+        /// <seealso cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" />
+        public async Task<ISafeByte> GetAsync(int index)
         {
             if ((index < 0) && (index >= Length))
                 throw new ArgumentOutOfRangeException(nameof(index));
             EnsureNotDisposed();
             EnsureNotEmpty();
             _memoryProtector.Unprotect(_encryptionKey);
-            var list = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey));
+            var list = await DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey);
             _memoryProtector.Protect(_encryptionKey);
             var id = list.ElementAt(index);
             var safeByte = _safeByteFactory.GetById(id);
@@ -141,7 +143,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             _isDisposed = true;
             Length = 0;
         }
-
         private byte[] GetAllAndMerge(IEnumerable<ISafeByte> safeBytes)
         {
             var buffer = new byte[Length];
@@ -167,7 +168,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 Array.Clear(decryptedBytes, 0, decryptedBytes.Length);
             }
         }
-
         private async Task<byte[]> SerializeAndEncryptAsync(IReadOnlyCollection<int> safeByteIdList, byte[] encryptionKey)
         {
             var serializedBytes = await _serializer.SerializeAsync(safeByteIdList);
@@ -181,9 +181,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 Array.Clear(serializedBytes, 0, serializedBytes.Length);
             }
         }
-
-      
-
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
         private void EnsureNotDisposed()
         {

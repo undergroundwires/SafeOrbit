@@ -1,23 +1,28 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SafeOrbit.Memory;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     Abstraction of a collection for <see cref="ISafeByte"/> instances.
+    ///     Abstraction of a collection for <see cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" /> instances.
     /// </summary>
-    /// <seealso cref="ISafeByte"/>
+    /// <seealso cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" />
     internal interface ISafeByteCollection : IDisposable
     {
         int Length { get; }
         void Append(ISafeByte safeByte);
-        ISafeByte Get(int index);
+        /// <summary>
+        ///     Gets the byte as <see cref="ISafeByte" /> for the specified index asynchronously.
+        /// </summary>
+        /// <param name="index">The position of the byte.</param>
+        /// <seealso cref="Get" />
+        Task<ISafeByte> GetAsync(int index);
         /// <summary>
         /// Returns all of the real byte values that <see cref="ISafeByteCollection"/> holds.
-        /// Reveals all protected data in memory.
-        /// Usage with <see cref="SafeMemoryStream"/> is recommended.
+        /// CAUTION: Reveals all protected data in memory. Use with <see cref="SafeMemoryStream"/>.
         /// </summary>
-        /// <returns></returns>
         byte[] ToDecryptedBytes();
     }
 }
