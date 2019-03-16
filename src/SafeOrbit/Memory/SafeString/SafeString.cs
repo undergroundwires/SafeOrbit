@@ -109,29 +109,30 @@ namespace SafeOrbit.Memory
         }
 
         /// <exception cref="ArgumentNullException">
-        ///     <paramref name="character" /> is <see langword="null" />.
+        ///     <paramref name="textBytes" /> is <see langword="null" />.
         /// </exception>
         /// <exception cref="ObjectDisposedException">
         ///     Throws if the SafeString instance is disposed.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     Throws if <paramref name="character" /> is less than zero or higher than the length.
+        ///     Throws if <paramref name="textBytes" /> is less than zero or higher than the length.
         /// </exception>
-        public void Insert(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
+        public void Insert(int position, ISafeBytes textBytes, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             EnsureNotDisposed();
             if ((position < 0) || (position > Length)) throw new ArgumentOutOfRangeException(nameof(position));
-            if (SafeBytes.IsNullOrEmpty(character)) throw new ArgumentNullException(nameof(character));
+            if (SafeBytes.IsNullOrEmpty(textBytes)) throw new ArgumentNullException(nameof(textBytes));
             if (encoding == InnerEncoding)
             {
-                _charBytesList.Insert(position, character);
+                _charBytesList.Insert(position, textBytes);
                 return;
             }
             //Convert encoding
-            var buffer = character.ToByteArray();
+            var buffer = textBytes.ToByteArray();
             try
             {
-                buffer = _textService.Convert(encoding, InnerEncoding, buffer);
+                if(encoding != InnerEncoding)
+                    buffer = _textService.Convert(encoding, InnerEncoding, buffer);
                 var safeBytes = _safeBytesFactory.Create();
                 for (var i = 0; i < buffer.Length; i++)
                 {

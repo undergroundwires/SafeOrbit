@@ -15,7 +15,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         protected override IByteIdListSerializer<int> GetSut() => new ByteIdListSerializer();
 
         [Test]
-        public async Task DeserializeAsync_NullArgument_ThrowsArgumentNullException()
+        public void DeserializeAsync_NullArgument_ThrowsArgumentNullException()
         {
             // arrange
             var sut = GetSut();
@@ -27,7 +27,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public async Task SerializeAsync_NullArgument_ThrowsArgumentNullException()
+        public void SerializeAsync_NullArgument_ThrowsArgumentNullException()
         {
             // arrange
             var sut = GetSut();
