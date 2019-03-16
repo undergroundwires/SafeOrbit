@@ -6,7 +6,6 @@ using SafeOrbit.Text;
 
 namespace SafeOrbit.Memory
 {
-    //TODO: write tests for public void Insert(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
     public class SafeString : ISafeString
     {
         private const Encoding InnerEncoding = Encoding.Utf16LittleEndian;
@@ -244,17 +243,25 @@ namespace SafeOrbit.Memory
 
         public bool Equals(string other)
         {
-            if (other?.Length != Length)
+            if (string.IsNullOrEmpty(other))
+                return this.Length == 0;
+            if (other.Length != Length)
                 return false;
-            using (var safeString = _safeStringFactory.Create())
+            var bytes = _textService.GetBytes(other);
+            for (var i = 0; i < Length; i++)
             {
-                safeString.Append(other);
-                return Equals(safeString);
+                var safeBytes = GetAsSafeBytes(i);
+                var plainBytes = new [] { bytes[i * 2], bytes[i * 2 + 1] };
+                if (!safeBytes.Equals(plainBytes))
+                    return false;
             }
+            return true;
         }
 
         public bool Equals(ISafeString other)
         {
+            if (IsNullOrEmpty(other))
+                return this.Length == 0;
             if (other?.Length != Length)
                 return false;
             for (var i = 0; i < Length; i++)
@@ -263,7 +270,8 @@ namespace SafeOrbit.Memory
             return true;
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:System.ObjectDisposedException">Throws if the <see cref="T:SafeOrbit.Memory.SafeString" /> instance is disposed</exception>
         public ISafeString DeepClone()
         {
             EnsureNotDisposed();
@@ -297,12 +305,15 @@ namespace SafeOrbit.Memory
 
         public override bool Equals(object obj)
         {
-            var safeString = obj as ISafeString;
-            if (safeString != null)
-                return Equals(safeString);
-            if (obj is string)
-                return Equals((string) obj);
-            return false;
+            switch (obj)
+            {
+                case ISafeString safeString:
+                    return Equals(safeString);
+                case string @string:
+                    return Equals(@string);
+                default:
+                    return false;
+            }
         }
 
         private char TransformSafeBytesToChar(ISafeBytes safeBytes, Encoding encoding)
@@ -334,7 +345,8 @@ namespace SafeOrbit.Memory
             }
             finally
             {
-                Array.Clear(byteBuffer, 0, byteBuffer.Length);
+                if(byteBuffer != null)
+                    Array.Clear(byteBuffer, 0, byteBuffer.Length);
             }
         }
 

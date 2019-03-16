@@ -284,16 +284,14 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void EqualsString_WhenHoldingSameChars_returnsTrue(
-            [Random(0, 125, 1)] byte i1,
-            [Random(125, 256, 1)] byte i2)
+        public void EqualsString_WhenHoldingSameChars_returnsTrue()
         {
             //Arrange
+            const char ch1 = 'a', ch2 = 'b';
+            const string expected = "ab";
             var sut = GetSut();
-            char ch1 = (char) i1, ch2 = (char) i2;
             sut.Append(ch1);
             sut.Append(ch2);
-            var expected = $"{ch1}{ch2}";
             //Act
             var equals = sut.Equals(expected);
             //Assert
