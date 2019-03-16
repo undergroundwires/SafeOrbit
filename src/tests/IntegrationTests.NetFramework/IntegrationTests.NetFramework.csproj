@@ -99,11 +99,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit">
-      <Version>3.9.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\SafeOrbit.licenseheader">
       <Link>SafeOrbit.licenseheader</Link>
     </None>
