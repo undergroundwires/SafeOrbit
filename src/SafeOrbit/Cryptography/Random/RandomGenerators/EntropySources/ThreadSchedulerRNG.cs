@@ -85,8 +85,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             public ThreadSchedulerRngCore()
             {
                 _chunk = new byte[ChunkSize];
-                _mainThread = new Thread(MainThreadLoop);
-                _mainThread.IsBackground = true; // Don't prevent application from dying if it wants to.
+                _mainThread = new Thread(MainThreadLoop)
+                {
+                    IsBackground = true // Don't prevent application from dying if it wants to.
+                };
                 _mainThread.Start();
             }
 
