@@ -43,9 +43,9 @@ namespace SafeOrbit.Cryptography.Encryption.Kdf
             var size = key.Length*2;
             byte[] result = null;
             //act
-            TestDelegate derivation = () => result = sut.Derive(key, salt, size);
+            void Derivation() => result = sut.Derive(key, salt, size);
             //assert
-            Assert.DoesNotThrow(derivation);
+            Assert.DoesNotThrow(Derivation);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.Empty);
             Assert.That(result, Has.Length.EqualTo(size));

@@ -1,10 +1,12 @@
 ﻿using NUnit.Framework;
+using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory
 {
     /// <seealso cref="ISafeBytes"/>
     /// <seealso cref="SafeBytes"/>
+    /// <seealso cref="SafeByteTests"/>
     [TestFixture]
     public class SafeBytesTests
     {

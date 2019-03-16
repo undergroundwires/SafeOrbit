@@ -16,7 +16,7 @@ namespace SafeOrbit.Fakes
             var list = new List<ISafeByte>();
             fake.Setup(x => x.Append(It.IsAny<ISafeByte>())).Callback<ISafeByte>(safeByte => list.Add(safeByte));
             fake.Setup(x => x.Length).Returns(() => list.Count);
-            fake.Setup(x => x.Get(It.IsAny<int>())).Returns((int index) => list[index]);
+            fake.Setup(x => x.GetAsync(It.IsAny<int>())).ReturnsAsync((int index) => list[index]);
             fake.Setup(x => x.ToDecryptedBytes()).Returns(list.Select(safeByte => safeByte.Get()).ToArray());
             fake.Setup(x => x.Dispose()).Callback(() => list.Clear());
             return fake.Object;
