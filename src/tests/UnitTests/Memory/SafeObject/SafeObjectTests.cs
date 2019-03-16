@@ -346,7 +346,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut(protectionMode: from,
                 injectionDetector: detectorMock.Object);
             var obj = sut.Object;
-            detectorMock.ResetCalls();
+            detectorMock.Invocations.Clear();
             //act
             sut.SetProtectionMode(to);
             //assert
@@ -361,7 +361,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut(protectionMode: from,
                 injectionDetector: detectorMock.Object);
             var obj = sut.Object;
-            detectorMock.ResetCalls();
+            detectorMock.Invocations.Clear();
             //act
             sut.SetProtectionMode(to);
             //assert

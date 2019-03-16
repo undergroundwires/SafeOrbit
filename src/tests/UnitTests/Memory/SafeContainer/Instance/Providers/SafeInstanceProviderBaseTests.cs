@@ -136,7 +136,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             var sut = GetSut(protectionMode: from,
                 injectionDetector: detectorMock.Object);
             sut.Provide(); //first call to the state
-            detectorMock.ResetCalls();
+            detectorMock.Invocations.Clear();
             //act
             sut.SetProtectionMode(to);
             var temp = sut.Provide(); //will trigger lazy logic
@@ -151,7 +151,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             var detectorMock = new Mock<IInjectionDetector>();
             var sut = GetSut(protectionMode: from,
                 injectionDetector: detectorMock.Object);
-            detectorMock.ResetCalls();
+            detectorMock.Invocations.Clear();
             //act
             sut.SetProtectionMode(to);
             //assert

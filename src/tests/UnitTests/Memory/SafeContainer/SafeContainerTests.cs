@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Infrastructure.Reflection;
@@ -130,41 +131,37 @@ namespace SafeOrbit.Memory
         {
             //arrange
             var safeObjectMock = new Mock<ISafeObject<Dictionary<string, IInstanceProvider>>>();
-            var instanceProvider1 = new Mock<IInstanceProvider>();
-            var instanceProvider2 = new Mock<IInstanceProvider>();
-            var instanceProvider3 = new Mock<IInstanceProvider>();
-            safeObjectMock.Setup(m => m.Object)
-                .Returns(new Dictionary<string, IInstanceProvider>()
-                {
-                    {"a", instanceProvider1.Object},
-                    {"b", instanceProvider2.Object},
-                    {"c", instanceProvider3.Object}
-                });
+            var instanceProviders = new []
+            {
+                new Mock<IInstanceProvider>(),
+                new Mock<IInstanceProvider>(),
+                new Mock<IInstanceProvider>()
+            };
+            var instancesToReturn = instanceProviders
+                .Select(instance => instance.Object)
+                .ToDictionary(provider => provider.ToString());
+            safeObjectMock
+                .Setup(m => m.Object)
+                .Returns(instancesToReturn);
             safeObjectMock.Setup(m => m.CanAlert)
                 .Returns(true);
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
                 .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
-            instanceProvider1.ResetCalls();
-            instanceProvider2.ResetCalls();
-            instanceProvider3.ResetCalls();
+            foreach (var provider in instanceProviders)
+                provider.Invocations.Clear();
             var otherProtectionMode = protectionMode == SafeContainerProtectionMode.FullProtection
-    ? SafeContainerProtectionMode.NonProtection
-    : SafeContainerProtectionMode.FullProtection;
+                ? SafeContainerProtectionMode.NonProtection
+                : SafeContainerProtectionMode.FullProtection;
             //act
             var sut = GetSut(protectionMode: otherProtectionMode, safeObjectFactory: safeObjectFactory.Object);
             sut.SetProtectionMode(protectionMode);
             //assert
-            instanceProvider1.Verify(
-                p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
-                Times.Once);
-            instanceProvider2.Verify(
-                p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
-                Times.Once);
-            instanceProvider3.Verify(
-                p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
-                Times.Once);
+            foreach (var provider in instanceProviders)
+                provider.Verify(
+                    p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
+                    Times.Once);
         }
 
         [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]

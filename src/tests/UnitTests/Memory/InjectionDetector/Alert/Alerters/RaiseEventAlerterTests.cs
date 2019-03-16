@@ -16,7 +16,7 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
         public override InjectionAlertChannel ExpectedChannel { get; } = InjectionAlertChannel.RaiseEvent;
         public override void Alert_Sut_Alerts_Message(TestDelegate alertingMessage, IInjectionMessage message)
         {
-            _safeOrbitCoreMock.ResetCalls();
+            _safeOrbitCoreMock.Invocations.Clear();
             alertingMessage.Invoke();
             _safeOrbitCoreMock.Verify(core=> core.AlertInjection(message.InjectedObject, message));
         }
