@@ -42,9 +42,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Decrypt(input, key);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithEmptyParameter = , Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -55,9 +55,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Decrypt(input, key);
+            void CallWithNullParameter() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -68,9 +68,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParamater = () => sut.Decrypt(input, key);
+            void CallWithEmptyParamater() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithEmptyParamater, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParamater, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -81,9 +81,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Decrypt(input, key);
+            void CallWithNullParameter() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -94,9 +94,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = new byte[sut.MaxKeySize/8 + 1];
             //Act
-            TestDelegate callingWithWrongKeySize = () => sut.Decrypt(input, key);
+            void CallWithWrongKeySize() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
         }
 
         [Test]
@@ -107,9 +107,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = new byte[sut.MinKeySize/8 - 1];
             //Act
-            TestDelegate callingWithWrongKeySize = () => sut.Decrypt(input, key);
+            void CallingWithWrongKeySize() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            Assert.That(CallingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
         }
 
         [Test]
@@ -137,9 +137,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Encrypt(input, key);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -150,9 +150,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Encrypt(input, key);
+            void CallWithNullParameter() => sut.Encrypt(input, key);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -163,9 +163,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Encrypt(input, key);
+            void CallWithEmptyParameter() => sut.Encrypt(input, key);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -176,9 +176,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Encrypt(input, key);
+            void CallWithNullParameter() => sut.Encrypt(input, key);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -189,9 +189,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = new byte[sut.MaxKeySize/8 + 1];
             //Act
-            TestDelegate callingWithWrongKeySize = () => sut.Encrypt(input, key);
+            void CallWithWrongKeySize() => sut.Encrypt(input, key);
             //Assert
-            Assert.That(callingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
         }
 
         [Test]
@@ -202,9 +202,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = new byte[sut.MinKeySize/8 - 1];
             //Act
-            TestDelegate callingWithWrongKeySize = () => sut.Encrypt(input, key);
+            void CallWithWrongKeySize() => sut.Encrypt(input, key);
             //Assert
-            Assert.That(callingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
         }
     }
 }

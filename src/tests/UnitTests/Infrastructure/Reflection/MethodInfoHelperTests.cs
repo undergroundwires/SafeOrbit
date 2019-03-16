@@ -15,9 +15,9 @@ namespace SafeOrbit.Infrastructure.Reflection
             //arrange
             var nullArgument = (MethodInfo)null;
             //act
-            TestDelegate callingWithNull = () => nullArgument.GetIlBytes();
+            void CallWithNull() => nullArgument.GetIlBytes();
             //assert
-            Assert.That(callingWithNull, Throws.ArgumentNullException);
+            Assert.That(CallWithNull, Throws.ArgumentNullException);
         }
         [Test]
         public void GetIlBytes_TwiceForSameType_ReturnsSame()
