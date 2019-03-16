@@ -33,6 +33,7 @@
       * Optimized serialization and encryption with faster async operations.
       * Small optimizations in random generators.
       * More parallel implementation: Many sync methods are replaced with async variants.
+        * TODO => ISafeByteCollection (go all async)
 
       - Other -
       * Fixed sanity check hash size function returning wrong value.
