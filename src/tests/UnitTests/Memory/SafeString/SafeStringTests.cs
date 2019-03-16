@@ -272,10 +272,23 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void EqualsISafeString_ParameterIsNullSafeBytes_returnsFalse()
+        public void EqualsISafeString_ParameterIsNullSafeBytesAndSelfIsEmpty_returnsTrue()
         {
             //Arrange
             var sut = GetSut();
+            ISafeString nullInstance = null;
+            //Act
+            var equals = sut.Equals(nullInstance);
+            //Assert
+            Assert.That(equals, Is.True);
+        }
+
+        [Test]
+        public void EqualsISafeString_ParameterIsNullSafeBytesAndSelfIsNotEmpty_returnsFalse()
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append("I'm not empty!");
             ISafeString nullInstance = null;
             //Act
             var equals = sut.Equals(nullInstance);
@@ -299,10 +312,23 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void EqualsString_WhenParameterIsNullString_returnsFalse()
+        public void EqualsString_ParameterIsNullStringAndSelfIsEmpty_returnsTrue()
         {
             //Arrange
             var sut = GetSut();
+            string nullString = null;
+            //Act
+            var equals = sut.Equals(nullString);
+            //Assert
+            Assert.That(equals, Is.True);
+        }
+
+        [Test]
+        public void EqualsString_ParameterIsNullStringAndSelfIsNotEmpty_returnsFalse()
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append("I'm not empty!");
             string nullString = null;
             //Act
             var equals = sut.Equals(nullString);
