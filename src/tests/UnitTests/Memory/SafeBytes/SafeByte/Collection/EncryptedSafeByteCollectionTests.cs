@@ -44,7 +44,20 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public async Task Append_GetAsync_SafeBytes_AppendsAtTheEnd_returnsTrue([Random(0, 256, 1)] byte b1,
+        public async Task Append_GetAsync_SafeBytes_AppendsSingle_CanGet()
+        {
+            //Arrange
+            var sut = GetSut();
+            const byte expected = 55;
+            sut.Append(GetSafeByteFor(expected));
+            //Act
+            var actual = await sut.GetAsync(0);
+            //Assert
+            Assert.That(expected, Is.EqualTo(actual));
+        }
+
+        [Test]
+        public async Task Append_GetAsync_SafeBytes_AppendsAtTheEnd_CanGet([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
             //Arrange

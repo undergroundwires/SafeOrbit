@@ -17,6 +17,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// </summary>
         public async Task<byte[]> SerializeAsync(IReadOnlyCollection<int> list)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list));
             if (!list.Any()) return new byte[0];
             var resultSize = sizeof(int) * list.Count; /* size + list bytes */;
             using (var memoryStream = new MemoryStream(capacity: resultSize))
@@ -31,6 +32,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
         public async Task<IEnumerable<int>> DeserializeAsync(byte[] list)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list));
             if (list.Length == 0) return Enumerable.Empty<int>();
             using (var memoryStream = new MemoryStream(list))
             {

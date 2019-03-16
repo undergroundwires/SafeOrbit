@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Moq;
 using Newtonsoft.Json;
+using SafeOrbit.Extensions;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
+using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes
 {
-    public class ByteIdListSerializerFaker : IByteIdListSerializer<int>
+    public class ByteIdListSerializerFaker : StubProviderBase<IByteIdListSerializer<int>>
     {
-        public Task<byte[]> SerializeAsync(IReadOnlyCollection<int> list)
-            => Task.FromResult(Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(list)));
-
-        public Task<IEnumerable<int>> DeserializeAsync(byte[] list)
-            => Task.FromResult(JsonConvert.DeserializeObject<Collection<int>>(Encoding.Unicode.GetString(list)).AsEnumerable());
+        public override IByteIdListSerializer<int> Provide()
+        {
+            var mock = new Mock<IByteIdListSerializer<int>>();
+            mock.Setup(s => s.SerializeAsync(It.IsAny<IReadOnlyCollection<int>>()))
+                .ReturnsAsync((IReadOnlyCollection<int> list) =>
+                    Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(list)));
+            mock.Setup(s => s.DeserializeAsync(It.IsAny<byte[]>()))
+                .ReturnsAsync((byte[] list) =>
+                    JsonConvert.DeserializeObject<Collection<int>>(Encoding.Unicode.GetString(list)).EmptyIfNull().AsEnumerable());
+            return mock.Object;
+        }
     }
 }

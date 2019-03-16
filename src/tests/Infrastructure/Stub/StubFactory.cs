@@ -40,6 +40,9 @@ namespace SafeOrbit.Tests
         }
         public TStub Provide<TStub>()
         {
+            if(!_typeFuncs.ContainsKey(typeof(TStub).FullName))
+                throw new KeyNotFoundException(
+                    $"Stub \"{typeof(TStub).Name}\" is not registered.\nFull name {typeof(TStub).FullName}");
             return (TStub) _typeFuncs[typeof (TStub).FullName].Invoke();
         }
     }

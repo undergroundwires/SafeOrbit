@@ -15,6 +15,10 @@ namespace SafeOrbit.Fakes
                 .Returns((byte[] input, byte[] key) => input.ToArray());
             fake.Setup(f => f.Decrypt(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
                 .Returns((byte[] input, byte[] key) => input.ToArray());
+            fake.Setup(f => f.EncryptAsync(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
+                .ReturnsAsync((byte[] input, byte[] key) => input.ToArray());
+            fake.Setup(f => f.DecryptAsync(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
+                .ReturnsAsync((byte[] input, byte[] key) => input.ToArray());
             return fake.Object;
         }
     }
