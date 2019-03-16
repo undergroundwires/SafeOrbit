@@ -190,8 +190,8 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             sut.Register<IInstanceTestClass, InstanceTestClass>();
             sut.Verify();
-            TestDelegate getNonRegistered = () => sut.Get<IDisposable>();
-            Assert.That(getNonRegistered, Throws.TypeOf<KeyNotFoundException>());
+            void GetNonRegistered() => sut.Get<IDisposable>();
+            Assert.That(GetNonRegistered, Throws.TypeOf<KeyNotFoundException>());
         }
 
         [Test]
@@ -211,8 +211,8 @@ namespace SafeOrbit.Memory
         public void Get_WithoutVerifying_throwsArgumentException()
         {
             var sut = GetSut();
-            TestDelegate getWithoutVerify = () => sut.Get<IDisposable>();
-            Assert.That(getWithoutVerify, Throws.ArgumentException);
+            void GetWithoutVerify() => sut.Get<IDisposable>();
+            Assert.That(GetWithoutVerify, Throws.ArgumentException);
         }
 
         [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
@@ -285,8 +285,8 @@ namespace SafeOrbit.Memory
         {
             var sut = GetSut();
             sut.Register<IInstanceTestClass, InstanceTestClass>();
-            TestDelegate registeringExistingType = () => sut.Register<IInstanceTestClass, InstanceTestClass>();
-            Assert.That(registeringExistingType, Throws.TypeOf<ArgumentException>());
+            void RegisteringExistingType() => sut.Register<IInstanceTestClass, InstanceTestClass>();
+            Assert.That(RegisteringExistingType, Throws.TypeOf<ArgumentException>());
         }
 
         [Test]
@@ -297,17 +297,17 @@ namespace SafeOrbit.Memory
             sut.Register<IInstanceTestClass, InstanceTestClass>();
             sut.Verify();
             //act
-            TestDelegate verifyingTwice = () => sut.Verify();
+            void VerifyingTwice() => sut.Verify();
             //assert
-            Assert.That(verifyingTwice, Throws.ArgumentException);
+            Assert.That(VerifyingTwice, Throws.ArgumentException);
         }
 
         [Test]
         public void Verify_IfNoTypesAreRegistered_throwsArgumentException()
         {
             var sut = GetSut();
-            TestDelegate verifyBeforeRegistering = () => sut.Verify();
-            Assert.That(verifyBeforeRegistering, Throws.TypeOf<ArgumentException>());
+            void VerifyBeforeRegistering() => sut.Verify();
+            Assert.That(VerifyBeforeRegistering, Throws.TypeOf<ArgumentException>());
         }
 
         private static ISafeContainer GetSut(

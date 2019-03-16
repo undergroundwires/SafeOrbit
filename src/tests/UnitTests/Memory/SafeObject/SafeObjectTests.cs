@@ -297,9 +297,9 @@ namespace SafeOrbit.Memory
             var sut = GetSut(initialObject);
             sut.MakeReadOnly();
             //act
-            TestDelegate callVerifyChanges = () => sut.ApplyChanges(a => { });
+            void CallVerifyChanges() => sut.ApplyChanges(a => { });
             //assert
-            Assert.That(callVerifyChanges, Throws.TypeOf<ReadOnlyAccessForbiddenException>());
+            Assert.That(CallVerifyChanges, Throws.TypeOf<ReadOnlyAccessForbiddenException>());
         }
 
         [Test]
