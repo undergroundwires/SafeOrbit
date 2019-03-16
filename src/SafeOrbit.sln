@@ -10,14 +10,29 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helpers", "helpers", "{606FBD51-2C64-4722-A296-0883BDF7B2AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.NetFramework", "tests\IntegrationTests.NetFramework\IntegrationTests.NetFramework.csproj", "{F9A2DDF3-D3D9-4133-B8E1-D3893ABEA2E6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{300DB885-91FF-4FBC-8C57-F9285EB252E7} = {300DB885-91FF-4FBC-8C57-F9285EB252E7}
+		{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1} = {0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceTests", "tests\PerformanceTests\PerformanceTests.csproj", "{26608A1A-0CCE-4D06-9011-F455A9095594}"
+	ProjectSection(ProjectDependencies) = postProject
+		{300DB885-91FF-4FBC-8C57-F9285EB252E7} = {300DB885-91FF-4FBC-8C57-F9285EB252E7}
+		{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1} = {0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SafeOrbit", "SafeOrbit\SafeOrbit.csproj", "{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests.NetFramework", "tests\UnitTests.NetFramework\UnitTests.NetFramework.csproj", "{2F706E0C-CA13-4CB7-A472-7F3E57BBF4DB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{300DB885-91FF-4FBC-8C57-F9285EB252E7} = {300DB885-91FF-4FBC-8C57-F9285EB252E7}
+		{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1} = {0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomComparisonApp", "tests\apps\RandomComparisonApp\RandomComparisonApp.csproj", "{5A9F48D4-BDF2-43D8-8E29-6D0CBC4318ED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1} = {0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "tests\Infrastructure\Infrastructure.csproj", "{300DB885-91FF-4FBC-8C57-F9285EB252E7}"
 EndProject
