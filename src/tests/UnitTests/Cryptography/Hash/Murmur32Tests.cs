@@ -36,8 +36,8 @@ namespace SafeOrbit.Cryptography.Hashers
                     var computed = sut.ComputeFast(key.Take(i).ToArray(), seed);
                     stream.Write(BitConverter.GetBytes(computed), 0, 4);
                 }
-                ArraySegment<byte> buffer;
-                if(!stream.TryGetBuffer(out buffer)) Assert.False(false, "Could not get the buffer.");
+                if(!stream.TryGetBuffer(out var buffer))
+                    Assert.False(false, "Could not get the buffer.");
                 result = sut.ComputeFast(buffer.Array, 0);
             }
             //Assert
