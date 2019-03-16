@@ -44,7 +44,7 @@
       * Added support for netstandard2.0, net462, net47, net471, net472
       * Updated framework dependencies to the latest available for different platforms
     </releaseNotes>
-    <copyright>Copyright 2016 - 2018</copyright>
+    <copyright>Copyright 2016 - 2019</copyright>
     <tags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</tags>
   </metadata>
   <files>
