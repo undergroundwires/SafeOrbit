@@ -41,6 +41,7 @@
         * Fixed dead lock in async encryption algorithms.
         * Removed unnecessary code from StartEarly
         * (Not done yet) Thread safe byte manipulations: Problems when managing more than one safebytes/safestring is solved.
+        * More small optimizations & fixes
 
       - Compatibility -
         * Added support for netstandard2.0, net462, net47, net471, net472
