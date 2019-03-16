@@ -129,7 +129,6 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </exception>
         private void ValidateParameters(byte[] input, byte[] key, byte[] salt)
         {
-            if (key.IsNullOrEmpty()) throw new ArgumentNullException(nameof(key));
             if (salt.IsNullOrEmpty()) throw new ArgumentNullException(nameof(salt));
             if (input.IsNullOrEmpty()) throw new ArgumentNullException(nameof(input));
             ValidateKey(key);
