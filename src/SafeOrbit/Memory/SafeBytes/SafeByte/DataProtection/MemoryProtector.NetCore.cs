@@ -1,4 +1,4 @@
-﻿#if (NETCORE)
+﻿#if NETCORE || NETCORE2
 using System;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;

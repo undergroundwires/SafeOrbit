@@ -44,7 +44,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Act
             TestDelegate callingWithEmptyParameter = () => sut.Decrypt(input, key);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(callingWithEmptyParameter = , Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
