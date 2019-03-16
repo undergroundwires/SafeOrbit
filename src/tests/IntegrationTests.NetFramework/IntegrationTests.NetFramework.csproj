@@ -84,9 +84,6 @@
     <Compile Include="..\IntegrationTests\Memory\SafeContainer\SafeContainerTests.cs">
       <Link>Memory\SafeContainer\SafeContainerTests.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationTests\Memory\SafeMemoryStream.cs">
-      <Link>Memory\SafeMemoryStream.cs</Link>
-    </Compile>
     <Compile Include="..\IntegrationTests\Memory\SafeObject\SafeObjectTests.cs">
       <Link>Memory\SafeObject\SafeObjectTests.cs</Link>
     </Compile>

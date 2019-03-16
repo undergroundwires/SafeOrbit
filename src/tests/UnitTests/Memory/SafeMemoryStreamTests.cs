@@ -39,7 +39,14 @@ namespace SafeOrbit.Memory
             Assert.That(sut.Length, Is.Zero);
         }
 
+        [Test]
+        public void CanWrite_InstanceIsClosed_returnsFalse()
+        {
+            var sut = GetSut();
+            sut.Close();
+            Assert.False(sut.CanWrite);
+        }
 
-        private static Stream GetSut() => new SafeMemoryStream();
+        private static SafeMemoryStream GetSut() => new SafeMemoryStream();
     }
 }
