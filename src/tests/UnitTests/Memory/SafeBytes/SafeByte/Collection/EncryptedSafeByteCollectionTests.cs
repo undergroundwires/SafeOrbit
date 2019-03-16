@@ -14,7 +14,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
     [TestFixture]
     internal class EncryptedSafeByteCollectionTests : TestsFor<ISafeByteCollection>
     {
-        private ISafeByte GetSafeByteFor(byte b)
+        private static ISafeByte GetSafeByteFor(byte b)
         {
             var safeByteFactory = Stubs.Get<ISafeByteFactory>();
             return safeByteFactory.GetByByte(b);
