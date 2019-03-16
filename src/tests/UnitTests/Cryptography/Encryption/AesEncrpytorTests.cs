@@ -73,7 +73,7 @@ namespace SafeOrbit.Cryptography.Encryption
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.TwoDifferentByteArrays16Length))]
-        public void Decrypt_KeyParameterIsEmpty_throwsArgumentNullException(byte[] input, byte[] salt)
+        public void Decrypt_KeyParameterIsEmpty_throwsKeySizeException(byte[] input, byte[] salt)
         {
             //Arrange
             var sut = GetSut();
@@ -81,7 +81,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             //Assert
-            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<KeySizeException>());
         }
 
         [Test]
