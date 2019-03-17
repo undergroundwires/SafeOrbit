@@ -45,11 +45,12 @@ namespace SafeOrbit.Memory
             Insert(Length, ch);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Appends a <see cref="string" /> that's already revealed in the memory.
+        ///     Appends a <see cref="T:System.String" /> that's already revealed in the memory.
         /// </summary>
-        /// <param name="text">Non-safe <see cref="string" /> that's already revealed in the memory</param>
-        /// <exception cref="ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
+        /// <param name="text">Non-safe <see cref="T:System.String" /> that's already revealed in the memory</param>
+        /// <exception cref="T:System.ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
         public void Append(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
@@ -60,13 +61,14 @@ namespace SafeOrbit.Memory
                 Append(ch);
         }
 
-        /// <exception cref="ArgumentNullException">
+        /// <inheritdoc />
+        /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="character" /> is <see langword="null" />.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
         ///     If position is less than zero or higher than the length.
         /// </exception>
-        /// <exception cref="ObjectDisposedException">
+        /// <exception cref="T:System.ObjectDisposedException">
         ///     Throws if the SafeString instance is disposed.
         /// </exception>
         public void Append(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
@@ -88,7 +90,8 @@ namespace SafeOrbit.Memory
                 Append(safeString.GetAsSafeBytes(i).DeepClone());
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:System.ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
         public void AppendLine()
         {
             EnsureNotDisposed();
@@ -245,29 +248,22 @@ namespace SafeOrbit.Memory
         {
             if (string.IsNullOrEmpty(other))
                 return this.Length == 0;
-            if (other.Length != Length)
-                return false;
-            var bytes = _textService.GetBytes(other);
-            for (var i = 0; i < Length; i++)
+            using (var ss = _safeStringFactory.Create())
             {
-                var safeBytes = GetAsSafeBytes(i);
-                var plainBytes = new [] { bytes[i * 2], bytes[i * 2 + 1] };
-                if (!safeBytes.Equals(plainBytes))
-                    return false;
+                ss.Append(other);
+                return Equals(ss);
             }
-            return true;
         }
 
         public bool Equals(ISafeString other)
         {
+            // Caution: Don't check length first and then fall out, since that leaks length info
             if (IsNullOrEmpty(other))
                 return this.Length == 0;
-            if (other?.Length != Length)
-                return false;
-            for (var i = 0; i < Length; i++)
-                if (!GetAsSafeBytes(i).Equals(other.GetAsSafeBytes(i)))
-                    return false;
-            return true;
+            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            for (var i = 0; i < Length && i < other.Length; i++)
+                comparisonBit |= (uint)(GetAsSafeBytes(i).Equals(other.GetAsSafeBytes(i)) ? 0 : 1);
+            return comparisonBit == 0;
         }
 
         /// <inheritdoc />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Extensions;
@@ -69,8 +70,7 @@ namespace SafeOrbit.Memory
             if (safeBytes.IsDisposed) throw new ObjectDisposedException(nameof(safeBytes));
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
             //If it's the known SafeBytes then it reveals nothing in the memory
-            var asSafeBytes = safeBytes as SafeBytes;
-            if (asSafeBytes != null)
+            if (safeBytes is SafeBytes asSafeBytes)
                 for (var i = 0; i < safeBytes.Length; i++)
                 {
                     var safeByte = TaskContext.RunSync(() => asSafeBytes.GetAsSafeByteAsync(i));
@@ -135,7 +135,7 @@ namespace SafeOrbit.Memory
         /// <summary>
         ///     Indicates whether the specified SafeBytes object is null or holds zero bytes.
         /// </summary>
-        public static bool IsNullOrEmpty(ISafeBytes safebytes) => (safebytes == null) || (safebytes.Length == 0);
+        public static bool IsNullOrEmpty(ISafeBytes safeBytes) => (safeBytes == null) || (safeBytes.Length == 0);
 
         internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
@@ -197,33 +197,33 @@ namespace SafeOrbit.Memory
 
         public bool Equals(byte[] other)
         {
-            if (Length != other?.Length)
-                return false;
-            //TODO: Better parallel implementation
-            for (var i = 0; i < Length; i++)
-                if (!TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Equals(other[i]))
-                    return false;
-            return true;
+            if (other == null || !other.Any()) return this.Length == 0;
+            // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
+            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            // TODO: Can run in parallel
+            for (var i = 0; i < Length && i < other.Length; i++)
+            {
+                var result = TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Equals(other[i]);
+                comparisonBit |= (uint)(result ? 0 : 1);
+            }
+            return comparisonBit == 0;
         }
 
         public bool Equals(ISafeBytes other)
         {
-            if (Length != other?.Length)
-                return false;
-            //TODO: Better parallel implementation
-            if (other is SafeBytes asSafeBytes)
+            if (other == null || other.Length == 0) return this.Length == 0;
+            // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
+            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            // TODO: Can run in parallel
+            var safeBytes = other as SafeBytes;
+            for (var i = 0; i < Length && i < other.Length; i++)
             {
-                for (var i = 0; i < Length; i++)
-                    if (!TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Equals(TaskContext.RunSync(() => asSafeBytes.GetAsSafeByteAsync(i))))
-                        return false;
+                var existingByte = TaskContext.RunSync(() => this.GetAsSafeByteAsync(i));
+                var result = safeBytes == null ? existingByte.Equals(other.GetByte(i)) :
+                    existingByte.Equals(TaskContext.RunSync(() => safeBytes.GetAsSafeByteAsync(i)));
+                comparisonBit |= (uint)(result ? 0 : 1);
             }
-            else
-            {
-                for (var i = 0; i < Length; i++)
-                    if (!TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Equals(other.GetByte(i)))
-                        return false;
-            }
-            return true;
+            return comparisonBit == 0;
         }
 
         public override bool Equals(object obj)
@@ -232,8 +232,8 @@ namespace SafeOrbit.Memory
             {
                 case SafeBytes sb:
                     return Equals(sb);
-                case byte[] _:
-                    return Equals((byte[]) obj);
+                case byte[] @byte:
+                    return Equals(@byte);
                 default:
                     return false;
             }

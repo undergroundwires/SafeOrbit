@@ -272,6 +272,37 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
+        public void EqualsISafeString_DifferentInstancesWithSameString_returnsTrue()
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append("Hello");
+            var other = GetSut();
+            other.Append("Hello");
+            //Act
+            var equals = sut.Equals(other);
+            var equalsOpposite = other.Equals(sut);
+            //Assert
+            Assert.That(equals, Is.True);
+            Assert.That(equalsOpposite, Is.True);
+        }
+        [TestCase("Hello", "H3ll0"), TestCase("Hello", "Hello2"), TestCase("Hello2", "Hello")]
+        public void EqualsISafeString_DifferentStrings_returnsFalse(string string1, string string2)
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append(string1);
+            var other = GetSut();
+            other.Append(string2);
+            //Act
+            var equals = sut.Equals(other);
+            var equalsOpposite = other.Equals(sut);
+            //Assert
+            Assert.That(equals, Is.False);
+            Assert.That(equalsOpposite, Is.False);
+        }
+
+        [Test]
         public void EqualsISafeString_ParameterIsNullSafeBytesAndSelfIsEmpty_returnsTrue()
         {
             //Arrange

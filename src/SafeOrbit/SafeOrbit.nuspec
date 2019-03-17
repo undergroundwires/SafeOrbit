@@ -28,6 +28,7 @@
       - Security -
         * IFastRandom is now seeded with strong random data.
         * Fixed memory leak problem in SafeStringToStringMarshaler.
+        * Protection against timing attacks in SafeByte/SafeString comparisions.
 
       - Performance -
         * Optimized serialization and encryption with async operations.

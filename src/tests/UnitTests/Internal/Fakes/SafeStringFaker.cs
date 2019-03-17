@@ -15,24 +15,28 @@ namespace SafeOrbit.Fakes
             var fake = new Mock<ISafeString>();
             var chars = new List<char>();
             var isDisposed = false;
-            fake.Setup(x => x.Append(It.IsAny<char>())).Callback<char>(x => chars.Add(x));
-            fake.Setup(x => x.Append(It.IsAny<string>())).Callback<string>(x => chars.AddRange(x));
-            fake.Setup(x => x.Append(It.IsAny<ISafeBytes>(), It.IsAny<Encoding>())).Callback<ISafeBytes, Encoding>(
-                (c, e) => chars.Add((char)c.ToByteArray().FirstOrDefault())); //this  might broke new tests
+            fake.Setup(x => x.Append(It.IsAny<char>()))
+                .Callback<char>(x => chars.Add(x));
+            fake.Setup(x => x.Append(It.IsAny<string>()))
+                .Callback<string>(x => chars.AddRange(x));
+            fake.Setup(x => x.Append(It.IsAny<ISafeBytes>(), It.IsAny<Encoding>()))
+                .Callback<ISafeBytes, Encoding>(
+                    (c, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString(c.ToByteArray()))); 
             fake.Setup(x => x.ToSafeBytes()).Returns(() =>
             {
                 var safeBytes = Stubs.Get<ISafeBytes>();
-                foreach (char c in chars)
-                {
-                    safeBytes.Append((byte)c);
-                }
+                var bytes = System.Text.Encoding.Unicode.GetBytes(new string(chars.ToArray()));
+                foreach (var @byte in bytes)
+                    safeBytes.Append(@byte);
                 return safeBytes;
             });
             fake.Setup(x => x.GetAsSafeBytes(It.IsAny<int>())).Returns((int i) =>
             {
                 var c = chars.ElementAt(i);
                 var safeBytes = Stubs.Get<ISafeBytes>();
-                safeBytes.Append((byte)c);
+                var bytes = System.Text.Encoding.Unicode.GetBytes($"{c}");
+                foreach (var @byte in bytes)
+                    safeBytes.Append(@byte);
                 return safeBytes;
             });
             fake.Setup(x => x.GetAsChar(It.IsAny<int>())).Returns((int i) => chars.ElementAt(i));

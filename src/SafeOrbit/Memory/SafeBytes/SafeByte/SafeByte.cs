@@ -194,7 +194,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             if (!IsByteSet && !other.IsByteSet)
                 return true;
             if (IsByteSet && other.IsByteSet)
-                return _id == other.GetHashCode();
+                return AreIdsSame(this.Id, other.GetHashCode());
             return false;
         }
 
@@ -202,9 +202,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             if (!IsByteSet)
                 return false;
-            return _id == _byteIdGenerator.Generate(other);
+            var otherId = _byteIdGenerator.Generate(other);
+            return AreIdsSame(this.Id, otherId);
         }
 
+ 
         /// <summary>
         ///     Frees the encryption resources.
         /// </summary>
@@ -270,12 +272,15 @@ namespace SafeOrbit.Memory.SafeBytesServices
 
         public override bool Equals(object obj)
         {
-            var sb = obj as SafeByte;
-            if (sb != null)
-                return Equals(sb);
-            if (obj is byte)
-                return Equals((byte) obj);
-            return false;
+            switch (obj)
+            {
+                case SafeByte sb:
+                    return Equals(sb);
+                case byte @byte:
+                    return Equals(@byte);
+                default:
+                    return false;
+            }
         }
 
         /// <summary>
@@ -309,6 +314,13 @@ namespace SafeOrbit.Memory.SafeBytesServices
         private void EnsureByteIsNotSet()
         {
             if (IsByteSet) throw new InvalidOperationException("Byte is already set");
+        }
+
+        private static bool AreIdsSame(int id, int other)
+        {
+            uint result = 0;
+            result |= (uint)id ^ (uint)other; // Protects against timing attacks, see: https://security.stackexchange.com/questions/83660/simple-string-comparisons-not-secure-against-timing-attacks 
+            return result == 0;
         }
     }
 }
