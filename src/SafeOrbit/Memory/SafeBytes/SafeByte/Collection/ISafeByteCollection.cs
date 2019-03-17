@@ -17,7 +17,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     Gets the byte as <see cref="ISafeByte" /> for the specified index asynchronously.
         /// </summary>
         /// <param name="index">The position of the byte.</param>
-        /// <seealso cref="Get" />
         Task<ISafeByte> GetAsync(int index);
         /// <summary>
         /// Returns all of the real byte values that <see cref="ISafeByteCollection"/> holds.
