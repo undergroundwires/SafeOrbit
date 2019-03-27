@@ -68,9 +68,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             var sut = GetSut();
             //Act
-            TestDelegate callingDeepClone = () => sut.DeepClone();
+            void CallDeepClone() => sut.DeepClone();
             //Assert
-            Assert.That(callingDeepClone, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallDeepClone, Throws.TypeOf<InvalidOperationException>());
         }
 
         [Test]
@@ -231,9 +231,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             var sut = GetSut();
             //Act
-            TestDelegate callingGet = () => sut.Get();
+            void CallGet() => sut.Get();
             //Assert
-            Assert.That(callingGet, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallGet, Throws.TypeOf<InvalidOperationException>());
         }
 
         //** GetHashCode() **//
@@ -276,9 +276,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             int temp;
             //Act
-            TestDelegate gettingIdWithoutSettingByte = () => temp = sut.Id;
+            void GetIdWithoutSettingByte() => temp = sut.Id;
             //Act
-            Assert.That(gettingIdWithoutSettingByte, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(GetIdWithoutSettingByte, Throws.TypeOf<InvalidOperationException>());
         }
 
         //** IsByteSet **//
@@ -315,9 +315,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             //Act
             sut.Set(b1);
-            TestDelegate callingOneMoreTime = () => sut.Set(b2);
+            void CallOneMoreTime() => sut.Set(b2);
             //Assert
-            Assert.That(callingOneMoreTime, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallOneMoreTime, Throws.TypeOf<InvalidOperationException>());
         }
     }
 }
