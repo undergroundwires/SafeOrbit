@@ -3,11 +3,11 @@
 <package>
   <metadata>
     <id>$id$</id>
-    <version>0.3</version>
+    <version>0.3.0</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://github.com/undergroundwires/SafeOrbit/blob/master/LICENSE</licenseUrl>
+    <license type="MIT"/>
     <projectUrl>https://github.com/undergroundwires/SafeOrbit</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

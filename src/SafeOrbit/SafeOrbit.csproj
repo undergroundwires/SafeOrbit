@@ -4,6 +4,7 @@
     <Description>SafeOrbit is easy-to-use and strong security toolkit for .NET and .NET Core.</Description>
     <Copyright>MIT-licensed</Copyright>
     <AssemblyTitle>SafeOrbit</AssemblyTitle>
+    <Version>0.3.0</Version>
     <Authors>undergroundwires</Authors>
     <TargetFrameworks>netstandard1.6;netstandard2.0;net45;net451;net452;net46;net461;net462;net47;net471;net472;</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -12,7 +13,6 @@
     <PackageId>SafeOrbit</PackageId>
     <PackageIconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/undergroundwires/SafeOrbit</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/undergroundwires/SafeOrbit</RepositoryUrl>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
