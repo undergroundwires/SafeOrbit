@@ -29,7 +29,7 @@
 **SafeOrbit** is **performance friendly**. It's up to you to decide for trade-off between speed and more security. Services have `Safe` or `Fast` prefixes. `Fast` classes strive for both performance and security, but `Safe` classes focuses the security over performance. **For example** while [SafeEncryptor](#aes-the-ISafeEncrpytor) uses lots of iterations, salts, and IV, [FastEncryptor](#blowfish-the-IFastEncryptor) uses a faster encryption alghoritm without any key deriving function. **Furthermore** most of the classes has a way to disable its protection. They let you change/disable the security level of the protection dynamically to gain more performance.
 
 
-|                 Platform |  .NET 4.0+   | .NET Core 2.0 | .NET Std 1.6 |
+|                 Platform |  .NET 4.5+   | .NET Core 2.0 | .NET Std 1.6 |
 |--------------------------|--------------|---------------|--------------|
 |            Full security |     ✔        |       ✔      |       ✔     |
 |  Exception serialization |     ✔        |       ✔      |       ✖     |

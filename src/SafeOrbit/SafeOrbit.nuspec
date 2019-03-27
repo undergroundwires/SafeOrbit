@@ -20,7 +20,7 @@
       Wiki : https://github.com/undergroundwires/safeOrbit/wiki
 
       Supported platforms:
-      - .NET Framework 4.0+
+      - .NET Framework 4.5+
       - .NET Standard 1.6+, 2.0+
     </description>
     <releaseNotes>
