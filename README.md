@@ -16,7 +16,7 @@
 
 **SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security). It protects every byte in your application with encryption in transit and at rest. It safeguards your application against memory injections and timing attacks.
 
-* You have [SafeBytes](#safebytes#) to protect binaries, 
+* You have [SafeBytes](#safebytes#) to protect binaries,
 * [SafeString](#safestring#) to protect strings,
 * [and even more to detect memory injections](#protect-your-classes#).
 
