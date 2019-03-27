@@ -38,8 +38,8 @@
       - Other -
         * Fixed sanity check hash size function returning wrong value.
         * Fixed dead lock in async encryption algorithms.
-        * Removed unnecessary code from StartEarlyd.
-        * More small optimizations & fixes
+        * Removed unnecessary code from StartEarly.
+        * More small optimizations &amp; fixes
 
       - Compatibility -
         * Added support for netstandard2.0, net462, net47, net471, net472
