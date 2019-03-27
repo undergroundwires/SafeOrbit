@@ -11,7 +11,7 @@ echo ----------------------------
 
 
 IF "%1" == "%2" (
-	dotnet pack --no-build --configuration %1 -o %3
+	dotnet pack --no-build --include-symbols --configuration %1 -o %3
 ) ELSE (
 	echo ----------------------------
 	echo Nuget package is not created as current configuration does not match the requested configuration.
