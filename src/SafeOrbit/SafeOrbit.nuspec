@@ -21,8 +21,7 @@
 
       Supported platforms:
       - .NET Framework 4.0+
-      - .NET Standard 1.6+
-      - .NET Core 2.0+
+      - .NET Standard 1.6+, 2.0+
     </description>
     <releaseNotes>
       - Security -
@@ -34,14 +33,12 @@
         * Optimized serialization and encryption with async operations.
         * Small optimizations in random generators.
         * Slightly safe string equality check with plain strings.
-        * More parallel implementation: Many sync methods are replaced with async variants.
-          * TODO => ISafeByteCollection (go all async)
+        * More parallel implementation in inner classes.
 
       - Other -
         * Fixed sanity check hash size function returning wrong value.
         * Fixed dead lock in async encryption algorithms.
-        * Removed unnecessary code from StartEarly
-        * (Not done yet) Thread safe byte manipulations: Problems when managing more than one safebytes/safestring is solved.
+        * Removed unnecessary code from StartEarlyd.
         * More small optimizations & fixes
 
       - Compatibility -
