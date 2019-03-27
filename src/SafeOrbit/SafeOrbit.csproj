@@ -4,7 +4,7 @@
     <Description>SafeOrbit is easy-to-use and strong security toolkit for .NET and .NET Core.</Description>
     <Copyright>MIT-licensed</Copyright>
     <AssemblyTitle>SafeOrbit</AssemblyTitle>
-    <Authors>Erkin Ekici</Authors>
+    <Authors>undergroundwires</Authors>
     <TargetFrameworks>netstandard1.6;netstandard2.0;net45;net451;net452;net46;net461;net462;net47;net471;net472;</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
