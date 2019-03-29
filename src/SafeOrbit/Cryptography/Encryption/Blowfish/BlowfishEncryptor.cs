@@ -52,19 +52,19 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
         ///     <see cref="BlowfishCipherMode" /> and <see cref="ICryptoRandom" />.
         /// </summary>
-        /// <param name="chiperMode">The chiper mode.</param>
+        /// <param name="cipherMode">The cipher mode.</param>
         /// <param name="random">The random generator to be used for creation of IV's.</param>
         /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}">
-        ///     <paramref name="chiperMode" /> is not defined in <see cref="BlowfishCipherMode" />.
+        ///     <paramref name="cipherMode" /> is not defined in <see cref="BlowfishCipherMode" />.
         /// </exception>
         /// <seealso cref="BlowfishCipherMode" />
         /// <seealso cref="IvSize" />
         /// <seealso cref="ICryptoRandom" />
-        public BlowfishEncryptor(BlowfishCipherMode chiperMode, ICryptoRandom random) : base(random)
+        public BlowfishEncryptor(BlowfishCipherMode cipherMode, ICryptoRandom random) : base(random)
         {
-            if (((int) chiperMode != 0) && ((int) chiperMode != 1))
-                throw new UnexpectedEnumValueException<BlowfishCipherMode>(chiperMode);
-            CipherMode = chiperMode;
+            if (((int) cipherMode != 0) && ((int) cipherMode != 1))
+                throw new UnexpectedEnumValueException<BlowfishCipherMode>(cipherMode);
+            CipherMode = cipherMode;
         }
 
         /// <summary>
