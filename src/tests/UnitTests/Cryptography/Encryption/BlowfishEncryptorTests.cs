@@ -194,13 +194,14 @@ namespace SafeOrbit.Cryptography.Encryption
         public void Decrypt_ForEncryptedSingleByte_CanDecrypt(BlowfishCipherMode cipherMode)
         {
             //Arrange
-            var input = new byte[]{77};
+            var expected = new byte[]{77};
             var sut = GetSut();
-            var key = new byte[sut.MinKeySize / 8 - 1];
+            var key = new byte[sut.MinKeySize];
             //Act
-            void CallWithWrongKeySize() => sut.Encrypt(input, key);
+            var encrypted = sut.Encrypt(expected, key);
+            var actual = sut.Decrypt(encrypted, key);
             //Assert
-            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }
