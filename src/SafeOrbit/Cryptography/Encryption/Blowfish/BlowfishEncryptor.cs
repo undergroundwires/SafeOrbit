@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
-using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Cryptography.Encryption
 {
