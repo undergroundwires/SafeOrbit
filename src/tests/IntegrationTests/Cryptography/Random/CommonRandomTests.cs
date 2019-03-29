@@ -22,8 +22,8 @@ namespace SafeOrbit.Cryptography.Random
         public void StaticInstance_InMultipleThreads_CanBeAccessedAndConsumed()
         {
             var sut = GetStaticInstance();
-            var iterations = 100;
-            var bufferLength = 200; //high for collisions
+            const int iterations = 100;
+            const int bufferLength = 200; //high for collisions
             var byteList = new ConcurrentBag<byte[]>();
             var threads = new Thread[iterations];
             for (var i = 0; i < iterations; i++)
@@ -42,11 +42,11 @@ namespace SafeOrbit.Cryptography.Random
                     Assert.That(tempBytes, Has.Length.EqualTo(bufferLength));
                 });
             }
-            for (int i = 0; i < iterations; i++)
+            for (var i = 0; i < iterations; i++)
             {
                 threads[i].Start();
             }
-            for (int i = 0; i < iterations; i++)
+            for (var i = 0; i < iterations; i++)
             {
                 threads[i].Join();
             }
@@ -57,8 +57,8 @@ namespace SafeOrbit.Cryptography.Random
         public void StaticInstance_InParallel_CanBeAccessedAndConsumed()
         {
             var sut = GetStaticInstance();
-            var iterations = 100;
-            var bufferLength = 200; //high for collisions
+            const int iterations = 100;
+            const int bufferLength = 200; //high for collisions
             var byteList = new ConcurrentBag<byte[]>();
             var actions = new Action[iterations];
             for (var i = 0; i < iterations; i++)

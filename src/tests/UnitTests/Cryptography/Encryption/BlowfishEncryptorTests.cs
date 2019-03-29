@@ -14,26 +14,8 @@ namespace SafeOrbit.Cryptography.Encryption
     public class BlowfishEncryptorTests
     {
         protected IFastEncryptor GetSut(ICryptoRandom random = null) => new BlowfishEncryptor(random ?? Stubs.Get<IFastRandom>());
-        private IFastEncryptor GetSut(BlowfishCipherMode cipherMode) => new BlowfishEncryptor(cipherMode, Stubs.Get<IFastRandom>());
-
-
-        [Test]
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
-        public void Cbc_Decrypt_Encrypt_KeySizeIsBetweenMinKeyAndLastKey(byte[] input)
-        {
-            //arrange
-            var sut = GetSut(BlowfishCipherMode.Cbc);
-            for (var i = sut.MinKeySize/8; i < sut.MaxKeySize/8; i++)
-            {
-                //act
-                var key = new byte[i];
-                var encrypted = sut.Encrypt(input, key);
-                var plain = sut.Decrypt(encrypted, key);
-                //assert
-                Assert.That(input, Is.EqualTo(plain));
-            }
-        }
-
+        private static IFastEncryptor GetSut(BlowfishCipherMode cipherMode) => new BlowfishEncryptor(cipherMode, Stubs.Get<IFastRandom>());
+        
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Decrypt_InputParameterIsEmpty_throwsArgumentNullException(byte[] key)
@@ -61,23 +43,23 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         [Test]
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
-        public void Decrypt_KeyParameterIsEmpty_throwsArgumentNullException(byte[] input)
+        public void Decrypt_KeyParameterIsEmpty_throwsArgumentNullException()
         {
             //Arrange
             var sut = GetSut();
+            var input = new byte[]{ 5, 10, 15 };
             var key = new byte[0];
             //Act
-            void CallWithEmptyParamater() => sut.Decrypt(input, key);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key);
             //Assert
-            Assert.That(CallWithEmptyParamater, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
-        public void Decrypt_KeyParameterIsNull_throwsArgumentNullException(byte[] input)
+        public void Decrypt_KeyParameterIsNull_throwsArgumentNullException()
         {
             //Arrange
+            var input = new byte[]{55};
             var sut = GetSut();
             var key = (byte[]) null;
             //Act
@@ -111,13 +93,13 @@ namespace SafeOrbit.Cryptography.Encryption
             //Assert
             Assert.That(CallingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
         }
-
         [Test]
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
-        public void Ecb_Decrypt_Encrypt_KeySizeIsBetweenMinKeyAndLastKey(byte[] input)
+        [TestCase(BlowfishCipherMode.Ecb), TestCase(BlowfishCipherMode.Cbc)]
+        public void Decrypt_Encrypt_KeySizeIsBetweenMinKeyAndLastKey(BlowfishCipherMode cipherMode)
         {
             //arrange
-            var sut = GetSut(BlowfishCipherMode.Ecb);
+            var input = (byte[])ByteCases.ByteArray32Length[0];
+            var sut = GetSut(cipherMode);
             for (var i = sut.MinKeySize/8; i < sut.MaxKeySize/8; i++)
             {
                 //act
@@ -201,6 +183,20 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var key = new byte[sut.MinKeySize/8 - 1];
+            //Act
+            void CallWithWrongKeySize() => sut.Encrypt(input, key);
+            //Assert
+            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+        }
+
+        [Test]
+        [TestCase(BlowfishCipherMode.Ecb), TestCase(BlowfishCipherMode.Cbc)]
+        public void Decrypt_ForEncryptedSingleByte_CanDecrypt(BlowfishCipherMode cipherMode)
+        {
+            //Arrange
+            var input = new byte[]{77};
+            var sut = GetSut();
+            var key = new byte[sut.MinKeySize / 8 - 1];
             //Act
             void CallWithWrongKeySize() => sut.Encrypt(input, key);
             //Assert
