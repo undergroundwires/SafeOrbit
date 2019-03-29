@@ -23,7 +23,6 @@ namespace CoreIntegrationConsoleApp
 
         private static IEnumerable<ITest> GetAllTests()
         {
-            yield return new BlowfishEncryptorTest();
             yield return new SafeStringTest();
             yield return new SafeStringToStringMarshalerTest();
         }
