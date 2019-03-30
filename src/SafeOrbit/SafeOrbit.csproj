@@ -85,40 +85,17 @@
     <Authors>undergroundwires</Authors>
     <Title>SafeOrbit is easy-to-use and strong security toolkit for .NET</Title>
     <Description>
-      SafeOrbit is easy-to-use and strong security toolkit for .NET and .NET Core.
-
-      While SafeOrbit's primarily focus is strong memory protection, SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.
-
-      Source code : https://github.com/undergroundwires/safeOrbit
-      Wiki : https://github.com/undergroundwires/safeOrbit/wiki
-
-      Supported platforms:
-      - .NET Framework 4.5+
-      - .NET Standard 1.6+, 2.0+
+      SafeOrbit is a security toolset including different high performance algorithms and easy to use classes for advanced memory protection.
+      SafeOrbit's primarly focus is strong memory protection.
+      It protects every byte in your application with encryption in transit and at rest.
+      It safeguards your application against memory injections and timing attacks.
+      It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.
     </Description>
     <Copyright>Copyright 2016 - 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>
-      - Security -
-      * IFastRandom is now seeded with strong random data.
-      * Fixed memory leak problem in SafeStringToStringMarshaler.
-      * Protection against timing attacks in SafeByte/SafeString comparisions.
-
-      - Performance -
-      * Optimized serialization and encryption with async operations.
-      * Small optimizations in random generators.
-      * Slightly safe string equality check with plain strings.
-      * More parallel implementation in inner classes.
-
-      - Other -
-      * Fixed sanity check hash size function returning wrong value.
-      * Removed unnecessary code from StartEarly.
-      * More small optimizations &amp; fixes
-
-      - Compatibility -
-      * Added support for netstandard2.0, net462, net47, net471, net472
-      * Updated framework dependencies to the latest available for different platforms
-    </PackageReleaseNotes>
+    <!-- including PDB files in NuGet for source link because symbolsource.org does not support portable PDBs -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <PackageReleaseNotes>https://github.com/undergroundwires/SafeOrbit/releases/tag/0.3.0</PackageReleaseNotes>
     <PackageTags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png</PackageIconUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
