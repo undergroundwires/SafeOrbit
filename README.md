@@ -64,7 +64,7 @@ It means that you're free to use **SafeOrbit** freely in any application, copy, 
 #### SafeString vs [System.Security.SecureString](https://msdn.microsoft.com/en-us/library/system.security.securestring(v=vs.110).aspx)
 
 |                              | SecureString | SafeString |
-|------------------------------|--------------|------------|
+|-----------------------------:|:------------:|:----------:|
 |  Supports multiple encodings |       ✖     |     ✔      |
 |      Safely character insert |       ✖     |     ✔      |
 |      Safely character remove |       ✖     |     ✔      |
