@@ -1,28 +1,4 @@
-﻿/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Memory.InjectionServices;
@@ -87,13 +63,10 @@ namespace SafeOrbit.Memory.Injection
             bool scanCode, bool scanState,
             InjectionAlertChannel alertChannel)
         {
-            if (alerter == null) throw new ArgumentNullException(nameof(alerter));
-            if (stateStamper == null) throw new ArgumentNullException(nameof(stateStamper));
-            if (codeStamper == null) throw new ArgumentNullException(nameof(codeStamper));
-            _alerter = alerter;
+            _alerter = alerter ?? throw new ArgumentNullException(nameof(alerter));
             _typeIdGenerator = typeIdGenerator;
-            _stateStamper = stateStamper;
-            _codeStamper = codeStamper;
+            _stateStamper = stateStamper ?? throw new ArgumentNullException(nameof(stateStamper));
+            _codeStamper = codeStamper ?? throw new ArgumentNullException(nameof(codeStamper));
             _alertChannel = alertChannel;
             ScanCode = scanCode;
             ScanState = scanState;
@@ -111,9 +84,10 @@ namespace SafeOrbit.Memory.Injection
         /// </summary>
         public bool ScanCode { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Saves the state and/or the code  of the object.
-        ///     Use <see cref="AlertUnnotifiedChanges" /> method to check if the state has been injected.
+        ///     Use <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.AlertUnnotifiedChanges(System.Object)" /> method to check if the state has been injected.
         /// </summary>
         /// <param name="object">Object that this instance scans/tracks.</param>
         public void NotifyChanges(object @object)
@@ -125,12 +99,13 @@ namespace SafeOrbit.Memory.Injection
                 SaveCodeStampFor(@object.GetType());
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Alerts when any unnotified changes are detected any <see cref="CanAlert" /> is true.
+        ///     Alerts when any unnotified changes are detected any <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.CanAlert" /> is true.
         /// </summary>
-        /// <param name="object">Object that this instance has been notified by <see cref="NotifyChanges" /></param>
-        /// <exception cref="ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
-        /// <seealso cref="IAlerts" />
+        /// <param name="object">Object that this instance has been notified by <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.NotifyChanges(System.Object)" /></param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
         public void AlertUnnotifiedChanges(object @object)
         {
             if (@object == null) throw new ArgumentNullException(nameof(@object));
@@ -160,8 +135,6 @@ namespace SafeOrbit.Memory.Injection
             var result = currentStamp.Equals(lastStamp);
             return result;
         }
-
-
         private void SaveCodeStampFor(Type type)
         {
             var codeId = GetCodeId(type);
@@ -170,12 +143,10 @@ namespace SafeOrbit.Memory.Injection
             var codeStamp = _codeStamper.GetStamp(type);
             CodeStampsDictionary.AddOrUpdate(codeId, codeStamp, (key, existingVal) => codeStamp);
         }
-
         private void SaveStateStamp(object obj)
         {
             _lastStateStamp = _stateStamper.GetStamp(obj);
         }
-
         /// <exception cref="ArgumentException">
         ///     Please validate the object using <see cref="NotifyChanges" /> method before
         ///     requesting a code stamp.
@@ -183,8 +154,7 @@ namespace SafeOrbit.Memory.Injection
         private IStamp<int> GetLastCodeStampFor(Type type)
         {
             var id = GetCodeId(type);
-            IStamp<int> stamp;
-            var valueExists = CodeStampsDictionary.TryGetValue(id, out stamp);
+            var valueExists = CodeStampsDictionary.TryGetValue(id, out var stamp);
             if (!valueExists)
                 throw new ArgumentException(
                     $"Please validate the object using {nameof(NotifyChanges)} method before requesting a code stamp.");
@@ -198,56 +168,47 @@ namespace SafeOrbit.Memory.Injection
 
         private InjectionAlertChannel _alertChannel;
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets or sets the alert channel.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="CanAlert" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.Injection.InjectionDetector.CanAlert" />
         /// <value>The alert channel.</value>
         public virtual InjectionAlertChannel AlertChannel
         {
-            get { return _alertChannel; }
-            set { _alertChannel = value; }
+            get => _alertChannel;
+            set => _alertChannel = value;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Returns whether this <see cref="InjectionDetector" /> instance tracks objects (see: <see cref="ScanCode" />,
-        ///     <see cref="ScanState" />)
+        ///     Returns whether this <see cref="T:SafeOrbit.Memory.Injection.InjectionDetector" /> instance tracks objects (see: <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.ScanCode" />,
+        ///     <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.ScanState" />)
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="AlertChannel" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.Injection.InjectionDetector.AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert => ScanCode || ScanState;
 
         #endregion
 
         #region [IDisposable]
-
-        private bool _isDisposed; // To detect redundant calls
-
+        private bool _isDisposed;
         protected virtual void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
-                _lastStateStamp = null;
-                _isDisposed = true;
-            }
+            if (_isDisposed) return;
+            _lastStateStamp = null;
+            _isDisposed = true;
         }
-
-        ~InjectionDetector()
-        {
-            Dispose(false);
-        }
-
-        // This code added to correctly implement the disposable pattern.
+        ~InjectionDetector() => Dispose(false);
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
         #endregion
     }
 }

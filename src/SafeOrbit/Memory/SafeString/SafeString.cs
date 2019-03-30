@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SafeOrbit.Library;
@@ -31,7 +6,6 @@ using SafeOrbit.Text;
 
 namespace SafeOrbit.Memory
 {
-    //TODO: write tests for public void Insert(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
     public class SafeString : ISafeString
     {
         private const Encoding InnerEncoding = Encoding.Utf16LittleEndian;
@@ -55,12 +29,9 @@ namespace SafeOrbit.Memory
             IFactory<ISafeString> safeStringFactory,
             IFactory<ISafeBytes> safeBytesFactory)
         {
-            if (textService == null) throw new ArgumentNullException(nameof(textService));
-            if (safeStringFactory == null) throw new ArgumentNullException(nameof(safeStringFactory));
-            if (safeBytesFactory == null) throw new ArgumentNullException(nameof(safeBytesFactory));
-            _textService = textService;
-            _safeStringFactory = safeStringFactory;
-            _safeBytesFactory = safeBytesFactory;
+            _textService = textService ?? throw new ArgumentNullException(nameof(textService));
+            _safeStringFactory = safeStringFactory ?? throw new ArgumentNullException(nameof(safeStringFactory));
+            _safeBytesFactory = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
             _charBytesList = new List<ISafeBytes>();
         }
 
@@ -74,11 +45,12 @@ namespace SafeOrbit.Memory
             Insert(Length, ch);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Appends a <see cref="string" /> that's already revealed in the memory.
+        ///     Appends a <see cref="T:System.String" /> that's already revealed in the memory.
         /// </summary>
-        /// <param name="text">Non-safe <see cref="string" /> that's already revealed in the memory</param>
-        /// <exception cref="ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
+        /// <param name="text">Non-safe <see cref="T:System.String" /> that's already revealed in the memory</param>
+        /// <exception cref="T:System.ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
         public void Append(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
@@ -89,13 +61,14 @@ namespace SafeOrbit.Memory
                 Append(ch);
         }
 
-        /// <exception cref="ArgumentNullException">
+        /// <inheritdoc />
+        /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="character" /> is <see langword="null" />.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
         ///     If position is less than zero or higher than the length.
         /// </exception>
-        /// <exception cref="ObjectDisposedException">
+        /// <exception cref="T:System.ObjectDisposedException">
         ///     Throws if the SafeString instance is disposed.
         /// </exception>
         public void Append(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
@@ -117,7 +90,8 @@ namespace SafeOrbit.Memory
                 Append(safeString.GetAsSafeBytes(i).DeepClone());
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:System.ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
         public void AppendLine()
         {
             EnsureNotDisposed();
@@ -137,29 +111,30 @@ namespace SafeOrbit.Memory
         }
 
         /// <exception cref="ArgumentNullException">
-        ///     <paramref name="character" /> is <see langword="null" />.
+        ///     <paramref name="textBytes" /> is <see langword="null" />.
         /// </exception>
         /// <exception cref="ObjectDisposedException">
         ///     Throws if the SafeString instance is disposed.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     Throws if <paramref name="character" /> is less than zero or higher than the length.
+        ///     Throws if <paramref name="textBytes" /> is less than zero or higher than the length.
         /// </exception>
-        public void Insert(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
+        public void Insert(int position, ISafeBytes textBytes, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             EnsureNotDisposed();
             if ((position < 0) || (position > Length)) throw new ArgumentOutOfRangeException(nameof(position));
-            if (SafeBytes.IsNullOrEmpty(character)) throw new ArgumentNullException(nameof(character));
+            if (SafeBytes.IsNullOrEmpty(textBytes)) throw new ArgumentNullException(nameof(textBytes));
             if (encoding == InnerEncoding)
             {
-                _charBytesList.Insert(position, character);
+                _charBytesList.Insert(position, textBytes);
                 return;
             }
             //Convert encoding
-            var buffer = character.ToByteArray();
+            var buffer = textBytes.ToByteArray();
             try
             {
-                buffer = _textService.Convert(encoding, InnerEncoding, buffer);
+                if(encoding != InnerEncoding)
+                    buffer = _textService.Convert(encoding, InnerEncoding, buffer);
                 var safeBytes = _safeBytesFactory.Create();
                 for (var i = 0; i < buffer.Length; i++)
                 {
@@ -271,26 +246,28 @@ namespace SafeOrbit.Memory
 
         public bool Equals(string other)
         {
-            if (other?.Length != Length)
-                return false;
-            using (var safeString = _safeStringFactory.Create())
+            if (string.IsNullOrEmpty(other))
+                return this.Length == 0;
+            using (var ss = _safeStringFactory.Create())
             {
-                safeString.Append(other);
-                return Equals(safeString);
+                ss.Append(other);
+                return Equals(ss);
             }
         }
 
         public bool Equals(ISafeString other)
         {
-            if (other?.Length != Length)
-                return false;
-            for (var i = 0; i < Length; i++)
-                if (!GetAsSafeBytes(i).Equals(other.GetAsSafeBytes(i)))
-                    return false;
-            return true;
+            // Caution: Don't check length first and then fall out, since that leaks length info
+            if (IsNullOrEmpty(other))
+                return this.Length == 0;
+            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            for (var i = 0; i < Length && i < other.Length; i++)
+                comparisonBit |= (uint)(GetAsSafeBytes(i).Equals(other.GetAsSafeBytes(i)) ? 0 : 1);
+            return comparisonBit == 0;
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:System.ObjectDisposedException">Throws if the <see cref="T:SafeOrbit.Memory.SafeString" /> instance is disposed</exception>
         public ISafeString DeepClone()
         {
             EnsureNotDisposed();
@@ -324,12 +301,15 @@ namespace SafeOrbit.Memory
 
         public override bool Equals(object obj)
         {
-            var safeString = obj as ISafeString;
-            if (safeString != null)
-                return Equals(safeString);
-            if (obj is string)
-                return Equals((string) obj);
-            return false;
+            switch (obj)
+            {
+                case ISafeString safeString:
+                    return Equals(safeString);
+                case string @string:
+                    return Equals(@string);
+                default:
+                    return false;
+            }
         }
 
         private char TransformSafeBytesToChar(ISafeBytes safeBytes, Encoding encoding)
@@ -361,7 +341,8 @@ namespace SafeOrbit.Memory
             }
             finally
             {
-                Array.Clear(byteBuffer, 0, byteBuffer.Length);
+                if(byteBuffer != null)
+                    Array.Clear(byteBuffer, 0, byteBuffer.Length);
             }
         }
 

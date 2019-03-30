@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
@@ -31,6 +6,7 @@ using SafeOrbit.Memory;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
+    /// <inheritdoc />
     /// <summary>
     ///     In a multitasking OS, each individual thread never knows when it's going to be granted execution time,
     ///     as many processes and threads compete for CPU cycles.  The granularity of time to wake up from sleep is
@@ -42,6 +18,47 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     /// </summary>
     public sealed class ThreadSchedulerRng : RandomNumberGenerator
     {
+        private static readonly ThreadSchedulerRngCore Core = new ThreadSchedulerRngCore();
+
+        /// <summary>
+        ///     Gets the bytes.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <exception cref="CryptographicException">Failed to return requested number of bytes</exception>
+        public override void GetBytes(byte[] data)
+        {
+            if (Core.Read(data, 0, data.Length) != data.Length)
+                throw new CryptographicException("Failed to return requested number of bytes");
+        }
+
+#if !NETCORE
+        public override void GetNonZeroBytes(byte[] data)
+        {
+            int offset = 0;
+            while (offset < data.Length)
+            {
+                var newBytes = new byte[data.Length - offset];
+                if (Core.Read(newBytes, 0, newBytes.Length) != newBytes.Length)
+                {
+                    throw new CryptographicException("Failed to return requested number of bytes");
+                }
+                for (int i = 0; i < newBytes.Length; i++)
+                {
+                    if (newBytes[i] != 0)
+                    {
+                        data[offset] = newBytes[i];
+                        offset++;
+                    }
+                }
+            }
+        }
+#endif
+
+        ~ThreadSchedulerRng()
+        {
+            Dispose(false);
+        }
+
         /// <summary>
         ///     By putting the core into its own class, it makes it easy for us to create a single instance of it, referenced
         ///     by a static member of ThreadSchedulerRNG, without any difficulty of finalizing or disposing etc.
@@ -68,8 +85,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             public ThreadSchedulerRngCore()
             {
                 _chunk = new byte[ChunkSize];
-                _mainThread = new Thread(MainThreadLoop);
-                _mainThread.IsBackground = true; // Don't prevent application from dying if it wants to.
+                _mainThread = new Thread(MainThreadLoop)
+                {
+                    IsBackground = true // Don't prevent application from dying if it wants to.
+                };
                 _mainThread.Start();
             }
 
@@ -88,7 +107,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                             var bytesRead = -1;
                             while ((readCount > 0) && (bytesRead != 0))
                             {
-                                bytesRead = _safeStream.Read(buffer, pos, (int) readCount);
+                                bytesRead = _safeStream.Read(buffer, pos, (int)readCount);
                                 _mainThreadLoopAre.Set();
                                 readCount -= bytesRead;
                                 pos += bytesRead;
@@ -143,7 +162,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                             byte newBit = 0;
                             for (var i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
                             {
-                                newBit ^= (byte) (ticks%2);
+                                newBit ^= (byte)(ticks % 2);
                                 ticks >>= 1;
                             }
                             GotBit(newBit);
@@ -197,47 +216,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             {
                 Dispose(false);
             }
-        }
-
-        private static readonly ThreadSchedulerRngCore Core = new ThreadSchedulerRngCore();
-
-        /// <summary>
-        ///     Gets the bytes.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <exception cref="CryptographicException">Failed to return requested number of bytes</exception>
-        public override void GetBytes(byte[] data)
-        {
-            if (Core.Read(data, 0, data.Length) != data.Length)
-                throw new CryptographicException("Failed to return requested number of bytes");
-        }
-
-#if !NETCORE
-        public override void GetNonZeroBytes(byte[] data)
-        {
-            int offset = 0;
-            while (offset < data.Length)
-            {
-                var newBytes = new byte[data.Length - offset];
-                if (Core.Read(newBytes, 0, newBytes.Length) != newBytes.Length)
-                {
-                    throw new CryptographicException("Failed to return requested number of bytes");
-                }
-                for (int i = 0; i < newBytes.Length; i++)
-                {
-                    if (newBytes[i] != 0)
-                    {
-                        data[offset] = newBytes[i];
-                        offset++;
-                    }
-                }
-            }
-        }
-#endif
-
-        ~ThreadSchedulerRng()
-        {
-            Dispose(false);
         }
     }
 }

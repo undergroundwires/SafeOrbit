@@ -5,7 +5,12 @@
     /// </summary>
     public enum Platform
     {
-        NetCore,
+        NetStandard,
+        NetStandard2,
+        Net472,
+        Net471,
+        Net470,
+        Net462,
         Net461,
         Net460,
         Net452,

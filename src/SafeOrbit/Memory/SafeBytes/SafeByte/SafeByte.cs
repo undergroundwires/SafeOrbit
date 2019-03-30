@@ -1,31 +1,7 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Exceptions;
@@ -85,14 +61,10 @@ namespace SafeOrbit.Memory.SafeBytesServices
             IByteIdGenerator byteIdGenerator,
             IByteArrayProtector memoryProtector)
         {
-            if (encryptor == null) throw new ArgumentNullException(nameof(encryptor));
-            if (fastRandom == null) throw new ArgumentNullException(nameof(fastRandom));
-            if (byteIdGenerator == null) throw new ArgumentNullException(nameof(fastRandom));
-            if (memoryProtector == null) throw new ArgumentNullException(nameof(memoryProtector));
-            _encryptor = encryptor;
-            _fastRandom = fastRandom;
-            _byteIdGenerator = byteIdGenerator;
-            _memoryProtector = memoryProtector;
+            _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
+            _fastRandom = fastRandom ?? throw new ArgumentNullException(nameof(fastRandom));
+            _byteIdGenerator = byteIdGenerator ?? throw new ArgumentNullException(nameof(fastRandom));
+            _memoryProtector = memoryProtector ?? throw new ArgumentNullException(nameof(memoryProtector));
         }
 
         /// <summary>
@@ -222,7 +194,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             if (!IsByteSet && !other.IsByteSet)
                 return true;
             if (IsByteSet && other.IsByteSet)
-                return _id == other.GetHashCode();
+                return AreIdsSame(this.Id, other.GetHashCode());
             return false;
         }
 
@@ -230,9 +202,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             if (!IsByteSet)
                 return false;
-            return _id == _byteIdGenerator.Generate(other);
+            var otherId = _byteIdGenerator.Generate(other);
+            return AreIdsSame(this.Id, otherId);
         }
 
+ 
         /// <summary>
         ///     Frees the encryption resources.
         /// </summary>
@@ -257,11 +231,12 @@ namespace SafeOrbit.Memory.SafeBytesServices
                     //Get key
                     _encryptionKey = _fastRandom.GetBytes(KeySize);
                     //Encrypt
-                    var encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, _encryptionKey);
+                    var encryptedBuffer = default(byte[]);
                     RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
                         //Action
                         () =>
                         {
+                            encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, _encryptionKey);
                             //Add arbitrary bytes
                             _encryptedByteLength = encryptedBuffer.Length;
                             _encryptedByte = GetMemoryProtectableSizedBytes(encryptedBuffer);
@@ -297,12 +272,15 @@ namespace SafeOrbit.Memory.SafeBytesServices
 
         public override bool Equals(object obj)
         {
-            var sb = obj as SafeByte;
-            if (sb != null)
-                return Equals(sb);
-            if (obj is byte)
-                return Equals((byte) obj);
-            return false;
+            switch (obj)
+            {
+                case SafeByte sb:
+                    return Equals(sb);
+                case byte @byte:
+                    return Equals(@byte);
+                default:
+                    return false;
+            }
         }
 
         /// <summary>
@@ -336,6 +314,13 @@ namespace SafeOrbit.Memory.SafeBytesServices
         private void EnsureByteIsNotSet()
         {
             if (IsByteSet) throw new InvalidOperationException("Byte is already set");
+        }
+
+        private static bool AreIdsSame(int id, int other)
+        {
+            uint result = 0;
+            result |= (uint)id ^ (uint)other; // Protects against timing attacks, see: https://security.stackexchange.com/questions/83660/simple-string-comparisons-not-secure-against-timing-attacks 
+            return result == 0;
         }
     }
 }

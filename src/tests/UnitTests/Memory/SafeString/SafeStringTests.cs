@@ -1,31 +1,7 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SafeOrbit.Infrastructure;
 using SafeOrbit.Extensions;
@@ -35,18 +11,17 @@ using SafeOrbit.Text;
 using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
-{ //TODO: Write encoding text for SafeBytes
-
+{
     [TestFixture]
-    public class SafeStringTests : TestsFor<ISafeString>
+    public partial class SafeStringTests
     {
-        protected override ISafeString GetSut()
+        private static ISafeString GetSut(ITextService textService = null)
         {
             return new SafeString(
-                Stubs.Get<ITextService>(),
+                textService ?? Stubs.Get<ITextService>(),
                 Stubs.GetFactory<ISafeString>(),
                 Stubs.GetFactory<ISafeBytes>());
-        } //** IsNullOrEmpty **//
+        }
 
         [Test]
         public void Clear_CallingTwice_doesNotThrow()
@@ -55,9 +30,9 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             //Act
             sut.Clear();
-            TestDelegate callingTwice = () => sut.Clear();
+            void CallingTwice() => sut.Clear();
             //Assert
-            Assert.DoesNotThrow(callingTwice);
+            Assert.DoesNotThrow(CallingTwice);
         }
 
         [Test]
@@ -84,9 +59,9 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             sut.Dispose();
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Clear();
+            void CallOnDisposedObject() => sut.Clear();
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
@@ -120,8 +95,10 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void DeepClone_ClonedObjectsToSafeBytes_returnsEqualSafeBytes([Random(0, 256, 1)] int i1,
-            [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
+        public void DeepClone_ClonedObjectsToSafeBytes_returnsEqualSafeBytes(
+            [Random(0, 256, 1)] int i1,
+            [Random(0, 256, 1)] int i2,
+            [Random(0, 256, 1)] int i3)
         {
             //Arrange
             var sut = GetSut();
@@ -161,9 +138,9 @@ namespace SafeOrbit.Memory
             sut.Append((char) i1);
             //Act
             sut.Dispose();
-            TestDelegate callingOnDisposedObject = () => sut.DeepClone();
+            void CallOnDisposedObject() => sut.DeepClone();
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
@@ -188,9 +165,9 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             sut.Dispose();
             //Act
-            TestDelegate disposingAgain = () => sut.Dispose();
+            void DisposeAgain() => sut.Dispose();
             //Assert
-            Assert.That(disposingAgain, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(DisposeAgain, Throws.TypeOf<ObjectDisposedException>());
         }
 
         //** Equals() **//
@@ -295,10 +272,54 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void EqualsISafeString_ParameterIsNullSafeBytes_returnsFalse()
+        public void EqualsISafeString_DifferentInstancesWithSameString_returnsTrue()
         {
             //Arrange
             var sut = GetSut();
+            sut.Append("Hello");
+            var other = GetSut();
+            other.Append("Hello");
+            //Act
+            var equals = sut.Equals(other);
+            var equalsOpposite = other.Equals(sut);
+            //Assert
+            Assert.That(equals, Is.True);
+            Assert.That(equalsOpposite, Is.True);
+        }
+        [TestCase("Hello", "H3ll0"), TestCase("Hello", "Hello2"), TestCase("Hello2", "Hello")]
+        public void EqualsISafeString_DifferentStrings_returnsFalse(string string1, string string2)
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append(string1);
+            var other = GetSut();
+            other.Append(string2);
+            //Act
+            var equals = sut.Equals(other);
+            var equalsOpposite = other.Equals(sut);
+            //Assert
+            Assert.That(equals, Is.False);
+            Assert.That(equalsOpposite, Is.False);
+        }
+
+        [Test]
+        public void EqualsISafeString_ParameterIsNullSafeBytesAndSelfIsEmpty_returnsTrue()
+        {
+            //Arrange
+            var sut = GetSut();
+            ISafeString nullInstance = null;
+            //Act
+            var equals = sut.Equals(nullInstance);
+            //Assert
+            Assert.That(equals, Is.True);
+        }
+
+        [Test]
+        public void EqualsISafeString_ParameterIsNullSafeBytesAndSelfIsNotEmpty_returnsFalse()
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append("I'm not empty!");
             ISafeString nullInstance = null;
             //Act
             var equals = sut.Equals(nullInstance);
@@ -307,26 +328,38 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void EqualsString_WhenHoldingSameChars_returnsTrue([Random(0, 125, 1)] byte i1,
-            [Random(125, 256, 1)] byte i2)
+        public void EqualsString_WhenHoldingSameChars_returnsTrue()
+        {
+            //Arrange
+            const char ch1 = 'a', ch2 = 'b';
+            const string expected = "ab";
+            var sut = GetSut();
+            sut.Append(ch1);
+            sut.Append(ch2);
+            //Act
+            var equals = sut.Equals(expected);
+            //Assert
+            Assert.True(equals);
+        }
+
+        [Test]
+        public void EqualsString_ParameterIsNullStringAndSelfIsEmpty_returnsTrue()
         {
             //Arrange
             var sut = GetSut();
-            char ch1 = (char) i1, ch2 = (char) i2;
-            sut.Append(ch1);
-            sut.Append(ch2);
-            var text = $"{ch1}{ch2}";
+            string nullString = null;
             //Act
-            var equals = sut.Equals(text);
+            var equals = sut.Equals(nullString);
             //Assert
             Assert.That(equals, Is.True);
         }
 
         [Test]
-        public void EqualsString_WhenParameterIsNullString_returnsFalse()
+        public void EqualsString_ParameterIsNullStringAndSelfIsNotEmpty_returnsFalse()
         {
             //Arrange
             var sut = GetSut();
+            sut.Append("I'm not empty!");
             string nullString = null;
             //Act
             var equals = sut.Equals(nullString);
@@ -427,9 +460,9 @@ namespace SafeOrbit.Memory
             sut.Append(ch);
             var index = sut.Length + 1;
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Insert(index, ch);
+            void CallOnDisposedObject() => sut.Insert(index, ch);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
@@ -441,9 +474,9 @@ namespace SafeOrbit.Memory
             var c = (char) i;
             sut.Append(c);
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Insert(index, c);
+            void CallOnDisposedObject() => sut.Insert(index, c);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
@@ -465,7 +498,6 @@ namespace SafeOrbit.Memory
             Assert.That(actual2, Is.EqualTo(expected2));
         }
 
-        //** Insert(char) **//
         [Test]
         public void InsertChar_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] int i)
         {
@@ -474,9 +506,9 @@ namespace SafeOrbit.Memory
             var c = (char) i;
             sut.Dispose();
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Insert(0, c);
+            void CallOnDisposedObject() => sut.Insert(0, c);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
@@ -488,9 +520,9 @@ namespace SafeOrbit.Memory
             sut.Append(safeBytes);
             var index = sut.Length + 1;
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Insert(index, safeBytes);
+            void CallOnDisposedObject() => sut.Insert(index, safeBytes);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
@@ -502,9 +534,9 @@ namespace SafeOrbit.Memory
             var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
             sut.Append(safeBytes);
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Insert(index, safeBytes);
+            void CallOnDisposedObject() => sut.Insert(index, safeBytes);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
@@ -513,10 +545,10 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             var sut = GetSut();
-            var insertPos = 0;
+            const int insertPos = 0;
             var safeBytes1 = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i1);
             var safeBytes2 = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i2);
-            int expected1 = 1, expected2 = 2;
+            const int expected1 = 1, expected2 = 2;
             //Act
             sut.Insert(insertPos, safeBytes1);
             var actual1 = sut.Length;
@@ -527,7 +559,6 @@ namespace SafeOrbit.Memory
             Assert.That(actual2, Is.EqualTo(expected2));
         }
 
-        //** Insert(ISafeBytes) **//
         [Test]
         public void InsertISafeBytes_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] int i)
         {
@@ -536,9 +567,114 @@ namespace SafeOrbit.Memory
             var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
             sut.Dispose();
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Insert(0, safeBytes);
+            void CallOnDisposedObject() => sut.Insert(0, safeBytes);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void Append_MultipleCharsAppended_CanGetCharsInOrder()
+        {
+            //Arrange
+            var sut = GetSut();
+            const char one = 'h', two = 'e', three = 'l', four = 'l', five = 'o';
+            sut.Append(one);
+            sut.Append(two);
+            sut.Append(three);
+            sut.Append(four);
+            sut.Append(five);
+            //Act
+            var actualOne = sut.GetAsChar(0);
+            var actualTwo = sut.GetAsChar(1);
+            var actualThree = sut.GetAsChar(2);
+            var actualFour = sut.GetAsChar(3);
+            var actualFive = sut.GetAsChar(4);
+            //Assert
+            Assert.AreEqual(one, actualOne);
+            Assert.AreEqual(two, actualTwo);
+            Assert.AreEqual(three, actualThree);
+            Assert.AreEqual(four, actualFour);
+            Assert.AreEqual(five, actualFive);
+        }
+
+        [Test]
+        public void Append_StringIsAppended_CanGetCharsInOrder()
+        {
+            //Arrange
+            var sut = GetSut();
+            const char one = 'h', two = 'e', three = 'l', four = 'l', five = 'o';
+            sut.Append("hello");
+            //Act
+            var actualOne = sut.GetAsChar(0);
+            var actualTwo = sut.GetAsChar(1);
+            var actualThree = sut.GetAsChar(2);
+            var actualFour = sut.GetAsChar(3);
+            var actualFive = sut.GetAsChar(4);
+            //Assert
+            Assert.AreEqual(one, actualOne);
+            Assert.AreEqual(two, actualTwo);
+            Assert.AreEqual(three, actualThree);
+            Assert.AreEqual(four, actualFour);
+            Assert.AreEqual(five, actualFive);
+        }
+
+        [Test]
+        public void Append_AsciiText_BytesAreConverted()
+        {
+            // arrange
+            var textServiceMock = new Mock<ITextService>();
+            var asciiBytes = new byte[] { 104, 101, 108, 108, 111 }; /* hello */
+            var expected = new byte[] { 104, 0, 101, 0, 108, 0, 108, 0, 111, 0 }; /*hello*/
+            textServiceMock
+                .Setup(s => s.Convert(Encoding.Ascii, Encoding.Utf16LittleEndian, asciiBytes))
+                .Returns(expected.ToArray);
+            var sut = GetSut(textService: textServiceMock.Object);
+            var safeBytes = Stubs.Get<ISafeBytes>();
+            foreach(var @byte in asciiBytes)
+                safeBytes.Append(@byte);
+            // act
+            sut.Append(safeBytes, Encoding.Ascii);
+            var actual = sut.ToSafeBytes().ToByteArray();
+            // assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Append_Utf16BigEndian_BytesAreConverted()
+        {
+            // arrange
+            var textServiceMock = new Mock<ITextService>();
+            var utf16BigEndianBytes = new byte[] { 0, 104, 0, 101, 0, 108, 0, 108, 0, 111 };
+            var expected = new byte[] { 104, 0, 101, 0, 108, 0, 108, 0, 111, 0 }; /*hello*/
+            textServiceMock
+                .Setup(s => s.Convert(Encoding.Utf16BigEndian, Encoding.Utf16LittleEndian, utf16BigEndianBytes))
+                .Returns(expected.ToArray);
+            var sut = GetSut(textService: textServiceMock.Object);
+            var safeBytes = Stubs.Get<ISafeBytes>();
+            foreach (var @byte in utf16BigEndianBytes)
+                safeBytes.Append(@byte);
+            // act
+            sut.Append(safeBytes, Encoding.Utf16BigEndian);
+            var actual = sut.ToSafeBytes().ToByteArray();
+            // assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Append_Utf16LittleEndian_BytesAreSame()
+        {
+            // arrange
+            var textServiceMock = new Mock<ITextService>();
+            var expected = new byte[] { 104, 0, 101, 0, 108, 0, 108, 0, 111, 0 }; /*hello*/
+            var sut = GetSut(textService: textServiceMock.Object);
+            var safeBytes = Stubs.Get<ISafeBytes>();
+            foreach (var @byte in expected)
+                safeBytes.Append(@byte);
+            // act
+            sut.Append(safeBytes, Encoding.Utf16LittleEndian);
+            var actual = sut.ToSafeBytes().ToByteArray();
+            // assert
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
@@ -557,23 +693,36 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void IsNullOrEmpty_ForNewSafeBytesInstance_returnsTrue()
+        public void IsNullOrEmpty_ForClearedInstance_returnsTrue()
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append("Hello world");
+            sut.Clear();
+            //Act
+            var isNull = SafeString.IsNullOrEmpty(sut);
+            //Assert
+            Assert.That(isNull, Is.True);
+        }
+
+        [Test]
+        public void IsNullOrEmpty_ForNewSafeStringInstance_returnsTrue()
         {
             //Arrange
             var sut = GetSut();
             //Act
-            var isEmpty = SafeOrbit.Memory.SafeString.IsNullOrEmpty(sut);
+            var isEmpty = SafeString.IsNullOrEmpty(sut);
             //Assert
             Assert.That(isEmpty, Is.True);
         }
 
         [Test]
-        public void IsNullOrEmpty_ForNullSafeBytesObject_returnsTrue()
+        public void IsNullOrEmpty_ForNullSafeStringObject_returnsTrue()
         {
             //Arrange
             var nullString = (ISafeString) null;
             //Act
-            var isNull = SafeOrbit.Memory.SafeString.IsNullOrEmpty(nullString);
+            var isNull = SafeString.IsNullOrEmpty(nullString);
             //Assert
             Assert.That(isNull, Is.True);
         }
@@ -589,7 +738,7 @@ namespace SafeOrbit.Memory
             sut.Append(c2);
             sut.Append(c3);
             //Act
-            var isNull = SafeOrbit.Memory.SafeString.IsNullOrEmpty(sut);
+            var isNull = SafeString.IsNullOrEmpty(sut);
             //Assert
             Assert.That(isNull, Is.False);
         }
@@ -603,7 +752,7 @@ namespace SafeOrbit.Memory
             var c = (char) i;
             sut.Append(c);
             //Act
-            var isEmpty = SafeOrbit.Memory.SafeString.IsNullOrEmpty(sut);
+            var isEmpty = SafeString.IsNullOrEmpty(sut);
             //Assert
             Assert.That(isEmpty, Is.False);
         }
@@ -629,11 +778,11 @@ namespace SafeOrbit.Memory
             sut.Append(ch);
             var index = sut.Length;
             //Act
-            TestDelegate callingWithZeroParameter = () => sut.Remove(index, 0);
-            TestDelegate callingWithNegativeParameter = () => sut.Remove(index, -1);
+            void CallWithZeroParameter() => sut.Remove(index, 0);
+            void CallWithNegativeParameter() => sut.Remove(index, -1);
             //Assert
-            Assert.That(callingWithZeroParameter, Throws.TypeOf<ArgumentOutOfRangeException>());
-            Assert.That(callingWithNegativeParameter, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallWithZeroParameter, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallWithNegativeParameter, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
@@ -645,9 +794,9 @@ namespace SafeOrbit.Memory
             sut.Append(ch);
             var index = sut.Length + 1;
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Remove(index);
+            void CallOnDisposedObject() => sut.Remove(index);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
@@ -659,9 +808,9 @@ namespace SafeOrbit.Memory
             var c = (char) i;
             sut.Append(c);
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Remove(index);
+            void CallOnDisposedObject() => sut.Remove(index);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         //** Remove() **//
@@ -673,19 +822,19 @@ namespace SafeOrbit.Memory
             var c = (char) i;
             sut.Dispose();
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.Remove(0, c);
+            void CallOnDisposedObject() => sut.Remove(0, c);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
         [TestCase(1)]
         [TestCase(2)]
-        public void Remove_OtherCharacters_doesntAffect(int count)
+        public void Remove_OtherCharacters_DoesNotAffect(int count)
         {
             //Arrange
             var sut = GetSut();
-            var startIndex = 1;
+            const int startIndex = 1;
             IList<char> chars = new[] {'t', 'e', 's', 't'}.ToList();
             foreach (var c in chars)
                 sut.Append(c);
@@ -703,7 +852,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Remove_TotalOfIndexAndCountIsHeigherThanLength_throwsArgumentOutOfRangeException()
+        public void Remove_TotalOfIndexAndCountIsHigherThanLength_throwsArgumentOutOfRangeException()
         {
             //Arrange
             var sut = GetSut();
@@ -713,9 +862,9 @@ namespace SafeOrbit.Memory
             var index = sut.Length - 1;
             var count = sut.Length;
             //Act
-            TestDelegate sendingBadParameters = () => sut.Remove(index, count);
+            void SendBadParameters() => sut.Remove(index, count);
             //Assert
-            Assert.That(sendingBadParameters, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(SendBadParameters, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
@@ -794,13 +943,13 @@ namespace SafeOrbit.Memory
             sut.Append((char) i1);
             //Act
             sut.Dispose();
-            TestDelegate callingOnDisposedObject = () => sut.ShallowClone();
+            void CallOnDisposedObject() => sut.ShallowClone();
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
-        [Test] //deepclone
-        public void ToSafeBytes_ChangingReturnedResult_doesntAffectOriginalObject()
+        [Test] 
+        public void ToSafeBytes_ChangingReturnedResult_OriginalObject()
         {
             //Arrange
             var sut = GetSut();
@@ -815,13 +964,13 @@ namespace SafeOrbit.Memory
             Assert.That(expected, Is.EqualTo(actual));
         }
 
-        [Test] //deepclone
-        public void ToSafeBytes_DisposingReturnedResult_doesntAffectOriginalObject()
+        [Test]
+        public void ToSafeBytes_DisposingReturnedResult_DoesNotAffectOriginalObject()
         {
             //Arrange
             var sut = GetSut();
-            var expected = 'a';
-            var index = 0;
+            const char expected = 'a';
+            const int index = 0;
             sut.Append(expected);
             //Act
             var bytes = sut.ToSafeBytes();
@@ -862,7 +1011,6 @@ namespace SafeOrbit.Memory
             Assert.That(areSame, Is.True);
         }
 
-        //** ToSafeBytes() **//
         [Test]
         public void ToSafeBytes_OnDisposedObject_throwsObjectDisposedException()
         {
@@ -871,9 +1019,9 @@ namespace SafeOrbit.Memory
             sut.Append('a');
             //Act
             sut.Dispose();
-            TestDelegate callingOnDisposedObject = () => sut.ToSafeBytes();
+            void CallOnDisposedObject() => sut.ToSafeBytes();
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
@@ -882,9 +1030,9 @@ namespace SafeOrbit.Memory
             //Arrange
             var sut = GetSut();
             //Act
-            TestDelegate callingOnDisposedObject = () => sut.ToSafeBytes();
+            void CallOnDisposedObject() => sut.ToSafeBytes();
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<InvalidOperationException>());
         }
     }
 }

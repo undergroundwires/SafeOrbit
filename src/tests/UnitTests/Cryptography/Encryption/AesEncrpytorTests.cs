@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
@@ -53,7 +28,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public void Encrypt_SameSalt_returnsDifferentResults(byte[] input, byte[] key, byte[] salt)
         {
             //Arrange
-            var ivSize = 16;
+            const int ivSize = 16;
             var randomMock = new Mock<IFastRandom>();
             randomMock.SetupSequence(r => r.GetBytes(It.Is<int>(i => i.Equals(ivSize))))
                 .Returns(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
@@ -78,9 +53,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Decrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -91,22 +66,22 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Decrypt(input, key, salt);
+            void CallWithNullParameter() => sut.Decrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.TwoDifferentByteArrays16Length))]
-        public void Decrypt_KeyParameterIsEmpty_throwsArgumentNullException(byte[] input, byte[] salt)
+        public void Decrypt_KeyParameterIsEmpty_throwsKeySizeException(byte[] input, byte[] salt)
         {
             //Arrange
             var sut = GetSut();
             var key = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Decrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<KeySizeException>());
         }
 
         [Test]
@@ -117,9 +92,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = (byte[]) null;
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Decrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -130,9 +105,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var salt = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Decrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -143,9 +118,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var salt = (byte[]) null;
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Decrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -156,9 +131,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Encrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Encrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -169,9 +144,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var input = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Encrypt(input, key, salt);
+            void CallWithNullParameter() => sut.Encrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -182,9 +157,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Encrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Encrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<KeySizeException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<KeySizeException>());
         }
 
         [Test]
@@ -195,9 +170,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Encrypt(input, key, salt);
+            void CallWithNullParameter() => sut.Encrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -208,9 +183,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var salt = new byte[0];
             //Act
-            TestDelegate callingWithEmptyParameter = () => sut.Encrypt(input, key, salt);
+            void CallWithEmptyParameter() => sut.Encrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithEmptyParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -221,9 +196,9 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var salt = (byte[]) null;
             //Act
-            TestDelegate callingWithNullParameter = () => sut.Encrypt(input, key, salt);
+            void CallWithNullParameter() => sut.Encrypt(input, key, salt);
             //Assert
-            Assert.That(callingWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
         }
 
 

@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;
@@ -93,9 +68,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             var sut = GetSut();
             //Act
-            TestDelegate callingDeepClone = () => sut.DeepClone();
+            void CallDeepClone() => sut.DeepClone();
             //Assert
-            Assert.That(callingDeepClone, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallDeepClone, Throws.TypeOf<InvalidOperationException>());
         }
 
         [Test]
@@ -256,9 +231,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             var sut = GetSut();
             //Act
-            TestDelegate callingGet = () => sut.Get();
+            void CallGet() => sut.Get();
             //Assert
-            Assert.That(callingGet, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallGet, Throws.TypeOf<InvalidOperationException>());
         }
 
         //** GetHashCode() **//
@@ -301,9 +276,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             int temp;
             //Act
-            TestDelegate gettingIdWithoutSettingByte = () => temp = sut.Id;
+            void GetIdWithoutSettingByte() => temp = sut.Id;
             //Act
-            Assert.That(gettingIdWithoutSettingByte, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(GetIdWithoutSettingByte, Throws.TypeOf<InvalidOperationException>());
         }
 
         //** IsByteSet **//
@@ -340,9 +315,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             //Act
             sut.Set(b1);
-            TestDelegate callingOneMoreTime = () => sut.Set(b2);
+            void CallOneMoreTime() => sut.Set(b2);
             //Assert
-            Assert.That(callingOneMoreTime, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallOneMoreTime, Throws.TypeOf<InvalidOperationException>());
         }
     }
 }

@@ -1,29 +1,5 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;
@@ -38,7 +14,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
     [TestFixture]
     internal class EncryptedSafeByteCollectionTests : TestsFor<ISafeByteCollection>
     {
-        private ISafeByte GetSafeByteFor(byte b)
+        private static ISafeByte GetSafeByteFor(byte b)
         {
             var safeByteFactory = Stubs.Get<ISafeByteFactory>();
             return safeByteFactory.GetByByte(b);
@@ -47,10 +23,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         protected override ISafeByteCollection GetSut()
         {
             return new EncryptedSafeByteCollection(
-                Stubs.Get<IFastEncryptor>(),
-                Stubs.Get<IByteArrayProtector>(),
-                Stubs.Get<IFastRandom>(),
-                Stubs.Get<ISafeByteFactory>());
+                encryptor: Stubs.Get<IFastEncryptor>(),
+                memoryProtector: Stubs.Get<IByteArrayProtector>(),
+                fastRandom: Stubs.Get<IFastRandom>(),
+                safeByteFactory: Stubs.Get<ISafeByteFactory>(),
+                serializer: Stubs.Get<IByteIdListSerializer<int>>());
         }
 
         //** Append **//
@@ -61,13 +38,26 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var sut = GetSut();
             sut.Dispose();
             //Act
-            TestDelegate appendingByte = () => sut.Append(GetSafeByteFor(b));
+            void AppendByte() => sut.Append(GetSafeByteFor(b));
             //Act
-            Assert.That(appendingByte, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(AppendByte, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void Append_Get_SafeBytes_AppendsAtTheEnd_returnsTrue([Random(0, 256, 1)] byte b1,
+        public async Task Append_GetAsync_SafeBytes_AppendsSingle_CanGet()
+        {
+            //Arrange
+            var sut = GetSut();
+            const byte expected = 55;
+            sut.Append(GetSafeByteFor(expected));
+            //Act
+            var actual = await sut.GetAsync(0);
+            //Assert
+            Assert.That(expected, Is.EqualTo(actual));
+        }
+
+        [Test]
+        public async Task Append_GetAsync_SafeBytes_AppendsAtTheEnd_CanGet([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
             //Arrange
@@ -76,8 +66,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             sut.Append(GetSafeByteFor(b2));
             sut.Append(GetSafeByteFor(b3));
             //Act
-            var b2Back = sut.Get(1);
-            var b3Back = sut.Get(2);
+            var b2Back = await sut.GetAsync(1);
+            var b3Back = await sut.GetAsync(2);
             //Assert
             Assert.That(b2, Is.EqualTo(b2Back));
             Assert.That(b3, Is.EqualTo(b3Back));
@@ -90,9 +80,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var sut = GetSut();
             ISafeByte nullInstance = null;
             //Act
-            TestDelegate appendingNull = () => sut.Append(nullInstance);
+            void AppendNull() => sut.Append(nullInstance);
             //Act
-            Assert.That(appendingNull, Throws.TypeOf<ArgumentNullException>());
+            Assert.That(AppendNull, Throws.TypeOf<ArgumentNullException>());
         }
 
         //** Dispose **//
@@ -114,7 +104,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
 
         //** Get **//
         [Test]
-        public void Get_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
+        public void GetAsync_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
         {
             //Arrange
             var sut = GetSut();
@@ -122,25 +112,25 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var position = 0;
             //Act
             sut.Dispose();
-            TestDelegate callingOnDisposedObject = () => sut.Get(position);
+            async Task CallOnDisposedObject() => await sut.GetAsync(position);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void Get_OnEmptyInstance_throwsInvalidOperationException()
+        public void GetAsync_OnEmptyInstance_throwsInvalidOperationException()
         {
             //Arrange
             var sut = GetSut();
             var position = 0;
             //Act
-            TestDelegate callingOnEmptyInstance = () => sut.Get(position);
+            async Task CallOnEmptyInstance() => await sut.GetAsync(position);
             //Assert
-            Assert.That(callingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
+            Assert.ThrowsAsync<InvalidOperationException>(CallOnEmptyInstance);
         }
 
         [Test]
-        public void Get_WhenRequestedPositionIsLowerThanRange_throwsArgumentOutOfRangeException(
+        public void GetAsync_WhenRequestedPositionIsLowerThanRange_throwsArgumentOutOfRangeException(
             [Random(0, 256, 1)] byte b)
         {
             //Arrange
@@ -148,13 +138,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             sut.Append(GetSafeByteFor(b));
             var position = -1;
             //Act
-            TestDelegate callingWithBadParamater = () => sut.Get(position);
+            async Task CallWithBadParameter() => await sut.GetAsync(position);
             //Assert
-            Assert.That(callingWithBadParamater, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallWithBadParameter);
         }
 
         [Test]
-        public void GetByte_ForMultipleAppendedBytes_returnsTheBytes([Random(0, 256, 1)] byte b1,
+        public async Task GetAsync_ForMultipleAppendedBytes_returnsTheBytes([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
             //Arrange
@@ -163,9 +153,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             sut.Append(GetSafeByteFor(b2));
             sut.Append(GetSafeByteFor(b3));
             //Act
-            var b1Back = sut.Get(0);
-            var b2Back = sut.Get(1);
-            var b3Back = sut.Get(2);
+            var b1Back = await sut.GetAsync(0);
+            var b2Back = await sut.GetAsync(1);
+            var b3Back = await sut.GetAsync(2);
             //Assert
             Assert.That(b1Back, Is.EqualTo(b1));
             Assert.That(b2Back, Is.EqualTo(b2));
@@ -174,14 +164,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void GetByte_ForSingleAppendedByte_ReturnsByte(byte b)
+        public async Task GetByte_ForSingleAppendedByte_ReturnsByte(byte b)
         {
             //Arrange
             var sut = GetSut();
             var safeByte = GetSafeByteFor(b);
             //Act
             sut.Append(safeByte);
-            var safebyteBack = sut.Get(0);
+            var safebyteBack = await sut.GetAsync(0);
             //Assert
             Assert.That(safeByte, Is.EqualTo(safebyteBack));
         }
@@ -193,11 +183,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             //Arrange
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b));
-            var position = 1;
+            const int position = 1;
             //Act
-            TestDelegate callingWithBadParamater = () => sut.Get(position);
+            async Task CallWithBadParameter() => await sut.GetAsync(position);
             //Assert
-            Assert.That(callingWithBadParamater, Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallWithBadParameter);
         }
 
         [Test]
@@ -286,12 +276,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             //Arrange
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b));
-            var position = 0;
+            const int position = 0;
             //Act
             sut.Dispose();
-            TestDelegate callingOnDisposedObject = () => sut.Get(position);
+            async Task CallingOnDisposedObject() => await sut.GetAsync(position);
             //Assert
-            Assert.That(callingOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.ThrowsAsync<ObjectDisposedException>(CallingOnDisposedObject);
         }
 
         //** ToDecryptedBytes **//
@@ -301,9 +291,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             //Arrange
             var sut = GetSut();
             //Act
-            TestDelegate callingOnEmptyInstance = () => sut.ToDecryptedBytes();
+            void CallingOnEmptyInstance() => sut.ToDecryptedBytes();
             //Assert
-            Assert.That(callingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
         }
     }
 }

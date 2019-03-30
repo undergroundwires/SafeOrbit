@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-/*
+﻿/*
 
 
 Here's how you use the class:
@@ -33,6 +8,7 @@ Here's how you use the class:
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Memory
 {
@@ -44,7 +20,7 @@ namespace SafeOrbit.Memory
     /// <remarks>
     ///     <p>
     ///         Based on a marshaler for SecureString :
-    ///         https://sambapos.googlecode.com/hg/Samba.Infrastructure/SecureStringToStringMarshaller.cs
+    ///         https://github.com/hilalsaim/sambapos/blob/master/Samba.Infrastructure/SecureStringToStringMarshaller.cs
     ///     </p>
     /// </remarks>
     /// <example>
@@ -84,17 +60,18 @@ namespace SafeOrbit.Memory
             SafeString = safeString;
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets or sets the safe string. Setting a new SafeString will automatically update the String property.
         /// </summary>
         /// <value>
         ///     The safe string that should be converted to a string.
         /// </value>
-        /// <exception cref="ArgumentNullException" accessor="set"><paramref name="value" /> is <see langword="null" />.</exception>
-        /// <exception cref="ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
+        /// <exception cref="T:System.ArgumentNullException" accessor="set"><paramref name="value" /> is <see langword="null" />.</exception>
+        /// <exception cref="T:System.ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
         public ISafeString SafeString
         {
-            get { return _safeString; }
+            get => _safeString;
             set
             {
                 if (value == null) throw new ArgumentNullException(nameof(SafeString));
@@ -104,6 +81,7 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets or sets the string representation of the SafeString object.
         ///     This string will be cleared from the memory when the class is disposed.
@@ -113,10 +91,7 @@ namespace SafeOrbit.Memory
         /// </value>
         public string String { get; protected set; }
 
-        public void Dispose()
-        {
-            Deallocate();
-        }
+        public void Dispose() => Deallocate();
 
         /// <summary>
         ///     Updates the string value from previously set SafeString.
@@ -128,29 +103,35 @@ namespace SafeOrbit.Memory
                 String = "";
                 return;
             }
+            Deallocate();
             unsafe
             {
                 String = new string('\0', SafeString.Length);
                 _gch = new GCHandle();
-#if NETFRAMEWORK
-                // Create a CER (Constrained Execution Region)
-                RuntimeHelpers.PrepareConstrainedRegions();
-#endif
-                try
-                {
-                }
+
+                RuntimeHelper.PrepareConstrainedRegions();
+                try { }
                 finally
                 {
                     // Pin our string, disallowing the garbage collector from moving it around.
                     _gch = GCHandle.Alloc(String, GCHandleType.Pinned);
                 }
-                // Create a CER (Constrained Execution Region)
-#if NETFRAMEWORK
-         RuntimeHelpers.PrepareConstrainedRegions();
-#endif
-                var pInsecureString = (char*) _gch.AddrOfPinnedObject();
-                for (var charIndex = 0; charIndex < SafeString.Length; charIndex++)
-                    pInsecureString[charIndex] = SafeString.GetAsChar(charIndex);
+
+
+                RuntimeHelper.PrepareConstrainedRegions();
+                try { }
+                finally
+                {
+                    var pInsecureString = (char*)_gch.AddrOfPinnedObject();
+                    // Copy the SafeString content to our pinned string
+                    //Fast.For(0, SafeString.Length, charIndex =>
+                    //    pInsecureString[charIndex] = SafeString.GetAsChar(charIndex)
+                    //);
+                    for(var i = 0; i < SafeString.Length; i++)
+                    {
+                        pInsecureString[i] = SafeString.GetAsChar(i);
+                    }
+                }
             }
         }
 

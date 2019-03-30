@@ -1,31 +1,9 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Random;
+using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
@@ -55,12 +33,9 @@ namespace SafeOrbit.Memory
             IFactory<ISafeBytes> safeBytesFactory,
             IFactory<ISafeByteCollection> safeByteCollectionFactory)
         {
-            if (fastRandom == null) throw new ArgumentNullException(nameof(fastRandom));
-            if (safeByteFactory == null) throw new ArgumentNullException(nameof(safeByteFactory));
-            if (safeBytesFactory == null) throw new ArgumentNullException(nameof(safeBytesFactory));
-            _fastRandom = fastRandom;
-            _safeByteFactory = safeByteFactory;
-            _safeBytesInstantiator = safeBytesFactory;
+            _fastRandom = fastRandom ?? throw new ArgumentNullException(nameof(fastRandom));
+            _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
+            _safeBytesInstantiator = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
             _safeByteCollection = safeByteCollectionFactory.Create();
         }
 
@@ -95,11 +70,10 @@ namespace SafeOrbit.Memory
             if (safeBytes.IsDisposed) throw new ObjectDisposedException(nameof(safeBytes));
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
             //If it's the known SafeBytes then it reveals nothing in the memory
-            var asSafeBytes = safeBytes as SafeBytes;
-            if (asSafeBytes != null)
+            if (safeBytes is SafeBytes asSafeBytes)
                 for (var i = 0; i < safeBytes.Length; i++)
                 {
-                    var safeByte = asSafeBytes.GetAsSafeByte(i);
+                    var safeByte = TaskContext.RunSync(() => asSafeBytes.GetAsSafeByteAsync(i));
                     _safeByteCollection.Append(safeByte);
                 }
             //If it's not, then reveals each byte in memory.
@@ -128,7 +102,7 @@ namespace SafeOrbit.Memory
             EnsureNotDisposed();
             EnsureNotEmpty();
             if ((position < 0) && (position >= Length)) throw new ArgumentOutOfRangeException(nameof(position));
-            return _safeByteCollection.Get(position).Get();
+            return TaskContext.RunSync(() => _safeByteCollection.GetAsync(position)).Get();
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
@@ -145,12 +119,11 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             var clone = _safeBytesInstantiator.Create();
-            var asSafeBytes = clone as SafeBytes;
-            if (asSafeBytes != null)
+            if (clone is SafeBytes asSafeBytes)
             {
                 //If it's the known SafeBytes then it reveals nothing in the memory
                 for (var i = 0; i < Length; i++)
-                    asSafeBytes.Append(GetAsSafeByte(i));
+                    asSafeBytes.Append(TaskContext.RunSync(() => GetAsSafeByteAsync(i)));
                 return asSafeBytes;
             }
             //If it's not, then reveals each byte in memory.
@@ -162,12 +135,12 @@ namespace SafeOrbit.Memory
         /// <summary>
         ///     Indicates whether the specified SafeBytes object is null or holds zero bytes.
         /// </summary>
-        public static bool IsNullOrEmpty(ISafeBytes safebytes) => (safebytes == null) || (safebytes.Length == 0);
+        public static bool IsNullOrEmpty(ISafeBytes safeBytes) => (safeBytes == null) || (safeBytes.Length == 0);
 
-        internal ISafeByte GetAsSafeByte(int position)
+        internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
             var realPosition = position*2;
-            return _safeByteCollection.Get(realPosition);
+            return await _safeByteCollection.GetAsync(realPosition);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
@@ -224,52 +197,57 @@ namespace SafeOrbit.Memory
 
         public bool Equals(byte[] other)
         {
-            if (Length != other?.Length)
-                return false;
-            for (var i = 0; i < Length; i++)
-                if (!GetAsSafeByte(i).Equals(other[i]))
-                    return false;
-            return true;
+            if (other == null || !other.Any()) return this.Length == 0;
+            // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
+            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            // TODO: Can run in parallel
+            for (var i = 0; i < Length && i < other.Length; i++)
+            {
+                var result = TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Equals(other[i]);
+                comparisonBit |= (uint)(result ? 0 : 1);
+            }
+            return comparisonBit == 0;
         }
 
         public bool Equals(ISafeBytes other)
         {
-            if (Length != other?.Length)
-                return false;
-            var asSafeBytes = other as SafeBytes;
-            if (asSafeBytes != null)
+            if (other == null || other.Length == 0) return this.Length == 0;
+            // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
+            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            // TODO: Can run in parallel
+            var safeBytes = other as SafeBytes;
+            for (var i = 0; i < Length && i < other.Length; i++)
             {
-                for (var i = 0; i < Length; i++)
-                    if (!GetAsSafeByte(i).Equals(asSafeBytes.GetAsSafeByte(i)))
-                        return false;
+                var existingByte = TaskContext.RunSync(() => this.GetAsSafeByteAsync(i));
+                var result = safeBytes == null ? existingByte.Equals(other.GetByte(i)) :
+                    existingByte.Equals(TaskContext.RunSync(() => safeBytes.GetAsSafeByteAsync(i)));
+                comparisonBit |= (uint)(result ? 0 : 1);
             }
-            else
-            {
-                for (var i = 0; i < Length; i++)
-                    if (!GetAsSafeByte(i).Equals(other.GetByte(i)))
-                        return false;
-            }
-            return true;
+            return comparisonBit == 0;
         }
 
         public override bool Equals(object obj)
         {
-            var sb = obj as SafeBytes;
-            if (sb != null)
-                return Equals(sb);
-            if (obj is byte[])
-                return Equals((byte[]) obj);
-            return false;
+            switch (obj)
+            {
+                case SafeBytes sb:
+                    return Equals(sb);
+                case byte[] @byte:
+                    return Equals(@byte);
+                default:
+                    return false;
+            }
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
+                //TODO: Better parallel implementation
                 const int multiplier = 26;
                 var hashCode = 1;
                 for (var i = 0; i < Length; i++)
-                    hashCode *= multiplier*GetAsSafeByte(i).Id;
+                    hashCode *= multiplier* TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Id;
                 return hashCode;
             }
         }

@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -66,14 +41,15 @@ namespace SafeOrbit.Memory
         private readonly AutoResetEvent _flushAutoResetEvent = new AutoResetEvent(false);
         private readonly Queue<byte[]> _queue = new Queue<byte[]>();
         private readonly AutoResetEvent _readerAutoResetEvent = new AutoResetEvent(false);
-        private readonly object _readLockObj = new object();
+        private readonly object _readLock = new object();
         private bool _closed;
         private byte[] _currentBlock;
         private int _currentBlockPosition;
         private bool _ioException;
         private long _length;
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeMemoryStream"/> class.
+        /// Initializes a new instance of the <see cref="T:SafeOrbit.Memory.SafeMemoryStream" /> class.
         /// </summary>
         public SafeMemoryStream()
         {
@@ -94,8 +70,8 @@ namespace SafeOrbit.Memory
         /// </exception>
         public override long Position
         {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         /// <exception cref="NotSupportedException">
@@ -110,7 +86,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentException" accessor="set">When <see cref="IoException" /> is set to true.</exception>
         public bool IoException
         {
-            get { return _ioException; }
+            get => _ioException;
             set
             {
                 if (!value)
@@ -125,16 +101,10 @@ namespace SafeOrbit.Memory
         /// <exception cref="NotSupportedException">
         ///     <see cref="Seek" /> is not supported for <see cref="SafeMemoryStream" />
         /// </exception>
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotSupportedException();
-        }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
         /// <exception cref="NotSupportedException">This method is not supported on a <see cref="SafeMemoryStream" /></exception>
-        public override void SetLength(long value)
-        {
-            throw new NotSupportedException();
-        }
+        public override void SetLength(long value) => throw new NotSupportedException();
 
         /// <exception cref="IOException">If <see cref="IoException" /> is true.</exception>
         /// <exception cref="AbandonedMutexException">
@@ -190,7 +160,7 @@ namespace SafeOrbit.Memory
             var finalPosition = offset + count;
             var position = offset;
             var bytesRead = 0;
-            lock (_readLockObj)
+            lock (_readLock)
             {
                 var internalLength = _length;
                 while ((position < finalPosition) && ((false == _closed) || (internalLength > 0)))
@@ -253,13 +223,14 @@ namespace SafeOrbit.Memory
             // flushARE.Dispose();
             base.Dispose(disposing);
         }
+        /// <inheritdoc />
         /// <summary>
-        /// Closes the instance. The reader may read up to the number of bytes available, and subsequent calls to <see cref="SafeMemoryStream.Read(byte[], int,int)" /> will return <c>0</c>.
+        /// Closes the instance. The reader may read up to the number of bytes available, and subsequent calls to <see cref="M:SafeOrbit.Memory.SafeMemoryStream.Read(System.Byte[],System.Int32,System.Int32)" /> will return <c>0</c>.
         /// </summary>
-#if NETFRAMEWORK
-        public override void Close() => _closed = true;
+#if NETCORE
+        public void Close() => this.Dispose();
 #else
-        public void Close() => _closed = true;
+        public override void Close() => this.Dispose();
 #endif
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>

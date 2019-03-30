@@ -1,30 +1,6 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Infrastructure.Reflection;
@@ -155,41 +131,37 @@ namespace SafeOrbit.Memory
         {
             //arrange
             var safeObjectMock = new Mock<ISafeObject<Dictionary<string, IInstanceProvider>>>();
-            var instanceProvider1 = new Mock<IInstanceProvider>();
-            var instanceProvider2 = new Mock<IInstanceProvider>();
-            var instanceProvider3 = new Mock<IInstanceProvider>();
-            safeObjectMock.Setup(m => m.Object)
-                .Returns(new Dictionary<string, IInstanceProvider>()
-                {
-                    {"a", instanceProvider1.Object},
-                    {"b", instanceProvider2.Object},
-                    {"c", instanceProvider3.Object}
-                });
+            var instanceProviders = new []
+            {
+                new Mock<IInstanceProvider>(),
+                new Mock<IInstanceProvider>(),
+                new Mock<IInstanceProvider>()
+            };
+            var instancesToReturn = instanceProviders
+                .Select(instance => instance.Object)
+                .ToDictionary(provider => provider.ToString());
+            safeObjectMock
+                .Setup(m => m.Object)
+                .Returns(instancesToReturn);
             safeObjectMock.Setup(m => m.CanAlert)
                 .Returns(true);
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
                 .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
-            instanceProvider1.ResetCalls();
-            instanceProvider2.ResetCalls();
-            instanceProvider3.ResetCalls();
+            foreach (var provider in instanceProviders)
+                provider.Invocations.Clear();
             var otherProtectionMode = protectionMode == SafeContainerProtectionMode.FullProtection
-    ? SafeContainerProtectionMode.NonProtection
-    : SafeContainerProtectionMode.FullProtection;
+                ? SafeContainerProtectionMode.NonProtection
+                : SafeContainerProtectionMode.FullProtection;
             //act
             var sut = GetSut(protectionMode: otherProtectionMode, safeObjectFactory: safeObjectFactory.Object);
             sut.SetProtectionMode(protectionMode);
             //assert
-            instanceProvider1.Verify(
-                p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
-                Times.Once);
-            instanceProvider2.Verify(
-                p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
-                Times.Once);
-            instanceProvider3.Verify(
-                p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
-                Times.Once);
+            foreach (var provider in instanceProviders)
+                provider.Verify(
+                    p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
+                    Times.Once);
         }
 
         [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
@@ -218,8 +190,8 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             sut.Register<IInstanceTestClass, InstanceTestClass>();
             sut.Verify();
-            TestDelegate getNonRegistered = () => sut.Get<IDisposable>();
-            Assert.That(getNonRegistered, Throws.TypeOf<KeyNotFoundException>());
+            void GetNonRegistered() => sut.Get<IDisposable>();
+            Assert.That(GetNonRegistered, Throws.TypeOf<KeyNotFoundException>());
         }
 
         [Test]
@@ -239,8 +211,8 @@ namespace SafeOrbit.Memory
         public void Get_WithoutVerifying_throwsArgumentException()
         {
             var sut = GetSut();
-            TestDelegate getWithoutVerify = () => sut.Get<IDisposable>();
-            Assert.That(getWithoutVerify, Throws.ArgumentException);
+            void GetWithoutVerify() => sut.Get<IDisposable>();
+            Assert.That(GetWithoutVerify, Throws.ArgumentException);
         }
 
         [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
@@ -313,8 +285,8 @@ namespace SafeOrbit.Memory
         {
             var sut = GetSut();
             sut.Register<IInstanceTestClass, InstanceTestClass>();
-            TestDelegate registeringExistingType = () => sut.Register<IInstanceTestClass, InstanceTestClass>();
-            Assert.That(registeringExistingType, Throws.TypeOf<ArgumentException>());
+            void RegisteringExistingType() => sut.Register<IInstanceTestClass, InstanceTestClass>();
+            Assert.That(RegisteringExistingType, Throws.TypeOf<ArgumentException>());
         }
 
         [Test]
@@ -325,17 +297,17 @@ namespace SafeOrbit.Memory
             sut.Register<IInstanceTestClass, InstanceTestClass>();
             sut.Verify();
             //act
-            TestDelegate verifyingTwice = () => sut.Verify();
+            void VerifyingTwice() => sut.Verify();
             //assert
-            Assert.That(verifyingTwice, Throws.ArgumentException);
+            Assert.That(VerifyingTwice, Throws.ArgumentException);
         }
 
         [Test]
         public void Verify_IfNoTypesAreRegistered_throwsArgumentException()
         {
             var sut = GetSut();
-            TestDelegate verifyBeforeRegistering = () => sut.Verify();
-            Assert.That(verifyBeforeRegistering, Throws.TypeOf<ArgumentException>());
+            void VerifyBeforeRegistering() => sut.Verify();
+            Assert.That(VerifyBeforeRegistering, Throws.TypeOf<ArgumentException>());
         }
 
         private static ISafeContainer GetSut(

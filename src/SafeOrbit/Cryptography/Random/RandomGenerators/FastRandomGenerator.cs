@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading;
@@ -34,28 +9,26 @@ using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
+    /// <inheritdoc />
     /// <summary>
     ///     <p>
-    ///         <see cref="FastRandomGenerator" /> returns cryptographically strong random data.  It uses a crypto prng to
+    ///         <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> returns cryptographically strong random data.  It uses a crypto prng to
     ///         generate more bytes than actually available in hardware entropy, so it's about 1,000 times faster than
-    ///         <see cref="SafeRandomGenerator" />.
+    ///         <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" />.
     ///     </p>
     ///     <p>
-    ///         For general purposes, <see cref="FastRandomGenerator" /> is recommended because of its performance
+    ///         For general purposes, <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> is recommended because of its performance
     ///         characteristics, but for extremely strong keys and other things that don't require a large number of bytes
-    ///         quickly,  <see cref="SafeRandomGenerator" /> is recommended instead.
+    ///         quickly,  <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" /> is recommended instead.
     ///     </p>
     /// </summary>
     /// <example>
     /// <code>
     ///  using SafeOrbit.Cryptography.Random;
-    ///  
     ///  static void Main(string[] args)
     ///  {
     ///      StartEarly.StartFillingEntropyPools();  // Start gathering entropy as early as possible
-    ///  
     ///      var randomBytes = new byte[32];
-    /// 
     ///      // Performance is highly variable.  On my system, it generated 2.00MB(minimum)/3.04MB(avg)/3.91MB(max) per second
     ///      // default FastRandom() constructor uses the SafeRandom() default constructor, which uses:
     ///      //     SystemRNGCryptoServiceProvider/SHA256, 
@@ -66,21 +39,17 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     /// </example>
     internal sealed class FastRandomGenerator : RandomNumberGenerator
     {
-
         private const int ReseedLocked = 1;
         private const int ReseedUnlocked = 0;
-
         private const int MaxBytesPerSeedSoft = 64*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
         private const int MaxStateCounterHard = 1024*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
         public static FastRandomGenerator StaticInstance => StaticInstanceLazy.Value;
-
         private static readonly Lazy<FastRandomGenerator> StaticInstanceLazy = new Lazy<FastRandomGenerator>(
             () => new FastRandomGenerator(SafeRandomGenerator.StaticInstance));
-
         private readonly int _digestSize;
         private readonly DigestRandomGenerator _myPrng;
         private readonly SafeRandomGenerator _safeRandomGenerator;
-        private readonly bool _safeRandomGeneratorIsMineExclusively;
+        private readonly bool _ownsSafeRandomGenerator;
         private readonly object _stateCounterLockObj = new object();
         private int _isDisposed = IntCondition.False;
         private int _reseedLockInt = ReseedUnlocked;
@@ -132,53 +101,46 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
          * Now we're super duper conservative, being zillions of times more conservative than necessary, maximally conservative to the point 
          * where we do not take an appreciable performance degradation.
          */
-
-        public FastRandomGenerator()
+        public FastRandomGenerator() : this(
+            safeRng: new SafeRandomGenerator(),
+            ownsSafeRng: true,
+            digest: new Sha512Digest())
         {
-            _safeRandomGenerator = new SafeRandomGenerator();
-            _safeRandomGeneratorIsMineExclusively = true;
-            IDigest digest = new Sha512Digest();
-            _myPrng = new DigestRandomGenerator(digest);
-            _digestSize = digest.GetDigestSize();
-            SeedSize = _digestSize;
-            Reseed();
         }
-
-        public FastRandomGenerator(IDigest digest)
+        public FastRandomGenerator(IDigest digest) : this(
+            safeRng: new SafeRandomGenerator(),
+            ownsSafeRng: true,
+            digest: digest)
         {
-            _safeRandomGenerator = new SafeRandomGenerator();
-            _safeRandomGeneratorIsMineExclusively = true;
-            _myPrng = new DigestRandomGenerator(digest);
-            _digestSize = digest.GetDigestSize();
-            SeedSize = _digestSize;
-            Reseed();
         }
-
-        public FastRandomGenerator(List<IEntropyHasher> entropyHashers, IDigest digest)
+        public FastRandomGenerator(IReadOnlyCollection<IEntropyHasher> entropyHashers, IDigest digest) : this(
+            safeRng: new SafeRandomGenerator(entropyHashers),
+            ownsSafeRng: true,
+            digest: digest)
         {
-            _safeRandomGenerator = new SafeRandomGenerator(entropyHashers);
-            _safeRandomGeneratorIsMineExclusively = true;
-            _myPrng = new DigestRandomGenerator(digest);
-            _digestSize = digest.GetDigestSize();
-            SeedSize = _digestSize;
-            Reseed();
         }
-
-        public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator)
+        public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator) : this(
+            safeRng: safeRandomGenerator,
+            ownsSafeRng: false,
+            digest: new Sha512Digest())
         {
-            _safeRandomGenerator = safeRandomGenerator;
-            _safeRandomGeneratorIsMineExclusively = false;
-            IDigest digest = new Sha512Digest();
-            _myPrng = new DigestRandomGenerator(digest);
-            _digestSize = digest.GetDigestSize();
-            SeedSize = _digestSize;
-            Reseed();
         }
-
-        public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator, IDigest digest)
+        ~FastRandomGenerator() => Dispose(false);
+        public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator, IDigest digest) : this(
+            safeRng: safeRandomGenerator,
+            ownsSafeRng: false,
+            digest: digest)
         {
-            _safeRandomGenerator = safeRandomGenerator;
-            _safeRandomGeneratorIsMineExclusively = false;
+
+        }
+        internal FastRandomGenerator(
+            SafeRandomGenerator safeRng,
+            bool ownsSafeRng,
+            IDigest digest)
+        {
+            if (digest == null) throw new ArgumentNullException(nameof(digest));
+            _safeRandomGenerator = safeRng ?? throw new ArgumentNullException(nameof(safeRng));
+            _ownsSafeRandomGenerator = ownsSafeRng;
             _myPrng = new DigestRandomGenerator(digest);
             _digestSize = digest.GetDigestSize();
             SeedSize = _digestSize;
@@ -205,7 +167,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             }
         }
 
-#if NETFRAMEWORK
+#if !NETCORE
         public override void GetNonZeroBytes(byte[] data)
         {
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.
@@ -267,14 +229,11 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             if (Interlocked.Exchange(ref _isDisposed, IntCondition.True) == IntCondition.True)
                 return;
-            if (_safeRandomGeneratorIsMineExclusively)
+            if (_ownsSafeRandomGenerator)
                 _safeRandomGenerator.Dispose();
             base.Dispose(disposing);
         }
 
-        ~FastRandomGenerator()
-        {
-            Dispose(false);
-        }
+ 
     }
 }

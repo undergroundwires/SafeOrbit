@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SafeOrbit.Library;
@@ -32,11 +7,11 @@ using SafeOrbit.Library;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("SafeOrbit")]
+[assembly: AssemblyProduct("")]
 [assembly: AssemblyTitle("SafeOrbit")]
-[assembly: AssemblyCompany("undergroundwires")]
-[assembly: AssemblyDescription("SafeOrbit is easy-to-use and strong security toolkit for .NET")]
-[assembly: AssemblyCopyright("Copyright undergroundwires ©  2016")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyDescription("SafeOrbit is easy-to-use and strong security toolkit for .NET and .NET Core.\r\n\r\nWhile SafeOrbit's primarily focus is strong memory protection, SafeOrbit can protect any data in the memory for you: you have SafeBytes to protect binaries, SafeString to protect texts and even more to protect your application against injections. It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.\r\n\r\nSource code : https://github.com/undergroundwires/safeOrbit\r\nWiki : https://github.com/undergroundwires/safeOrbit/wiki\r\n\r\nSupported platforms:\r\n- .NET Framework 4.5+\r\n- .NET Standard 1.6+, 2.0+")]
+[assembly: AssemblyCopyright("2016 - 2019")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from

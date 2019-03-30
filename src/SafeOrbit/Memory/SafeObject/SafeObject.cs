@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -138,8 +113,7 @@ namespace SafeOrbit.Memory
         internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector)
             : base(settings.ProtectionMode)
         {
-            if (injectionDetector == null) throw new ArgumentNullException(nameof(injectionDetector));
-            _injectionDetector = injectionDetector;
+            _injectionDetector = injectionDetector ?? throw new ArgumentNullException(nameof(injectionDetector));
             _injectionDetector.AlertChannel = settings.AlertChannel;
             SetInitialValue(settings.InitialValue, ref _object);
             ChangeProtectionMode(new ProtectionChangeContext<SafeObjectProtectionMode>(settings.ProtectionMode));
@@ -148,50 +122,56 @@ namespace SafeOrbit.Memory
         }
 
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets or sets the alert channel for the inner <see cref="IInjectionDetector" />.
+        ///     Gets or sets the alert channel for the inner <see cref="T:SafeOrbit.Memory.IInjectionDetector" />.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="CanAlert" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.CanAlert" />
         /// <value>The alert channel.</value>
         public virtual InjectionAlertChannel AlertChannel
         {
-            get { return _injectionDetector.AlertChannel; }
-            set { _injectionDetector.AlertChannel = value; }
+            get => _injectionDetector.AlertChannel;
+            set => _injectionDetector.AlertChannel = value;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets if this instance is allowed to alert via <see cref="AlertChannel" />.
+        ///     Gets if this instance is allowed to alert via <see cref="P:SafeOrbit.Memory.SafeObject`1.AlertChannel" />.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="AlertChannel" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert
             => (CurrentProtectionMode != SafeObjectProtectionMode.NoProtection) && _injectionDetector.CanAlert;
 
-        /// <exception cref="MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
         public TObject Object => GetObjectInternal(true);
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets a value indicating whether this instance is modifiable.
         /// </summary>
         /// <value><c>true</c> if this instance is modifiable; otherwise, <c>false</c>.</value>
-        /// <seealso cref="MakeReadOnly" />
+        /// <seealso cref="M:SafeOrbit.Memory.SafeObject`1.MakeReadOnly" />
         public bool IsReadOnly { get; private set; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Closes this instance to any kind of changes.
         /// </summary>
-        /// <seealso cref="IsReadOnly" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.IsReadOnly" />
         public void MakeReadOnly()
         {
-            if (!IsReadOnly)
-                lock (_syncRoot)
-                {
-                    IsReadOnly = true;
-                }
+            lock (_syncRoot)
+            {
+                if (IsReadOnly)
+                return;
+                IsReadOnly = true;
+            }
         }
 
         /// <summary>

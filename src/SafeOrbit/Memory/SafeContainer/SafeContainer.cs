@@ -1,29 +1,4 @@
-﻿
-/*
-MIT License
-
-Copyright (c) 2016 Erkin Ekici - undergroundwires@safeorb.it
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SafeOrbit.Exceptions;
@@ -87,14 +62,10 @@ namespace SafeOrbit.Memory
             SafeContainerProtectionMode protectionMode = Defaults.ContainerProtectionMode,
             InjectionAlertChannel alertChannel = Defaults.AlertChannel) : base(protectionMode)
         {
-            if (typeIdGenerator == null) throw new ArgumentNullException(nameof(typeIdGenerator));
-            if (instanceFactory == null) throw new ArgumentNullException(nameof(instanceFactory));
-            if (instanceValidator == null) throw new ArgumentNullException(nameof(instanceValidator));
-            if (safeObjectFactory == null) throw new ArgumentNullException(nameof(safeObjectFactory));
-            _typeIdGenerator = typeIdGenerator;
-            _instanceFactory = instanceFactory;
-            _instanceValidator = instanceValidator;
-            _safeObjectFactory = safeObjectFactory;
+            _typeIdGenerator = typeIdGenerator ?? throw new ArgumentNullException(nameof(typeIdGenerator));
+            _instanceFactory = instanceFactory ?? throw new ArgumentNullException(nameof(instanceFactory));
+            _instanceValidator = instanceValidator ?? throw new ArgumentNullException(nameof(instanceValidator));
+            _safeObjectFactory = safeObjectFactory ?? throw new ArgumentNullException(nameof(safeObjectFactory));
             _alertChannel = alertChannel;
             ChangeProtectionMode(new ProtectionChangeContext<SafeContainerProtectionMode>(protectionMode));
             SetAlertChannelInternal(alertChannel);
@@ -168,29 +139,30 @@ namespace SafeOrbit.Memory
             RegisterInstanceInternal<TComponent>(instance);
         }
 
-        /// <exception cref="ArgumentException"><see cref="Verify" /> is not called.</exception>
-        /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="KeyNotFoundException">If the <paramref name="serviceType" /> is not registered.</exception>
+        /// <inheritdoc />
+        /// <exception cref="T:System.ArgumentException"><see cref="M:SafeOrbit.Memory.SafeContainer.Verify" /> is not called.</exception>
+        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
+        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
+        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">If the <paramref name="serviceType" /> is not registered.</exception>
         public object GetService(Type serviceType)
         {
             if (!_isVerified) throw new ArgumentException($"Please call {nameof(Verify)} before using the factory");
             SpinUntilSecurityModeIsAvailable();
             var key = _typeIdGenerator.Generate(serviceType);
-            IInstanceProvider instanceProvider;
-            var success = _typeInstancesSafe.Object.TryGetValue(key, out instanceProvider);
-            if (!success) throw new KeyNotFoundException($"{serviceType.FullName} is not registered.");
+            if(!_typeInstancesSafe.Object.TryGetValue(key, out var instanceProvider))
+                throw new KeyNotFoundException($"{serviceType.FullName} is not registered.");
             var result = instanceProvider.Provide();
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Registers a component with a custom <see cref="Func{TImplementation}" />.
+        ///     Registers a component with a custom <see cref="T:System.Func`1" />.
         /// </summary>
         /// <typeparam name="TComponent">The type of the component.</typeparam>
         /// <param name="instanceInitializer">The instance getter.</param>
         /// <param name="lifeTime">The life time.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="instanceInitializer" /> is <see langword="null" />.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="instanceInitializer" /> is <see langword="null" />.</exception>
         public void Register<TComponent>(Func<TComponent> instanceInitializer, LifeTime lifeTime = LifeTime.Unknown)
             where TComponent : class
         {
@@ -209,7 +181,7 @@ namespace SafeOrbit.Memory
         /// <value>The alert channel.</value>
         public virtual InjectionAlertChannel AlertChannel
         {
-            get { return _alertChannel; }
+            get => _alertChannel;
             set
             {
                 if (_alertChannel == value) return;
@@ -217,12 +189,13 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets if this instance is allowed to alert via <see cref="AlertChannel" />.
+        ///     Gets if this instance is allowed to alert via <see cref="P:SafeOrbit.Memory.SafeContainer.AlertChannel" />.
         /// </summary>
-        /// <seealso cref="IAlerts" />
-        /// <seealso cref="IInjectionDetector" />
-        /// <seealso cref="AlertChannel" />
+        /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
+        /// <seealso cref="T:SafeOrbit.Memory.IInjectionDetector" />
+        /// <seealso cref="P:SafeOrbit.Memory.SafeContainer.AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert => CurrentProtectionMode != SafeContainerProtectionMode.NonProtection;
 
@@ -255,6 +228,7 @@ namespace SafeOrbit.Memory
 
         private void SetAlertChannelInternal(InjectionAlertChannel value)
         {
+            if (!Enum.IsDefined(typeof(InjectionAlertChannel), value)) throw new ArgumentOutOfRangeException(nameof(value), "Value should be defined in the InjectionAlertChannel enum.");
             _alertChannel = value;
             _typeInstancesSafe.AlertChannel = value;
             var dict = _typeInstancesSafe.Object;
