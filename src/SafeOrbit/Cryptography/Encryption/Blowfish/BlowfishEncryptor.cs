@@ -199,7 +199,7 @@ namespace SafeOrbit.Cryptography.Encryption
                 {
                     using (var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write))
                     {
-                        await cs.WriteAsync(input, 0, input.Length);
+                        await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
                     }
                 }
                 return ms.ToArray();
@@ -223,7 +223,7 @@ namespace SafeOrbit.Cryptography.Encryption
                 {
                     using (var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write))
                     {
-                        await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length);
+                        await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
                     }
                 }
                 return ms.ToArray();
@@ -241,8 +241,8 @@ namespace SafeOrbit.Cryptography.Encryption
                 {
                     using (var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write))
                     {
-                        await cs.WriteAsync(input, 0, input.Length);
-                        if(encryptedContent != null) {await cs.WriteAsync(input, 0, input.Length);}
+                        await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
+                        if(encryptedContent != null) {await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);}
                     }
                 }
                 encryptedContent = ms.ToArray();

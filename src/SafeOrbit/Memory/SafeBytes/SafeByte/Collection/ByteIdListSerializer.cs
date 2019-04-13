@@ -23,9 +23,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             using (var memoryStream = new MemoryStream(capacity: resultSize))
             {
                 var buffer = new byte[sizeof(int)];
-                await WriteInt32Async(list.Count, buffer, memoryStream); /* Write the size */
+                await WriteInt32Async(list.Count, buffer, memoryStream).ConfigureAwait(false); /* Write the size */
                 foreach (var i in list)
-                    await WriteInt32Async(i, buffer, memoryStream);
+                    await WriteInt32Async(i, buffer, memoryStream).ConfigureAwait(false);
                 Array.Clear(buffer, 0, sizeof(int));
                 return memoryStream.ToArray();
             }
@@ -40,7 +40,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 /* First byte tells the length of the list */
                 const int lengthBytesSize = sizeof(int);
                 var buffer = new byte[lengthBytesSize];
-                if (await memoryStream.ReadAsync(buffer, 0, lengthBytesSize) != lengthBytesSize)
+                if (await memoryStream.ReadAsync(buffer, 0, lengthBytesSize).ConfigureAwait(false) != lengthBytesSize)
                     ThrowCorrupted();
                 var length = BitConverter.ToInt32(buffer, 0);
                 if(length < 0)
@@ -50,7 +50,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 /* Retrieve the list bytes */
                 var listBytesSize = length * sizeof(int);
                 buffer = new byte[listBytesSize];
-                if (await memoryStream.ReadAsync(buffer, 0, listBytesSize) != listBytesSize)
+                if (await memoryStream.ReadAsync(buffer, 0, listBytesSize).ConfigureAwait(false) != listBytesSize)
                     ThrowCorrupted();
                 var bytesAsList = BytesToIntList(buffer);
                 return bytesAsList;

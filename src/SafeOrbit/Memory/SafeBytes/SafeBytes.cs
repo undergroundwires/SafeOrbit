@@ -140,7 +140,7 @@ namespace SafeOrbit.Memory
         internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
             var realPosition = position*2;
-            return await _safeByteCollection.GetAsync(realPosition);
+            return await _safeByteCollection.GetAsync(realPosition).ConfigureAwait(false);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>

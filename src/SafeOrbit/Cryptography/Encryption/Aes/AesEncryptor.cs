@@ -148,7 +148,7 @@ namespace SafeOrbit.Cryptography.Encryption
                     {
                         using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
                         {
-                            await cs.WriteAsync(input, 0, input.Length);
+                            await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
                         }
                     }
                 }
@@ -174,7 +174,7 @@ namespace SafeOrbit.Cryptography.Encryption
                     {
                         using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Write))
                         {
-                            await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length);
+                            await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
                         }
                     }
                 }
