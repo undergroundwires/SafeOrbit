@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using SafeOrbit.Memory;
+﻿using NUnit.Framework;
 
 namespace SafeOrbit.Memory
 {
     [TestFixture]
     public partial class SafeStringTests
     {
-        //** Equals() **//
         [Test]
         public void Equals_ParameterIsNullObject_returnsFalse()
         {
