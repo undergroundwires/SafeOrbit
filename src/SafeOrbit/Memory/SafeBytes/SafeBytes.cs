@@ -140,6 +140,7 @@ namespace SafeOrbit.Memory
         internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
             var realPosition = position*2;
+            if ((realPosition < 0) || (realPosition >= _safeByteCollection.Length)) throw new ArgumentOutOfRangeException(nameof(position));
             return await _safeByteCollection.GetAsync(realPosition).ConfigureAwait(false);
         }
 
@@ -203,7 +204,8 @@ namespace SafeOrbit.Memory
             // TODO: Can run in parallel
             for (var i = 0; i < Length && i < other.Length; i++)
             {
-                var result = TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Equals(other[i]);
+                var existingByte = TaskContext.RunSync(() => this.GetAsSafeByteAsync(i));
+                var result = existingByte.Equals(other[i]);
                 comparisonBit |= (uint)(result ? 0 : 1);
             }
             return comparisonBit == 0;
@@ -215,13 +217,21 @@ namespace SafeOrbit.Memory
             // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
             var comparisonBit = (uint)this.Length ^ (uint)other.Length;
             // TODO: Can run in parallel
-            var safeBytes = other as SafeBytes;
             for (var i = 0; i < Length && i < other.Length; i++)
             {
                 var existingByte = TaskContext.RunSync(() => this.GetAsSafeByteAsync(i));
-                var result = safeBytes == null ? existingByte.Equals(other.GetByte(i)) :
-                    existingByte.Equals(TaskContext.RunSync(() => safeBytes.GetAsSafeByteAsync(i)));
-                comparisonBit |= (uint)(result ? 0 : 1);
+                bool bytesEqual;
+                if (other is SafeBytes safeBytes) 
+                {
+                    // No need to reveal the bytes
+                    var otherByte = TaskContext.RunSync(() => safeBytes.GetAsSafeByteAsync(i));
+                    bytesEqual = existingByte.Equals(otherByte);
+                }
+                else
+                {
+                    bytesEqual = existingByte.Equals(other.GetByte(i)); // reveal the byte;
+                }
+                comparisonBit |= (uint)(bytesEqual ? 0 : 1);
             }
             return comparisonBit == 0;
         }
