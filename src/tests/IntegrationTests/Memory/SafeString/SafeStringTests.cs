@@ -42,5 +42,16 @@ namespace SafeOrbit.Memory
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
+
+        [Test]
+        public void Equals_TwoStringsWithDifferentLength_ReturnsFalse()
+        {
+            var sut1 = new SafeString();
+            sut1.Append("hej");
+            var sut2 = new SafeString();
+            sut2.Append("sup");
+            Assert.False(sut1.Equals(sut2));
+            Assert.False(sut2.Equals(sut1));
+        }
     }
 }
