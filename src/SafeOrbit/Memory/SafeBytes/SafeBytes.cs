@@ -102,7 +102,8 @@ namespace SafeOrbit.Memory
             EnsureNotDisposed();
             EnsureNotEmpty();
             if ((position < 0) && (position >= Length)) throw new ArgumentOutOfRangeException(nameof(position));
-            return TaskContext.RunSync(() => _safeByteCollection.GetAsync(position)).Get();
+            var safeByte = TaskContext.RunSync(() => GetAsSafeByteAsync(position));
+            return safeByte.Get();
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
