@@ -46,12 +46,17 @@ namespace SafeOrbit.Memory
         [Test]
         public void Equals_TwoStringsWithDifferentLength_ReturnsFalse()
         {
+            // arrange
             var sut1 = new SafeString();
             sut1.Append("hej");
             var sut2 = new SafeString();
             sut2.Append("sup");
-            Assert.False(sut1.Equals(sut2));
-            Assert.False(sut2.Equals(sut1));
+            // act
+            var equality = sut1.Equals(sut2);
+            var equalityOpposite = sut2.Equals(sut1);
+            // assert
+            Assert.False(equality);
+            Assert.False(equalityOpposite);
         }
     }
 }
