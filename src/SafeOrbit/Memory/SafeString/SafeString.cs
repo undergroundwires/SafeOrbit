@@ -184,7 +184,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Throws when <paramref name="startIndex" /> is out of range.
         ///     Throws when <paramref name="count" /> is less than one.
-        ///     Throws when the total of <paramref name="startIndex" /> and <paramref name="count" /> is higher than lenth.
+        ///     Throws when the total of <paramref name="startIndex" /> and <paramref name="count" /> is higher than length.
         /// </exception>
         /// <exception cref="ObjectDisposedException">
         ///     Throws if the <see cref="SafeString" /> instance is disposed.
@@ -248,11 +248,9 @@ namespace SafeOrbit.Memory
         {
             if (string.IsNullOrEmpty(other))
                 return this.Length == 0;
-            using (var ss = _safeStringFactory.Create())
-            {
-                ss.Append(other);
-                return Equals(ss);
-            }
+            using var ss = _safeStringFactory.Create();
+            ss.Append(other);
+            return Equals(ss);
         }
 
         public bool Equals(ISafeString other)
