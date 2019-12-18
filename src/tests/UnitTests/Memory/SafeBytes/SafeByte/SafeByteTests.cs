@@ -29,11 +29,13 @@ namespace SafeOrbit.Memory.SafeBytesServices
         [Test]
         public void DeepClone_ClonedInstanceWithSameValue_doesNotReferToSameObject([Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             sut.Set(b);
-            //Act & Assert
-            Assert.That(sut.DeepClone(), Is.Not.SameAs(sut));
+            // Act
+            var other = sut.DeepClone();
+            // Assert
+            Assert.False(ReferenceEquals(sut, other));
         }
 
         [Test]
@@ -214,15 +216,15 @@ namespace SafeOrbit.Memory.SafeBytesServices
         //** Get() **//
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void Get_ReturnsThePreviouslySetByte_returnsTrue(byte b)
+        public void Get_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
         {
             //Arrange
             var sut = GetSut();
             //Act
-            sut.Set(b);
-            var byteBack = sut.Get();
+            sut.Set(expected);
+            var actual = sut.Get();
             //Assert
-            Assert.That(b, Is.EqualTo(byteBack));
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
