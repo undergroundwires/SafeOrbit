@@ -11,9 +11,9 @@ namespace SafeOrbit.Fakes
     {
         public override IFastEncryptor Provide()
         {
-            byte[] Encrypt(byte[] input, byte[] key) =>
+            static byte[] Encrypt(byte[] input, byte[] key) =>
                 input.Concat(key).Concat(BitConverter.GetBytes(Convert.ToBase64String(input).GetHashCode())).ToArray();
-            byte[] Decrypt(byte[] input, byte[] key)
+            static byte[] Decrypt(byte[] input, byte[] key)
             {
                 var plainLength = input.Length - key.Length - sizeof(int);
                 var rawBytes = input.Take(plainLength).ToArray();
