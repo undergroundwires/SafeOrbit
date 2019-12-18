@@ -144,6 +144,20 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
+        public void GetByte_WhenRequestedPositionIsHigherThanRange_throwsArgumentOutOfRangeException(
+            [Random(0, 256, 1)] byte b)
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Append(GetSafeByteFor(b));
+            const int position = 1;
+            //Act
+            async Task CallWithBadParameter() => await sut.GetAsync(position);
+            //Assert
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallWithBadParameter);
+        }
+
+        [Test]
         public async Task GetAsync_ForMultipleAppendedBytes_returnsTheBytes([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
@@ -174,20 +188,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var safebyteBack = await sut.GetAsync(0);
             //Assert
             Assert.That(safeByte, Is.EqualTo(safebyteBack));
-        }
-
-        [Test]
-        public void GetByte_WhenRequestedPositionIsHigherThanRange_throwsArgumentOutOfRangeException(
-            [Random(0, 256, 1)] byte b)
-        {
-            //Arrange
-            var sut = GetSut();
-            sut.Append(GetSafeByteFor(b));
-            const int position = 1;
-            //Act
-            async Task CallWithBadParameter() => await sut.GetAsync(position);
-            //Assert
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallWithBadParameter);
         }
 
         [Test]
@@ -246,7 +246,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
             //Arrange
-            var bytes = new[] {b1, b2, b3};
+            var bytes = new[] { b1, b2, b3 };
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b1));
             sut.Append(GetSafeByteFor(b2));
@@ -261,7 +261,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public void ToByteArray_ForInstanceHoldingSingleByte_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b)
         {
             //Arrange
-            var bytes = new[] {b};
+            var bytes = new[] { b };
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b));
             //Act
