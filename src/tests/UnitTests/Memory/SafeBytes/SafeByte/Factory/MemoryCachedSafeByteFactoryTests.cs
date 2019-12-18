@@ -66,8 +66,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             catch { /*swallow exceptions*/ }
             mock.Verify(f => f.Initialize(), Times.Once);
         }
-        private static ISafeByteFactory GetSut(SafeObjectProtectionMode innerDictionaryProtectionMode = MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection,
-            InjectionAlertChannel alertChannel = Defaults.AlertChannel)
+        private static ISafeByteFactory GetSut(SafeObjectProtectionMode innerDictionaryProtectionMode = MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection)
         {
             return new MemoryCachedSafeByteFactory(
                 Stubs.Get<IByteIdGenerator>(),
