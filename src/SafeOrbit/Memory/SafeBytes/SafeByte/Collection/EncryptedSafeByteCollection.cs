@@ -24,6 +24,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     The encryption key to encrypt/decrypt the inner list.
         /// </summary>
         private readonly byte[] _encryptionKey;
+        //TODO: Encryption salt
 
         private readonly IFastEncryptor _encryptor;
         private readonly IByteArrayProtector _memoryProtector;
@@ -95,12 +96,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public async Task<ISafeByte> GetAsync(int index)
         {
             if ((index < 0) && (index >= Length))
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"Must be non-negative than zero and lower than length {Length}");
             EnsureNotDisposed();
             EnsureNotEmpty();
             _memoryProtector.Unprotect(_encryptionKey);
-            var list = await DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey).ConfigureAwait(false);
+            var list = await DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey);
             _memoryProtector.Protect(_encryptionKey);
+            if (index >= list.Count)
+                throw new ArgumentOutOfRangeException(nameof(index), index,
+                "Inner encrypted collection is corrupt." +
+                $"Must be lower than length {Length} but was {index}.");
             var id = list.ElementAt(index);
             var safeByte = _safeByteFactory.GetById(id);
             list.Clear();
@@ -157,10 +162,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             if (encryptedCollection == null)
                 return new List<int>();
-            var decryptedBytes = await _encryptor.DecryptAsync(encryptedCollection, encryptionKey).ConfigureAwait(false);
+            var decryptedBytes = await _encryptor.DecryptAsync(encryptedCollection, encryptionKey);
             try
             {
-                var deserializedBytes = await _serializer.DeserializeAsync(decryptedBytes).ConfigureAwait(false);
+                var deserializedBytes = await _serializer.DeserializeAsync(decryptedBytes);
                 return deserializedBytes.ToList();
             }
             finally
@@ -170,10 +175,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
         private async Task<byte[]> SerializeAndEncryptAsync(IReadOnlyCollection<int> safeByteIdList, byte[] encryptionKey)
         {
-            var serializedBytes = await _serializer.SerializeAsync(safeByteIdList).ConfigureAwait(false);
+            var serializedBytes = await _serializer.SerializeAsync(safeByteIdList);
             try
             {
-                var encrypted = await _encryptor.EncryptAsync(serializedBytes, encryptionKey).ConfigureAwait(false);
+                var encrypted = await _encryptor.EncryptAsync(serializedBytes, encryptionKey);
                 return encrypted;
             }
             finally
