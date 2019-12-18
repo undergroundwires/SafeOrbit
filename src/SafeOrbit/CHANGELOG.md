@@ -28,6 +28,7 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 - More small optimizations & fixes
 - Updated framework dependencies to the latest available for different platforms
 
+
 ### Removed
 - Removed unnecessary code from `StartEarly`.
 

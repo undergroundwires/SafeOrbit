@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Exceptions;
@@ -23,25 +21,15 @@ namespace SafeOrbit.Memory.SafeBytesServices
     /// <seealso cref="MemoryCachedSafeByteFactory" />
     internal sealed class SafeByte : ISafeByte
     {
-        /// <summary>
-        ///     The encryption key size.
-        /// </summary>
-        private const int KeySize = 16;
-
-        /// <summary>
-        ///     The size of the salt for the encryption.
-        /// </summary>
-        private const int SaltSize = 16;
+        private int _encryptedByteLength;
+        private int _id;
+        private int _realBytePosition;
 
         private readonly IByteIdGenerator _byteIdGenerator;
         private readonly IFastEncryptor _encryptor;
         private readonly IFastRandom _fastRandom;
-        private readonly IByteArrayProtector _memoryProtector;
-        private byte[] _encryptedByte; //Its length in order to be used in memory protection
-        private int _encryptedByteLength;
-        private byte[] _encryptionKey;
-        private int _id;
-        private int _realBytePosition;
+        private readonly IMemoryProtectedBytes _encryptedByte;
+        private readonly IMemoryProtectedBytes _encryptionKey;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SafeByte" /> class.
@@ -50,7 +38,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
         public SafeByte() : this(SafeOrbitCore.Current.Factory.Get<IFastEncryptor>(),
             SafeOrbitCore.Current.Factory.Get<IFastRandom>(),
             SafeOrbitCore.Current.Factory.Get<IByteIdGenerator>(),
-            SafeOrbitCore.Current.Factory.Get<IByteArrayProtector>()
+            SafeOrbitCore.Current.Factory.Get<IMemoryProtectedBytes>(),
+            SafeOrbitCore.Current.Factory.Get<IMemoryProtectedBytes>()
         )
         {
         }
@@ -59,12 +48,14 @@ namespace SafeOrbit.Memory.SafeBytesServices
             IFastEncryptor encryptor,
             IFastRandom fastRandom,
             IByteIdGenerator byteIdGenerator,
-            IByteArrayProtector memoryProtector)
+            IMemoryProtectedBytes encryptedByte,
+            IMemoryProtectedBytes encryptionKey)
         {
             _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
             _fastRandom = fastRandom ?? throw new ArgumentNullException(nameof(fastRandom));
             _byteIdGenerator = byteIdGenerator ?? throw new ArgumentNullException(nameof(fastRandom));
-            _memoryProtector = memoryProtector ?? throw new ArgumentNullException(nameof(memoryProtector));
+            _encryptedByte = encryptedByte ?? throw new ArgumentNullException(nameof(encryptedByte));
+            _encryptionKey = encryptionKey ?? throw new ArgumentNullException(nameof(encryptionKey));
         }
 
         /// <summary>
@@ -72,25 +63,21 @@ namespace SafeOrbit.Memory.SafeBytesServices
         /// </summary>
         private SafeByte(
             int id, int realBytePosition,
-            int encryptedByteLength, byte[] encryptionKey, byte[] encryptedByte,
+            int encryptedByteLength,
             IFastEncryptor encryptor,
             IFastRandom fastRandom,
             IByteIdGenerator byteIdGenerator,
-            IByteArrayProtector memoryProtector)
+            IMemoryProtectedBytes encryptedByte,
+            IMemoryProtectedBytes encryptionKey)
         {
             _encryptor = encryptor;
             _fastRandom = fastRandom;
             _byteIdGenerator = byteIdGenerator;
-            _memoryProtector = memoryProtector;
             //Deep copy
             _id = id;
             _realBytePosition = realBytePosition;
-            _encryptedByte = new byte[encryptedByte.Length];
-            _encryptionKey = new byte[encryptionKey.Length];
-            Buffer.BlockCopy(encryptedByte, 0, _encryptedByte, 0, encryptedByte.Length);
-            Buffer.BlockCopy(encryptionKey, 0, _encryptionKey, 0, encryptionKey.Length);
-            _memoryProtector.Protect(_encryptionKey);
-            _memoryProtector.Protect(_encryptedByte);
+            _encryptedByte = encryptedByte.DeepClone();
+            _encryptionKey = encryptionKey.DeepClone();
             _encryptedByteLength = encryptedByteLength;
             IsByteSet = true;
         }
@@ -117,20 +104,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
         public void Set(byte b)
         {
             EnsureByteIsNotSet();
-            RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
-                () =>
-                {
-                    //Generate ID
-                    _id = _byteIdGenerator.Generate(b);
-                    //Encrypt
-                    Encrypt(b);
-                    IsByteSet = true;
-                },
-                () =>
-                {
-                    _memoryProtector.Protect(_encryptionKey);
-                    _memoryProtector.Protect(_encryptedByte);
-                });
+            //Generate ID
+            _id = _byteIdGenerator.Generate(b);
+            //Encrypt
+            Initialize(b);
+            IsByteSet = true;
         }
 
         /// <summary>
@@ -144,13 +122,18 @@ namespace SafeOrbit.Memory.SafeBytesServices
             byte[] byteBuffer = null;
             try
             {
-                _memoryProtector.Unprotect(_encryptionKey);
-                _memoryProtector.Unprotect(_encryptedByte);
                 var encryptedBuffer = new byte[_encryptedByteLength];
                 try
                 {
-                    Buffer.BlockCopy(_encryptedByte, 0, encryptedBuffer, 0, _encryptedByteLength);
-                    byteBuffer = _encryptor.Decrypt(encryptedBuffer, _encryptionKey);
+                    using(var @byte = _encryptedByte.RevealDecryptedBytes())
+                    {
+                        Buffer.BlockCopy(@byte.PlainBytes, 0, encryptedBuffer, 0, _encryptedByteLength);
+                    }
+
+                    using(var encryptionKey = _encryptionKey.RevealDecryptedBytes())
+                    {
+                        byteBuffer = _encryptor.Decrypt(encryptedBuffer, encryptionKey.PlainBytes);
+                    }
                     //Extract the byte from arbitrary bytes
                     return byteBuffer[_realBytePosition];
                 }
@@ -163,8 +146,6 @@ namespace SafeOrbit.Memory.SafeBytesServices
             {
                 if (byteBuffer != null)
                     Array.Clear(byteBuffer, 0, byteBuffer.Length);
-                _memoryProtector.Protect(_encryptionKey);
-                _memoryProtector.Protect(_encryptedByte);
             }
         }
 
@@ -178,12 +159,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
         public ISafeByte DeepClone()
         {
             EnsureByteIsSet();
-            _memoryProtector.Unprotect(_encryptionKey);
-            _memoryProtector.Unprotect(_encryptedByte);
-            var clone = new SafeByte(_id, _realBytePosition, _encryptedByteLength, _encryptionKey, _encryptedByte,
-                _encryptor, _fastRandom, _byteIdGenerator, _memoryProtector);
-            _memoryProtector.Protect(_encryptionKey);
-            _memoryProtector.Protect(_encryptedByte);
+            var clone = new SafeByte(_id, _realBytePosition, _encryptedByteLength,
+                _encryptor, _fastRandom, _byteIdGenerator, _encryptedByte, _encryptionKey);
             return clone;
         }
 
@@ -206,40 +183,36 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return AreIdsSame(this.Id, otherId);
         }
 
- 
-        /// <summary>
-        ///     Frees the encryption resources.
-        /// </summary>
         public void Dispose()
         {
-            _memoryProtector.Unprotect(_encryptionKey);
-            _memoryProtector.Unprotect(_encryptedByte);
-            Array.Clear(_encryptedByte, 0, _encryptedByte.Length);
-            Array.Clear(_encryptionKey, 0, _encryptionKey.Length);
+            _encryptionKey.Dispose();
+            _encryptedByte.Dispose();
         }
 
-        private void Encrypt(byte b)
+        private void Initialize(byte b)
         {
             //Mix the with arbitrary bytes
-            _realBytePosition = _fastRandom.GetInt(0, SaltSize);
-            var arbitraryBytes = _fastRandom.GetBytes(SaltSize);
+             var saltSize = _encryptedByte.BlockSizeInBytes;
+            _realBytePosition = _fastRandom.GetInt(0, saltSize);
+            var arbitraryBytes = _fastRandom.GetBytes(saltSize);
             RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
                 //Action
                 () =>
                 {
                     arbitraryBytes[_realBytePosition] = b;
                     //Get key
-                    _encryptionKey = _fastRandom.GetBytes(KeySize);
+                    var keySize = _encryptionKey.BlockSizeInBytes;
+                    var encryptionKey = _fastRandom.GetBytes(keySize);
                     //Encrypt
                     var encryptedBuffer = default(byte[]);
                     RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
                         //Action
                         () =>
                         {
-                            encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, _encryptionKey);
+                            encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, encryptionKey);
                             //Add arbitrary bytes
                             _encryptedByteLength = encryptedBuffer.Length;
-                            _encryptedByte = GetMemoryProtectableSizedBytes(encryptedBuffer);
+                            _encryptedByte.Initialize(GetMemoryProtectableSizedBytes(encryptedBuffer));
                         },
                         //Cleanup
                         () =>
@@ -247,6 +220,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
                             if (encryptedBuffer != null)
                                 Array.Clear(encryptedBuffer, 0, encryptedBuffer.Length);
                         });
+                    _encryptionKey.Initialize(encryptionKey);
                 },
                 //Cleanup
                 () =>
@@ -260,7 +234,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         /// </summary>
         private byte[] GetMemoryProtectableSizedBytes(byte[] byteArray)
         {
-            var multipleOfRule = _memoryProtector.BlockSizeInBytes;
+            var multipleOfRule = _encryptedByte.BlockSizeInBytes;
             var length = byteArray.Length;
             var fixedLength = length - length%multipleOfRule + multipleOfRule;
             var result = new byte[fixedLength];
@@ -290,10 +264,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         ///     Unique hash code based on the byte it is holding, suitable for use in hashing algorithms and data structures like a
         ///     hash table.
         /// </returns>
-        public override int GetHashCode()
-        {
-            return _id;
-        }
+        public override int GetHashCode() => _id;
 
         public override string ToString()
         {

@@ -15,7 +15,7 @@ namespace SafeOrbit.Memory
         {
             //arrange
             var expected = b;
-            var sut = GetSut();
+            using var sut = GetSut();
             //act
             sut.Append(expected);
             var actual = sut.GetByte(0);

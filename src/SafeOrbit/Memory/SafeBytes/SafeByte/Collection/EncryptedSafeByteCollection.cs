@@ -9,6 +9,7 @@ using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Extensions;
 using SafeOrbit.Helpers;
+using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
@@ -21,8 +22,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// <summary>
         ///     The encryption key to encrypt/decrypt the inner list.
         /// </summary>
-        private readonly MemoryProtectedBytes _encryptionKey;
-        //TODO: Encryption salt
+        private readonly IMemoryProtectedBytes _encryptionKey;
+        //TODO: A possible security improvement: Add salt
 
         private readonly IFastEncryptor _encryptor;
         private readonly ISafeByteFactory _safeByteFactory;
@@ -39,17 +40,22 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// </summary>
         public EncryptedSafeByteCollection() : this(
             SafeOrbitCore.Current.Factory.Get<IFastEncryptor>(),
-            SafeOrbitCore.Current.Factory.Get<IByteArrayProtector>(),
+            SafeOrbitCore.Current.Factory.Get<IMemoryProtectedBytes>(),
             SafeOrbitCore.Current.Factory.Get<IFastRandom>(),
             SafeOrbitCore.Current.Factory.Get<ISafeByteFactory>(),
             SafeOrbitCore.Current.Factory.Get<IByteIdListSerializer<int>>())
         {
         }
 
-        internal EncryptedSafeByteCollection(IFastEncryptor encryptor, IByteArrayProtector memoryProtector,
-            IFastRandom fastRandom, ISafeByteFactory safeByteFactory, IByteIdListSerializer<int> serializer)
+        internal EncryptedSafeByteCollection(
+            IFastEncryptor encryptor,
+            IMemoryProtectedBytes encryptionKey,
+            ICryptoRandom fastRandom,
+            ISafeByteFactory safeByteFactory,
+            IByteIdListSerializer<int> serializer)
         {
-            _encryptionKey = GenerateEncryptionKey(memoryProtector, fastRandom);
+            _encryptionKey = encryptionKey ?? throw new ArgumentNullException(nameof(encryptionKey));
+            _encryptionKey.Initialize(fastRandom.GetBytes(encryptionKey.BlockSizeInBytes));
             _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
             _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
             _serializer = serializer;
@@ -67,11 +73,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             EnsureNotDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
 
-            using (var key = _encryptionKey.UseDecryptedData())
+            using (var key = _encryptionKey.RevealDecryptedBytes())
             {
-                var list = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, key.Data));
+                var list = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes));
                 list.Add(safeByte.Id);
-                _encryptedCollection = TaskContext.RunSync(() => SerializeAndEncryptAsync(list.ToArray(), key.Data));
+                _encryptedCollection = TaskContext.RunSync(() => SerializeAndEncryptAsync(list.ToArray(), key.PlainBytes));
                 list.Clear();
             }
 
@@ -98,9 +104,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             EnsureNotDisposed();
             EnsureNotEmpty();
             ICollection<int> list;
-            using (var key = _encryptionKey.UseDecryptedData())
+            using (var key = _encryptionKey.RevealDecryptedBytes())
             {
-                list = await DecryptAndDeserializeAsync(_encryptedCollection, key.Data)
+                list = await DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes)
                     .ConfigureAwait(false);
             }
             if (index >= list.Count)
@@ -125,9 +131,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             EnsureNotEmpty();
             EnsureNotDisposed();
             ICollection<int> safeBytesIds;
-            using (var key = _encryptionKey.UseDecryptedData())
+            using (var key = _encryptionKey.RevealDecryptedBytes())
             {
-                safeBytesIds = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, key.Data));
+                safeBytesIds = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes));
             }
             if (safeBytesIds.IsNullOrEmpty()) return new byte[0];
             var safeBytes = safeBytesIds.Select(id => _safeByteFactory.GetById(id));
@@ -204,38 +210,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         private void EnsureNotEmpty()
         {
             if (Length == 0) throw new InvalidOperationException($"{nameof(SafeBytes)} is empty");
-        }
-        private static MemoryProtectedBytes GenerateEncryptionKey(IByteArrayProtector memoryProtector, ICryptoRandom random)
-        {
-            if (memoryProtector == null) throw new ArgumentNullException(nameof(memoryProtector));
-            if (random == null) throw new ArgumentNullException(nameof(random));
-            var encryptionKeyBytes = random.GetBytes(memoryProtector.BlockSizeInBytes);
-            return new MemoryProtectedBytes(memoryProtector, encryptionKeyBytes);
-        }
-        private class MemoryProtectedBytes : IDisposable
-        {
-            private readonly IByteArrayProtector _protector;
-            private readonly byte[] _encryptedBytes;
-            public MemoryProtectedBytes(IByteArrayProtector protector, byte[] unencryptedBytes)
-            {
-                _protector = protector;
-                _encryptedBytes = unencryptedBytes ?? throw new ArgumentNullException(nameof(unencryptedBytes));
-                _protector.Protect(unencryptedBytes);
-            }
-            public UnprotectedBytes UseDecryptedData() => new UnprotectedBytes(_protector, _encryptedBytes);
-            public void Dispose() => Array.Clear(_encryptedBytes, 0, _encryptedBytes.Length);
-            public class UnprotectedBytes : IDisposable
-            {
-                private readonly IByteArrayProtector _protector;
-                public byte[] Data { get; }
-                public UnprotectedBytes(IByteArrayProtector protector, byte[] encryptedBytes)
-                {
-                    _protector = protector;
-                    protector.Protect(encryptedBytes);
-                    Data = encryptedBytes;
-                }
-                public void Dispose() => _protector.Protect(Data);
-            }
         }
     }
 }

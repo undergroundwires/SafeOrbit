@@ -1,5 +1,5 @@
 ﻿using Moq;
-using SafeOrbit.Memory.SafeBytesServices.DataProtection;
+using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes
