@@ -111,6 +111,23 @@ namespace SafeOrbit.Memory
             Assert.That(callingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
         }
 
+        [Test]
+        public void Equals_DifferentLength_ReturnsFalse()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(5);
+            sut.Append(10);
+            var other = GetSut();
+            other.Append(3);
+            // Act
+            var equality = sut.Equals(other);
+            var equalityOpposite = other.Equals(sut);
+            // Assert
+            Assert.False(equality);
+            Assert.False(equalityOpposite);
+        }
+
         protected override ISafeBytes GetSut()
         {
             return new SafeBytes(
