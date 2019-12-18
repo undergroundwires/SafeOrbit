@@ -59,8 +59,7 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             var safeByte = _safeByteFactory.GetByByte(b);
-            _safeByteCollection.Append(safeByte);
-            AddArbitraryByte();
+            Append(safeByte);
         }
 
         /// <summary>

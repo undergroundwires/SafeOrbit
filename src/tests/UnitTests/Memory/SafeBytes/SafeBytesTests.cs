@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Fakes;
+using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Tests;
@@ -137,6 +139,64 @@ namespace SafeOrbit.Memory
             var actual = sut.Length;
             //Assert
             Assert.That(actual, Is.EqualTo(expected));
+        }
+        [Test]
+        public void Append_PlainByte_AppendsFromFactory()
+        {
+            //Arrange
+            const byte @byte = 55;
+            var expected = new Mock<ISafeByte>();
+            var factoryMock = new Mock<ISafeByteFactory>();
+            factoryMock.Setup(f => f.GetByByte(@byte))
+                .Returns(expected.Object);
+            var collection = new Mock<ISafeByteCollection>(MockBehavior.Strict);
+            collection.Setup(c => c.Append(expected.Object))
+                .Verifiable();
+            collection.Setup(c => c.Append(It.IsAny<ISafeByte>()));
+            var sut = GetSut(collection: collection.Object, factory: factoryMock.Object);
+            //Act
+            sut.Append(@byte);
+            //Assert
+            collection.Verify(c => c.Append(expected.Object));
+        }
+
+        [Test]
+        public void Append_UnknownISafeBytes_Appends()
+        {
+            //Arrange
+            const byte firstByte = 55, secondByte = 77;
+            var expected = new SafeBytesFaker()
+                .Provide();
+            expected.Append(firstByte);
+            expected.Append(secondByte);
+            var collection = new Mock<ISafeByteCollection>(MockBehavior.Strict);
+            collection.Setup(c => c.Append(It.IsAny<ISafeByte>()))
+                .Verifiable();
+            var sut = GetSut(collection: collection.Object);
+            //Act
+            sut.Append(expected);
+            //Assert
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == firstByte)), Times.Once);
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == secondByte)), Times.Once);
+        }
+
+        [Test]
+        public void Append_SafeBytes_AppendsFromFactory()
+        {
+            //Arrange
+            const byte firstByte = 55, secondByte = 77;
+            var expected = new SafeBytes();
+            expected.Append(firstByte);
+            expected.Append(secondByte);
+            var collection = new Mock<ISafeByteCollection>(MockBehavior.Strict);
+            collection.Setup(c => c.Append(It.IsAny<ISafeByte>()))
+                .Verifiable();
+            var sut = GetSut(collection: collection.Object);
+            //Act
+            sut.Append(expected);
+            //Assert
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == 55)), Times.Once);
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == 77)), Times.Once);
         }
 
         [Test]
@@ -490,14 +550,14 @@ namespace SafeOrbit.Memory
             Assert.That(hashSut, Is.Not.EqualTo(hashOther));
         }
 
-
-        protected override ISafeBytes GetSut()
+        protected override ISafeBytes GetSut() => GetSut();
+        private static ISafeBytes GetSut(ISafeByteCollection collection = null, ISafeByteFactory factory = null)
         {
             return new SafeBytes(
                 Stubs.Get<IFastRandom>(),
-                Stubs.Get<ISafeByteFactory>(),
+                factory ?? Stubs.Get<ISafeByteFactory>(),
                 Stubs.GetFactory<ISafeBytes>(),
-                Stubs.GetFactory<ISafeByteCollection>());
+                Stubs.GetFactory(collection));
         }
     }
 }
