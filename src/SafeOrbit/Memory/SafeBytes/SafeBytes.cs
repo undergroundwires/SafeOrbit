@@ -16,7 +16,7 @@ namespace SafeOrbit.Memory
         private readonly IFastRandom _fastRandom;
         private readonly ISafeByteCollection _safeByteCollection;
         private readonly ISafeByteFactory _safeByteFactory;
-        private readonly IFactory<ISafeBytes> _safeBytesInstantiator;
+        private readonly IFactory<ISafeBytes> _safeBytesFactory;
 
         [DebuggerHidden]
         public SafeBytes() : this(
@@ -35,7 +35,7 @@ namespace SafeOrbit.Memory
         {
             _fastRandom = fastRandom ?? throw new ArgumentNullException(nameof(fastRandom));
             _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
-            _safeBytesInstantiator = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
+            _safeBytesFactory = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
             _safeByteCollection = safeByteCollectionFactory.Create();
         }
 
@@ -119,7 +119,7 @@ namespace SafeOrbit.Memory
         public ISafeBytes DeepClone()
         {
             EnsureNotDisposed();
-            var clone = _safeBytesInstantiator.Create();
+            var clone = _safeBytesFactory.Create();
             if (clone is SafeBytes asSafeBytes)
             {
                 //If it's the known SafeBytes then it reveals nothing in the memory
