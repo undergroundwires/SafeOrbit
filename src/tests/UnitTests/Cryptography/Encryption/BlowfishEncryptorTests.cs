@@ -195,7 +195,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             //Arrange
             var expected = new byte[]{77};
-            var sut = GetSut();
+            var sut = GetSut(cipherMode);
             var key = new byte[sut.MinKeySize];
             //Act
             var encrypted = sut.Encrypt(expected, key);
