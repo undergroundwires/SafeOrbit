@@ -94,9 +94,9 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             sut.Dispose();
             //Act
-            TestDelegate appendingByte = () => sut.Append(b);
+            void AppendingByte() => sut.Append(b);
             //Act
-            Assert.That(appendingByte, Throws.TypeOf<ObjectDisposedException>());
+            Assert.That(AppendingByte, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
@@ -106,10 +106,54 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             var position = 0;
             //Act
-            TestDelegate callingOnEmptyInstance = () => sut.GetByte(position);
+            void CallingOnEmptyInstance() => sut.GetByte(position);
             //Assert
-            Assert.That(callingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
         }
+
+        [Test]
+        public void GetByte_ForExistingByteAtStart_retrievesAsExpected()
+        {
+            //Arrange
+            const byte expected = 55;
+            var sut = GetSut();
+            sut.Append(expected);
+            //Act
+            var actual = sut.GetByte(0);
+            //Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void GetByte_ForExistingByteAtEnd_retrievesAsExpected()
+        {
+            //Arrange
+            const byte expected = 55;
+            var sut = GetSut();
+            sut.Append(22);
+            sut.Append(expected);
+            //Act
+            var actual = sut.GetByte(1);
+            //Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void GetByte_ForExistingByteInTheMiddle_retrievesAsExpected()
+        {
+            //Arrange
+            const byte expected = 55;
+            var sut = GetSut();
+            sut.Append(22);
+            sut.Append(expected);
+            sut.Append(31);
+            //Act
+            var actual = sut.GetByte(1);
+            //Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        // GetAsSafeByteAsync
 
         [Test]
         public void Equals_DifferentLength_ReturnsFalse()
