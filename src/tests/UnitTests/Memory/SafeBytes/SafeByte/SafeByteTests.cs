@@ -22,7 +22,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
                 Stubs.Get<IFastEncryptor>(),
                 Stubs.Get<IFastRandom>(),
                 Stubs.Get<IByteIdGenerator>(),
-                Stubs.Get<IByteArrayProtector>()
+                Stubs.Get<IMemoryProtectedBytes>(),
+                Stubs.Get<IMemoryProtectedBytes>()
             );
         }
 

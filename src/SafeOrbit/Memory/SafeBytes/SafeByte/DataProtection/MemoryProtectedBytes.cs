@@ -29,8 +29,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
         public int BlockSizeInBytes => _protector.BlockSizeInBytes;
         public bool IsInitialized => _encryptedBytes != null;
-        public IDecryptionSession RevealDecryptedBytes() => new DecryptionSession(
-            _protector, ref _encryptedBytes);
+        public IDecryptionSession RevealDecryptedBytes() => 
+            IsInitialized ? throw new ArgumentException("Not yet initialized") :  new DecryptionSession(_protector, ref _encryptedBytes);
 
         public IMemoryProtectedBytes DeepClone()
         {

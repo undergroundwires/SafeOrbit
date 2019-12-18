@@ -26,7 +26,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             return new EncryptedSafeByteCollection(
                 encryptor: Stubs.Get<IFastEncryptor>(),
-                memoryProtector: Stubs.Get<IByteArrayProtector>(),
+                encryptionKey: Stubs.Get<IMemoryProtectedBytes>(),
                 fastRandom: Stubs.Get<IFastRandom>(),
                 safeByteFactory: Stubs.Get<ISafeByteFactory>(),
                 serializer: Stubs.Get<IByteIdListSerializer<int>>());
