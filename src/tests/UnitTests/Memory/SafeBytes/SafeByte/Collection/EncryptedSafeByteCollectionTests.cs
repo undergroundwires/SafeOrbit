@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption;
@@ -7,10 +8,11 @@ using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Tests;
-using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
+    /// <seealso cref="ISafeByteCollection"/>
+    /// <seealso cref="EncryptedSafeByteCollection"/>
     [TestFixture]
     internal class EncryptedSafeByteCollectionTests : TestsFor<ISafeByteCollection>
     {
@@ -144,7 +146,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public void GetByte_WhenRequestedPositionIsHigherThanRange_throwsArgumentOutOfRangeException(
+        public void GetAsync_WhenRequestedPositionIsHigherThanRange_throwsArgumentOutOfRangeException(
             [Random(0, 256, 1)] byte b)
         {
             //Arrange
@@ -177,17 +179,50 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public async Task GetByte_ForSingleAppendedByte_ReturnsByte(byte b)
+        public async Task GetAsync_ForSingleAppendedByte_ReturnsByte()
         {
             //Arrange
             var sut = GetSut();
-            var safeByte = GetSafeByteFor(b);
+            var safeByte = GetSafeByteFor(5);
             //Act
             sut.Append(safeByte);
             var safebyteBack = await sut.GetAsync(0);
             //Assert
             Assert.That(safeByte, Is.EqualTo(safebyteBack));
+        }
+
+        [Test]
+        public async Task GetAsync_AfterModifications_ReturnsAsExpected()
+        {
+            //Arrange
+            var expected = new []{ GetSafeByteFor(5), GetSafeByteFor(10) };
+            var sut = GetSut();
+            sut.Append(expected[0]);
+            //Act
+            await sut.GetAsync(0); // Calling once first to test the encryption/decryption harmony with Append
+            sut.Append(expected[1]);
+            var actual = new []
+            {
+                await sut.GetAsync(0),
+                await sut.GetAsync(1)
+            };
+            //Assert
+            Assert.True(expected[0].Equals(actual[0]));
+            Assert.True(actual[0].Equals(expected[0]));
+        }
+
+        [Test]
+        public async Task GetAsync_AfterCallingToDecryptedBytes_ReturnsAsExpected()
+        {
+            //Arrange
+            var expected = GetSafeByteFor(5);
+            var sut = GetSut();
+            sut.Append(expected);
+            //Act
+            sut.ToDecryptedBytes(); // Calling once first to test the encryption/decryption harmony with ToDecryptedBytes
+            var actual = await sut.GetAsync(0);
+            //Assert
+            Assert.True(expected.Equals(actual));
         }
 
         [Test]
@@ -284,7 +319,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             Assert.ThrowsAsync<ObjectDisposedException>(CallingOnDisposedObject);
         }
 
-        //** ToDecryptedBytes **//
         [Test]
         public void ToDecryptedBytes_OnEmptyInstance_throwsInvalidOperationException()
         {
@@ -294,6 +328,70 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             void CallingOnEmptyInstance() => sut.ToDecryptedBytes();
             //Assert
             Assert.That(CallingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
+        }
+
+        [Test]
+        public void ToDecryptedBytes_ForMultipleBytes_returnsAsExpected()
+        {
+            //Arrange
+            var expected = new byte[] {5, 10, 15};
+            var sut = GetSut();
+            foreach (var @byte in expected)
+                sut.Append(GetSafeByteFor(@byte));
+            //Act
+            var actual = sut.ToDecryptedBytes();
+            //Assert
+            Assert.True(expected.SequenceEqual(actual));
+        }
+
+        [Test]
+        public void ToDecryptedBytes_ForSingleByte_returnsAsExpected()
+        {
+            //Arrange
+            var expected = new byte[] { 5 };
+            var sut = GetSut(); 
+            sut.Append(GetSafeByteFor(5));
+            //Act
+            var actual = sut.ToDecryptedBytes();
+            //Assert
+            Assert.True(expected.SequenceEqual(actual));
+        }
+
+        [Test]
+        public void ToDecryptedBytes_CalledMultipleTimes_returnsExpected()
+        {
+            //Arrange
+            var expected = new byte[] { 5, 10, 15 };
+            var sut = GetSut();
+            foreach (var @byte in expected)
+                sut.Append(GetSafeByteFor(@byte));
+            //Act
+            var actual = sut.ToDecryptedBytes();
+            var second = sut.ToDecryptedBytes();
+            //Assert
+            Assert.True(expected.SequenceEqual(actual));
+            Assert.True(expected.SequenceEqual(second));
+        }
+
+        [Test]
+        public void ToDecryptedBytes_CalledAgainAfterModifications_returnsExpected()
+        {
+            //Arrange
+            var raw = new byte[] { 5, 10, 15 };
+            var sut = GetSut();
+            foreach (var @byte in raw)
+                sut.Append(GetSafeByteFor(@byte));
+            var modifications = new byte[] { 10, 15, 30 };
+            //Act
+            sut.ToDecryptedBytes(); // Calling once first to test the encryption/decryption harmony with Append
+            foreach (var @byte in modifications)
+                sut.Append(GetSafeByteFor(@byte));
+            var afterModifications = sut.ToDecryptedBytes();
+            //Assert
+            var expected = raw.Concat(modifications).ToArray();
+            Console.WriteLine($"Expected: {string.Join(",", expected.Select(e=>e.ToString()))}{Environment.NewLine}" +
+                              $"Actual: {string.Join(",", afterModifications.Select(e => e.ToString()))}{Environment.NewLine}");
+            Assert.True(afterModifications.SequenceEqual(expected));
         }
     }
 }
