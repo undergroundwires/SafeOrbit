@@ -11,8 +11,13 @@ using SafeOrbit.Memory.SafeBytesServices.Factory;
 
 namespace SafeOrbit.Memory
 {
+    /// <remarks>
+    ///     Wraps <see cref="ISafeByteCollection"/>.
+    ///     Adds arbitrary bytes during modifications to avoid having real sequences in the memory. 
+    /// </remarks>
     public class SafeBytes : ISafeBytes
     {
+        private const int TotalArbitraryBytesPerByte = 1;
         private readonly IFastRandom _fastRandom;
         private readonly ISafeByteCollection _safeByteCollection;
         private readonly ISafeByteFactory _safeByteFactory;
@@ -42,7 +47,7 @@ namespace SafeOrbit.Memory
         /// <summary>
         ///     Returns to real length of the bytes inside
         /// </summary>
-        public int Length => _safeByteCollection?.Length ?? 0;
+        public int Length => (_safeByteCollection?.Length ?? 0) == 0 ? 0 : _safeByteCollection.Length / (TotalArbitraryBytesPerByte + 1);
 
         public bool IsDisposed { get; private set; }
 
@@ -55,6 +60,7 @@ namespace SafeOrbit.Memory
             EnsureNotDisposed();
             var safeByte = _safeByteFactory.GetByByte(b);
             _safeByteCollection.Append(safeByte);
+            AddArbitraryByte();
         }
 
         /// <summary>
@@ -74,16 +80,23 @@ namespace SafeOrbit.Memory
                 for (var i = 0; i < safeBytes.Length; i++)
                 {
                     var safeByte = TaskContext.RunSync(() => asSafeBytes.GetAsSafeByteAsync(i));
-                    _safeByteCollection.Append(safeByte);
+                    Append(safeByte);
                 }
             //If it's not, then reveals each byte in memory.
             else
                 for (var i = 0; i < safeBytes.Length; i++)
                 {
                     var safeByte = _safeByteFactory.GetByByte(safeBytes.GetByte(i));
-                    _safeByteCollection.Append(safeByte);
+                    Append(safeByte);
                 }
-            //Add the arbitrary byte
+        }
+
+        /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
+        private void Append(ISafeByte safeByte)
+        {
+            if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
+            _safeByteCollection.Append(safeByte);
+            AddArbitraryByte();
         }
 
         /// <summary>
@@ -111,8 +124,12 @@ namespace SafeOrbit.Memory
         public byte[] ToByteArray()
         {
             EnsureNotDisposed();
-            EnsureNotEmpty();
-            return _safeByteCollection.ToDecryptedBytes();
+            if(Length == 0) 
+                return new byte[0];
+            var decryptedBytes = _safeByteCollection.ToDecryptedBytes();
+            var withoutArbitraryBytes = decryptedBytes.Where((x, i) => i % (TotalArbitraryBytesPerByte + 1) == 0)
+                .ToArray();
+            return withoutArbitraryBytes;
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
@@ -138,25 +155,27 @@ namespace SafeOrbit.Memory
         /// </summary>
         public static bool IsNullOrEmpty(ISafeBytes safeBytes) => (safeBytes == null) || (safeBytes.Length == 0);
 
+
+        /// <summary>
+        ///     Gets the byte from its real location (skips the arbitrary bytes)
+        /// </summary>
         internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
-            var realPosition = position*2;
+            var realPosition = position * (TotalArbitraryBytesPerByte + 1);
             if ((realPosition < 0) || (realPosition >= _safeByteCollection.Length)) throw new ArgumentOutOfRangeException(nameof(position));
             return await _safeByteCollection.GetAsync(realPosition).ConfigureAwait(false);
         }
 
-        /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
-        private void Append(ISafeByte safeByte)
-        {
-            if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
-            _safeByteCollection.Append(safeByte);
-            AddArbitraryByte();
-        }
-
+        /// <summary>
+        ///     The reason to add arbitrary byte is to avoid simple memory dumps to see all bytes.
+        /// </summary>
         private void AddArbitraryByte()
         {
-            var safeByte = _safeByteFactory.GetByByte((byte) _fastRandom.GetInt(0, 256));
-            _safeByteCollection.Append(safeByte);
+            for(var i = 0; i < TotalArbitraryBytesPerByte; i++)
+            {
+                var safeByte = _safeByteFactory.GetByByte((byte)_fastRandom.GetInt(0, 256));
+                _safeByteCollection.Append(safeByte);
+            }
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
