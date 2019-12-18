@@ -100,7 +100,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             EnsureNotDisposed();
             EnsureNotEmpty();
             _memoryProtector.Unprotect(_encryptionKey);
-            var list = await DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey);
+            var list = await DecryptAndDeserializeAsync(_encryptedCollection, _encryptionKey)
+                .ConfigureAwait(false);
             _memoryProtector.Protect(_encryptionKey);
             if (index >= list.Count)
                 throw new ArgumentOutOfRangeException(nameof(index), index,
@@ -162,10 +163,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             if (encryptedCollection == null)
                 return new List<int>();
-            var decryptedBytes = await _encryptor.DecryptAsync(encryptedCollection, encryptionKey);
+            var decryptedBytes = await _encryptor.DecryptAsync(encryptedCollection, encryptionKey)
+                .ConfigureAwait(false); ;
             try
             {
-                var deserializedBytes = await _serializer.DeserializeAsync(decryptedBytes);
+                var deserializedBytes = await _serializer.DeserializeAsync(decryptedBytes)
+                    .ConfigureAwait(false); ;
                 return deserializedBytes.ToList();
             }
             finally
@@ -175,10 +178,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
         private async Task<byte[]> SerializeAndEncryptAsync(IReadOnlyCollection<int> safeByteIdList, byte[] encryptionKey)
         {
-            var serializedBytes = await _serializer.SerializeAsync(safeByteIdList);
+            var serializedBytes = await _serializer.SerializeAsync(safeByteIdList)
+                .ConfigureAwait(false);
             try
             {
-                var encrypted = await _encryptor.EncryptAsync(serializedBytes, encryptionKey);
+                var encrypted = await _encryptor.EncryptAsync(serializedBytes, encryptionKey)
+                    .ConfigureAwait(false);
                 return encrypted;
             }
             finally
