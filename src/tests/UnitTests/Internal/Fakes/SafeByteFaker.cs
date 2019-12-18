@@ -11,9 +11,11 @@ namespace SafeOrbit.Fakes
         public override ISafeByte Provide()
         {
             var fake = new Mock<ISafeByte>();
+            var isSet = false;
             var b = new byte();
             fake.Setup(x => x.Set(It.IsAny<byte>())).Callback<byte>(x => b = x);
-            fake.Setup(x => x.Get()).Returns(() => b);
+            fake.Setup(x => x.Get()).Returns(() => { isSet = true; return b; });
+            fake.Setup(x => x.IsByteSet).Returns(() => isSet);
             fake.Setup(x => x.GetHashCode()).Returns(() => b);
             fake.Setup(x => x.Equals(It.IsAny<byte>())).Returns((byte byt) => byt.Equals(b));
             fake.Setup(x => x.Equals(It.IsAny<ISafeByte>())).Returns((ISafeByte safeB) => safeB.Get().Equals(b));
