@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Fakes;
@@ -9,9 +10,10 @@ using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
 {
+    /// <seealso cref="SafeBytes" />
+    /// <seealso cref="ISafeBytes" />
     public class SafeBytesTests : TestsFor<ISafeBytes>
     {
-        //** IsNullOrEmpty **//
         [Test]
         public void IsNullOrEmpty_ForNullSafeBytesObject_returnsTrue()
         {
@@ -74,7 +76,6 @@ namespace SafeOrbit.Memory
             Assert.That(isEmpty, Is.True);
         }
 
-        //** IsDisposed **//
         [Test]
         public void IsDisposed_ForNewSafeBytesInstance_returnsFalse()
         {
@@ -86,7 +87,58 @@ namespace SafeOrbit.Memory
             Assert.That(isDisposed, Is.False);
         }
 
-        //** Append(byte) **//
+        [Test]
+        public void IsDisposed_ForDisposedInstance_returnsFalse()
+        {
+            //Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            //Act
+            var isDisposed = sut.IsDisposed;
+            //Assert
+            Assert.That(isDisposed, Is.True);
+        }
+
+        [Test]
+        public void Length_ForNewEmptyInstance_returnsZero()
+        {
+            //Arrange
+            const int expected = 0;
+            var sut = GetSut();
+            //Act
+            var isDisposed = sut.Length;
+            //Assert
+            Assert.That(isDisposed, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Length_SingleByte_returnsOne()
+        {
+            //Arrange
+            const int expected = 1;
+            var sut = GetSut();
+            sut.Append(5);
+            //Act
+            var actual = sut.Length;
+            //Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Length_MultipleBytes_returnsExpected()
+        {
+            //Arrange
+            const int expected = 3;
+            var sut = GetSut();
+            sut.Append(5);
+            sut.Append(5);
+            sut.Append(5);
+            //Act
+            var actual = sut.Length;
+            //Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
         [Test]
         public void AppendByte_ForDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
         {
@@ -97,6 +149,69 @@ namespace SafeOrbit.Memory
             void AppendingByte() => sut.Append(b);
             //Act
             Assert.That(AppendingByte, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendByte_ForCleanObject_canAppendSingle()
+        {
+            // Arrange
+            const byte expected = 5;
+            var sut = GetSut();
+            // Act
+            sut.Append(expected);
+            // Assert
+            var actual = sut.GetByte(0);
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void AppendByte_ForCleanObject_canAppendMultiple()
+        {
+            // Arrange
+            byte[] expected = {5,10,15,31,31};
+            var sut = GetSut();
+            // Act
+            foreach(var @byte in expected)
+                sut.Append(@byte);
+            // Assert
+            var actual = sut.ToByteArray();
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void AppendSafeBytes_MultipleBytesOnCleanInstance_appendsAsExpected()
+        {
+            //Arrange
+            byte[] expected = { 3, 5, 10, 20 };
+            var sut = GetSut();
+            var toAppend = GetSut();
+            foreach (var @byte in expected)
+                toAppend.Append(@byte);
+            // act
+            sut.Append(toAppend);
+            // assert
+            var actual = sut.ToByteArray();
+            Console.WriteLine($"Actual: ${string.Join(",", actual.Select(a=> a.ToString()))}{Environment.NewLine}" +
+                              $"Expected: ${string.Join(",", expected.Select(a => a.ToString()))}");
+            Assert.True(actual.SequenceEqual(expected));
+        }
+
+        [Test]
+        public void AppendSafeBytes_MultipleBytesOnInstanceWithExistingBytes_appendsAsExpected()
+        {
+            //Arrange
+            byte[] expected = { 3, 5, 10, 20 };
+            var sut = GetSut();
+            sut.Append(3);
+            sut.Append(5);
+            var toAppend = GetSut();
+            toAppend.Append(10);
+            toAppend.Append(20);
+            // act
+            sut.Append(toAppend);
+            // assert
+            var actual = sut.ToByteArray();
+            Assert.True(actual.SequenceEqual(expected));
         }
 
         [Test]
@@ -153,17 +268,82 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        // GetAsSafeByteAsync
+        [Test]
+        public void ToByteArray_ForEmptyInstance_returnsEmptyArray()
+        {
+            //Arrange
+            var sut = GetSut();
+            //Act
+            var actual = sut.ToByteArray();
+            //Assert
+            Assert.That(actual, Is.Not.Null);
+            Assert.That(actual, Has.Length.Zero);
+        }
 
         [Test]
-        public void Equals_DifferentLength_ReturnsFalse()
+        public void ToByteArray_ForInstanceWithSingleByte_returnsExpected()
+        {
+            //Arrange
+            byte[] expected = {5};
+            var sut = GetSut();
+            sut.Append(5);
+            //Act
+            var actual = sut.ToByteArray();
+            //Assert
+            Assert.That(actual.SequenceEqual(expected));
+        }
+
+        [Test]
+        public void ToByteArray_ForInstanceWithMultipleBytes_returnsExpected()
+        {
+            //Arrange
+            byte[] expected = { 5, 10, 15 };
+            var sut = GetSut();
+            foreach(var @byte in expected)
+                sut.Append(@byte);
+            //Act
+            var actual = sut.ToByteArray();
+            //Assert
+            Assert.That(actual.SequenceEqual(expected));
+        }
+
+        [Test]
+        public void DeepClone_EmptyInstance_returnsDifferentEmptyInstance()
         {
             // Arrange
             var sut = GetSut();
-            sut.Append(5);
-            sut.Append(10);
+            // Act
+            var clone = sut.DeepClone();
+            // Assert
+            Assert.False(ReferenceEquals(sut, clone));
+            Assert.True(sut.Equals(clone));
+            Assert.True(clone.Equals(sut));
+        }
+
+        [Test]
+        public void DeepClone_WithExistingBytes_returnsDifferentEqualInstance()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(55);
+            sut.Append(31);
+            // Act
+            var clone = sut.DeepClone();
+            // Assert
+            Assert.False(ReferenceEquals(sut, clone));
+            Assert.True(sut.Equals(clone));
+            Assert.True(clone.Equals(sut));
+        }
+
+        [Test]
+        public void Equals_SafeBytes_DifferentLength_returnsFalse()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(1);
+            sut.Append(1);
             var other = GetSut();
-            other.Append(3);
+            other.Append(1);
             // Act
             var equality = sut.Equals(other);
             var equalityOpposite = other.Equals(sut);
@@ -171,6 +351,145 @@ namespace SafeOrbit.Memory
             Assert.False(equality);
             Assert.False(equalityOpposite);
         }
+
+        [Test]
+        public void Equals_ClearBytes_DifferentLength_returnsFalse()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(1);
+            var other = new byte[] { 1, 1 };
+            // Act
+            var actual = sut.Equals(other);
+            // Assert
+            Assert.False(actual);
+        }
+
+        [Test]
+        public void Equals_SafeBytes_SameLengthDifferentBytes_returnsFalse()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(5);
+            sut.Append(10);
+            var other = GetSut();
+            other.Append(3);
+            sut.Append(10);
+            // Act
+            var equality = sut.Equals(other);
+            var equalityOpposite = other.Equals(sut);
+            // Assert
+            Assert.False(equality);
+            Assert.False(equalityOpposite);
+        }
+
+        [Test]
+        public void Equals_ClearBytes_SameLengthDifferentBytes_returnsFalse()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(5);
+            sut.Append(10);
+            var other = new byte[] { 3, 10 };
+            // Act
+            var actual = sut.Equals(other);
+            // Assert
+            Assert.False(actual);
+        }
+
+        [Test]
+        public void Equals_SafeBytes_SameBytes_returnsTrue()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(5);
+            sut.Append(10);
+            var other = GetSut();
+            other.Append(5);
+            other.Append(10);
+            // Act
+            var equality = sut.Equals(other);
+            var equalityOpposite = other.Equals(sut);
+            // Assert
+            Assert.True(equality);
+            Assert.True(equalityOpposite);
+        }
+
+        [Test]
+        public void Equals_ClearBytes_SameBytes_returnsTrue()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(5);
+            sut.Append(10);
+            var other = new byte[] { 5, 10 };
+            // Act
+            var actual = sut.Equals(other);
+            // Assert
+            Assert.True(actual);
+        }
+
+        [Test]
+        public void GetHashCode_BothEmpty_returnsSame()
+        {
+            // Arrange
+            var sut = GetSut();
+            var other = GetSut();
+            // Act
+            var hashSut = sut.GetHashCode();
+            var hashOther = other.GetHashCode();
+            // Assert
+            Assert.That(hashSut, Is.EqualTo(hashOther));
+        }
+       
+        [Test]
+        public void GetHashCode_SameNonEmptyBytes_returnsSame()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(3);
+            sut.Append(5);
+            var other = GetSut();
+            other.Append(3);
+            other.Append(5);
+            // Act
+            var hashSut = sut.GetHashCode();
+            var hashOther = other.GetHashCode();
+            // Assert
+            Assert.That(hashSut, Is.EqualTo(hashOther));
+        }
+        
+        [Test]
+        public void GetHashCode_DifferentBytesSameLength_returnsFalse()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(3);
+            var other = GetSut();
+            other.Append(5);
+            // Act
+            var hashSut = sut.GetHashCode();
+            var hashOther = other.GetHashCode();
+            // Assert
+            Assert.That(hashSut, Is.Not.EqualTo(hashOther));
+        }
+        
+        [Test]
+        public void GetHashCode_DifferentBytesDifferentLength_returnsFalse()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Append(1);
+            var other = GetSut();
+            other.Append(1);
+            other.Append(1);
+            // Act
+            var hashSut = sut.GetHashCode();
+            var hashOther = other.GetHashCode();
+            // Assert
+            Assert.That(hashSut, Is.Not.EqualTo(hashOther));
+        }
+
 
         protected override ISafeBytes GetSut()
         {
