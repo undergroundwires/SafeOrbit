@@ -14,4 +14,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\SafeOrbit\SafeOrbit.csproj" />
   </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <AssemblyOriginatorKeyFile>../../../docs/signature_keys/private/RandomComparisonApp-key.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+  </PropertyGroup>
 </Project>
