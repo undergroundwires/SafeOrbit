@@ -76,7 +76,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             );
         }
 
-        private Mock<MemoryCachedSafeByteFactory> GetMock()
+        private static Mock<MemoryCachedSafeByteFactory> GetMock()
             =>
             new Mock<MemoryCachedSafeByteFactory>(
                 Stubs.Get<IByteIdGenerator>(),
