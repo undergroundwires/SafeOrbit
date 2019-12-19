@@ -257,15 +257,12 @@ namespace SafeOrbit.Memory
 
         public override bool Equals(object obj)
         {
-            switch (obj)
+            return obj switch
             {
-                case SafeBytes sb:
-                    return Equals(sb);
-                case byte[] @byte:
-                    return Equals(@byte);
-                default:
-                    return false;
-            }
+                SafeBytes sb => Equals(sb),
+                byte[] @byte => Equals(@byte),
+                _ => false
+            };
         }
 
         public override int GetHashCode()
