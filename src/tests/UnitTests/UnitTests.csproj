@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>SafeOrbit.UnitTests</AssemblyName>
+    <PackageId>SafeOrbit.UnitTests</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SafeOrbit\SafeOrbit.csproj" />
