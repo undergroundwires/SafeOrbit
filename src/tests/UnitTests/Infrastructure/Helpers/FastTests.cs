@@ -10,7 +10,7 @@ namespace SafeOrbit.Helpers
     public class FastTests : TestsBase
     {
         [Test]
-        public void FastFor_1000Factorials_FasterThanForLoop()
+        public void FastFor_1000Factorials_FasterThanOrEqualToForLoop()
         {
             //arrange
             var iterations = 1000;
@@ -29,7 +29,7 @@ namespace SafeOrbit.Helpers
                 Fast.For(0, iterations, (i) => factorial.Invoke(i));
             });
             //assert
-            Assert.That(actual, Is.LessThan(expectedMax));
+            Assert.That(actual, Is.LessThanOrEqualTo(expectedMax));
         }
     }
 }
