@@ -1,7 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
-using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Tests.Cases;
 
