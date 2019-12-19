@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\tests\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\tests\Shared\Shared.csproj" />
     <ProjectReference Include="..\..\SafeOrbit\SafeOrbit.csproj" />
   </ItemGroup>
 

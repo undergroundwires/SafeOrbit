@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SafeOrbit\SafeOrbit.csproj" />
-    <ProjectReference Include="..\..\tests\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\tests\Shared\Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
