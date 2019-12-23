@@ -389,8 +389,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var afterModifications = sut.ToDecryptedBytes();
             //Assert
             var expected = raw.Concat(modifications).ToArray();
-            Console.WriteLine($"Expected: {string.Join(",", expected.Select(e=>e.ToString()))}{Environment.NewLine}" +
-                              $"Actual: {string.Join(",", afterModifications.Select(e => e.ToString()))}{Environment.NewLine}");
+            Console.WriteLine($"Expected: {string.Join(",", expected)}{Environment.NewLine}" +
+                              $"Actual: {string.Join(",", afterModifications)}{Environment.NewLine}");
             Assert.True(afterModifications.SequenceEqual(expected));
         }
     }

@@ -77,6 +77,18 @@ namespace SafeOrbit.Memory.SafeBytesServices
         }
 
         [Test]
+        public void DeepClone_Disposed_Throws()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void DeepClone() => sut.DeepClone();
+            // Assert
+            Assert.Throws<ArgumentException>(DeepClone);
+        }
+
+        [Test]
         public void Equals_ForObjectWithValueAndNoValue_returnsFalse([Random(0, 256, 1)] byte b)
         {
             //Arrange

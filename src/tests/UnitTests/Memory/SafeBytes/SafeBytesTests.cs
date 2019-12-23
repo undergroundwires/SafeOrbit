@@ -148,7 +148,7 @@ namespace SafeOrbit.Memory
             var factoryMock = new Mock<ISafeByteFactory>();
             factoryMock.Setup(f => f.GetByByte(@byte))
                 .Returns(expected.Object);
-            var collection = new Mock<ISafeByteCollection>(MockBehavior.Strict);
+            var collection = new Mock<ISafeByteCollection>();
             collection.Setup(c => c.Append(expected.Object))
                 .Verifiable();
             collection.Setup(c => c.Append(It.IsAny<ISafeByte>()));
@@ -168,7 +168,7 @@ namespace SafeOrbit.Memory
                 .Provide();
             expected.Append(firstByte);
             expected.Append(secondByte);
-            var collection = new Mock<ISafeByteCollection>(MockBehavior.Strict);
+            var collection = new Mock<ISafeByteCollection>();
             collection.Setup(c => c.Append(It.IsAny<ISafeByte>()))
                 .Verifiable();
             using var sut = GetSut(collection: collection.Object);
@@ -184,10 +184,10 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             const byte firstByte = 55, secondByte = 77;
-            var expected = new SafeBytes();
+            var expected = Stubs.Get<ISafeBytes>();
             expected.Append(firstByte);
             expected.Append(secondByte);
-            var collection = new Mock<ISafeByteCollection>(MockBehavior.Strict);
+            var collection = new Mock<ISafeByteCollection>();
             collection.Setup(c => c.Append(It.IsAny<ISafeByte>()))
                 .Verifiable();
             using var sut = GetSut(collection: collection.Object);
@@ -250,8 +250,8 @@ namespace SafeOrbit.Memory
             sut.Append(toAppend);
             // assert
             var actual = sut.ToByteArray();
-            Console.WriteLine($"Actual: ${string.Join(",", actual.Select(a=> a.ToString()))}{Environment.NewLine}" +
-                              $"Expected: ${string.Join(",", expected.Select(a => a.ToString()))}");
+            Console.WriteLine($"Actual: ${string.Join(",", actual)}{Environment.NewLine}" +
+                              $"Expected: ${string.Join(",", expected)}");
             Assert.True(actual.SequenceEqual(expected));
         }
 
@@ -377,6 +377,18 @@ namespace SafeOrbit.Memory
             Assert.False(ReferenceEquals(sut, clone));
             Assert.True(sut.Equals(clone));
             Assert.True(clone.Equals(sut));
+        }
+
+        [Test]
+        public void DeepClone_Disposed_Throws()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void DeepClone() => sut.DeepClone();
+            // Assert
+            Assert.Throws<ArgumentException>(DeepClone);
         }
 
         [Test]
