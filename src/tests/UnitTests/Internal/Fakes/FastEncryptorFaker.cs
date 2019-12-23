@@ -22,9 +22,9 @@ namespace SafeOrbit.Fakes
                     throw new ArgumentException(
                         $"Wrong encryption key.{Environment.NewLine}" +
                         $"Expected was:{Environment.NewLine}" +
-                        string.Join(",", key.Select(b => b)) + Environment.NewLine +
+                        string.Join(",", key) + Environment.NewLine +
                         $"But got: {Environment.NewLine}" +
-                        string.Join(",", keyBytes.Select(b => b)));
+                        string.Join(",", keyBytes));
                 return rawBytes;
             }
 
