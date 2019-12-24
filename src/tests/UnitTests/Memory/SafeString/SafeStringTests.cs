@@ -10,6 +10,8 @@ using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
 {
+    /// <seealso cref="ISafeString"/>
+    /// <seealso cref="SafeString"/>
     [TestFixture]
     public partial class SafeStringTests
     {
@@ -149,7 +151,7 @@ namespace SafeOrbit.Memory
             // Act
             void DeepClone() => sut.DeepClone();
             // Assert
-            Assert.Throws<ArgumentException>(DeepClone);
+            Assert.Throws<ObjectDisposedException>(DeepClone);
         }
 
         [Test]
@@ -291,18 +293,30 @@ namespace SafeOrbit.Memory
         [Test]
         public void InsertISafeBytes_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
             sut.Dispose();
-            //Act
+            // Act
             void CallOnDisposedObject() => sut.Insert(0, safeBytes);
-            //Assert
+            // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void Append_MultipleCharsAppended_CanGetCharsInOrder()
+        public void AppendChar_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void CallOnDisposedObject() => sut.Append('e');
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendChar_MultipleCharsAppended_CanGetCharsInOrder()
         {
             //Arrange
             using var sut = GetSut();
@@ -327,7 +341,19 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_StringIsAppended_CanGetCharsInOrder()
+        public void AppendString_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void CallOnDisposedObject() => sut.Append("hello");
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendString_StringIsAppended_CanGetCharsInOrder()
         {
             //Arrange
             using var sut = GetSut();
@@ -348,7 +374,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_AsciiText_BytesAreConverted()
+        public void AppendBytes_AsciiText_BytesAreConverted()
         {
             // arrange
             var textServiceMock = new Mock<ITextService>();
@@ -369,7 +395,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_Utf16BigEndian_BytesAreConverted()
+        public void AppendBytes_Utf16BigEndian_BytesAreConverted()
         {
             // arrange
             var textServiceMock = new Mock<ITextService>();
@@ -390,7 +416,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_Utf16LittleEndian_BytesAreSame()
+        public void AppendBytes_Utf16LittleEndian_BytesAreSame()
         {
             // arrange
             var textServiceMock = new Mock<ITextService>();
@@ -403,6 +429,45 @@ namespace SafeOrbit.Memory
             sut.Append(safeBytes, Encoding.Utf16LittleEndian);
             var actual = sut.ToSafeBytes().ToByteArray();
             // assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void AppendBytes_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            var safeBytes = Stubs.Get<ISafeBytes>(); 
+            safeBytes.Append(55);
+            // Act
+            void CallOnDisposedObject() => sut.Append(safeBytes);
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendLine_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void CallOnDisposedObject() => sut.AppendLine();
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendLine_AppendsUnicodeLineFeed()
+        {
+            //Arrange
+            const int expected = 0x000A;
+            using var sut = GetSut();
+            //Act
+            sut.AppendLine();
+            //Assert
+            var actual = sut.GetAsSafeBytes(0).GetByte(0);
             Assert.AreEqual(expected, actual);
         }
 
@@ -663,9 +728,8 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        //** ShallowClone() **//
         [Test]
-        public void ShallowClone_OnDisposedObject_returnsObjectDisposedException([Random(0, 256, 1)] int i1)
+        public void ShallowClone_OnDisposedObject_ThrowsObjectDisposedException([Random(0, 256, 1)] int i1)
         {
             //Arrange
             var sut = GetSut();

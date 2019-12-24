@@ -2,6 +2,8 @@
 
 namespace SafeOrbit.Memory
 {
+    /// <seealso cref="ISafeString"/>
+    /// <seealso cref="SafeString"/>
     [TestFixture]
     public partial class SafeStringTests
     {
