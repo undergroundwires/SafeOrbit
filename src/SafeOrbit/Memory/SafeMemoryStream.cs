@@ -211,9 +211,9 @@ namespace SafeOrbit.Memory
         protected override void Dispose(bool disposing)
         {
             _closed = true;
-            _readerAutoResetEvent.Set();
-            _queue.TrimExcess();
+            _flushAutoResetEvent.Set();
             _flushAutoResetEvent.Dispose();
+            _readerAutoResetEvent.Set();
             _readerAutoResetEvent.Dispose();
             base.Dispose(disposing);
         }
