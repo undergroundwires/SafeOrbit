@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 this project uses does not use semantic versioning as it keeps the major to 0 to underline that it's not production ready.
 
 ## [Unreleased]
+
+
+## [0.3.1] - 2019-12-24
 ### Changed
 - Using `.ConfigureAwait(false)` in async methods to better support UI applications.
 - More strict disposed checks

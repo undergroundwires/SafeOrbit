@@ -79,7 +79,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageOutputPath>../../dist/</PackageOutputPath>
     <PackageId>SafeOrbit</PackageId>
-    <Version>0.3.0</Version>
+    <Version>0.3.1</Version>
     <Authors>undergroundwires</Authors>
     <Title>SafeOrbit is easy-to-use and strong security toolkit for .NET</Title>
     <Description>
