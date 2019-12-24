@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if !NETCORE
+#if !NETSTANDARD1_6
 using System.Security.Permissions;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -17,8 +17,8 @@ namespace SafeOrbit.Exceptions.SerializableException
     /// </remarks>
     /// <seealso cref="Exception"/>
     /// <seealso cref="ConfigureSerialize"/>
-#if !NETCORE
-/// <seealso cref="SerializableAttribute"/>
+#if !NETSTANDARD1_6
+    /// <seealso cref="SerializableAttribute"/>
     [Serializable]
 #endif
 #pragma warning restore 587
@@ -41,7 +41,7 @@ namespace SafeOrbit.Exceptions.SerializableException
         {
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected SerializableExceptionBase(SerializationInfo info, StreamingContext context) : base(info, context)
         {
@@ -58,7 +58,7 @@ namespace SafeOrbit.Exceptions.SerializableException
             serializationContext.Add(() => ResourceReferenceProperty);
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
 
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -78,7 +78,7 @@ namespace SafeOrbit.Exceptions.SerializableException
             return serializationContext;
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
         {
             var propertiesToSerialize = serializationContext.PropertyInfos;

@@ -117,7 +117,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 
         #region Serializing/Deserializing methods
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         ///     Serializing to a file. File will be always new created and closed after the serialization.
         /// </summary>
@@ -146,7 +146,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         /// </summary>
         /// <param name="data"></param>
         /// <param name="stream"></param>
-#if !NETCORE
+#if !NETSTANDARD1_6
         [MethodImpl(MethodImplOptions.Synchronized)]
 #endif
         public void Serialize(object data, Stream stream)
@@ -168,7 +168,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
             }
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         ///     Deserializing from the file. After deserialization the file will be closed.
         /// </summary>
@@ -189,7 +189,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-#if !NETCORE
+#if !NETSTANDARD1_6
         [MethodImpl(MethodImplOptions.Synchronized)]
 #endif
         public object Deserialize(Stream stream)

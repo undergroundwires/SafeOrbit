@@ -1,4 +1,4 @@
-﻿#if !NETCORE
+﻿#if !NETSTANDARD1_6
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -12,7 +12,7 @@ namespace SafeOrbit.Exceptions
     /// <remarks>
     /// TODO: rename this class.
     /// </remarks>
-#if !NETCORE
+#if !NETSTANDARD1_6
     [Serializable]
 #endif
     public class ReadOnlyAccessForbiddenException : SafeOrbitException
@@ -21,7 +21,7 @@ namespace SafeOrbit.Exceptions
         {
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public ReadOnlyAccessForbiddenException(SerializationInfo info, StreamingContext context) : base(info, context)
         {

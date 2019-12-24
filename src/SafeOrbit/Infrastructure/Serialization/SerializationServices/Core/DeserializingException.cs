@@ -1,14 +1,16 @@
 ﻿//This is a modified version of the beautiful SharpSerializer by Pawel Idzikowski (see: http://www.sharpserializer.com)
 
 using System;
+#if !NETSTANDARD1_6
 using System.Runtime.Serialization;
+#endif
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
 {
     /// <summary>
     ///     Can occur during deserialization
     /// </summary>
-#if !NETCORE
+#if !NETSTANDARD1_6
     [Serializable]
 #endif
     internal class DeserializingException : Exception
@@ -41,7 +43,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         {
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         /// </summary>
         /// <param name="info"></param>

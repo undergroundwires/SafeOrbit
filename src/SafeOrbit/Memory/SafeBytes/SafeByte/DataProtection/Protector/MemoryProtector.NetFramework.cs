@@ -1,4 +1,4 @@
-﻿#if !NETCORE && !NETCORE2
+﻿#if !NETSTANDARD1_6 && !NETSTANDARD2
 using System;
 using System.Security.Cryptography;
 

@@ -167,7 +167,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             }
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         public override void GetNonZeroBytes(byte[] data)
         {
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
-#if NETCORE
+#if NETSTANDARD1_6
+using System.IO;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
-
 #endif
 
 namespace SafeOrbit.Infrastructure.Reflection
@@ -21,7 +20,7 @@ namespace SafeOrbit.Infrastructure.Reflection
         public static byte[] GetIlBytes(this MethodInfo methodInfo)
         {
             if (methodInfo == null) throw new ArgumentNullException(nameof(methodInfo));
-#if !NETCORE
+#if !NETSTANDARD1_6
             var methodBody = methodInfo.GetMethodBody();
             var result =  methodBody?.GetILAsByteArray();
             return result;

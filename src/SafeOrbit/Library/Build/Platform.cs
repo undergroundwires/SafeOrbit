@@ -5,7 +5,7 @@
     /// </summary>
     public enum Platform
     {
-        NetStandard,
+        NetStandard1_6,
         NetStandard2,
         Net472,
         Net471,

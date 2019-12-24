@@ -1,6 +1,6 @@
 ﻿using SafeOrbit.Exceptions.SerializableException;
 
-#if !NETCORE
+#if !NETSTANDARD1_6
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -11,8 +11,8 @@ namespace SafeOrbit.Exceptions
     /// <summary>
     /// This type of exception is thrown if the key size was given wrong to complete the cryptologic operation.
     /// </summary>
-#if !NETCORE
-   [Serializable]
+#if !NETSTANDARD1_6
+    [Serializable]
 #endif
     public class KeySizeException : SafeOrbitException
     {
@@ -33,7 +33,7 @@ namespace SafeOrbit.Exceptions
             base.ConfigureSerialize(serializationContext);
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public KeySizeException(SerializationInfo info, StreamingContext context) : base(info, context)
         {

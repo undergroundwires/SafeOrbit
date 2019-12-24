@@ -31,7 +31,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 throw new CryptographicException("Failed to return requested number of bytes");
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         public override void GetNonZeroBytes(byte[] data)
         {
             int offset = 0;

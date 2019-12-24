@@ -8,7 +8,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
     /// <summary>
     ///   Occurs if no instance of a type can be created. Maybe the type lacks on a public standard (parameterless) constructor?
     /// </summary>
-#if !NETCORE
+#if !NETSTANDARD1_6
     [Serializable]
 #endif
     internal class CreatingInstanceException : Exception
@@ -35,7 +35,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         }
 
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         /// </summary>
         /// <param name = "info"></param>

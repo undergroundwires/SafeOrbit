@@ -1,10 +1,5 @@
 ﻿using System;
-using SafeOrbit.Cryptography.Encryption;
-using SafeOrbit.Cryptography.Random;
 
-#if !NETCORE
-using System.Security.Cryptography;
-#endif
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 {
     /// <inheritdoc />
