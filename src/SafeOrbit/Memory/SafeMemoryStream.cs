@@ -208,19 +208,13 @@ namespace SafeOrbit.Memory
         ///     true to release both managed and unmanaged resources; false to release only unmanaged
         ///     resources.
         /// </param>
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "writerARE")]
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "readerARE")]
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "flushARE")]
         protected override void Dispose(bool disposing)
         {
             _closed = true;
             _readerAutoResetEvent.Set();
-            // We explicitly don't dispose these objects now, although it's considered best practice to do so.
-            // We don't know if anything might be waiting on WaitOne, but if there is, we want it to continue
-            // so we will wait for garbage collector to dispose these objects later.
-            // readerARE.Dispose();
-            // writerARE.Dispose();
-            // flushARE.Dispose();
+            _queue.TrimExcess();
+            _flushAutoResetEvent.Dispose();
+            _readerAutoResetEvent.Dispose();
             base.Dispose(disposing);
         }
 
