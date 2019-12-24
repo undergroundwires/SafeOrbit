@@ -29,7 +29,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 
         public void Protect(byte[] userData)
         {
-            if (userData == null) throw new ArgumentNullException(nameof(userData));
+            this.EnsureParameter(userData);
             var encryptedBytes = _encryptor.Encrypt(userData, _key);
             SetBytesToByteArray(
                 source: encryptedBytes,
@@ -38,7 +38,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 
         public void Unprotect(byte[] encryptedData)
         {
-            if (encryptedData == null) throw new ArgumentNullException(nameof(encryptedData));
+            this.EnsureParameter(encryptedData);
             var decryptedBytes = _encryptor.Decrypt(encryptedData, _key);
             SetBytesToByteArray(
                 source: decryptedBytes,

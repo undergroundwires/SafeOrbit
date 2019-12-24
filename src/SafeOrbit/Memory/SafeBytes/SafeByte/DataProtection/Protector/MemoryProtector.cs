@@ -12,7 +12,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
         private void EnsureParameter(byte[] userData)
         {
             if (userData == null) throw new ArgumentNullException(nameof(userData));
-            if (userData.Length% BlockSizeInBytes != 0)
+            if (userData.Length % BlockSizeInBytes != 0)
                 throw new ArgumentOutOfRangeException($"Size of {nameof(userData)} must be" +
                                                       $"multiple of {BlockSizeInBytes}");
         }
