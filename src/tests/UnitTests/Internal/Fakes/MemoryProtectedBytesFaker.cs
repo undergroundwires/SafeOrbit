@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Moq;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Tests;
@@ -15,7 +13,7 @@ namespace UnitTests.Internal.Fakes
         {
             var mock = new Mock<IMemoryProtectedBytes>();
             byte[] bytes = null;
-            mock.Setup(m => m.BlockSizeInBytes).Returns(16);
+            mock.SetupGet(m => m.BlockSizeInBytes).Returns(16);
             mock.Setup(m => m.IsInitialized).Returns(() => bytes != null);
             mock.Setup(m => m.Initialize(It.IsAny<byte[]>()))
                 .Callback((byte[] rawBytes) =>
