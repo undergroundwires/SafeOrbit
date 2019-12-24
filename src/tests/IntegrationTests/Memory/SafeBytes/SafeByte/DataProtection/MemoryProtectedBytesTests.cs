@@ -25,7 +25,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             const int totalCountPerThread = 100;
             var collection = new ConcurrentBag<byte[]>();
             var threads = new Thread[totalThreads];
-            for(var i = 0; i < totalThreads; i++)
+            var random = new Random();
+            for (var i = 0; i < totalThreads; i++)
             {
                 var threadId = i;
                 threads[i] = new Thread(() =>
@@ -39,7 +40,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
                         {
                             var actual = firstSession.PlainBytes.CopyToNewArray();
                             collection.Add(actual);
-                            Thread.Sleep(new Random().Next(0,100));
+                            var sleepMs = random.Next(0, 100);
+                            Console.WriteLine($"Thread {threadId} is sleeping for {sleepMs} ms.");
+                            Thread.Sleep(sleepMs);
                         }
                         count++;
                     }
@@ -52,6 +55,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             foreach (var thread in threads)
                 thread.Join();
             // assert
+            Console.WriteLine($"Total revealed results in the bag: {collection.Count}");
             Assert.True(collection.All(bytes => expected.SequenceEqual(bytes)));
         }
 
