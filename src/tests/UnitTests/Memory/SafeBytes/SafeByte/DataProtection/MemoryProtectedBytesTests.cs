@@ -25,7 +25,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             void InitializeAgain() => sut.Initialize(GetValidBytes());
 
             // Assert
-            Assert.Throws<ArgumentException>(InitializeAgain);
+            Assert.Throws<InvalidOperationException>(InitializeAgain);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             void Initialize() => sut.Initialize(GetValidBytes());
 
             // Assert
-            Assert.Throws<ArgumentException>(Initialize);
+            Assert.Throws<ObjectDisposedException>(Initialize);
         }
 
         [Test]
@@ -225,7 +225,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Act
             void RevealDecryptedBytes() => sut.RevealDecryptedBytes();
             // Assert
-            Assert.Throws<ArgumentException>(RevealDecryptedBytes);
+            Assert.Throws<InvalidOperationException>(RevealDecryptedBytes);
         }
         
         [Test]
@@ -238,7 +238,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Act
             void RevealDecryptedBytes() => sut.RevealDecryptedBytes();
             // Assert
-            Assert.Throws<ArgumentException>(RevealDecryptedBytes);
+            Assert.Throws<ObjectDisposedException>(RevealDecryptedBytes);
         }
 
         [Test]
@@ -264,7 +264,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Act
             void DeepClone() => sut.DeepClone();
             // Assert
-            Assert.Throws<ArgumentException>(DeepClone);
+            Assert.Throws<ObjectDisposedException>(DeepClone);
         }
 
         [Test]
