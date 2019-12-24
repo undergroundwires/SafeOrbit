@@ -8,11 +8,13 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 ### Changed
 - Using `.ConfigureAwait(false)` in async methods to better support UI applications.
 - More strict disposed checks
+- SafeString & SafeBytes can be revealed truly thread-safe.
 
 ### Fixed
-- Issue with SafeBytes causing some logic to fail is solved (wrong arbitrary byte logic after 0.3.0).
-- ToByteArray in SafeBytes leads to corrupted memory.
-- SafeMemoryStream: Fixed stackoverflow in .NET Framework and .NET Standard 2.0
+- Issue with `SafeBytes` causing some logic to fail is solved (wrong arbitrary byte logic after 0.3.0).
+- ToByteArray in `SafeBytes` leads to corrupted memory.
+- `SafeMemoryStream`: Fixed stackoverflow in .NET Framework and .NET Standard 2.0
+- SafeString / Bytes cannot be revealed twice: bug with encryption of inner bytes
 
 ## [0.3.0] - 2019-03-30
 ### Security
@@ -29,7 +31,6 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 ### Changed
 - More small optimizations & fixes
 - Updated framework dependencies to the latest available for different platforms
-
 
 ### Removed
 - Removed unnecessary code from `StartEarly`.
