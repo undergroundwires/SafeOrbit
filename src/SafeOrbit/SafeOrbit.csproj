@@ -73,27 +73,29 @@
     <!-- ////////////////////////// NUGET BEGIN ////////////////////////// -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageOutputPath>../../dist/</PackageOutputPath>
     <PackageId>SafeOrbit</PackageId>
     <Version>0.3.1</Version>
     <Authors>undergroundwires</Authors>
-    <Title>SafeOrbit is easy-to-use and strong security toolkit for .NET</Title>
+    <Title>SafeOrbit 🛡️ is easy-to-use and strong security toolkit for .NET</Title>
     <Description>
-      SafeOrbit is a security toolset including different high performance algorithms and easy to use classes for advanced memory protection.
-      SafeOrbit's primarly focus is strong memory protection.
-      It protects every byte in your application with encryption in transit and at rest.
-      It safeguards your application against memory injections and timing attacks.
-      It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.
+      SafeOrbit 🛡️ is a security toolset including different high performance algorithms and easy to use classes for advanced memory protection.
+      ► SafeOrbit's primarly focus is strong memory protection.
+      ► It protects every byte in your application with encryption in transit and at rest.
+      ► It safeguards your application against memory injections and timing attacks.
+      ► It also provides a bunch of tools to implement strong and high performance cryptographically secure algorithms for encryption, hashing and random.
     </Description>
     <Copyright>Copyright 2016 - 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <!-- including PDB files in NuGet for source link because symbolsource.org does not support portable PDBs -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <PackageReleaseNotes>https://github.com/undergroundwires/SafeOrbit/releases/tag/0.3.0</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/undergroundwires/SafeOrbit/releases/tag/0.3.1</PackageReleaseNotes>
     <PackageTags>.net security protect safeorbit hash safestring saferandom safebytes protection injection detection asynchronous encryption</PackageTags>
-    <PackageIconUrl>logo_60x60.png</PackageIconUrl>
+    <PackageIcon>logo_60x60.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/undergroundwires/SafeOrbit</RepositoryUrl>
     <!-- /////////////////////////// NUGET END /////////////////////////// -->
-  </PropertyGroup>
+  
+</PropertyGroup>
 </Project>
