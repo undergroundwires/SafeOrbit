@@ -388,7 +388,7 @@ namespace SafeOrbit.Memory
             // Act
             void DeepClone() => sut.DeepClone();
             // Assert
-            Assert.Throws<ArgumentException>(DeepClone);
+            Assert.Throws<ObjectDisposedException>(DeepClone);
         }
 
         [Test]
