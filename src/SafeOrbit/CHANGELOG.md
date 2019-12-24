@@ -18,9 +18,9 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 
 ## [0.3.0] - 2019-03-30
 ### Security
-- IFastRandom is now seeded with strong random data.
-- Fixed memory leak problem in SafeStringToStringMarshaler.
-- Protection against timing attacks in SafeByte/SafeString comparisons.
+- `IFastRandom` is now seeded with strong random data.
+- Fixed memory leak problem in `SafeStringToStringMarshaler`.
+- Protection against timing attacks in `SafeByte`/`SafeString` comparisons.
 
 ### Added
 - Added support for netstandard2.0, net462, net47, net471, net472
