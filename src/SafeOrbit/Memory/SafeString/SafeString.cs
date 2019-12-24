@@ -38,12 +38,8 @@ namespace SafeOrbit.Memory
         public int Length => (_charBytesList == null) || IsDisposed ? 0 : _charBytesList.Count;
         public bool IsEmpty => Length == 0;
         public bool IsDisposed { get; private set; }
-
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
-        public void Append(char ch)
-        {
-            Insert(Length, ch);
-        }
+        public void Append(char ch) => Insert(Length, ch);
 
         /// <inheritdoc />
         /// <summary>
@@ -51,6 +47,7 @@ namespace SafeOrbit.Memory
         /// </summary>
         /// <param name="text">Non-safe <see cref="T:System.String" /> that's already revealed in the memory</param>
         /// <exception cref="T:System.ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
+        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
         public void Append(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
@@ -62,26 +59,16 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="T:System.ArgumentNullException">
-        ///     <paramref name="character" /> is <see langword="null" />.
-        /// </exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        ///     If position is less than zero or higher than the length.
-        /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
-        ///     Throws if the SafeString instance is disposed.
-        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="character" /> is <see langword="null" />. </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">If position is less than zero or higher than the length.  </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
         public void Append(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             Insert(Length, character, encoding);
         }
 
-        /// <exception cref="ArgumentNullException">
-        ///     <paramref name="safeString" /> is <see langword="null" />.
-        /// </exception>
-        /// <exception cref="ObjectDisposedException">
-        ///     Throws if the SafeString instance is disposed.
-        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="safeString" /> is <see langword="null" />. </exception>
+        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
         public void Append(ISafeString safeString)
         {
             if (safeString == null) throw new ArgumentNullException(nameof(safeString));
@@ -184,7 +171,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Throws when <paramref name="startIndex" /> is out of range.
         ///     Throws when <paramref name="count" /> is less than one.
-        ///     Throws when the total of <paramref name="startIndex" /> and <paramref name="count" /> is higher than lenth.
+        ///     Throws when the total of <paramref name="startIndex" /> and <paramref name="count" /> is higher than length.
         /// </exception>
         /// <exception cref="ObjectDisposedException">
         ///     Throws if the <see cref="SafeString" /> instance is disposed.
@@ -248,11 +235,9 @@ namespace SafeOrbit.Memory
         {
             if (string.IsNullOrEmpty(other))
                 return this.Length == 0;
-            using (var ss = _safeStringFactory.Create())
-            {
-                ss.Append(other);
-                return Equals(ss);
-            }
+            using var ss = _safeStringFactory.Create();
+            ss.Append(other);
+            return Equals(ss);
         }
 
         public bool Equals(ISafeString other)

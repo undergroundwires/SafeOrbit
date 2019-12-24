@@ -96,8 +96,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 
 
             // Create Serializer and Deserializer
-            IBinaryReader reader = null;
-            IBinaryWriter writer = null;
+            IBinaryReader reader;
+            IBinaryWriter writer;
             if (settings.Mode == BinarySerializationMode.Burst)
             {
                 // Burst mode
@@ -117,7 +117,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 
         #region Serializing/Deserializing methods
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         ///     Serializing to a file. File will be always new created and closed after the serialization.
         /// </summary>
@@ -126,14 +126,11 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Serialize(object data, string filename)
         {
-            CreateDirectoryIfNeccessary(filename);
-            using (Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write))
-            {
-                Serialize(data, stream);
-            }
+            CreateDirectoryIfNecessary(filename);
+            using Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            Serialize(data, stream);
         }
-
-        private void CreateDirectoryIfNeccessary(string filename)
+        private static void CreateDirectoryIfNecessary(string filename)
         {
             var directory = Path.GetDirectoryName(filename);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
@@ -146,7 +143,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         /// </summary>
         /// <param name="data"></param>
         /// <param name="stream"></param>
-#if !NETCORE
+#if !NETSTANDARD1_6
         [MethodImpl(MethodImplOptions.Synchronized)]
 #endif
         public void Serialize(object data, Stream stream)
@@ -168,7 +165,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
             }
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         ///     Deserializing from the file. After deserialization the file will be closed.
         /// </summary>
@@ -177,10 +174,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         [MethodImpl(MethodImplOptions.Synchronized)]
         public object Deserialize(string filename)
         {
-            using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
-            {
-                return Deserialize(stream);
-            }
+            using var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            return Deserialize(stream);
         }
 #endif
 
@@ -189,7 +184,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-#if !NETCORE
+#if !NETSTANDARD1_6
         [MethodImpl(MethodImplOptions.Synchronized)]
 #endif
         public object Deserialize(Stream stream)

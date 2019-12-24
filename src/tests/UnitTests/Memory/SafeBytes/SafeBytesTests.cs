@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Fakes;
+using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Tests;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
 {
@@ -80,7 +81,7 @@ namespace SafeOrbit.Memory
         public void IsDisposed_ForNewSafeBytesInstance_returnsFalse()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             //Act
             var isDisposed = sut.IsDisposed;
             //Assert
@@ -91,7 +92,7 @@ namespace SafeOrbit.Memory
         public void IsDisposed_ForDisposedInstance_returnsFalse()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Dispose();
             //Act
             var isDisposed = sut.IsDisposed;
@@ -104,7 +105,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             const int expected = 0;
-            var sut = GetSut();
+            using var sut = GetSut();
             //Act
             var isDisposed = sut.Length;
             //Assert
@@ -116,7 +117,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             const int expected = 1;
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(5);
             //Act
             var actual = sut.Length;
@@ -129,7 +130,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             const int expected = 3;
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(5);
             sut.Append(5);
             sut.Append(5);
@@ -137,6 +138,64 @@ namespace SafeOrbit.Memory
             var actual = sut.Length;
             //Assert
             Assert.That(actual, Is.EqualTo(expected));
+        }
+        [Test]
+        public void Append_PlainByte_AppendsFromFactory()
+        {
+            //Arrange
+            const byte @byte = 55;
+            var expected = new Mock<ISafeByte>();
+            var factoryMock = new Mock<ISafeByteFactory>();
+            factoryMock.Setup(f => f.GetByByte(@byte))
+                .Returns(expected.Object);
+            var collection = new Mock<ISafeByteCollection>();
+            collection.Setup(c => c.Append(expected.Object))
+                .Verifiable();
+            collection.Setup(c => c.Append(It.IsAny<ISafeByte>()));
+            using var sut = GetSut(collection: collection.Object, factory: factoryMock.Object);
+            //Act
+            sut.Append(@byte);
+            //Assert
+            collection.Verify(c => c.Append(expected.Object));
+        }
+
+        [Test]
+        public void Append_UnknownISafeBytes_Appends()
+        {
+            //Arrange
+            const byte firstByte = 55, secondByte = 77;
+            var expected = new SafeBytesFaker()
+                .Provide();
+            expected.Append(firstByte);
+            expected.Append(secondByte);
+            var collection = new Mock<ISafeByteCollection>();
+            collection.Setup(c => c.Append(It.IsAny<ISafeByte>()))
+                .Verifiable();
+            using var sut = GetSut(collection: collection.Object);
+            //Act
+            sut.Append(expected);
+            //Assert
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == firstByte)), Times.Once);
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == secondByte)), Times.Once);
+        }
+
+        [Test]
+        public void Append_SafeBytes_AppendsFromFactory()
+        {
+            //Arrange
+            const byte firstByte = 55, secondByte = 77;
+            var expected = Stubs.Get<ISafeBytes>();
+            expected.Append(firstByte);
+            expected.Append(secondByte);
+            var collection = new Mock<ISafeByteCollection>();
+            collection.Setup(c => c.Append(It.IsAny<ISafeByte>()))
+                .Verifiable();
+            using var sut = GetSut(collection: collection.Object);
+            //Act
+            sut.Append(expected);
+            //Assert
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == 55)), Times.Once);
+            collection.Verify(c => c.Append(It.Is<ISafeByte>(b => b.Get() == 77)), Times.Once);
         }
 
         [Test]
@@ -156,7 +215,7 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             const byte expected = 5;
-            var sut = GetSut();
+            using var sut = GetSut();
             // Act
             sut.Append(expected);
             // Assert
@@ -169,7 +228,7 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             byte[] expected = {5,10,15,31,31};
-            var sut = GetSut();
+            using var sut = GetSut();
             // Act
             foreach(var @byte in expected)
                 sut.Append(@byte);
@@ -183,7 +242,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             byte[] expected = { 3, 5, 10, 20 };
-            var sut = GetSut();
+            using var sut = GetSut();
             var toAppend = GetSut();
             foreach (var @byte in expected)
                 toAppend.Append(@byte);
@@ -191,8 +250,8 @@ namespace SafeOrbit.Memory
             sut.Append(toAppend);
             // assert
             var actual = sut.ToByteArray();
-            Console.WriteLine($"Actual: ${string.Join(",", actual.Select(a=> a.ToString()))}{Environment.NewLine}" +
-                              $"Expected: ${string.Join(",", expected.Select(a => a.ToString()))}");
+            Console.WriteLine($"Actual: ${string.Join(",", actual)}{Environment.NewLine}" +
+                              $"Expected: ${string.Join(",", expected)}");
             Assert.True(actual.SequenceEqual(expected));
         }
 
@@ -201,7 +260,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             byte[] expected = { 3, 5, 10, 20 };
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(3);
             sut.Append(5);
             var toAppend = GetSut();
@@ -218,8 +277,8 @@ namespace SafeOrbit.Memory
         public void GetByte_OnEmptyInstance_throwsInvalidOperationException()
         {
             //Arrange
-            var sut = GetSut();
-            var position = 0;
+            using var sut = GetSut();
+            const int position = 0;
             //Act
             void CallingOnEmptyInstance() => sut.GetByte(position);
             //Assert
@@ -231,7 +290,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             const byte expected = 55;
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(expected);
             //Act
             var actual = sut.GetByte(0);
@@ -244,7 +303,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             const byte expected = 55;
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(22);
             sut.Append(expected);
             //Act
@@ -258,7 +317,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             const byte expected = 55;
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(22);
             sut.Append(expected);
             sut.Append(31);
@@ -272,7 +331,7 @@ namespace SafeOrbit.Memory
         public void ToByteArray_ForEmptyInstance_returnsEmptyArray()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             //Act
             var actual = sut.ToByteArray();
             //Assert
@@ -285,7 +344,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             byte[] expected = {5};
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(5);
             //Act
             var actual = sut.ToByteArray();
@@ -298,7 +357,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             byte[] expected = { 5, 10, 15 };
-            var sut = GetSut();
+            using var sut = GetSut();
             foreach(var @byte in expected)
                 sut.Append(@byte);
             //Act
@@ -318,6 +377,18 @@ namespace SafeOrbit.Memory
             Assert.False(ReferenceEquals(sut, clone));
             Assert.True(sut.Equals(clone));
             Assert.True(clone.Equals(sut));
+        }
+
+        [Test]
+        public void DeepClone_Disposed_Throws()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void DeepClone() => sut.DeepClone();
+            // Assert
+            Assert.Throws<ObjectDisposedException>(DeepClone);
         }
 
         [Test]
@@ -356,7 +427,7 @@ namespace SafeOrbit.Memory
         public void Equals_ClearBytes_DifferentLength_returnsFalse()
         {
             // Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(1);
             var other = new byte[] { 1, 1 };
             // Act
@@ -387,7 +458,7 @@ namespace SafeOrbit.Memory
         public void Equals_ClearBytes_SameLengthDifferentBytes_returnsFalse()
         {
             // Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(5);
             sut.Append(10);
             var other = new byte[] { 3, 10 };
@@ -419,7 +490,7 @@ namespace SafeOrbit.Memory
         public void Equals_ClearBytes_SameBytes_returnsTrue()
         {
             // Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(5);
             sut.Append(10);
             var other = new byte[] { 5, 10 };
@@ -433,8 +504,8 @@ namespace SafeOrbit.Memory
         public void GetHashCode_BothEmpty_returnsSame()
         {
             // Arrange
-            var sut = GetSut();
-            var other = GetSut();
+            using var sut = GetSut();
+            using var other = GetSut();
             // Act
             var hashSut = sut.GetHashCode();
             var hashOther = other.GetHashCode();
@@ -446,10 +517,10 @@ namespace SafeOrbit.Memory
         public void GetHashCode_SameNonEmptyBytes_returnsSame()
         {
             // Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(3);
             sut.Append(5);
-            var other = GetSut();
+            using var other = GetSut();
             other.Append(3);
             other.Append(5);
             // Act
@@ -463,9 +534,9 @@ namespace SafeOrbit.Memory
         public void GetHashCode_DifferentBytesSameLength_returnsFalse()
         {
             // Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(3);
-            var other = GetSut();
+            using var other = GetSut();
             other.Append(5);
             // Act
             var hashSut = sut.GetHashCode();
@@ -478,9 +549,9 @@ namespace SafeOrbit.Memory
         public void GetHashCode_DifferentBytesDifferentLength_returnsFalse()
         {
             // Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(1);
-            var other = GetSut();
+            using var other = GetSut();
             other.Append(1);
             other.Append(1);
             // Act
@@ -490,14 +561,58 @@ namespace SafeOrbit.Memory
             Assert.That(hashSut, Is.Not.EqualTo(hashOther));
         }
 
+        [Test]
+        public void Dispose_AfterInvocation_setsIsDisposedToTrue()
+        {
+            // Arrange
+            var sut = GetSut();
+            // Act
+            sut.Dispose();
+            // Assert
+            Assert.True(sut.IsDisposed);
+        }
 
-        protected override ISafeBytes GetSut()
+        [Test]
+        public void Dispose_AfterInvocation_disposesInnerCollection()
+        {
+            // Arrange
+            var mock = new Mock<ISafeByteCollection>(MockBehavior.Strict);
+            mock.Setup(m=>m.Dispose()).Verifiable();
+            var sut = GetSut(collection: mock.Object);
+            // Act
+            sut.Dispose();
+            // Assert
+            mock.Verify(m=>m.Dispose(), Times.Once);
+        }
+
+        [Test]
+        public void IsDisposed_OnEmptyInstance_returnsFalse()
+        {
+            // Arrange & act
+            using var sut = GetSut();
+            // Assert
+            Assert.False(sut.IsDisposed);
+        }
+
+        [Test]
+        public void IsDisposed_NonEmptyInstance_returnsFalse()
+        {
+            // Arrange & act
+            using var sut = GetSut();
+            sut.Append(5);
+            sut.Append(10);
+            // Assert
+            Assert.False(sut.IsDisposed);
+        }
+
+        protected override ISafeBytes GetSut() => GetSut();
+        private static ISafeBytes GetSut(ISafeByteCollection collection = null, ISafeByteFactory factory = null)
         {
             return new SafeBytes(
                 Stubs.Get<IFastRandom>(),
-                Stubs.Get<ISafeByteFactory>(),
+                factory ?? Stubs.Get<ISafeByteFactory>(),
                 Stubs.GetFactory<ISafeBytes>(),
-                Stubs.GetFactory<ISafeByteCollection>());
+                Stubs.GetFactory(collection));
         }
     }
 }

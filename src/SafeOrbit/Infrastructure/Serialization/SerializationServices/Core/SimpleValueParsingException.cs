@@ -8,7 +8,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
     /// <summary>
     ///     Occurs if the simple value can not be restored from its text representation
     /// </summary>
-#if !NETCORE
+#if !NETSTANDARD1_6
     [Serializable]
 #endif
     internal class SimpleValueParsingException : Exception
@@ -34,7 +34,7 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
         {
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         /// </summary>
         /// <param name="info"></param>

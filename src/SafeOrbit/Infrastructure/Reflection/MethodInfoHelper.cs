@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
-#if NETCORE
+#if NETSTANDARD1_6
+using System.IO;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
-
 #endif
 
 namespace SafeOrbit.Infrastructure.Reflection
@@ -21,7 +20,7 @@ namespace SafeOrbit.Infrastructure.Reflection
         public static byte[] GetIlBytes(this MethodInfo methodInfo)
         {
             if (methodInfo == null) throw new ArgumentNullException(nameof(methodInfo));
-#if !NETCORE
+#if !NETSTANDARD1_6
             var methodBody = methodInfo.GetMethodBody();
             var result =  methodBody?.GetILAsByteArray();
             return result;
@@ -29,17 +28,15 @@ namespace SafeOrbit.Infrastructure.Reflection
             //.NET Core implementation is based on https://gist.github.com/nguerrera/72444715c7ea0b40addb
             var metadataToken = methodInfo.GetMetadataToken();
             var assemblyLocation = methodInfo.DeclaringType.GetTypeInfo().Assembly.Location;
-            using (var stream = File.OpenRead(assemblyLocation))
-            using (var peReader = new PEReader(stream))
-            {
-                var metadataReader = peReader.GetMetadataReader();
-                var methodHandle = MetadataTokens.MethodDefinitionHandle(metadataToken);
-                var methodDef = metadataReader.GetMethodDefinition(methodHandle);
-                var virtualAddress = methodDef.RelativeVirtualAddress;
-                if (virtualAddress == 0) return null; //method not found
-                var methodBody = peReader.GetMethodBody(methodDef.RelativeVirtualAddress);
-                return methodBody.GetILBytes();
-            }
+            using var stream = File.OpenRead(assemblyLocation);
+            using var peReader = new PEReader(stream);
+            var metadataReader = peReader.GetMetadataReader();
+            var methodHandle = MetadataTokens.MethodDefinitionHandle(metadataToken);
+            var methodDef = metadataReader.GetMethodDefinition(methodHandle);
+            var virtualAddress = methodDef.RelativeVirtualAddress;
+            if (virtualAddress == 0) return null; //method not found
+            var methodBody = peReader.GetMethodBody(methodDef.RelativeVirtualAddress);
+            return methodBody.GetILBytes();
 #endif
         }
     }

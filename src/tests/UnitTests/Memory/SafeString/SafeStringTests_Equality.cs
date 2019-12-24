@@ -2,6 +2,8 @@
 
 namespace SafeOrbit.Memory
 {
+    /// <seealso cref="ISafeString"/>
+    /// <seealso cref="SafeString"/>
     [TestFixture]
     public partial class SafeStringTests
     {
@@ -9,7 +11,7 @@ namespace SafeOrbit.Memory
         public void Equals_ParameterIsNullObject_returnsFalse()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             object nullInstance = null;
             //Act
             var equals = sut.Equals(nullInstance);
@@ -140,7 +142,7 @@ namespace SafeOrbit.Memory
         public void EqualsISafeString_ParameterIsNullSafeBytesAndSelfIsEmpty_returnsTrue()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             ISafeString nullInstance = null;
             //Act
             var equals = sut.Equals(nullInstance);
@@ -152,7 +154,7 @@ namespace SafeOrbit.Memory
         public void EqualsISafeString_ParameterIsNullSafeBytesAndSelfIsNotEmpty_returnsFalse()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append("I'm not empty!");
             ISafeString nullInstance = null;
             //Act
@@ -167,7 +169,7 @@ namespace SafeOrbit.Memory
             //Arrange
             const char ch1 = 'a', ch2 = 'b';
             const string expected = "ab";
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append(ch1);
             sut.Append(ch2);
             //Act
@@ -180,7 +182,7 @@ namespace SafeOrbit.Memory
         public void EqualsString_ParameterIsNullStringAndSelfIsEmpty_returnsTrue()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             string nullString = null;
             //Act
             var equals = sut.Equals(nullString);
@@ -192,7 +194,7 @@ namespace SafeOrbit.Memory
         public void EqualsString_ParameterIsNullStringAndSelfIsNotEmpty_returnsFalse()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append("I'm not empty!");
             string nullString = null;
             //Act
@@ -206,7 +208,7 @@ namespace SafeOrbit.Memory
             [Random(125, 256, 1)] byte i2)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             char ch1 = (char)i1, ch2 = (char)i2;
             sut.Append(ch1);
             sut.Append(ch2);
@@ -221,7 +223,7 @@ namespace SafeOrbit.Memory
         public void GetHashCode_ForDistinctEmptyInstances_returnsTrue()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var holdingSame = GetSut();
             var hashCode = sut.GetHashCode();
             var sameHashCode = holdingSame.GetHashCode();
@@ -234,8 +236,8 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
         {
             //Arrange
-            var sut = GetSut();
-            var holdingSame = GetSut();
+            using var sut = GetSut();
+            using var holdingSame = GetSut();
             char ch1 = (char)i1, ch2 = (char)i2, ch3 = (char)i3;
             sut.Append(ch1);
             sut.Append(ch2);
@@ -255,8 +257,8 @@ namespace SafeOrbit.Memory
         public void GetHashCode_ForDistinctObjectsHavingSameSingleChar_returnsTrue([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
-            var holdingSame = GetSut();
+            using var sut = GetSut();
+            using var holdingSame = GetSut();
             var ch = (char)i;
             sut.Append(ch);
             holdingSame.Append(ch);
@@ -272,7 +274,7 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             char ch1 = (char)i1, ch2 = (char)i2, ch3 = (char)i3;
             sut.Append(ch1);
             sut.Append(ch2);

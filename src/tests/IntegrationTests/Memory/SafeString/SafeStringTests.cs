@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Text;
+using System.Threading;
 using NUnit.Framework;
 
 namespace SafeOrbit.Memory
@@ -58,5 +59,27 @@ namespace SafeOrbit.Memory
             Assert.False(equality);
             Assert.False(equalityOpposite);
         }
+
+        [Test]
+        public void SafeString_TextCanBeRevealedTwice()
+        {
+            const string expected = "test";
+            var sut = new SafeString();
+            sut.Append(expected);
+            var revealed = Reveal(sut);
+            var revealedAgain = Reveal(sut);
+            Assert.AreEqual(expected, revealed);
+            Assert.AreEqual(expected, revealedAgain);
+            string Reveal(ISafeString str)
+            {
+                var strBuilder = new StringBuilder(str.Length);
+                for (var i = 0; i < str.Length; i++)
+                {
+                    strBuilder.Append(str.GetAsChar(i));
+                }
+                return strBuilder.ToString();
+            }
+        }
     }
+
 }

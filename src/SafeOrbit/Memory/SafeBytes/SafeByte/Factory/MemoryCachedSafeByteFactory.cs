@@ -113,8 +113,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             for (var i = 0; i < totalBytes; i++)
             {
                 var @byte = (byte) i;
-                safeBytes[i] = _safeByteFactory.Create();
-                safeBytes[i].Set(@byte);
+                var safeByte = _safeByteFactory.Create();
+                safeByte.Set(@byte);
+                safeBytes[i] = safeByte;
             }
             //Fast.For(0, 256, i =>
             //{

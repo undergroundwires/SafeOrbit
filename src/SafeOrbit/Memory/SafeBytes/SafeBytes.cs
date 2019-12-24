@@ -57,10 +57,8 @@ namespace SafeOrbit.Memory
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         public void Append(byte b)
         {
-            EnsureNotDisposed();
             var safeByte = _safeByteFactory.GetByByte(b);
-            _safeByteCollection.Append(safeByte);
-            AddArbitraryByte();
+            Append(safeByte);
         }
 
         /// <summary>
@@ -72,8 +70,6 @@ namespace SafeOrbit.Memory
         public void Append(ISafeBytes safeBytes)
         {
             EnsureNotDisposed();
-            if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
-            if (safeBytes.IsDisposed) throw new ObjectDisposedException(nameof(safeBytes));
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
             //If it's the known SafeBytes then it reveals nothing in the memory
             if (safeBytes is SafeBytes asSafeBytes)
@@ -91,9 +87,11 @@ namespace SafeOrbit.Memory
                 }
         }
 
+        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
         private void Append(ISafeByte safeByte)
         {
+            EnsureNotDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
             _safeByteCollection.Append(safeByte);
             AddArbitraryByte();
@@ -258,15 +256,12 @@ namespace SafeOrbit.Memory
 
         public override bool Equals(object obj)
         {
-            switch (obj)
+            return obj switch
             {
-                case SafeBytes sb:
-                    return Equals(sb);
-                case byte[] @byte:
-                    return Equals(@byte);
-                default:
-                    return false;
-            }
+                SafeBytes sb => Equals(sb),
+                byte[] @byte => Equals(@byte),
+                _ => false
+            };
         }
 
         public override int GetHashCode()

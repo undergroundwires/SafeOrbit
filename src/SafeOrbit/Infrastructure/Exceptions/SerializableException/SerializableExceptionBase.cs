@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if !NETCORE
+#if !NETSTANDARD1_6
 using System.Security.Permissions;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -17,8 +17,8 @@ namespace SafeOrbit.Exceptions.SerializableException
     /// </remarks>
     /// <seealso cref="Exception"/>
     /// <seealso cref="ConfigureSerialize"/>
-#if !NETCORE
-/// <seealso cref="SerializableAttribute"/>
+#if !NETSTANDARD1_6
+    /// <seealso cref="SerializableAttribute"/>
     [Serializable]
 #endif
 #pragma warning restore 587
@@ -41,7 +41,10 @@ namespace SafeOrbit.Exceptions.SerializableException
         {
         }
 
-#if !NETCORE
+        public string ResourceReferenceProperty { get; set; }
+        public override string ToString() => $"Message = {Message}";
+
+#if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected SerializableExceptionBase(SerializationInfo info, StreamingContext context) : base(info, context)
         {
@@ -49,17 +52,16 @@ namespace SafeOrbit.Exceptions.SerializableException
             var serializationContext = ConfigureAndGetSerializationContext();
             DeserializeProperties(serializationContext, info);
         }
-#endif
-
-        public string ResourceReferenceProperty { get; set; }
-
+        private ISerializationContext ConfigureAndGetSerializationContext()
+        {
+            var serializationContext = new SerializationContext();
+            ConfigureSerialize(serializationContext);
+            return serializationContext;
+        }
         protected virtual void ConfigureSerialize(ISerializationContext serializationContext)
         {
             serializationContext.Add(() => ResourceReferenceProperty);
         }
-
-#if !NETCORE
-
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -67,19 +69,7 @@ namespace SafeOrbit.Exceptions.SerializableException
             var serializationContext = ConfigureAndGetSerializationContext();
             SerializeProperties(serializationContext, info);
             base.GetObjectData(info, context);
-        }
-#endif
-        public override string ToString() => $"Message = {Message}";
-
-        private ISerializationContext ConfigureAndGetSerializationContext()
-        {
-            var serializationContext = new SerializationContext();
-            ConfigureSerialize(serializationContext);
-            return serializationContext;
-        }
-
-#if !NETCORE
-        private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
+        }        private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
         {
             var propertiesToSerialize = serializationContext.PropertyInfos;
             if (propertiesToSerialize == null && !propertiesToSerialize.Any()) return;

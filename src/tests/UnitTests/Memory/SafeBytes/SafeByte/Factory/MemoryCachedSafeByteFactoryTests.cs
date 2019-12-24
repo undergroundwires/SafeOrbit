@@ -1,7 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
-using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Tests.Cases;
 
@@ -66,8 +65,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             catch { /*swallow exceptions*/ }
             mock.Verify(f => f.Initialize(), Times.Once);
         }
-        private static ISafeByteFactory GetSut(SafeObjectProtectionMode innerDictionaryProtectionMode = MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection,
-            InjectionAlertChannel alertChannel = Defaults.AlertChannel)
+        private static ISafeByteFactory GetSut(SafeObjectProtectionMode innerDictionaryProtectionMode = MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection)
         {
             return new MemoryCachedSafeByteFactory(
                 Stubs.Get<IByteIdGenerator>(),
@@ -77,7 +75,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             );
         }
 
-        private Mock<MemoryCachedSafeByteFactory> GetMock()
+        private static Mock<MemoryCachedSafeByteFactory> GetMock()
             =>
             new Mock<MemoryCachedSafeByteFactory>(
                 Stubs.Get<IByteIdGenerator>(),

@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if !NETCORE
+#if !NETSTANDARD1_6
 using System.Runtime.CompilerServices;
 #endif
 
@@ -13,7 +13,7 @@ namespace SafeOrbit.Helpers
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (cleanup == null) throw new ArgumentNullException(nameof(cleanup));
 
-#if !NETCORE
+#if !NETSTANDARD1_6
             //RuntimeHelpers.ExecuteCodeWithGuaranteedCleanup(
             //delegate
             //    {
@@ -50,7 +50,7 @@ namespace SafeOrbit.Helpers
         /// </summary>
         public static void PrepareConstrainedRegions()
         {
-#if !NETCORE
+#if !NETSTANDARD1_6
             RuntimeHelpers.PrepareConstrainedRegions();
 #endif
         }

@@ -8,7 +8,7 @@ namespace SafeOrbit.Library.Build
     public class BuildInfoTests
     {
         [Test]
-        public void TargetPlatform_Is_NetCore()
+        public void TargetPlatform_Is_NetStandard()
         {
             const Platform expected = Platform.NetStandard2;
             var sut = new BuildInfo();

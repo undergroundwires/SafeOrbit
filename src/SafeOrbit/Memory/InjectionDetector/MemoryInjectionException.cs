@@ -1,10 +1,9 @@
 using System;
-using System.Runtime.Serialization;
 using SafeOrbit.Exceptions.SerializableException;
 using SafeOrbit.Memory;
-using SafeOrbit.Memory.InjectionServices;
 
-#if !NETCORE
+#if !NETSTANDARD1_6
+using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 
@@ -15,7 +14,7 @@ namespace SafeOrbit.Exceptions
     /// </summary>
     /// <seealso cref="SafeOrbitException" />
     /// <seealso cref="SerializableExceptionBase" />
-#if !NETCORE
+#if !NETSTANDARD1_6
     [Serializable]
 #endif
     public class MemoryInjectionException : SafeOrbitException
@@ -50,13 +49,11 @@ namespace SafeOrbit.Exceptions
             InjectionType = injectionType;
         }
 
-#if !(NETCORE || NETCORE2)
+#if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public MemoryInjectionException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
-#endif
-
         protected override void ConfigureSerialize(ISerializationContext serializationContext)
         {
             serializationContext.Add(() => InjectionType);
@@ -64,5 +61,7 @@ namespace SafeOrbit.Exceptions
             serializationContext.Add(() => DetectionTime);
             base.ConfigureSerialize(serializationContext);
         }
+#endif
+
     }
 }

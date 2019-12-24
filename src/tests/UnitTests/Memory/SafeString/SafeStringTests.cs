@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Infrastructure;
 using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
-using SafeOrbit.Tests;
 using SafeOrbit.Text;
 using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
 {
+    /// <seealso cref="ISafeString"/>
+    /// <seealso cref="SafeString"/>
     [TestFixture]
     public partial class SafeStringTests
     {
@@ -27,7 +27,7 @@ namespace SafeOrbit.Memory
         public void Clear_CallingTwice_doesNotThrow()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             //Act
             sut.Clear();
             void CallingTwice() => sut.Clear();
@@ -39,11 +39,11 @@ namespace SafeOrbit.Memory
         public void Clear_ForLengthProperty_setsZero()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append('A');
             sut.Append('b');
             sut.Append('c');
-            var expected = 0;
+            const int expected = 0;
             //Act
             sut.Clear();
             var actual = sut.Length;
@@ -69,7 +69,7 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i2)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             char ch1 = (char) i1, ch2 = (char) i2;
             sut.Append(ch1);
             var expected = sut.Length;
@@ -101,7 +101,7 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i3)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             char ch1 = (char) i1, ch2 = (char) i2, ch3 = (char) i3;
             sut.Append(ch1);
             sut.Append(ch2);
@@ -119,7 +119,7 @@ namespace SafeOrbit.Memory
         public void DeepClone_ClonedObjectsValue_isEqual([Random(0, 256, 1)] int i1)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var expected = (char) i1;
             sut.Append(expected);
             var clone = sut.DeepClone();
@@ -129,7 +129,6 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        //** DeepClone() **//
         [Test]
         public void DeepClone_OnDisposedObject_returnsObjectDisposedException([Random(0, 256, 1)] int i1)
         {
@@ -141,6 +140,18 @@ namespace SafeOrbit.Memory
             void CallOnDisposedObject() => sut.DeepClone();
             //Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+        
+        [Test]
+        public void DeepClone_Disposed_Throws()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void DeepClone() => sut.DeepClone();
+            // Assert
+            Assert.Throws<ObjectDisposedException>(DeepClone);
         }
 
         [Test]
@@ -174,7 +185,7 @@ namespace SafeOrbit.Memory
         public void InsertChar_IndexHigherThanLength_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var ch = (char) i;
             sut.Append(ch);
             var index = sut.Length + 1;
@@ -188,8 +199,8 @@ namespace SafeOrbit.Memory
         public void InsertChar_IndexLowerThanZero_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
-            var index = -1;
+            using var sut = GetSut();
+            const int index = -1;
             var c = (char) i;
             sut.Append(c);
             //Act
@@ -203,10 +214,11 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i2)
         {
             //Arrange
-            var sut = GetSut();
-            var insertPos = 0;
+            using var sut = GetSut();
+            const int insertPos = 0;
             char c1 = (char) i1, c2 = (char) i2;
-            int expected1 = 1, expected2 = 2;
+            const int expected1 = 1;
+            const int expected2 = 2;
             //Act
             sut.Insert(insertPos, c1);
             var actual1 = sut.Length;
@@ -234,7 +246,7 @@ namespace SafeOrbit.Memory
         public void InsertISafeBytes_IndexHigherThanLength_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
             sut.Append(safeBytes);
             var index = sut.Length + 1;
@@ -248,8 +260,8 @@ namespace SafeOrbit.Memory
         public void InsertISafeBytes_IndexLowerThanZero_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
-            var index = -1;
+            using var sut = GetSut();
+            const int index = -1;
             var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
             sut.Append(safeBytes);
             //Act
@@ -263,7 +275,7 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i2)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const int insertPos = 0;
             var safeBytes1 = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i1);
             var safeBytes2 = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i2);
@@ -281,21 +293,33 @@ namespace SafeOrbit.Memory
         [Test]
         public void InsertISafeBytes_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
             sut.Dispose();
-            //Act
+            // Act
             void CallOnDisposedObject() => sut.Insert(0, safeBytes);
-            //Assert
+            // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void Append_MultipleCharsAppended_CanGetCharsInOrder()
+        public void AppendChar_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void CallOnDisposedObject() => sut.Append('e');
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendChar_MultipleCharsAppended_CanGetCharsInOrder()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const char one = 'h', two = 'e', three = 'l', four = 'l', five = 'o';
             sut.Append(one);
             sut.Append(two);
@@ -317,10 +341,22 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_StringIsAppended_CanGetCharsInOrder()
+        public void AppendString_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void CallOnDisposedObject() => sut.Append("hello");
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendString_StringIsAppended_CanGetCharsInOrder()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const char one = 'h', two = 'e', three = 'l', four = 'l', five = 'o';
             sut.Append("hello");
             //Act
@@ -338,7 +374,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_AsciiText_BytesAreConverted()
+        public void AppendBytes_AsciiText_BytesAreConverted()
         {
             // arrange
             var textServiceMock = new Mock<ITextService>();
@@ -347,7 +383,7 @@ namespace SafeOrbit.Memory
             textServiceMock
                 .Setup(s => s.Convert(Encoding.Ascii, Encoding.Utf16LittleEndian, asciiBytes))
                 .Returns(expected.ToArray);
-            var sut = GetSut(textService: textServiceMock.Object);
+            using var sut = GetSut(textService: textServiceMock.Object);
             var safeBytes = Stubs.Get<ISafeBytes>();
             foreach(var @byte in asciiBytes)
                 safeBytes.Append(@byte);
@@ -359,7 +395,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_Utf16BigEndian_BytesAreConverted()
+        public void AppendBytes_Utf16BigEndian_BytesAreConverted()
         {
             // arrange
             var textServiceMock = new Mock<ITextService>();
@@ -368,7 +404,7 @@ namespace SafeOrbit.Memory
             textServiceMock
                 .Setup(s => s.Convert(Encoding.Utf16BigEndian, Encoding.Utf16LittleEndian, utf16BigEndianBytes))
                 .Returns(expected.ToArray);
-            var sut = GetSut(textService: textServiceMock.Object);
+            using var sut = GetSut(textService: textServiceMock.Object);
             var safeBytes = Stubs.Get<ISafeBytes>();
             foreach (var @byte in utf16BigEndianBytes)
                 safeBytes.Append(@byte);
@@ -380,12 +416,12 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Append_Utf16LittleEndian_BytesAreSame()
+        public void AppendBytes_Utf16LittleEndian_BytesAreSame()
         {
             // arrange
             var textServiceMock = new Mock<ITextService>();
             var expected = new byte[] { 104, 0, 101, 0, 108, 0, 108, 0, 111, 0 }; /*hello*/
-            var sut = GetSut(textService: textServiceMock.Object);
+            using var sut = GetSut(textService: textServiceMock.Object);
             var safeBytes = Stubs.Get<ISafeBytes>();
             foreach (var @byte in expected)
                 safeBytes.Append(@byte);
@@ -393,6 +429,45 @@ namespace SafeOrbit.Memory
             sut.Append(safeBytes, Encoding.Utf16LittleEndian);
             var actual = sut.ToSafeBytes().ToByteArray();
             // assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void AppendBytes_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            var safeBytes = Stubs.Get<ISafeBytes>(); 
+            safeBytes.Append(55);
+            // Act
+            void CallOnDisposedObject() => sut.Append(safeBytes);
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendLine_DisposedObject_ThrowsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+            // Act
+            void CallOnDisposedObject() => sut.AppendLine();
+            // Assert
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public void AppendLine_AppendsUnicodeLineFeed()
+        {
+            //Arrange
+            const int expected = 0x000A;
+            using var sut = GetSut();
+            //Act
+            sut.AppendLine();
+            //Assert
+            var actual = sut.GetAsSafeBytes(0).GetByte(0);
             Assert.AreEqual(expected, actual);
         }
 
@@ -467,7 +542,7 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var c = (char) i;
             sut.Append(c);
             //Act
@@ -481,7 +556,7 @@ namespace SafeOrbit.Memory
         public void Length_ForAFreshInstance_isZero()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             //Act
             var length = sut.Length;
             //Assert
@@ -492,7 +567,7 @@ namespace SafeOrbit.Memory
         public void Remove_CountParameterIsLessThanOne_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var ch = (char) i;
             sut.Append(ch);
             var index = sut.Length;
@@ -508,7 +583,7 @@ namespace SafeOrbit.Memory
         public void Remove_IndexParameterHigherThanLength_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var ch = (char) i;
             sut.Append(ch);
             var index = sut.Length + 1;
@@ -522,8 +597,8 @@ namespace SafeOrbit.Memory
         public void Remove_IndexParameterLowerThanZero_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
             //Arrange
-            var sut = GetSut();
-            var index = -1;
+            using var sut = GetSut();
+            const int index = -1;
             var c = (char) i;
             sut.Append(c);
             //Act
@@ -552,7 +627,7 @@ namespace SafeOrbit.Memory
         public void Remove_OtherCharacters_DoesNotAffect(int count)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const int startIndex = 1;
             IList<char> chars = new[] {'t', 'e', 's', 't'}.ToList();
             foreach (var c in chars)
@@ -574,7 +649,7 @@ namespace SafeOrbit.Memory
         public void Remove_TotalOfIndexAndCountIsHigherThanLength_throwsArgumentOutOfRangeException()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const char ch1 = 't', ch2 = 'e';
             sut.Append(ch1);
             sut.Append(ch2);
@@ -592,7 +667,7 @@ namespace SafeOrbit.Memory
         public void Remove_WhenRemoved_decreasesLength(int count)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const char ch1 = 't', ch2 = 'e';
             sut.Append(ch1);
             sut.Append(ch2);
@@ -608,7 +683,7 @@ namespace SafeOrbit.Memory
         public void ShallowClone_AppendingToObject_changesCloned([Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             char ch1 = (char) i1, ch2 = (char) i2;
             sut.Append(ch1);
             //Act
@@ -625,7 +700,7 @@ namespace SafeOrbit.Memory
             [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             char ch1 = (char) i1, ch2 = (char) i2, ch3 = (char) i3;
             sut.Append(ch1);
             sut.Append(ch2);
@@ -643,7 +718,7 @@ namespace SafeOrbit.Memory
         public void ShallowClone_ClonedObjectsValue_isEqual([Random(0, 256, 1)] int i1)
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             var expected = (char) i1;
             sut.Append(expected);
             var clone = sut.ShallowClone();
@@ -653,9 +728,8 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        //** ShallowClone() **//
         [Test]
-        public void ShallowClone_OnDisposedObject_returnsObjectDisposedException([Random(0, 256, 1)] int i1)
+        public void ShallowClone_OnDisposedObject_ThrowsObjectDisposedException([Random(0, 256, 1)] int i1)
         {
             //Arrange
             var sut = GetSut();
@@ -671,9 +745,9 @@ namespace SafeOrbit.Memory
         public void ToSafeBytes_ChangingReturnedResult_OriginalObject()
         {
             //Arrange
-            var sut = GetSut();
-            var expected = 'a';
-            var index = 0;
+            using var sut = GetSut();
+            const char expected = 'a';
+            const int index = 0;
             sut.Append(expected);
             //Act
             var bytes = sut.ToSafeBytes();
@@ -687,7 +761,7 @@ namespace SafeOrbit.Memory
         public void ToSafeBytes_DisposingReturnedResult_DoesNotAffectOriginalObject()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const char expected = 'a';
             const int index = 0;
             sut.Append(expected);
@@ -703,7 +777,7 @@ namespace SafeOrbit.Memory
         public void ToSafeBytes_ForMultipleChars_returnsEqualBytes()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append('a');
             sut.Append('b');
             var charBytes1 = sut.GetAsSafeBytes(0).ToByteArray();
@@ -720,7 +794,7 @@ namespace SafeOrbit.Memory
         public void ToSafeBytes_ForSingleChar_returnsEqualBytes()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             sut.Append('a');
             var expected = sut.GetAsSafeBytes(0).ToByteArray();
             //Act
@@ -747,11 +821,11 @@ namespace SafeOrbit.Memory
         public void ToSafeBytes_OnEmptyInstance_throwsInvalidOperationException()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             //Act
-            void CallOnDisposedObject() => sut.ToSafeBytes();
+            void CallOnEmptyObject() => sut.ToSafeBytes();
             //Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<InvalidOperationException>());
+            Assert.That(CallOnEmptyObject, Throws.TypeOf<InvalidOperationException>());
         }
     }
 }

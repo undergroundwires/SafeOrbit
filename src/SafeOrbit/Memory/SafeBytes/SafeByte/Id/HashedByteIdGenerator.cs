@@ -11,86 +11,69 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
 {
     /// <summary>
     ///     Creates a unique <see cref="int" /> values for each <see cref="byte" />.
-    ///     The class is stateless but session-based. <see cref="SessionSalt" /> is different values each time the application
-    ///     is loaded.
+    ///     It's a singleton so byte ID's are consistent throughout the execution of the process, on restart a new salt & new ID's are generated.
     /// </summary>
-    /// <seealso cref="SessionSalt" />
     /// <seealso cref="IByteIdGenerator" />
     internal class HashedByteIdGenerator : IByteIdGenerator
     {
         private const int SaltLength = 16;
-        private static byte[] _sessionSalt;
+        private readonly IMemoryProtectedBytes _sessionSalt;
         private readonly IFastHasher _fastHasher;
-        private readonly IByteArrayProtector _memoryProtector;
         private readonly ISafeRandom _safeRandom;
-        private bool _isSaltEncrypted;
 
         /// <exception cref="MemoryInjectionException">The object has been injected.</exception>
         public HashedByteIdGenerator() : this(
             SafeOrbitCore.Current.Factory.Get<IFastHasher>(),
             SafeOrbitCore.Current.Factory.Get<ISafeRandom>(),
-            SafeOrbitCore.Current.Factory.Get<IByteArrayProtector>())
+            SafeOrbitCore.Current.Factory.Get<IMemoryProtectedBytes>())
         {
         }
 
         internal HashedByteIdGenerator(IFastHasher fastHasher, ISafeRandom safeRandom,
-            IByteArrayProtector memoryProtector)
+            IMemoryProtectedBytes sessionSalt)
         {
             _fastHasher = fastHasher ?? throw new ArgumentNullException(nameof(fastHasher));
             _safeRandom = safeRandom ?? throw new ArgumentNullException(nameof(safeRandom));
-            _memoryProtector = memoryProtector ?? throw new ArgumentNullException(nameof(memoryProtector));
+            _sessionSalt = sessionSalt ?? throw new ArgumentNullException(nameof(sessionSalt));
+            InitializeSalt();
+        }
+        public int Generate(byte b)
+        {
+            using (var salt = _sessionSalt.RevealDecryptedBytes())
+            {
+                return Generate(b, salt.PlainBytes);
+            }
         }
 
-        public byte[] SessionSalt => _sessionSalt = _sessionSalt ?? GenerateSessionSalt();
-        public int Generate(byte b) => GenerateInternal(b, SessionSalt, ref _isSaltEncrypted);
-
-        /// <summary>
-        ///     Clears the session salt. A new session salt will created lazily upon request. Please keep in my that requesting
-        ///     a new session salt will break all of the SafeOrbit instances and should never be used at all.
-        /// </summary>
-        internal static void ClearSessionSalt() => _sessionSalt = null;
-
-        private int GenerateInternal(byte b, byte[] salt, ref bool isSaltEncrypted, bool doNotEncrypt = false)
+        public int Generate(byte b, byte[] salt)
         {
-            var byteBuffer = new byte[salt.Length + 1];
+            byte[] byteBuffer = null;
             try
             {
-                //Decrypt salt
-                if (isSaltEncrypted)
-                {
-                    _memoryProtector.Unprotect(salt);
-                    isSaltEncrypted = false;
-                }
+                byteBuffer = new byte[salt.Length];
                 //Append salt + byte
                 Array.Copy(salt, byteBuffer, salt.Length);
-                byteBuffer[salt.Length] = b;
-                //Hash it
+                byteBuffer[salt.Length - 1] = b;
                 var result = _fastHasher.ComputeFast(byteBuffer);
                 return result;
             }
             finally
             {
-                Array.Clear(byteBuffer, 0, byteBuffer.Length);
-                //Encrypt the salt
-                if (!isSaltEncrypted && !doNotEncrypt)
-                {
-                    _memoryProtector.Protect(salt);
-                    isSaltEncrypted = true;
-                }
+                if (byteBuffer != null)
+                    Array.Clear(byteBuffer, 0, byteBuffer.Length);
             }
         }
 
-        /// <summary>
-        ///     Recursive method that generates and returns a validated session salt.
-        /// </summary>
-        /// <seealso cref="IsSaltValid" />
-        private byte[] GenerateSessionSalt()
+        private void InitializeSalt()
         {
-            var salt = _safeRandom.GetBytes(SaltLength);
-            if (!IsSaltValid(salt)) return GenerateSessionSalt(); //try until it's valid
-            _memoryProtector.Protect(salt);
-            _isSaltEncrypted = true;
-            return salt;
+            while (true)
+            {
+                var salt = _safeRandom.GetBytes(SaltLength);
+                if (!IsSaltValid(salt))
+                    continue;
+                _sessionSalt.Initialize(salt);
+                break;
+            }
         }
 
         /// <summary>
@@ -99,19 +82,18 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         private bool IsSaltValid(byte[] salt)
         {
             const int totalBytes = 256;
-            //generate all possible bytes
-            var byteHashes = GetHashesForAllBytes(salt, false);
-            //check if they're all unique.
+            var byteHashes = GetHashesForAllBytes(salt);
             var totalUniqueHashes = byteHashes.Distinct().Count();
             return totalUniqueHashes == totalBytes;
         }
 
-        private IEnumerable<int> GetHashesForAllBytes(byte[] salt, bool isEncrypted)
+        private IEnumerable<int> GetHashesForAllBytes(byte[] salt)
         {
             const int totalBytes = 256;
             var byteHashes = new int[totalBytes];
-            //Fast.For(0, totalBytes, (i) => byteHashes[i] = this.GenerateInternal((byte)i, salt, ref isEncrypted));
-            for (var i = 0; i < 256; i++) byteHashes[i] = GenerateInternal((byte) i, salt, ref isEncrypted, true);
+            //Fast.For(0, totalBytes, (i) => byteHashes[i] = this.GenerateInternal((byte)i);
+            for (var i = 0; i < 256; i++)
+                byteHashes[i] = Generate((byte) i, salt);
             return byteHashes;
         }
     }

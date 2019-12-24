@@ -7,6 +7,7 @@ using SafeOrbit.Memory;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
+using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Text;
@@ -36,6 +37,7 @@ namespace SafeOrbit.Library
             safeContainer.Register<ISafeByte, SafeByte>();
             safeContainer.Register<ISafeByteFactory, MemoryCachedSafeByteFactory>(LifeTime.Singleton);
             safeContainer.Register<IByteArrayProtector, MemoryProtector>(LifeTime.Transient);
+            safeContainer.Register<IMemoryProtectedBytes, MemoryProtectedBytes>(LifeTime.Transient);
             safeContainer.Register<IByteIdListSerializer<int>, ByteIdListSerializer>(LifeTime.Singleton);
             safeContainer.Register<IByteIdGenerator, HashedByteIdGenerator>(LifeTime.Singleton);
             safeContainer.Register<ISafeByteCollection, EncryptedSafeByteCollection>();

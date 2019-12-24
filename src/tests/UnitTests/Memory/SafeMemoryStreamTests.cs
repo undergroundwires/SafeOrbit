@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using SafeOrbit.Infrastructure;
+﻿using NUnit.Framework;
 using SafeOrbit.Extensions;
 
 namespace SafeOrbit.Memory
@@ -13,7 +10,7 @@ namespace SafeOrbit.Memory
         [Test]
         public void Write_Clears_Input_Buffer()
         {
-            var sut = GetSut();
+            using var sut = GetSut();
             var buffer = new byte[] {5, 10, 15, 20, 25, 30};
             sut.Write(buffer,0, buffer.Length);
             Assert.That(buffer, Is.Empty.Or.All.EqualTo(0));
@@ -25,7 +22,7 @@ namespace SafeOrbit.Memory
             //arrange
             var expected1 = new byte[] { 5, 10, 15 };
             var expected2 = new byte[] {20, 25, 30};
-            var sut = GetSut();
+            using var sut = GetSut();
             var buffer = expected1.Combine(expected2);
             sut.Write(buffer, 0, buffer.Length);
             //act

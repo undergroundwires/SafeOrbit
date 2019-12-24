@@ -127,7 +127,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             }
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         public override void GetNonZeroBytes(byte[] data)
         {
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.
@@ -228,7 +228,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 new ThreadSchedulerRng(),
                 /* Algorithms */
                 new HashAlgorithmWrapper(new Sha256Digest()));
-            IEntropyHasher GetHasher(RandomNumberGenerator rng, params IHashAlgorithmWrapper[] algorithms)
+            static IEntropyHasher GetHasher(RandomNumberGenerator rng, params IHashAlgorithmWrapper[] algorithms)
                 => new EntropyHasher(rng, algorithms);
         }
         private static int GetHashLengthInBits(IEnumerable<IEntropyHasher> entropyHashers)

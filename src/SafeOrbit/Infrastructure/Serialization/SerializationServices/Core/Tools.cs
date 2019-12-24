@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using SafeOrbitNetCore.Infrastructure.Serialization.SharpSerializer.Common;
 
 namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core
 {

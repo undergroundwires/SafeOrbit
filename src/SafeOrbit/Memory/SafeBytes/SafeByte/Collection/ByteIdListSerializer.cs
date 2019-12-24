@@ -20,53 +20,50 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             if (list == null) throw new ArgumentNullException(nameof(list));
             if (!list.Any()) return new byte[0];
             var resultSize = sizeof(int) * list.Count; /* size + list bytes */;
-            using (var memoryStream = new MemoryStream(capacity: resultSize))
-            {
-                var buffer = new byte[sizeof(int)];
-                await WriteInt32Async(list.Count, buffer, memoryStream).ConfigureAwait(false); /* Write the size */
-                foreach (var i in list)
-                    await WriteInt32Async(i, buffer, memoryStream).ConfigureAwait(false);
-                Array.Clear(buffer, 0, sizeof(int));
-                return memoryStream.ToArray();
-            }
+            using var memoryStream = new MemoryStream(capacity: resultSize);
+            var buffer = new byte[sizeof(int)];
+            await WriteInt32Async(list.Count, buffer, memoryStream).ConfigureAwait(false); /* Write the size */
+            foreach (var i in list)
+                await WriteInt32Async(i, buffer, memoryStream).ConfigureAwait(false);
+            Array.Clear(buffer, 0, sizeof(int));
+            return memoryStream.ToArray();
         }
         public async Task<IEnumerable<int>> DeserializeAsync(byte[] list)
         {
             if (list == null) throw new ArgumentNullException(nameof(list));
             if (list.Length == 0) return Enumerable.Empty<int>();
-            using (var memoryStream = new MemoryStream(list))
-            {
-
-                /* First byte tells the length of the list */
-                const int lengthBytesSize = sizeof(int);
-                var buffer = new byte[lengthBytesSize];
-                if (await memoryStream.ReadAsync(buffer, 0, lengthBytesSize).ConfigureAwait(false) != lengthBytesSize)
-                    ThrowCorrupted();
-                var length = BitConverter.ToInt32(buffer, 0);
-                if(length < 0)
-                    ThrowCorrupted();
-
-
-                /* Retrieve the list bytes */
-                var listBytesSize = length * sizeof(int);
-                buffer = new byte[listBytesSize];
-                if (await memoryStream.ReadAsync(buffer, 0, listBytesSize).ConfigureAwait(false) != listBytesSize)
-                    ThrowCorrupted();
-                var bytesAsList = BytesToIntList(buffer);
-                return bytesAsList;
-            }
-            void ThrowCorrupted() => throw new SerializationException("Serialized bytes are corrupted in memory");
+            using var stream = new MemoryStream(list);
+            /* First byte tells the length of the list */
+            const int lengthBytesSize = sizeof(int);
+            var lengthBytes = await ReadNextBytesAsync(stream, lengthBytesSize).ConfigureAwait(false);
+            var length = BitConverter.ToInt32(lengthBytes, 0);
+            if (length < 0)  ThrowCorrupted();
+            /* Retrieve the list bytes */
+            var listBytesSize = length * sizeof(int);
+            var listBytes = await ReadNextBytesAsync(stream, listBytesSize).ConfigureAwait(false);
+            var bytesAsList = BytesToIntList(listBytes);
+            return bytesAsList;
         }
+        private static async Task<byte[]> ReadNextBytesAsync(Stream stream, int count)
+        {
+            var buffer = new byte[count];
+            var readBytes = await stream.ReadAsync(buffer, 0, count).ConfigureAwait(false);
+            if (readBytes != count)
+                ThrowCorrupted();
+            return buffer;
+        }
+
+        private static void ThrowCorrupted() => throw new SerializationException("Serialized bytes are corrupted in memory");
 
         private static IEnumerable<int> BytesToIntList(byte[] buffer)
         {
             var size = buffer.Length / sizeof(int);
-            var ints = new int[size];
+            var integerList = new int[size];
             for (var index = 0; index < size; index++)
             {
-                ints[index] = BitConverter.ToInt32(buffer, index * sizeof(int));
+                integerList[index] = BitConverter.ToInt32(buffer, index * sizeof(int));
             }
-            return ints;
+            return integerList;
         }
 
         private static Task WriteInt32Async(int value, byte[] buffer, Stream outStream)

@@ -208,30 +208,16 @@ namespace SafeOrbit.Memory
         ///     true to release both managed and unmanaged resources; false to release only unmanaged
         ///     resources.
         /// </param>
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "writerARE")]
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "readerARE")]
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "flushARE")]
         protected override void Dispose(bool disposing)
         {
             _closed = true;
+            _flushAutoResetEvent.Set();
+            _flushAutoResetEvent.Dispose();
             _readerAutoResetEvent.Set();
-            // We explicitly don't dispose these objects now, although it's considered best practice to do so.
-            // We don't know if anything might be waiting on WaitOne, but if there is, we want it to continue
-            // so we will wait for garbage collector to dispose these objects later.
-            // readerARE.Dispose();
-            // writerARE.Dispose();
-            // flushARE.Dispose();
+            _readerAutoResetEvent.Dispose();
             base.Dispose(disposing);
         }
-        /// <inheritdoc />
-        /// <summary>
-        /// Closes the instance. The reader may read up to the number of bytes available, and subsequent calls to <see cref="M:SafeOrbit.Memory.SafeMemoryStream.Read(System.Byte[],System.Int32,System.Int32)" /> will return <c>0</c>.
-        /// </summary>
-#if NETCORE
-        public void Close() => this.Dispose();
-#else
-        public override void Close() => this.Dispose();
-#endif
+
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
         public void EnsureReadOrWriteParameters(byte[] buffer, int offset, int count)

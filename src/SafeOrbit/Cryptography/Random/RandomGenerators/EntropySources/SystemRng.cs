@@ -28,7 +28,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             _systemRngProvider.GetBytes(data);
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         public override void GetNonZeroBytes(byte[] data)
         {
             _systemRngProvider.GetNonZeroBytes(data);

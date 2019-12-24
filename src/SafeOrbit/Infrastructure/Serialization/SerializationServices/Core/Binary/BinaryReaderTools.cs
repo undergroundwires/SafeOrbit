@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SafeOrbit.Infrastructure.Serialization.SerializationServices.Core;
 using System.Reflection;
 using SafeOrbitNetCore.Infrastructure.Serialization.SharpSerializer.Common;
 
@@ -34,17 +33,13 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices.Core.Bina
             var size = reader.ReadByte();
 
             // Number
-            switch (size)
+            return size switch
             {
-                case NumberSize.Zero:
-                    return 0;
-                case NumberSize.B1:
-                    return reader.ReadByte();
-                case NumberSize.B2:
-                    return reader.ReadInt16();
-                default:
-                    return reader.ReadInt32();
-            }
+                NumberSize.Zero => 0,
+                NumberSize.B1 => reader.ReadByte(),
+                NumberSize.B2 => reader.ReadInt16(),
+                _ => reader.ReadInt32()
+            };
         }
 
         /// <summary>
