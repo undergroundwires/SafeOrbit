@@ -32,6 +32,8 @@ namespace UnitTests.Internal.Fakes
                     if (bytes == null) throw new ArgumentException("Not yet initialized");
                     return sessionMock.Object;
                 });
+            mock.Setup(m => m.DeepClone())
+                .Returns(() => mock.Object);
             return mock.Object;
         }
     }

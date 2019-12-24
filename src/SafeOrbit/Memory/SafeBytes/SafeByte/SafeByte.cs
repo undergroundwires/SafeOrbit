@@ -21,6 +21,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
     /// <seealso cref="MemoryCachedSafeByteFactory" />
     internal sealed class SafeByte : ISafeByte
     {
+        private volatile bool _isDisposed;
+
         private int _encryptedByteLength;
         private int _id;
         private int _realBytePosition;
@@ -82,12 +84,14 @@ namespace SafeOrbit.Memory.SafeBytesServices
             IsByteSet = true;
         }
 
+        /// <exception cref="ObjectDisposedException" accessor="get">If object is disposed</exception>
         /// <exception cref="InvalidOperationException" accessor="get">Thrown when byte is already set</exception>
         public int Id
         {
             get
             {
                 EnsureByteIsSet();
+                EnsureNotDisposed();
                 return _id;
             }
         }
@@ -100,9 +104,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
         /// </value>
         public bool IsByteSet { get; private set; }
 
-        /// <exception cref="System.InvalidOperationException">Thrown when byte is already set</exception>
+        /// <exception cref="ObjectDisposedException">If object is disposed</exception>
+        /// <exception cref="InvalidOperationException">Thrown when byte is already set</exception>
         public void Set(byte b)
         {
+            EnsureNotDisposed();
             EnsureByteIsNotSet();
             //Generate ID
             _id = _byteIdGenerator.Generate(b);
@@ -115,9 +121,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
         ///     Decrypts and returns the byte that this <see cref="SafeByte" /> instance represents.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="System.InvalidOperationException">Thrown when byte is not set</exception>
+        /// <exception cref="InvalidOperationException">Thrown when byte is not set</exception>
+        /// <exception cref="ObjectDisposedException">If object is disposed</exception>
         public byte Get()
         {
+            EnsureNotDisposed();
             EnsureByteIsSet();
             byte[] byteBuffer = null;
             try
@@ -156,16 +164,26 @@ namespace SafeOrbit.Memory.SafeBytesServices
         ///     Cloned object.
         /// </returns>
         /// <exception cref="InvalidOperationException">Thrown when byte is not set</exception>
+        /// <exception cref="ObjectDisposedException">If object is disposed</exception>
         public ISafeByte DeepClone()
         {
             EnsureByteIsSet();
-            var clone = new SafeByte(_id, _realBytePosition, _encryptedByteLength,
-                _encryptor, _fastRandom, _byteIdGenerator, _encryptedByte, _encryptionKey);
+            EnsureNotDisposed();
+            var clone = new SafeByte(
+                id: _id,
+                realBytePosition: _realBytePosition,
+                encryptedByteLength: _encryptedByteLength,
+                encryptor: _encryptor,
+                fastRandom: _fastRandom,
+                byteIdGenerator: _byteIdGenerator,
+                encryptedByte: _encryptedByte,
+                encryptionKey: _encryptionKey);
             return clone;
         }
 
         public bool Equals(ISafeByte other)
         {
+            EnsureNotDisposed();
             if (other == null)
                 return false;
             if (!IsByteSet && !other.IsByteSet)
@@ -177,22 +195,60 @@ namespace SafeOrbit.Memory.SafeBytesServices
 
         public bool Equals(byte other)
         {
-            if (!IsByteSet)
-                return false;
+            EnsureNotDisposed();
+            EnsureByteIsSet();
             var otherId = _byteIdGenerator.Generate(other);
             return AreIdsSame(this.Id, otherId);
         }
 
-        public void Dispose()
+        public override bool Equals(object obj)
         {
-            _encryptionKey.Dispose();
-            _encryptedByte.Dispose();
+            return obj switch
+            {
+                ISafeByte sb => Equals(sb),
+                byte @byte => Equals(@byte),
+                null => false,
+                _ => throw new ArgumentException("Unknown object type")
+            };
         }
 
+        /// <summary>
+        ///     Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        ///     Unique hash code based on the byte it is holding, suitable for use in hashing algorithms and data structures like a
+        ///     hash table.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            EnsureByteIsSet();
+            EnsureNotDisposed();
+            return _id;
+        }
+
+        public void Dispose()
+        {
+            EnsureNotDisposed();
+            _encryptionKey.Dispose();
+            _encryptedByte.Dispose();
+            _id = 0;
+            _encryptedByteLength = 0;
+            _realBytePosition = 0;
+            _isDisposed = true;
+        }
+
+        public override string ToString()
+        {
+#if DEBUG
+            return $"InnerByte = {Get()}";
+#else
+            return "";
+#endif
+        }
         private void Initialize(byte b)
         {
             //Mix the with arbitrary bytes
-             var saltSize = _encryptedByte.BlockSizeInBytes;
+            var saltSize = _encryptedByte.BlockSizeInBytes;
             _realBytePosition = _fastRandom.GetInt(0, saltSize);
             var arbitraryBytes = _fastRandom.GetBytes(saltSize);
             RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
@@ -228,7 +284,6 @@ namespace SafeOrbit.Memory.SafeBytesServices
                     Array.Clear(arbitraryBytes, 0, arbitraryBytes.Length);
                 });
         }
-
         /// <summary>
         ///     User data must be multiple of 16 in order to be used in ProtectedMemory.Protect
         /// </summary>
@@ -236,43 +291,12 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             var multipleOfRule = _encryptedByte.BlockSizeInBytes;
             var length = byteArray.Length;
-            var fixedLength = length - length%multipleOfRule + multipleOfRule;
+            var fixedLength = length - length % multipleOfRule + multipleOfRule;
             var result = new byte[fixedLength];
             Buffer.BlockCopy(byteArray, 0, result, 0, length);
             for (var i = byteArray.Length; i < fixedLength; i++)
                 result[i] = _fastRandom.GetBytes(1).First();
             return result;
-        }
-
-        public override bool Equals(object obj)
-        {
-            switch (obj)
-            {
-                case SafeByte sb:
-                    return Equals(sb);
-                case byte @byte:
-                    return Equals(@byte);
-                default:
-                    return false;
-            }
-        }
-
-        /// <summary>
-        ///     Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        ///     Unique hash code based on the byte it is holding, suitable for use in hashing algorithms and data structures like a
-        ///     hash table.
-        /// </returns>
-        public override int GetHashCode() => _id;
-
-        public override string ToString()
-        {
-#if DEBUG
-            return $"InnerByte = {Get()}";
-#else
-            return "";
-#endif
         }
 
         /// <exception cref="System.InvalidOperationException">Thrown when byte is not set</exception>
@@ -281,7 +305,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             if (!IsByteSet) throw new InvalidOperationException($"Byte must be set using {nameof(Set)} method.");
         }
 
-        /// <exception cref="System.InvalidOperationException">Thrown when byte is already set</exception>
+        /// <exception cref="InvalidOperationException">Thrown when byte is already set</exception>
         private void EnsureByteIsNotSet()
         {
             if (IsByteSet) throw new InvalidOperationException("Byte is already set");
@@ -292,6 +316,12 @@ namespace SafeOrbit.Memory.SafeBytesServices
             uint result = 0;
             result |= (uint)id ^ (uint)other; // Protects against timing attacks, see: https://security.stackexchange.com/questions/83660/simple-string-comparisons-not-secure-against-timing-attacks 
             return result == 0;
+        }
+
+        private void EnsureNotDisposed()
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(GetType().Name);
         }
     }
 }

@@ -7,6 +7,7 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 ## [Unreleased]
 ### Changed
 - Using `.ConfigureAwait(false)` in async methods to better support UI applications.
+- More strict disposed checks
 
 ### Fixed
 - Issue with SafeBytes causing some logic to fail is solved (wrong arbitrary byte logic after 0.3.0).
