@@ -8,6 +8,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         int BlockSizeInBytes { get; }
         bool IsInitialized { get; }
         bool IsDisposed { get; }
-        IDecryptionSession RevealDecryptedBytes();
+        IDecryptedBytesMarshaler RevealDecryptedBytes();
     }
 }

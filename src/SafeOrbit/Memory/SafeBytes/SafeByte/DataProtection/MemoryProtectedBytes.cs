@@ -52,12 +52,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
         /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
         /// <exception cref="InvalidOperationException">Throws if the instance is not yet initialized.</exception>
-        public IDecryptionSession RevealDecryptedBytes()
+        public IDecryptedBytesMarshaler RevealDecryptedBytes()
         {
             if (!IsInitialized)  throw new InvalidOperationException("Not yet initialized");
             EnsureNotDisposed();
-            // TODO: If we copy the encrypted bytes here instead of sending a reference we achieve the multi thread safety very easily
-            return new DecryptionSession(_protector, ref _encryptedBytes);
+            //TODO: test this
+            var decryptedBytes = GetCopyOfBytes(_encryptedBytes);
+            _protector.Unprotect(decryptedBytes);
+            return new DecryptedBytesMarshaler(decryptedBytes);
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>

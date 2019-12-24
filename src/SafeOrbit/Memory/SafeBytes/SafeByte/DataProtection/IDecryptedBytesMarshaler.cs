@@ -2,7 +2,7 @@
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
-    public interface IDecryptionSession : IDisposable
+    public interface IDecryptedBytesMarshaler : IDisposable
     {
         byte[] PlainBytes { get; }
     }

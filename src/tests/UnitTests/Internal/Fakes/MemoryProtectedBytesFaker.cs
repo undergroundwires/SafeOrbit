@@ -21,7 +21,7 @@ namespace UnitTests.Internal.Fakes
                     if (bytes != null) throw new ArgumentException("Already initialized");
                     bytes = rawBytes;
                 });
-            var sessionMock = new Mock<IDecryptionSession>();
+            var sessionMock = new Mock<IDecryptedBytesMarshaler>();
             sessionMock.Setup(s => s.PlainBytes)
                 .Returns(() => bytes);
             mock.Setup(m => m.RevealDecryptedBytes())
