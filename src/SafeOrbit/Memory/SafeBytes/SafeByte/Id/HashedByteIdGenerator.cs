@@ -11,7 +11,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
 {
     /// <summary>
     ///     Creates a unique <see cref="int" /> values for each <see cref="byte" />.
-    ///     It's a singleton so byte ID's are consistent throughout the execution of the process, on restart a new salt & new ID's are generated.
+    ///     It's a singleton so byte ID's are consistent throughout the execution of the process, on restart a new salt &amp; new ID's are generated.
     /// </summary>
     /// <seealso cref="IByteIdGenerator" />
     internal class HashedByteIdGenerator : IByteIdGenerator

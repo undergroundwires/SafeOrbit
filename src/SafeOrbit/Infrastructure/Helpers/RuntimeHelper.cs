@@ -8,6 +8,7 @@ namespace SafeOrbit.Helpers
 {
     public class RuntimeHelper
     {
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="action"/> or <paramref name="cleanup"/> is <see langword="null"/></exception>
         public static void ExecuteCodeWithGuaranteedCleanup(Action action, Action cleanup)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));

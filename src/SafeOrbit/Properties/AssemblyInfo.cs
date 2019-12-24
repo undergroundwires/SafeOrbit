@@ -24,5 +24,6 @@ using SafeOrbit.Library;
 
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToUnitTests)]
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToIntegrationTests)]
+[assembly: InternalsVisibleTo(InternalsVisibleTo.ToNetFrameworkIntegrationTests)]
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToPerformanceTests)]
 [assembly: InternalsVisibleTo(InternalsVisibleTo.ToDynamicProxyGenAssembly2)]

@@ -12,12 +12,12 @@ namespace SafeOrbit.Exceptions.SerializableException
     /// <summary>
     ///     An abstract base for serializable classes.
     /// </summary>
+#if !NETSTANDARD1_6
     /// <remarks>
     ///     <p>Override <see cref="ConfigureSerialize" /> method to add different properties to the serialization.</p>
     /// </remarks>
     /// <seealso cref="Exception"/>
     /// <seealso cref="ConfigureSerialize"/>
-#if !NETSTANDARD1_6
     /// <seealso cref="SerializableAttribute"/>
     [Serializable]
 #endif
