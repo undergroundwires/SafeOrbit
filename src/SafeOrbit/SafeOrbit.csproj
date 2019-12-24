@@ -70,10 +70,8 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <NoWarn>$(NoWarn);1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyOriginatorKeyFile>../../docs/signature_keys/private/Release-key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../docs/key/Release-key.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    <DelaySign>false</DelaySign>
     <!-- ////////////////////////// NUGET BEGIN ////////////////////////// -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>

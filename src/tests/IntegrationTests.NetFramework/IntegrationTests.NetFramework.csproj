@@ -30,9 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyOriginatorKeyFile>..\..\..\docs\signature_keys\private\Release-key.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>../../../docs/key/Release-key.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
