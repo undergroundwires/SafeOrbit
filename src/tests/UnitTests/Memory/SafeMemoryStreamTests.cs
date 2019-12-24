@@ -39,7 +39,7 @@ namespace SafeOrbit.Memory
         [Test]
         public void CanWrite_InstanceIsClosed_returnsFalse()
         {
-            using var sut = GetSut();
+            var sut = GetSut();
             sut.Close();
             Assert.False(sut.CanWrite);
         }
