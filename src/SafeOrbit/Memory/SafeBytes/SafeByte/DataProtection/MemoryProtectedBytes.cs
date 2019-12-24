@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 
@@ -21,6 +22,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             _encryptedBytes = encryptedBytes;
         }
 
+        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
         public void Dispose()
         {
             EnsureNotDisposed();
@@ -28,13 +30,19 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             if(_encryptedBytes != null)
                 Array.Clear(_encryptedBytes, 0, _encryptedBytes.Length);
         }
+
+        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
+        /// <exception cref="InvalidOperationException">Throws if the instance is already initialized.</exception>
+        /// <exception cref="ArgumentException">Throws if the <paramref name="plainBytes" /> is empty.</exception>
+        /// <exception cref="ArgumentNullException">Throws if the <paramref name="plainBytes" /> is null.</exception>
+        /// <exception cref="CryptographicException">Throws if the <paramref name="plainBytes" /> size does not conform to block size defined in <see cref="BlockSizeInBytes"/>.</exception>
         public void Initialize(byte[] plainBytes)
         {
             if (plainBytes == null)  throw new ArgumentNullException(nameof(plainBytes));
             if (plainBytes.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(plainBytes));
+            if (plainBytes.Length % BlockSizeInBytes != 0) throw new CryptographicException($"Block size is {BlockSizeInBytes}, but plain bytes have {plainBytes.Length}. Maybe pad the bytes?");
             if (IsInitialized)  throw new InvalidOperationException("Already initialized");
             EnsureNotDisposed();
-            if(plainBytes.Length % BlockSizeInBytes != 0) throw new ArgumentException($"Block size is {BlockSizeInBytes}, but plain bytes have {plainBytes.Length}. Maybe pad the bytes?");
             _encryptedBytes = plainBytes;
             _protector.Protect(_encryptedBytes);
         }
@@ -42,14 +50,17 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         public bool IsInitialized => _encryptedBytes != null;
         public bool IsDisposed { get; private set; }
 
-        //TODO: If we copy the encrypted bytes here instead of sending a reference we achieve the multi thread safety very easily
+        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
+        /// <exception cref="InvalidOperationException">Throws if the instance is not yet initialized.</exception>
         public IDecryptionSession RevealDecryptedBytes()
         {
             if (!IsInitialized)  throw new InvalidOperationException("Not yet initialized");
             EnsureNotDisposed();
+            // TODO: If we copy the encrypted bytes here instead of sending a reference we achieve the multi thread safety very easily
             return new DecryptionSession(_protector, ref _encryptedBytes);
         }
 
+        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
         public IMemoryProtectedBytes DeepClone()
         {
             EnsureNotDisposed();

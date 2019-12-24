@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
@@ -83,7 +84,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             void Initialize() => sut.Initialize(plainBytes);
 
             // Assert
-            Assert.Throws<ArgumentException>(Initialize);
+            Assert.Throws<CryptographicException>(Initialize);
         }
 
         [Test]

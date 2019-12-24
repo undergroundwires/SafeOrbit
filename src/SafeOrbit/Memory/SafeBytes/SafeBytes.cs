@@ -57,7 +57,6 @@ namespace SafeOrbit.Memory
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         public void Append(byte b)
         {
-            EnsureNotDisposed();
             var safeByte = _safeByteFactory.GetByByte(b);
             Append(safeByte);
         }
@@ -71,8 +70,6 @@ namespace SafeOrbit.Memory
         public void Append(ISafeBytes safeBytes)
         {
             EnsureNotDisposed();
-            if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
-            if (safeBytes.IsDisposed) throw new ObjectDisposedException(nameof(safeBytes));
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
             //If it's the known SafeBytes then it reveals nothing in the memory
             if (safeBytes is SafeBytes asSafeBytes)
@@ -90,9 +87,11 @@ namespace SafeOrbit.Memory
                 }
         }
 
+        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
         private void Append(ISafeByte safeByte)
         {
+            EnsureNotDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
             _safeByteCollection.Append(safeByte);
             AddArbitraryByte();
