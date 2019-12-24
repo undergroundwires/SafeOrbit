@@ -10,7 +10,6 @@ namespace SafeOrbit.Memory
     ///     Creates a stream with no backing store (ephemeral memory). The buffer will be deleted after it's read or written.
     /// </summary>
     /// <seealso cref="Stream" />
-    /// <seealso cref="SafeMemoryStream.Close()" />
     /// <seealso cref="SafeMemoryStream.Read(byte[], int,int)" />
     public class SafeMemoryStream : Stream
     {
