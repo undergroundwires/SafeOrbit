@@ -91,6 +91,9 @@
     <Compile Include="..\IntegrationTests\Memory\SafeBytes\SafeByte\DataProtection\MemoryProtectedBytesTests.cs">
       <Link>Memory\SafeBytes\SafeByte\DataProtection\MemoryProtectedBytesTests.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationTests\Memory\SafeMemoryTests.cs">
+      <Link>Memory\SafeMemoryTests.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

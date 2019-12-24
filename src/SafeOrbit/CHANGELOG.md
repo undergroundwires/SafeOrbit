@@ -12,6 +12,7 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 ### Fixed
 - Issue with SafeBytes causing some logic to fail is solved (wrong arbitrary byte logic after 0.3.0).
 - ToByteArray in SafeBytes leads to corrupted memory.
+- SafeMemoryStream: Fixed stackoverflow in .NET Framework and .NET Standard 2.0
 
 ## [0.3.0] - 2019-03-30
 ### Security

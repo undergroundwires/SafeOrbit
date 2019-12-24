@@ -223,14 +223,12 @@ namespace SafeOrbit.Memory
             // flushARE.Dispose();
             base.Dispose(disposing);
         }
+#if NETSTANDARD
         /// <inheritdoc />
         /// <summary>
         /// Closes the instance. The reader may read up to the number of bytes available, and subsequent calls to <see cref="M:SafeOrbit.Memory.SafeMemoryStream.Read(System.Byte[],System.Int32,System.Int32)" /> will return <c>0</c>.
         /// </summary>
-#if NETCORE
         public void Close() => this.Dispose();
-#else
-        public override void Close() => this.Dispose();
 #endif
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
