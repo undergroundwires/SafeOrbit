@@ -248,12 +248,51 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Arrange
             var expected = GetValidBytes();
             var sut = GetSut();
-            sut.Initialize(expected);
+            sut.Initialize(expected.CopyToNewArray());
             // Act
             var session = sut.RevealDecryptedBytes();
             var actual = session.PlainBytes;
             // Assert
+            Console.WriteLine("Expected:" + Environment.NewLine +
+                              string.Join(", ", expected) + Environment.NewLine +
+                              "Actual:" + Environment.NewLine +
+                              string.Join(", ", actual));
             Assert.True(expected.SequenceEqual(actual));
+        }
+
+        [Test]
+        public void RevealDecryptedBytes_RevealedTwiceWithoutDisposing_ReturnsUnprotectedBytes()
+        {
+            // Arrange
+            var expected = GetValidBytes();
+            var sut = GetSut();
+            sut.Initialize(expected.CopyToNewArray());
+            // Act
+            using var firstSession = sut.RevealDecryptedBytes();
+            using var secondSession = sut.RevealDecryptedBytes();
+            var firstBytes = firstSession.PlainBytes;
+            var secondBytes = secondSession.PlainBytes;
+            // Assert
+            Assert.True(expected.SequenceEqual(firstBytes));
+            Assert.True(expected.SequenceEqual(secondBytes));
+        }
+
+        [Test]
+        public void RevealDecryptedBytes_RevealedAndDisposedTwice_ReturnsUnprotectedBytes()
+        {
+            // Arrange
+            var expected = GetValidBytes();
+            var sut = GetSut();
+            sut.Initialize(expected.CopyToNewArray());
+            // Act
+            byte[] firstBytes, secondBytes;
+            using (var firstSession = sut.RevealDecryptedBytes())
+                firstBytes = firstSession.PlainBytes.CopyToNewArray();
+            using (var secondSession = sut.RevealDecryptedBytes())
+                secondBytes = secondSession.PlainBytes.CopyToNewArray();
+            // Assert
+            Assert.True(expected.SequenceEqual(firstBytes));
+            Assert.True(expected.SequenceEqual(secondBytes));
         }
 
         [Test]

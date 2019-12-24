@@ -56,7 +56,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             if (!IsInitialized)  throw new InvalidOperationException("Not yet initialized");
             EnsureNotDisposed();
-            //TODO: test this
             var decryptedBytes = GetCopyOfBytes(_encryptedBytes);
             _protector.Unprotect(decryptedBytes);
             return new DecryptedBytesMarshaler(decryptedBytes);
