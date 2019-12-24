@@ -53,7 +53,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
                 byteBuffer = new byte[salt.Length];
                 //Append salt + byte
                 Array.Copy(salt, byteBuffer, salt.Length);
-                byteBuffer[salt.Length] = b;
+                byteBuffer[salt.Length - 1] = b;
                 var result = _fastHasher.ComputeFast(byteBuffer);
                 return result;
             }
