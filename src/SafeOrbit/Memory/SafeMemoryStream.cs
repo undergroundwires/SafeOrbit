@@ -9,30 +9,6 @@ namespace SafeOrbit.Memory
     /// <summary>
     ///     Creates a stream with no backing store (ephemeral memory). The buffer will be deleted after it's read or written.
     /// </summary>
-    /// <remarks>
-    ///     <p>
-    ///         This is very similar to a <see cref="MemoryStream" />, except, once data has been read from the
-    ///         <see cref="SafeMemoryStream" />, it disappears.  You cannot seek, you cannot get or set position.
-    ///         If you write to the <see cref="SafeMemoryStream" />, the data is written to the end, and and when you read, the
-    ///         beginning moves closer to the end.
-    ///     </p>
-    ///     <p>Length tells you how many bytes are currently in memory.</p>
-    ///     <p>
-    ///         After calling <see cref="SafeMemoryStream.Close()" />, the <see cref="SafeMemoryStream" /> cannot be written to
-    ///         anymore, but it can still be read from.
-    ///     </p>
-    ///     <p>
-    ///         The writer should call <see cref="SafeMemoryStream.Close()" /> when it's done writing.
-    ///         The reader may optionally call <see cref="SafeMemoryStream.Close()" /> when it's done reading.
-    ///     </p>
-    ///     <p>
-    ///         After <see cref="SafeMemoryStream.Close()" /> has been called, the reader may read up to the number of bytes
-    ///         available, and subsequent calls to <see cref="SafeMemoryStream.Read(byte[], int,int)" />
-    ///         will return <c>0</c>.  <see cref="SafeMemoryStream.Read(byte[], int,int)" /> will never return <c>0</c>, until
-    ///         after <see cref="SafeMemoryStream.Close()" /> has been called, and all the bytes have been
-    ///         read.
-    ///     </p>
-    /// </remarks>
     /// <seealso cref="Stream" />
     /// <seealso cref="SafeMemoryStream.Close()" />
     /// <seealso cref="SafeMemoryStream.Read(byte[], int,int)" />
