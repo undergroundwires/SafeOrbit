@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 
@@ -22,14 +21,6 @@ namespace SafeOrbit.Memory
         private int _currentBlockPosition;
         private bool _ioException;
         private long _length;
-        /// <inheritdoc />
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:SafeOrbit.Memory.SafeMemoryStream" /> class.
-        /// </summary>
-        public SafeMemoryStream()
-        {
-            
-        }
         public override bool CanRead => true;
         public override bool CanSeek => false;
         public override bool CanWrite => !_closed;
@@ -76,10 +67,16 @@ namespace SafeOrbit.Memory
         /// <exception cref="NotSupportedException">
         ///     <see cref="Seek" /> is not supported for <see cref="SafeMemoryStream" />
         /// </exception>
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
 
         /// <exception cref="NotSupportedException">This method is not supported on a <see cref="SafeMemoryStream" /></exception>
-        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
 
         /// <exception cref="IOException">If <see cref="IoException" /> is true.</exception>
         /// <exception cref="AbandonedMutexException">
@@ -130,7 +127,7 @@ namespace SafeOrbit.Memory
         {
             EnsureReadOrWriteParameters(buffer, offset, count);
             EnsureThatIoExceptionIsNotTrue();
-            if (_closed && (_length == 0))
+            if (_closed && _length == 0)
                 return 0;
             var finalPosition = offset + count;
             var position = offset;
@@ -138,7 +135,7 @@ namespace SafeOrbit.Memory
             lock (_readLock)
             {
                 var internalLength = _length;
-                while ((position < finalPosition) && ((false == _closed) || (internalLength > 0)))
+                while (position < finalPosition && (false == _closed || internalLength > 0))
                 {
                     if (_currentBlock == null)
                         lock (_queue)
@@ -146,6 +143,7 @@ namespace SafeOrbit.Memory
                             if (_queue.Count > 0)
                                 _currentBlock = _queue.Dequeue();
                         }
+
                     if (_currentBlock == null)
                     {
                         if (!_closed)
@@ -154,8 +152,10 @@ namespace SafeOrbit.Memory
                             if (_ioException)
                                 throw new IOException();
                         }
+
                         continue;
                     }
+
                     var bytesRequested = finalPosition - position;
                     var bytesAvail = _currentBlock.Length - _currentBlockPosition;
                     var bytesToRead = bytesRequested <= bytesAvail ? bytesRequested : bytesAvail;
@@ -170,6 +170,7 @@ namespace SafeOrbit.Memory
                     _currentBlockPosition = 0;
                 }
             }
+
             _flushAutoResetEvent.Set();
             _length -= bytesRead;
             return bytesRead;
@@ -199,7 +200,7 @@ namespace SafeOrbit.Memory
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
             var finalPosition = offset + count;
-            if ((buffer.Length < finalPosition) || (offset < 0) || (count < 0))
+            if (buffer.Length < finalPosition || offset < 0 || count < 0)
                 throw new ArgumentOutOfRangeException(nameof(buffer.Length));
         }
 
