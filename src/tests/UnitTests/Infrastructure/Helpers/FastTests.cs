@@ -13,20 +13,20 @@ namespace SafeOrbit.Helpers
         public void FastFor_1000Factorials_FasterThanOrEqualToForLoop()
         {
             //arrange
-            var iterations = 1000;
-            Func<int, int> factorial = n => n == 0 ? 1 :
+            const int iterations = 1000;
+            static int Factorial(int n) => n == 0 ? 1 :
                 Enumerable.Range(1, n).Aggregate((acc, x) => acc * x);
             var expectedMax = base.Measure(() =>
             {
-                for (int i = 0; i < iterations; i++)
+                for (var i = 0; i < iterations; i++)
                 {
-                    factorial.Invoke(i);
+                    Factorial(i);
                 }
             });
             //act
             var actual = base.Measure(() =>
             {
-                Fast.For(0, iterations, (i) => factorial.Invoke(i));
+                Fast.For(0, iterations, (i) => Factorial(i));
             });
             //assert
             Assert.That(actual, Is.LessThanOrEqualTo(expectedMax));

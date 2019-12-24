@@ -96,8 +96,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
 
 
             // Create Serializer and Deserializer
-            IBinaryReader reader = null;
-            IBinaryWriter writer = null;
+            IBinaryReader reader;
+            IBinaryWriter writer;
             if (settings.Mode == BinarySerializationMode.Burst)
             {
                 // Burst mode
@@ -126,14 +126,11 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Serialize(object data, string filename)
         {
-            CreateDirectoryIfNeccessary(filename);
-            using (Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write))
-            {
-                Serialize(data, stream);
-            }
+            CreateDirectoryIfNecessary(filename);
+            using Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            Serialize(data, stream);
         }
-
-        private void CreateDirectoryIfNeccessary(string filename)
+        private static void CreateDirectoryIfNecessary(string filename)
         {
             var directory = Path.GetDirectoryName(filename);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
@@ -177,10 +174,8 @@ namespace SafeOrbit.Infrastructure.Serialization.SerializationServices
         [MethodImpl(MethodImplOptions.Synchronized)]
         public object Deserialize(string filename)
         {
-            using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
-            {
-                return Deserialize(stream);
-            }
+            using var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            return Deserialize(stream);
         }
 #endif
 

@@ -746,8 +746,8 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             using var sut = GetSut();
-            var expected = 'a';
-            var index = 0;
+            const char expected = 'a';
+            const int index = 0;
             sut.Append(expected);
             //Act
             var bytes = sut.ToSafeBytes();
@@ -761,7 +761,7 @@ namespace SafeOrbit.Memory
         public void ToSafeBytes_DisposingReturnedResult_DoesNotAffectOriginalObject()
         {
             //Arrange
-            var sut = GetSut();
+            using var sut = GetSut();
             const char expected = 'a';
             const int index = 0;
             sut.Append(expected);

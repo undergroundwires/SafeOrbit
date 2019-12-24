@@ -41,6 +41,9 @@ namespace SafeOrbit.Exceptions.SerializableException
         {
         }
 
+        public string ResourceReferenceProperty { get; set; }
+        public override string ToString() => $"Message = {Message}";
+
 #if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         protected SerializableExceptionBase(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -49,17 +52,16 @@ namespace SafeOrbit.Exceptions.SerializableException
             var serializationContext = ConfigureAndGetSerializationContext();
             DeserializeProperties(serializationContext, info);
         }
-#endif
-
-        public string ResourceReferenceProperty { get; set; }
-
+        private ISerializationContext ConfigureAndGetSerializationContext()
+        {
+            var serializationContext = new SerializationContext();
+            ConfigureSerialize(serializationContext);
+            return serializationContext;
+        }
         protected virtual void ConfigureSerialize(ISerializationContext serializationContext)
         {
             serializationContext.Add(() => ResourceReferenceProperty);
         }
-
-#if !NETSTANDARD1_6
-
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -67,19 +69,7 @@ namespace SafeOrbit.Exceptions.SerializableException
             var serializationContext = ConfigureAndGetSerializationContext();
             SerializeProperties(serializationContext, info);
             base.GetObjectData(info, context);
-        }
-#endif
-        public override string ToString() => $"Message = {Message}";
-
-        private ISerializationContext ConfigureAndGetSerializationContext()
-        {
-            var serializationContext = new SerializationContext();
-            ConfigureSerialize(serializationContext);
-            return serializationContext;
-        }
-
-#if !NETSTANDARD1_6
-        private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
+        }        private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
         {
             var propertiesToSerialize = serializationContext.PropertyInfos;
             if (propertiesToSerialize == null && !propertiesToSerialize.Any()) return;

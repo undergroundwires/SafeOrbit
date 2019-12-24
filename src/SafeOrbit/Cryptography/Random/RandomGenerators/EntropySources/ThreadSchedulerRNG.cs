@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
+using SafeOrbit.Helpers;
 using SafeOrbit.Memory;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
@@ -67,10 +68,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             private const int MaxPoolSize = 4096;
 
-            // Interlocked cannot handle bools.  So using int as if it were bool.
-            private const int TrueInt = 1;
-            private const int FalseInt = 0;
-
             private const int ChunkSize = 16;
             private readonly object _fifoStreamLock = new object();
             private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
@@ -78,7 +75,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             private readonly byte[] _chunk;
             private int _chunkBitIndex;
             private int _chunkByteIndex;
-            private int _disposed = FalseInt;
+            private int _disposed = IntCondition.False;
             private readonly Thread _mainThread;
             private readonly AutoResetEvent _mainThreadLoopAre = new AutoResetEvent(false);
 
@@ -120,8 +117,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 }
                 catch
                 {
-                    if (_disposed == TrueInt)
-                        throw new IOException("Read() interrupted by Dispose()");
+                    if (_disposed == IntCondition.True)
+                        throw new IOException($"{nameof(Read)}() interrupted by {nameof(Dispose)}()");
                     throw;
                 }
             }
@@ -130,7 +127,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             {
                 try
                 {
-                    while (_disposed == FalseInt)
+                    while (_disposed == IntCondition.False)
                         if (_safeStream.Length < MaxPoolSize)
                         {
                             // While running in this tight loop, consumes approx 0% cpu time.  Cannot even measure with Task Manager
@@ -175,7 +172,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 }
                 catch
                 {
-                    if (_disposed == FalseInt) // If we caught an exception after being disposed, just swallow it.
+                    if (_disposed == IntCondition.False) // If we caught an exception after being disposed, just swallow it.
                         throw;
                 }
             }
@@ -183,7 +180,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             private void GotBit(byte bitByte)
             {
                 if (bitByte > 1)
-                    throw new ArgumentException("bitByte must be equal to 0 or 1");
+                    throw new ArgumentOutOfRangeException(nameof(bitByte), $"{nameof(bitByte)} must be equal to 0 or 1");
                 _chunk[_chunkByteIndex] <<= 1; // << operator discards msb's and zero-fills lsb's, never causes overflow
                 if (bitByte == 1)
                     _chunk[_chunkByteIndex]++; // By incrementing, we are setting the lsb to 1.
@@ -201,9 +198,9 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 }
             }
 
-            private void Dispose(bool disposing)
+            private void Dispose()
             {
-                if (Interlocked.Exchange(ref _disposed, TrueInt) == TrueInt)
+                if (Interlocked.Exchange(ref _disposed, IntCondition.True) == IntCondition.True)
                     return;
                 _mainThreadLoopAre.Set();
                 _mainThreadLoopAre.Dispose();
@@ -212,10 +209,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 _safeStream.Dispose();
             }
 
-            ~ThreadSchedulerRngCore()
-            {
-                Dispose(false);
-            }
+            ~ThreadSchedulerRngCore() => Dispose();
         }
     }
 }

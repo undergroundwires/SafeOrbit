@@ -54,8 +54,6 @@ namespace SafeOrbit.Exceptions
         public MemoryInjectionException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
-#endif
-
         protected override void ConfigureSerialize(ISerializationContext serializationContext)
         {
             serializationContext.Add(() => InjectionType);
@@ -63,5 +61,7 @@ namespace SafeOrbit.Exceptions
             serializationContext.Add(() => DetectionTime);
             base.ConfigureSerialize(serializationContext);
         }
+#endif
+
     }
 }

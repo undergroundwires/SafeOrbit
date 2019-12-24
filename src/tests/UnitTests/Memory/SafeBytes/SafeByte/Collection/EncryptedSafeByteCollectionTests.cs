@@ -252,8 +252,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public void Length_IncreasesAfterEachAppend_Increases([Random(0, 256, 1)] byte b1,
-            [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3, [Random(0, 256, 1)] byte b4)
+        public void Length_IncreasesAfterEachAppend_Increases()
         {
             //arrange
             var sut = GetSut();
@@ -263,11 +262,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             const int expected4 = 3;
             //act
             var actual1 = sut.Length;
-            sut.Append(GetSafeByteFor(b1));
+            sut.Append(GetSafeByteFor(1));
             var actual2 = sut.Length;
-            sut.Append(GetSafeByteFor(b2));
+            sut.Append(GetSafeByteFor(2));
             var actual3 = sut.Length;
-            sut.Append(GetSafeByteFor(b3));
+            sut.Append(GetSafeByteFor(3));
             var actual4 = sut.Length;
             //assert
             Assert.That(actual1, Is.EqualTo(expected1));

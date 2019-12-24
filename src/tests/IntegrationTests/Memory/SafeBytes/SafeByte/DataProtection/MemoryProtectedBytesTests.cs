@@ -37,7 +37,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             var expected = GetTestBytes(sut.BlockSizeInBytes);
             sut.Initialize(expected.CopyToNewArray());
             // Act
-            byte[] actual = null;
+            byte[] actual;
             using (var firstSession = sut.RevealDecryptedBytes())
                 actual = firstSession.PlainBytes;
             var secondSession = sut.RevealDecryptedBytes();
