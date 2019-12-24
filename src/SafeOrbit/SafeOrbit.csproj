@@ -70,7 +70,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <NoWarn>$(NoWarn);1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyOriginatorKeyFile>../../docs/signature_keys/private/SafeOrbit-key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../docs/signature_keys/private/Release-key.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <DelaySign>false</DelaySign>
