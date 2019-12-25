@@ -30,9 +30,9 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 
 ### Fixed
 - Sanity check hash size function returning wrong value.
+- Minor fixes
 
 ### Changed
-- More small optimizations & fixes
 - Updated framework dependencies to the latest available for different platforms
 
 ### Removed
@@ -40,33 +40,35 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 
 ## Performance
 - Optimized serialization and encryption with async operations.
-- Small optimizations in random generators.
+- Minor performance optimizations in random generators.
 - More parallel implementation in inner classes.
+- Other minor performance optimizations
 
 ## [0.2.2] - 2016-12-29
 ### Added
 - All .NET platforms above 4.0 are supported : 4.0, 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1
+- `MemoryProtector` now uses Blowfish encryption to protect data depending on .NET Core platform.
 
-### Fixed
-- Fixed MemoryProtector: MemoryProtector now uses different strategies to protect data depending on the platform.
+### Security
+- Fixed `MemoryProtector` not protecting data in .NET Core.
 
 ## [0.2.1] - 2016-11-27
-### Changed
-  - Xml documentation are included in nuget package.
+### Added
+  - XML documentation is included in nuget package.
 
 ### Fixed
-  - .NET CORE only fix :  Not being able to read IL-bytes
+  - Not being able to read IL-bytes in .NET Core
   - Minor bug fixes
 
 ## [0.2.0] - 2016-11-24
 ### Security
-- [Security] FastRandom generates secure numbers.
+- `FastRandom` generates secure numbers.
 
 ### Added
 - .NET Core is supported.
 
 ### Changed
-- More tests, more/better documentations and refactorings.
+- More tests, more/better documentation and refactorings.
 
 [Unreleased]: https://github.com/undergroundwires/SafeOrbit/compare/0.3.1...HEAD
 [0.3.1]: https://github.com/undergroundwires/SafeOrbit/compare/0.3.1...0.3.0
