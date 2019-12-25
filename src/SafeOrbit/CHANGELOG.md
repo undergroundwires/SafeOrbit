@@ -68,7 +68,8 @@ this project uses does not use semantic versioning as it keeps the major to 0 to
 ### Changed
 - More tests, more/better documentations and refactorings.
 
-[Unreleased]: https://github.com/undergroundwires/SafeOrbit/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/undergroundwires/SafeOrbit/compare/0.3.1...HEAD
+[0.3.1]: https://github.com/undergroundwires/SafeOrbit/compare/0.3.1...0.3.0
 [0.3.0]: https://github.com/undergroundwires/SafeOrbit/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/undergroundwires/SafeOrbit/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/undergroundwires/SafeOrbit/compare/0.2.0...0.2.1
