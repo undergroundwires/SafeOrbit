@@ -22,10 +22,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
         internal MemoryProtector(IFastEncryptor encryptor, ICryptoRandom random)
         {
             _encryptor = encryptor;
-            _key = random.GetBytes(Encryptor.MinKeySize);
+            _key = random.GetBytes(Encryptor.MinKeySizeInBits);
         }
 
-        public int BlockSizeInBytes => _encryptor.BlockSize/4;
+        public int BlockSizeInBytes => _encryptor.BlockSizeInBits/4;
 
         public void Protect(byte[] userData)
         {

@@ -25,7 +25,9 @@ namespace SafeOrbit.Cryptography.Encryption
     ///     </p>
     ///     <p>https://www.schneier.com/academic/blowfish/</p>
     /// </remarks>
-    /// <seealso cref="IFastEncryptor" />
+    /// <seealso cref="T:SafeOrbit.Cryptography.Encryption.IFastEncryptor" />
+    /// <inheritdoc cref="EncryptorBase" />
+    /// <inheritdoc cref="IFastEncryptor" />
     public class BlowfishEncryptor : EncryptorBase, IFastEncryptor
     {
         public const BlowfishCipherMode DefaultCipherMode = BlowfishCipherMode.Cbc;
@@ -47,18 +49,17 @@ namespace SafeOrbit.Cryptography.Encryption
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
-        ///     <see cref="BlowfishCipherMode" /> and <see cref="ICryptoRandom" />.
+        ///     Initializes a new instance of the <see cref="T:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor" /> class with a defined
+        ///     <see cref="T:SafeOrbit.Cryptography.Encryption.BlowfishCipherMode" />.
         /// </summary>
         /// <param name="cipherMode">The cipher mode.</param>
-        /// <param name="random">The random generator to be used for creation of IV's.</param>
         /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}">
         ///     <paramref name="cipherMode" /> is not defined in <see cref="BlowfishCipherMode" />.
         /// </exception>
         /// <seealso cref="BlowfishCipherMode" />
-        /// <seealso cref="IvSize" />
-        /// <seealso cref="ICryptoRandom" />
+        /// <seealso cref="IvSizeInBits" />
         public BlowfishEncryptor(BlowfishCipherMode cipherMode, ICryptoRandom random) : base(random)
         {
             if (((int) cipherMode != 0) && ((int) cipherMode != 1))
@@ -70,22 +71,21 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
         ///     <see cref="BlowfishCipherMode" />.
         /// </summary>
-        /// <param name="chiperMode">The chiper mode.</param>
+        /// <param name="cipherMode">The cipher mode.</param>
         /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}">
-        ///     <paramref name="chiperMode" /> is not defined in
-        ///     <see cref="BlowfishCipherMode" />.
+        ///     <paramref name="cipherMode" /> is not defined in <see cref="BlowfishCipherMode" />.
         /// </exception>
         /// <seealso cref="BlowfishCipherMode" />
-        /// <seealso cref="IvSize" />
-        public BlowfishEncryptor(BlowfishCipherMode chiperMode) : this(chiperMode, FastRandom.StaticInstance)
+        /// <seealso cref="IvSizeInBits" />
+        public BlowfishEncryptor(BlowfishCipherMode cipherMode) : this(cipherMode, FastRandom.StaticInstance)
         {
         }
 
         public BlowfishCipherMode CipherMode { get; } = DefaultCipherMode;
-        public override int MinKeySize { get; } = 32;
-        public override int MaxKeySize { get; } = 448;
-        public override int BlockSize { get; } = 64;
-        public override int IvSize => this.CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
+        public override int MinKeySizeInBits { get; } = 32;
+        public override int MaxKeySizeInBits { get; } = 448;
+        public override int BlockSizeInBits { get; } = 64;
+        public override int IvSizeInBits => this.CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
 
         /// <inheritdoc />
         /// <summary>
@@ -99,7 +99,6 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
         ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
         /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.EncryptAsync(System.Byte[],System.Byte[])" />
         public byte[] Encrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => EncryptAsync(input, key));
 
@@ -115,7 +114,6 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
         ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
         /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.DecryptAsync(System.Byte[],System.Byte[])" />
         public byte[] Decrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => DecryptAsync(input, key));
 
@@ -131,20 +129,15 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
         ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
-        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.Encrypt(System.Byte[],System.Byte[])" />
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
-            switch (CipherMode)
+            return CipherMode switch
             {
-                case BlowfishCipherMode.Ecb:
-                    return InternalCryptEcbAsync(input, key, true);
-                case BlowfishCipherMode.Cbc:
-                    return InternalCryptCbcAsync(input, key, true);
-                default:
-                    throw new UnexpectedEnumValueException<BlowfishCipherMode>(CipherMode);
-            }
+                BlowfishCipherMode.Ecb => InternalCryptEcbAsync(input, key, true),
+                BlowfishCipherMode.Cbc => InternalCryptCbcAsync(input, key, true),
+                _ => throw new UnexpectedEnumValueException<BlowfishCipherMode>(CipherMode)
+            };
         }
 
         /// <inheritdoc />
@@ -159,20 +152,16 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
         ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
         /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.UnexpectedEnumValueException`1"><see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" /> is not defined or supported.</exception>
         /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.Decrypt(System.Byte[],System.Byte[])" />
         public Task<byte[]> DecryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
-            switch (CipherMode)
+            return CipherMode switch
             {
-                case BlowfishCipherMode.Ecb:
-                    return InternalCryptEcbAsync(input, key, false);
-                case BlowfishCipherMode.Cbc:
-                    return InternalCryptCbcAsync(input, key, false);
-                default:
-                    throw new UnexpectedEnumValueException<BlowfishCipherMode>(CipherMode);
-            }
+                BlowfishCipherMode.Ecb => InternalCryptEcbAsync(input, key, false),
+                BlowfishCipherMode.Cbc => InternalCryptCbcAsync(input, key, false),
+                _ => throw new UnexpectedEnumValueException<BlowfishCipherMode>(CipherMode)
+            };
         }
 
         /// <exception cref="ArgumentNullException">
@@ -180,8 +169,8 @@ namespace SafeOrbit.Cryptography.Encryption
         ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
         /// </exception>
         /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySizeInBits" /> and
+        ///     <see cref="MaxKeySizeInBits" /> values.
         /// </exception>
         private void EnsureParameters(byte[] input, byte[] key)
         {
@@ -193,17 +182,13 @@ namespace SafeOrbit.Cryptography.Encryption
 
         private static async Task<byte[]> InternalCryptEcbAsync(byte[] input, byte[] key, bool forEncryption)
         {
-            using (var ms = new MemoryStream())
+            using var ms = new MemoryStream();
+            using (var blowfish = new BlowfishEcb(key, forEncryption))
             {
-                using (var blowfish = new BlowfishEcb(key, forEncryption))
-                {
-                    using (var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write))
-                    {
-                        await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
-                    }
-                }
-                return ms.ToArray();
+                using var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write);
+                await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
             }
+            return ms.ToArray();
         }
 
         private Task<byte[]> InternalCryptCbcAsync(byte[] input, byte[] key, bool forEncryption)
@@ -213,21 +198,17 @@ namespace SafeOrbit.Cryptography.Encryption
 
         private async Task<byte[]> InternalDecryptCbcAsync(byte[] input, byte[] key)
         {
-            var iv = new byte[IvSize];
-            var encryptedContent = new byte[input.Length - IvSize];
+            var iv = new byte[IvSizeInBits];
+            var encryptedContent = new byte[input.Length - IvSizeInBits];
             Buffer.BlockCopy(input, 0, iv, 0, iv.Length);
             Buffer.BlockCopy(input, iv.Length, encryptedContent, 0, encryptedContent.Length);
-            using (var ms = new MemoryStream())
+            using var ms = new MemoryStream();
+            using (var blowfish = new BlowfishCbc(key, iv, false))
             {
-                using (var blowfish = new BlowfishCbc(key, iv, false))
-                {
-                    using (var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write))
-                    {
-                        await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
-                    }
-                }
-                return ms.ToArray();
+                using var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write);
+                await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
             }
+            return ms.ToArray();
         }
 
         private async Task<byte[]> InternalEncryptCbcAsync(byte[] input, byte[] key)
@@ -239,11 +220,8 @@ namespace SafeOrbit.Cryptography.Encryption
                 iv = GetIv();
                 using (var blowfish = new BlowfishCbc(key, iv, true))
                 {
-                    using (var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write))
-                    {
-                        await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
-                        if(encryptedContent != null) {await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);}
-                    }
+                    using var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write);
+                    await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
                 }
                 encryptedContent = ms.ToArray();
             }

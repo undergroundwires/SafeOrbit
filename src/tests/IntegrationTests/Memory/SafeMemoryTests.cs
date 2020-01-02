@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using SafeOrbit.Extensions;
 using SafeOrbit.Memory;
-using Shared.Extensions;
 
 namespace IntegrationTests.Memory
 {

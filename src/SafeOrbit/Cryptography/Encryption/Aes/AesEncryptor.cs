@@ -49,10 +49,10 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <value>The size of the block in bits.</value>
         /// <remarks>https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</remarks>
-        public override int BlockSize { get; } = 128;
-        public override int MinKeySize { get; } = 8;
-        public override int MaxKeySize { get; } = int.MaxValue;
-        public override int IvSize { get; } = 16;
+        public override int BlockSizeInBits { get; } = 128;
+        public override int MinKeySizeInBits { get; } = 8;
+        public override int MaxKeySizeInBits { get; } = int.MaxValue;
+        public override int IvSizeInBits { get; } = 16;
         /// <summary>
         ///     The key derivation function to strengthen the key.
         /// </summary>
@@ -69,23 +69,11 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             _keyDeriver = keyDeriver ?? throw new ArgumentNullException(nameof(keyDeriver));
         }
-        /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
-        /// </exception>
+        /// <inheritdoc cref="EncryptAsync"/>
         public byte[] Encrypt(byte[] input, byte[] key, byte[] salt)
             => TaskContext.RunSync(() => EncryptAsync(input, key, salt));
 
-        /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
-        /// </exception>
+        /// <inheritdoc cref="DecryptAsync"/>
         public byte[] Decrypt(byte[] input, byte[] key, byte[] salt)
             => TaskContext.RunSync(() => DecryptAsync(input, key, salt));
 
@@ -124,8 +112,8 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySize" /> and
-        ///     <see cref="MaxKeySize" /> values.
+        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySizeInBits" /> and
+        ///     <see cref="MaxKeySizeInBits" /> values.
         /// </exception>
         private void ValidateParameters(byte[] input, byte[] key, byte[] salt)
         {
@@ -144,13 +132,9 @@ namespace SafeOrbit.Cryptography.Encryption
                 using (var algorithm = GetAlgorithm(derivedKey))
                 {
                     iv = GetIv(); //Use the random generated iv created by AesManaged
-                    using (var encryptor = algorithm.CreateEncryptor(derivedKey, iv))
-                    {
-                        using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-                        {
-                            await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
-                        }
-                    }
+                    using var encryptor = algorithm.CreateEncryptor(derivedKey, iv);
+                    using var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
+                    await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
                 }
                 encryptedContent = ms.ToArray();
             }
@@ -161,25 +145,19 @@ namespace SafeOrbit.Cryptography.Encryption
 
         private async Task<byte[]> InternalDecryptAsync(byte[] input, byte[] key, byte[] salt)
         {
-            var iv = new byte[IvSize];
-            var encryptedContent = new byte[input.Length - IvSize];
+            var iv = new byte[IvSizeInBits];
+            var encryptedContent = new byte[input.Length - IvSizeInBits];
             Buffer.BlockCopy(input, 0, iv, 0, iv.Length);
             Buffer.BlockCopy(input, iv.Length, encryptedContent, 0, encryptedContent.Length);
             var derivedKey = _keyDeriver.Derive(key, salt, KeySize/8);
-            using (var ms = new MemoryStream())
+            using var ms = new MemoryStream();
+            using (var algorithm = GetAlgorithm(derivedKey))
             {
-                using (var algorithm = GetAlgorithm(derivedKey))
-                {
-                    using (var decryptor = algorithm.CreateDecryptor(derivedKey, iv))
-                    {
-                        using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Write))
-                        {
-                            await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
-                        }
-                    }
-                }
-                return ms.ToArray();
+                using var decryptor = algorithm.CreateDecryptor(derivedKey, iv);
+                using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Write);
+                await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
             }
+            return ms.ToArray();
         }
 
         /// <summary>
@@ -194,7 +172,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var algorithm = Aes.Create();
             algorithm.Mode = Mode;
             algorithm.Padding = Padding;
-            algorithm.BlockSize = BlockSize;
+            algorithm.BlockSize = BlockSizeInBits;
             algorithm.KeySize = KeySize;
             algorithm.Key = key;
             return algorithm;
