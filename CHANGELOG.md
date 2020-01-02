@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 this project uses does not use semantic versioning as it keeps the major to 0 to underline that it's not production ready.
 
 ## [Unreleased]
+### Changed
+- Simplifed builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
 
 
 ## [0.3.1] - 2019-12-24
