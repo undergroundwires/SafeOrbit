@@ -36,9 +36,14 @@ namespace SafeOrbit.Cryptography.Hashers
                     var computed = sut.ComputeFast(key.Take(i).ToArray(), seed);
                     stream.Write(BitConverter.GetBytes(computed), 0, 4);
                 }
+#if NET45
+                var buffer = stream.GetBuffer();
+                result = sut.ComputeFast(buffer.ToArray(), 0);
+#else
                 if(!stream.TryGetBuffer(out var buffer))
                     Assert.False(false, "Could not get the buffer.");
                 result = sut.ComputeFast(buffer.Array, 0);
+#endif
             }
             //Assert
             Assert.That(result, Is.EqualTo((int)verificationKey));

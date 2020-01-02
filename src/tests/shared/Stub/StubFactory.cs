@@ -25,9 +25,9 @@ namespace SafeOrbit.Tests
             {
                 var instanceProvider = Activator.CreateInstance(instanceProviderType) as IStubProvider;
                 var stubType = instanceProviderType
-                    .GetInterfaces()
+                    .GetTypeInfo().GetInterfaces()
                     .Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IStubProvider<>))
-                    .SelectMany(i => i.GetGenericArguments())
+                    .SelectMany(i => i.GetTypeInfo().GetGenericArguments())
                     .FirstOrDefault();
                 this.Register(stubType, instanceProvider);
             }

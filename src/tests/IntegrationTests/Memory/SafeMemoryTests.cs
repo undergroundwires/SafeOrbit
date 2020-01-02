@@ -18,7 +18,9 @@ namespace IntegrationTests.Memory
             sut.Write(buffer, 0, buffer.Length);
             var part1 = new byte[buffer.Length];
             sut.Read(part1, 0, 3);
+#if !NETCOREAPP1_1
             sut.Close();
+#endif
         }
     }
 }

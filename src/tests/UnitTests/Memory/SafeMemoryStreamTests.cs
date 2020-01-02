@@ -59,6 +59,7 @@ namespace SafeOrbit.Memory
             Assert.That(actual2, Is.EqualTo(expected2));
         }
 
+#if !NETCOREAPP1_1
         [Test]
         public void CanWrite_InstanceIsClosed_returnsFalse()
         {
@@ -66,6 +67,7 @@ namespace SafeOrbit.Memory
             sut.Close();
             Assert.False(sut.CanWrite);
         }
+#endif
 
         private static SafeMemoryStream GetSut() => new SafeMemoryStream();
     }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿#if !NETCOREAPP1_1
+using System;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Memory;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
@@ -12,3 +12,4 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
             => new InstanceValidationException("message", new Exception("foo"));
     }
 }
+#endif
