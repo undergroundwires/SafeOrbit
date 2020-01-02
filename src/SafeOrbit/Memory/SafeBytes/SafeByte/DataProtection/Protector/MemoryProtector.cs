@@ -4,9 +4,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Encrypts/decrypt a byte array using <see cref="T:SafeOrbit.Cryptography.Encryption.BlowfishEcb" />.
+    ///     Encrypts/decrypt a byte array using <see cref="Cryptography.Encryption.BlowfishEcb" />.
     /// </summary>
-    /// <seealso cref="T:SafeOrbit.Memory.SafeBytesServices.DataProtection.IByteArrayProtector" />
+    /// <seealso cref="IByteArrayProtector" />
     public partial class MemoryProtector
     {
         private void EnsureParameter(byte[] userData)

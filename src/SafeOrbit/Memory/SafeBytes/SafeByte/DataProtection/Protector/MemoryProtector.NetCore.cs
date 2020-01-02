@@ -25,8 +25,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
             _key = random.GetBytes(Encryptor.MinKeySizeInBits);
         }
 
-        public int BlockSizeInBytes => _encryptor.BlockSizeInBits/4;
+        /// <inheritdoc />
+        public int BlockSizeInBytes => _encryptor.BlockSizeInBits / 8;
 
+        /// <inheritdoc />
+        /// <inheritdoc cref="EnsureParameter" />
         public void Protect(byte[] userData)
         {
             this.EnsureParameter(userData);
@@ -36,6 +39,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
                 target: ref userData);
         }
 
+        /// <inheritdoc />
+        /// <inheritdoc cref="EnsureParameter" />
         public void Unprotect(byte[] encryptedData)
         {
             this.EnsureParameter(encryptedData);
