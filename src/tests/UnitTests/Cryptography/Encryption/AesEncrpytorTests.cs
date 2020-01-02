@@ -243,5 +243,20 @@ namespace SafeOrbit.Cryptography.Encryption
             var actual = sut.BlockSizeInBits;
             Assert.That(actual, Is.EqualTo(expected));
         }
+
+        [Test]
+        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
+        public void Decrypt_ForEncryptedSingleByte_CanDecrypt(byte[] salt) // a.k.a. padding works
+        {
+            // Arrange
+            var expected = new byte[] { 77 };
+            var sut = GetSut();
+            var key = new byte[sut.MinKeySizeInBits];
+            // Act
+            var encrypted = sut.Encrypt(expected, key, salt);
+            var actual = sut.Decrypt(encrypted, key, salt);
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
     }
 }
