@@ -87,48 +87,24 @@ namespace SafeOrbit.Cryptography.Encryption
         public override int BlockSizeInBits { get; } = 64;
         public override int IvSizeInBits => this.CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Encrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
-        /// </summary>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
-        ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
-        /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
-        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
-        /// </exception>
-        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.EncryptAsync(System.Byte[],System.Byte[])" />
+        /// <inheritdoc cref="EncryptAsync" />
         public byte[] Encrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => EncryptAsync(input, key));
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Decrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
-        /// </summary>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
-        ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
-        /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
-        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
-        /// </exception>
-        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.DecryptAsync(System.Byte[],System.Byte[])" />
+        /// <inheritdoc cref="DecryptAsync" />
         public byte[] Decrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => DecryptAsync(input, key));
 
         /// <inheritdoc />
         /// <summary>
-        ///     Encrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
+        ///     Encrypts the specified input using <see cref="CipherMode" />.
         /// </summary>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
         ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
         /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
-        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
+        /// <exception cref="KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySizeInbits" /> and <see cref="MaxKeySizeInBits" /> values.
         /// </exception>
+        /// <exception cref="DataLengthException"> Length of the <paramref name="input" /> is empty </exception>
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
@@ -141,18 +117,14 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Decrypts the specified input using <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.CipherMode" />.
-        /// </summary>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
         ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
         /// </exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MinKeySize" /> and
-        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.MaxKeySize" /> values.
+        /// <exception cref=KeySizeException">
+        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySizeInBits" /> and <see cref="MaxKeySizeInBits" /> values.
         /// </exception>
-        /// <seealso cref="M:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor.Decrypt(System.Byte[],System.Byte[])" />
+        /// <exception cref="DataLengthException"> Length of the <paramref name="input" /> is empty </exception>
         public Task<byte[]> DecryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
@@ -164,22 +136,20 @@ namespace SafeOrbit.Cryptography.Encryption
             };
         }
 
-        /// <exception cref="ArgumentNullException">
-        ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
-        ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
-        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="data" /> is null</exception>
         /// <exception cref="KeySizeException">
         ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySizeInBits" /> and
         ///     <see cref="MaxKeySizeInBits" /> values.
         /// </exception>
-        private void EnsureParameters(byte[] input, byte[] key)
+        /// <exception cref="DataLengthException"> Length of the <paramref name="data" /> is empty </exception>
+        private void EnsureParameters(byte[] data, byte[] key)
         {
-            if ((input == null) || !input.Any()) throw new ArgumentNullException(nameof(input));
-            if ((key == null) || !key.Any()) throw new ArgumentNullException(nameof(key));
+            if (data == null) throw new ArgumentNullException(nameof(data));
             ValidateKey(key);
+            if (data.Length == 0)
+                throw new DataLengthException(nameof(data), "Data is empty");
         }
-
-
+        
         private static async Task<byte[]> InternalCryptEcbAsync(byte[] input, byte[] key, bool forEncryption)
         {
             using var ms = new MemoryStream();
@@ -229,5 +199,6 @@ namespace SafeOrbit.Cryptography.Encryption
             var result = iv.Combine(encryptedContent);
             return result;
         }
+        
     }
 }

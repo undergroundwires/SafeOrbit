@@ -34,22 +34,10 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="IFastEncryptor" />
     public interface IFastEncryptor<TResult, in TInput, in TKey> : IEncryptor
     {
-        /// <summary>
-        ///     Encrypts the specified input with the given key and the salt.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="EncryptAsync" />
+        /// <inheritdoc cref="EncryptAsync"/>
         TResult Encrypt(TInput input, TKey key);
 
-        /// <summary>
-        ///     Decrypts the specified input with the given key and the salt.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="DecryptAsync" />
+        /// <inheritdoc cref="DecryptAsync"/>
         TResult Decrypt(TInput input, TKey key);
 
         /// <summary>

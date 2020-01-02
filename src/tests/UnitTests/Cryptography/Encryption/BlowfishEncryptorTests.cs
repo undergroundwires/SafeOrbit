@@ -191,7 +191,7 @@ namespace SafeOrbit.Cryptography.Encryption
 
         [Test]
         [TestCase(BlowfishCipherMode.Ecb), TestCase(BlowfishCipherMode.Cbc)]
-        public void Decrypt_ForEncryptedSingleByte_CanDecrypt(BlowfishCipherMode cipherMode)
+        public void Decrypt_ForEncryptedSingleByte_CanDecrypt(BlowfishCipherMode cipherMode) // a.k.a. padding works
         {
             //Arrange
             var expected = new byte[] { 77 };
