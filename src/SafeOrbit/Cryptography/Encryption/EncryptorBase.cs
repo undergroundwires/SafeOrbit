@@ -55,7 +55,7 @@ namespace SafeOrbit.Cryptography.Encryption
         protected void ValidateKey(byte[] key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            if ((key.Length < MinKeySizeInBits/8) || (key.Length > MaxKeySizeInBits))
+            if ((key.Length < MinKeySizeInBits / 8) || (key.Length > MaxKeySizeInBits))
                 throw new KeySizeException(minSize: 32, maxSize: 488, actual: key.Length);
         }
 
