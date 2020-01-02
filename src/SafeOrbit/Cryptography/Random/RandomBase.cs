@@ -44,7 +44,7 @@ namespace SafeOrbit.Cryptography.Random
             return (int)scale;
         }
 
-#if NETFRAMEWORK
+#if !NETSTANDARD1_6
         public byte[] GetNonZeroBytes(int length)
         {
             var data = new byte[length];
