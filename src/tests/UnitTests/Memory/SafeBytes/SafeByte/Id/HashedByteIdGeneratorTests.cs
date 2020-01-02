@@ -73,7 +73,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             if (hasher == null)
             {
                 var mockHasher = new Mock<IFastHasher>();
-                mockHasher.Setup(m => m.ComputeFast(It.IsAny<byte[]>())).Returns((byte[] b) => b[^1]);
+                mockHasher.Setup(m => m.ComputeFast(It.IsAny<byte[]>()))
+#if !(NETCOREAPP3_1 || NETCOREAPP3_0)
+                    .Returns((byte[] b) => b[b.Length - 1]);
+#else
+                    .Returns((byte[] b) => b[^1]);
+#endif
                 hasher = mockHasher.Object;
             }
             return new HashedByteIdGenerator(

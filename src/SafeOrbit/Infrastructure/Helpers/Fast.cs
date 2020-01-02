@@ -20,14 +20,14 @@ namespace SafeOrbit.Helpers
             {
                 @delegate.Invoke(i);
             }
-//#if NETFRAMEWORK
+//#if !NETSTANDARD1_6
 //            var partitioner = Partitioner.Create(0, endIndex);
 //            Parallel.ForEach(partitioner, range =>
 //            {
 //                for (var i = range.Item1; i < range.Item2; i++)
 //                    @delegate.Invoke(i);
 //            });
-//#elif NETSTANDARD1_6
+//#else
 //            for (var i = startIndex; i < endIndex; i++)
 //            {
 //                @delegate.Invoke(i);

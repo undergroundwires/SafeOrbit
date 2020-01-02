@@ -8,9 +8,10 @@
 
         private static Platform GetTargetPlatform()
         {
+            // Different preprocessor symbols: https://docs.microsoft.com/en-us/dotnet/core/tutorials/libraries
 #if NETSTANDARD1_6
             return Platform.NetStandard1_6;
-#elif NETSTANDARD2
+#elif NETSTANDARD2_0
             return Platform.NetStandard2;
 #elif NET472
             return Platform.Net472;

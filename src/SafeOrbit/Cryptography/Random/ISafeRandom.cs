@@ -6,7 +6,7 @@
     /// <seealso cref="ICryptoRandom" />
     public interface ISafeRandom : ICryptoRandom
     {
-#if NETFRAMEWORK
+#if !NETSTANDARD1_6
 
         /// <summary>
         /// Gets the non zero bytes.
