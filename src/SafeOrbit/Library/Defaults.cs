@@ -12,14 +12,15 @@ namespace SafeOrbit
         //SafeObject
         public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
 
-        public static IInitialSafeObjectSettings SafeObjectSettings
-            => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode, SafeOrbitCore.Current.AlertChannel);
-
 
         //SafeContainer
         public const SafeContainerProtectionMode ContainerProtectionMode = SafeContainerProtectionMode.FullProtection;
 
         //InjectionProtector
         public const InjectionAlertChannel AlertChannel = InjectionAlertChannel.ThrowException;
+
+        public static IInitialSafeObjectSettings SafeObjectSettings
+            => new InitialSafeObjectSettings(null, false, SafeObjectProtectionMode.StateAndCode,
+                SafeOrbitCore.Current.AlertChannel);
     }
 }

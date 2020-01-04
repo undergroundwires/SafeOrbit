@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Moq;
-using SafeOrbit.Text;
 using SafeOrbit.Memory;
 using SafeOrbit.Tests;
+using SafeOrbit.Text;
 
 namespace SafeOrbit.Fakes
 {
@@ -21,7 +21,7 @@ namespace SafeOrbit.Fakes
                 .Callback<string>(x => chars.AddRange(x));
             fake.Setup(x => x.Append(It.IsAny<ISafeBytes>(), It.IsAny<Encoding>()))
                 .Callback<ISafeBytes, Encoding>(
-                    (c, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString(c.ToByteArray()))); 
+                    (c, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString(c.ToByteArray())));
             fake.Setup(x => x.ToSafeBytes()).Returns(() =>
             {
                 var safeBytes = Stubs.Get<ISafeBytes>();
@@ -43,7 +43,8 @@ namespace SafeOrbit.Fakes
             fake.Setup(x => x.Length).Returns(() => chars.Count());
             fake.Setup(x => x.IsEmpty).Returns(() => !chars.Any());
             fake.Setup(x => x.DeepClone()).Returns(() => fake.Object);
-            fake.Setup(x => x.Equals(It.IsAny<string>())).Returns((string text) => chars.ToArray().SequenceEqual(text.ToCharArray()));
+            fake.Setup(x => x.Equals(It.IsAny<string>()))
+                .Returns((string text) => chars.ToArray().SequenceEqual(text.ToCharArray()));
             fake.Setup(x => x.IsDisposed).Returns(() => isDisposed);
             fake.Setup(x => x.Dispose()).Callback(() => isDisposed = true);
             return fake.Object;

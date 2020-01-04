@@ -3,7 +3,7 @@
 namespace SafeOrbit.Memory
 {
     public interface ISafeBytes : IDisposable, IDeepCloneable<ISafeBytes>,
-          IEquatable<byte[]>, IEquatable<ISafeBytes>
+        IEquatable<byte[]>, IEquatable<ISafeBytes>
     {
         int Length { get; }
         bool IsDisposed { get; }

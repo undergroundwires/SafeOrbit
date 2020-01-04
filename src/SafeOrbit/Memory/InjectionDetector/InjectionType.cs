@@ -1,6 +1,6 @@
 namespace SafeOrbit.Memory
 {
-    public enum InjectionType : int
+    public enum InjectionType
     {
         /// <summary>
         ///     Reprents injection when the code of the application is injected.

@@ -18,7 +18,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             _sut = new MemoryCachedSafeByteFactory();
             _sut.Initialize();
         }
-        [Test, TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
+
+        [Test]
+        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
         public void GetByByte_ReturnsRightByte([Random(0, 256, 1)] byte b)
         {
             //arrange
@@ -27,10 +29,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             //act
             var safeByte = sut.GetByByte(expected);
             var actual = safeByte.Get();
-           //assert
-           Assert.That(actual, Is.EqualTo(expected));
+            //assert
+            Assert.That(actual, Is.EqualTo(expected));
         }
-        [Test, TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
+
+        [Test]
+        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
         public void GetById_ReturnsRightByte(byte b)
         {
             //arrange

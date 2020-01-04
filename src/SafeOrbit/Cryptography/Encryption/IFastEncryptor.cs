@@ -35,10 +35,10 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="IFastEncryptor" />
     public interface IFastEncryptor<TResult, in TInput, in TKey> : IPaddedEncryptor
     {
-        /// <inheritdoc cref="EncryptAsync"/>
+        /// <inheritdoc cref="EncryptAsync" />
         TResult Encrypt(TInput input, TKey key);
 
-        /// <inheritdoc cref="DecryptAsync"/>
+        /// <inheritdoc cref="DecryptAsync" />
         TResult Decrypt(TInput input, TKey key);
 
         /// <summary>

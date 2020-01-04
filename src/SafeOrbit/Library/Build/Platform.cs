@@ -1,7 +1,7 @@
 ﻿namespace SafeOrbit.Library.Build
 {
     /// <summary>
-    /// An enumeration of the supported platforms for SafeOrbit.
+    ///     An enumeration of the supported platforms for SafeOrbit.
     /// </summary>
     public enum Platform
     {

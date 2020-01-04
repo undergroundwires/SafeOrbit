@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using SafeOrbit.Infrastructure.Reflection;
+using SafeOrbit.Core.Reflection;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Stampers;
 
@@ -87,7 +87,8 @@ namespace SafeOrbit.Memory.Injection
         /// <inheritdoc />
         /// <summary>
         ///     Saves the state and/or the code  of the object.
-        ///     Use <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.AlertUnnotifiedChanges(System.Object)" /> method to check if the state has been injected.
+        ///     Use <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.AlertUnnotifiedChanges(System.Object)" /> method to
+        ///     check if the state has been injected.
         /// </summary>
         /// <param name="object">Object that this instance scans/tracks.</param>
         public void NotifyChanges(object @object)
@@ -101,9 +102,13 @@ namespace SafeOrbit.Memory.Injection
 
         /// <inheritdoc />
         /// <summary>
-        ///     Alerts when any unnotified changes are detected any <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.CanAlert" /> is true.
+        ///     Alerts when any unnotified changes are detected any
+        ///     <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.CanAlert" /> is true.
         /// </summary>
-        /// <param name="object">Object that this instance has been notified by <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.NotifyChanges(System.Object)" /></param>
+        /// <param name="object">
+        ///     Object that this instance has been notified by
+        ///     <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.NotifyChanges(System.Object)" />
+        /// </param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
         /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
         public void AlertUnnotifiedChanges(object @object)
@@ -135,6 +140,7 @@ namespace SafeOrbit.Memory.Injection
             var result = currentStamp.Equals(lastStamp);
             return result;
         }
+
         private void SaveCodeStampFor(Type type)
         {
             var codeId = GetCodeId(type);
@@ -143,10 +149,12 @@ namespace SafeOrbit.Memory.Injection
             var codeStamp = _codeStamper.GetStamp(type);
             CodeStampsDictionary.AddOrUpdate(codeId, codeStamp, (key, existingVal) => codeStamp);
         }
+
         private void SaveStateStamp(object obj)
         {
             _lastStateStamp = _stateStamper.GetStamp(obj);
         }
+
         /// <exception cref="ArgumentException">
         ///     Please validate the object using <see cref="NotifyChanges" /> method before
         ///     requesting a code stamp.
@@ -184,7 +192,8 @@ namespace SafeOrbit.Memory.Injection
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns whether this <see cref="T:SafeOrbit.Memory.Injection.InjectionDetector" /> instance tracks objects (see: <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.ScanCode" />,
+        ///     Returns whether this <see cref="T:SafeOrbit.Memory.Injection.InjectionDetector" /> instance tracks objects (see:
+        ///     <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.ScanCode" />,
         ///     <see cref="P:SafeOrbit.Memory.Injection.InjectionDetector.ScanState" />)
         /// </summary>
         /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.IAlerts" />
@@ -196,19 +205,24 @@ namespace SafeOrbit.Memory.Injection
         #endregion
 
         #region [IDisposable]
+
         private bool _isDisposed;
+
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed) return;
             _lastStateStamp = null;
             _isDisposed = true;
         }
+
         ~InjectionDetector() => Dispose(false);
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 }

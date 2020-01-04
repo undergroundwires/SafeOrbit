@@ -9,19 +9,21 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
     internal interface ISafeByteFactory
     {
         /// <summary>
-        /// Initializes this instance.
+        ///     Initializes this instance.
         /// </summary>
         void Initialize();
+
         /// <summary>
-        /// Returns the <see cref="ISafeByte"/> for the specified <see cref="byte"/>.
+        ///     Returns the <see cref="ISafeByte" /> for the specified <see cref="byte" />.
         /// </summary>
         /// <param name="byte">The byte.</param>
         ISafeByte GetByByte(byte @byte);
+
         /// <summary>
-        /// Returns the <see cref="ISafeByte"/> for the specified <see cref="ISafeByte.Id"/>.
+        ///     Returns the <see cref="ISafeByte" /> for the specified <see cref="ISafeByte.Id" />.
         /// </summary>
         /// <param name="safeByteId">The safe byte identifier.</param>
-        /// <seealso cref="IByteIdGenerator"/>
+        /// <seealso cref="IByteIdGenerator" />
         ISafeByte GetById(int safeByteId);
     }
 }

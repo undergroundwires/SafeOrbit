@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using NUnit.Framework;
 
@@ -9,7 +8,8 @@ namespace SafeOrbit.Cryptography.Encryption.Padding
     {
         protected abstract IPaddedEncryptor GetEncryptor(PaddingMode mode);
 
-        [Test, TestCaseSource(typeof(PaddedEncryptorTestsBase), nameof(PaddingModes))]
+        [Test]
+        [TestCaseSource(typeof(PaddedEncryptorTestsBase), nameof(PaddingModes))]
         public void PaddingMode_DifferentModes_CanSet(PaddingMode expected)
         {
             // Arrange
@@ -21,7 +21,8 @@ namespace SafeOrbit.Cryptography.Encryption.Padding
             Assert.AreEqual(expected, actual);
         }
 
-        [Test, TestCaseSource(typeof(PaddedEncryptorTestsBase), nameof(PaddingModes))]
+        [Test]
+        [TestCaseSource(typeof(PaddedEncryptorTestsBase), nameof(PaddingModes))]
         public void Ctor_DifferentPaddingModes_Sets(PaddingMode expected)
         {
             // Act

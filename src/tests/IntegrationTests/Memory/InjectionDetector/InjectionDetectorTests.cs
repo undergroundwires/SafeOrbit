@@ -4,8 +4,8 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.Injection
 {
-    /// <seealso cref="IInjectionDetector"/>
-    /// <seealso cref="InjectionDetector"/>
+    /// <seealso cref="IInjectionDetector" />
+    /// <seealso cref="InjectionDetector" />
     [TestFixture]
     public class InjectionDetectorTests
     {
@@ -24,7 +24,7 @@ namespace SafeOrbit.Memory.Injection
         [Test]
         public void Alerts_OnCodeInjection()
         {
-            var obj = new Lines { Line1 = "1", Line2 = "2", Line3 = "3" };
+            var obj = new Lines {Line1 = "1", Line2 = "2", Line3 = "3"};
             var obj2 = new InjectionDetectorTests(); //random different class
             var sut = GetSut(scanCode: false, scanState: true);
             sut.AlertChannel = InjectionAlertChannel.ThrowException;
@@ -39,6 +39,7 @@ namespace SafeOrbit.Memory.Injection
             public string Line2 { get; set; }
             public string Line3 { get; set; }
         }
+
         private static IInjectionDetector GetSut(bool scanState, bool scanCode)
             => new InjectionDetector(scanState: scanState, scanCode: scanCode);
     }

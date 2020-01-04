@@ -10,7 +10,7 @@ namespace SafeOrbit.Fakes
         public override ISafeRandom Provide()
         {
             var fake = new Mock<ISafeRandom>();
-            fake.Setup(x => x.GetBytes(It.IsAny<int>())).Returns<int>((x) => new byte[x]);
+            fake.Setup(x => x.GetBytes(It.IsAny<int>())).Returns<int>(x => new byte[x]);
             return fake.Object;
         }
     }

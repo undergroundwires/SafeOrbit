@@ -6,7 +6,6 @@ Here's how you use the class:
 */
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SafeOrbit.Helpers;
 
@@ -20,7 +19,7 @@ namespace SafeOrbit.Memory
     /// <remarks>
     ///     <p>
     ///         Based on a marshaler for SecureString :
-    ///         https://github.com/hilalsaim/sambapos/blob/master/Samba.Infrastructure/SecureStringToStringMarshaller.cs
+    ///         https://github.com/hilalsaim/sambapos/blob/master/Samba.Core/SecureStringToStringMarshaller.cs
     ///     </p>
     /// </remarks>
     /// <example>
@@ -61,12 +60,6 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the safe string. Setting a new SafeString will automatically update the String property.
-        /// </summary>
-        /// <value>
-        ///     The safe string that should be converted to a string.
-        /// </value>
         /// <exception cref="T:System.ArgumentNullException" accessor="set"><paramref name="value" /> is <see langword="null" />.</exception>
         /// <exception cref="T:System.ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
         public ISafeString SafeString
@@ -82,13 +75,6 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the string representation of the SafeString object.
-        ///     This string will be cleared from the memory when the class is disposed.
-        /// </summary>
-        /// <value>
-        ///     The string.
-        /// </value>
         public string String { get; protected set; }
 
         public void Dispose() => Deallocate();
@@ -103,6 +89,7 @@ namespace SafeOrbit.Memory
                 String = "";
                 return;
             }
+
             Deallocate();
             unsafe
             {
@@ -110,7 +97,9 @@ namespace SafeOrbit.Memory
                 _gch = new GCHandle();
 
                 RuntimeHelper.PrepareConstrainedRegions();
-                try { }
+                try
+                {
+                }
                 finally
                 {
                     // Pin our string, disallowing the garbage collector from moving it around.
@@ -119,18 +108,17 @@ namespace SafeOrbit.Memory
 
 
                 RuntimeHelper.PrepareConstrainedRegions();
-                try { }
+                try
+                {
+                }
                 finally
                 {
-                    var pInsecureString = (char*)_gch.AddrOfPinnedObject();
+                    var pInsecureString = (char*) _gch.AddrOfPinnedObject();
                     // Copy the SafeString content to our pinned string
                     //Fast.For(0, SafeString.Length, charIndex =>
                     //    pInsecureString[charIndex] = SafeString.GetAsChar(charIndex)
                     //);
-                    for(var i = 0; i < SafeString.Length; i++)
-                    {
-                        pInsecureString[i] = SafeString.GetAsChar(i);
-                    }
+                    for (var i = 0; i < SafeString.Length; i++) pInsecureString[i] = SafeString.GetAsChar(i);
                 }
             }
         }

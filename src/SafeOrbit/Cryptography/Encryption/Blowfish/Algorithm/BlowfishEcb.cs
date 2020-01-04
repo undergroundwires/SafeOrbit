@@ -18,6 +18,21 @@ namespace SafeOrbit.Cryptography.Encryption
     public class BlowfishEcb : ICryptoTransform
     {
         /// <summary>
+        ///     Standard is 16
+        /// </summary>
+        /// <remarks>To increase the number of rounds, bf_P needs to be equal to the number of rounds. Use digits of PI.</remarks>
+        private const int Rounds = 16;
+
+
+        private readonly byte[] _key;
+        private uint[] _pArray;
+        private uint[][] _sArray;
+
+        //HALF-BLOCKS
+        private uint _xlPar;
+        private uint _xrPar;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="BlowfishEcb" /> class.
         /// </summary>
         /// <param name="cipherKey">The cipher key.</param>
@@ -44,21 +59,6 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <value><c>true</c> if for encryption;  <c>false</c> if for decryption.</value>
         public bool ForEncryption { get; }
 
-        /// <summary>
-        ///     Standard is 16
-        /// </summary>
-        /// <remarks>To increase the number of rounds, bf_P needs to be equal to the number of rounds. Use digits of PI.</remarks>
-        private const int Rounds = 16;
-
-
-        private readonly byte[] _key;
-        private uint[][] _sArray;
-        private uint[] _pArray;
-
-        //HALF-BLOCKS
-        private uint _xlPar;
-        private uint _xrPar;
-
         public void Dispose()
         {
             if (_key != null)
@@ -70,8 +70,10 @@ namespace SafeOrbit.Cryptography.Encryption
                     if (array == null) continue;
                     Array.Clear(array, 0, array.Length);
                 }
+
                 Array.Clear(_sArray, 0, _sArray.Length);
             }
+
             if (_pArray != null)
                 Array.Clear(_pArray, 0, _pArray.Length);
         }
@@ -147,10 +149,12 @@ namespace SafeOrbit.Cryptography.Encryption
             var j = 0;
             for (var i = 0; i < 18; i++)
             {
-                var d = (uint)(((key[j % cipherKey.Length] * 256 + key[(j + 1) % cipherKey.Length]) * 256 + key[(j + 2) % cipherKey.Length]) * 256 + key[(j + 3) % cipherKey.Length]);
+                var d = (uint) (((key[j % cipherKey.Length] * 256 + key[(j + 1) % cipherKey.Length]) * 256 +
+                                 key[(j + 2) % cipherKey.Length]) * 256 + key[(j + 3) % cipherKey.Length]);
                 _pArray[i] ^= d;
                 j = (j + 4) % cipherKey.Length;
             }
+
             _xlPar = 0;
             _xrPar = 0;
             for (var i = 0; i < 18; i += 2)
@@ -159,30 +163,35 @@ namespace SafeOrbit.Cryptography.Encryption
                 _pArray[i] = _xlPar;
                 _pArray[i + 1] = _xrPar;
             }
+
             for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 _sArray[0][i] = _xlPar;
                 _sArray[0][i + 1] = _xrPar;
             }
+
             for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 _sArray[1][i] = _xlPar;
                 _sArray[1][i + 1] = _xrPar;
             }
+
             for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 _sArray[2][i] = _xlPar;
                 _sArray[2][i + 1] = _xrPar;
             }
+
             for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 _sArray[3][i] = _xlPar;
                 _sArray[3][i + 1] = _xrPar;
             }
+
             return key;
         }
 
@@ -253,6 +262,7 @@ namespace SafeOrbit.Cryptography.Encryption
                 _xrPar = Round(_xrPar, _xlPar, i + 1);
                 _xlPar = Round(_xlPar, _xrPar, i + 2);
             }
+
             _xrPar ^= _pArray[17];
             // Swap the blocks
             var swap = _xlPar;
@@ -271,6 +281,7 @@ namespace SafeOrbit.Cryptography.Encryption
                 _xrPar = Round(_xrPar, _xlPar, i);
                 _xlPar = Round(_xlPar, _xrPar, i - 1);
             }
+
             _xrPar ^= _pArray[0];
             // Swap the blocks
             var swap = _xlPar;

@@ -1,12 +1,11 @@
 ﻿using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption;
-using Moq;
 using SafeOrbit.Cryptography.Encryption.Padding;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Fakes;
-using SafeOrbit.Helpers;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
@@ -28,7 +27,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
             const int encryptorBlockSizeInBits = 32;
             const int expected = 4;
             var mock = new Mock<IFastEncryptor>();
-            mock.SetupGet(e=>e.BlockSizeInBits)
+            mock.SetupGet(e => e.BlockSizeInBits)
                 .Returns(encryptorBlockSizeInBits);
             var protector = new MemoryProtector(
                 encryptor: mock.Object,
@@ -60,6 +59,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
             // Arrange
             var sut = GetSut();
             var invalidBytes = new byte[sut.BlockSizeInBytes - 1];
+
             // Act
             void Action() => sut.Protect(invalidBytes);
             // Assert
@@ -72,6 +72,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
             // Arrange
             var sut = GetSut();
             var invalidBytes = new byte[sut.BlockSizeInBytes - 1];
+
             // Act
             void Action() => sut.Unprotect(invalidBytes);
             // Assert
@@ -115,8 +116,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 
 
 #if !NET45
-        private static IByteArrayProtector GetSut(IFastEncryptor encryptor = null, IFastRandom random = null) => new MemoryProtector(
-            encryptor: encryptor ?? Stubs.Get<IFastEncryptor>(), random: random ?? Stubs.Get<IFastRandom>());
+        private static IByteArrayProtector GetSut(IFastEncryptor encryptor = null, IFastRandom random = null) =>
+            new MemoryProtector(
+                encryptor: encryptor ?? Stubs.Get<IFastEncryptor>(), random: random ?? Stubs.Get<IFastRandom>());
 #endif
     }
 }

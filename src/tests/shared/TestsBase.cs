@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using NUnit.Framework;
 
 namespace SafeOrbit.Tests
 {
-
     public abstract class TestsBase
     {
         protected void IgnoreTest()
         {
             Assert.Inconclusive();
         }
+
         /// <summary>
-        /// Measures the specified action.
+        ///     Measures the specified action.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <returns>Total elapsed milliseconds</returns>
@@ -30,6 +29,7 @@ namespace SafeOrbit.Tests
                 stopwatch.Stop();
                 elapsedTime = stopwatch.ElapsedMilliseconds;
             }
+
             return elapsedTime;
         }
     }

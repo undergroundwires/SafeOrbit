@@ -5,19 +5,22 @@ using SafeOrbit.Cryptography.Random.RandomGenerators;
 namespace SafeOrbit.Cryptography.Random
 {
     /// <summary>
-    /// Helper methods for the implementations.
+    ///     Helper methods for the implementations.
     /// </summary>
     public abstract class RandomBase : ICryptoRandom
     {
         private readonly RandomNumberGenerator _generator;
+
         protected RandomBase() : this(SafeRandomGenerator.StaticInstance)
         {
         }
+
         internal RandomBase(RandomNumberGenerator generator)
         {
             _generator = generator;
         }
 
+        /// <inheritdoc />
         public byte[] GetBytes(int length)
         {
             var data = new byte[length];
@@ -25,6 +28,7 @@ namespace SafeOrbit.Cryptography.Random
             return data;
         }
 
+        /// <inheritdoc />
         public int GetInt()
         {
             var scale = uint.MaxValue;
@@ -41,18 +45,11 @@ namespace SafeOrbit.Cryptography.Random
                 // Convert that into an uint.
                 scale = BitConverter.ToUInt32(fourBytes, 0);
             }
-            return (int)scale;
+
+            return (int) scale;
         }
 
-#if !NETSTANDARD1_6
-        public byte[] GetNonZeroBytes(int length)
-        {
-            var data = new byte[length];
-            _generator.GetNonZeroBytes(data);
-            return data;
-        }
-#endif
-
+        /// <inheritdoc />
         public int GetInt(int min, int max)
         {
             if (min == max)
@@ -73,10 +70,11 @@ namespace SafeOrbit.Cryptography.Random
             }
 
             // Add min to the scaled difference between max and min.
-            return (int)(min + (max - min) *
-                          (scale / (double)uint.MaxValue));
+            return (int) (min + (max - min) *
+                          (scale / (double) uint.MaxValue));
         }
 
+        /// <inheritdoc />
         public bool GetBool()
         {
             var data = new byte[1];
@@ -84,13 +82,15 @@ namespace SafeOrbit.Cryptography.Random
             var @byte = data[0];
             return (@byte & 0x80) != 0;
         }
-        /// <exception cref="ArgumentOutOfRangeException"><param name="upperBound"/> must be greater than <param name="lowerBound"/></exception>
-        protected void EnsureParameters(int lowerBound, int upperBound)
+
+#if !NETSTANDARD1_6
+        /// <inheritdoc />
+        public byte[] GetNonZeroBytes(int length)
         {
-            if (lowerBound > upperBound)
-            {
-                throw new ArgumentOutOfRangeException(nameof(upperBound), upperBound, $"{nameof(upperBound)} must be greater than {nameof(lowerBound)}");
-            }
+            var data = new byte[length];
+            _generator.GetNonZeroBytes(data);
+            return data;
         }
+#endif
     }
 }

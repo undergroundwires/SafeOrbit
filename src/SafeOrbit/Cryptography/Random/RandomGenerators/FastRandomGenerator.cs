@@ -12,18 +12,21 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     /// <inheritdoc />
     /// <summary>
     ///     <p>
-    ///         <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> returns cryptographically strong random data.  It uses a crypto prng to
+    ///         <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> returns cryptographically
+    ///         strong random data.  It uses a crypto prng to
     ///         generate more bytes than actually available in hardware entropy, so it's about 1,000 times faster than
     ///         <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" />.
     ///     </p>
     ///     <p>
-    ///         For general purposes, <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> is recommended because of its performance
+    ///         For general purposes, <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> is
+    ///         recommended because of its performance
     ///         characteristics, but for extremely strong keys and other things that don't require a large number of bytes
-    ///         quickly,  <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" /> is recommended instead.
+    ///         quickly,  <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" /> is recommended
+    ///         instead.
     ///     </p>
     /// </summary>
     /// <example>
-    /// <code>
+    ///     <code>
     ///  using SafeOrbit.Cryptography.Random;
     ///  static void Main(string[] args)
     ///  {
@@ -41,15 +44,18 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     {
         private const int ReseedLocked = 1;
         private const int ReseedUnlocked = 0;
-        private const int MaxBytesPerSeedSoft = 64*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
-        private const int MaxStateCounterHard = 1024*1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
-        public static FastRandomGenerator StaticInstance => StaticInstanceLazy.Value;
+        private const int MaxBytesPerSeedSoft = 64 * 1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
+
+        private const int
+            MaxStateCounterHard = 1024 * 1024; // See "BouncyCastle DigestRandomGenerator Analysis" comment
+
         private static readonly Lazy<FastRandomGenerator> StaticInstanceLazy = new Lazy<FastRandomGenerator>(
             () => new FastRandomGenerator(SafeRandomGenerator.StaticInstance));
+
         private readonly int _digestSize;
         private readonly DigestRandomGenerator _myPrng;
-        private readonly SafeRandomGenerator _safeRandomGenerator;
         private readonly bool _ownsSafeRandomGenerator;
+        private readonly SafeRandomGenerator _safeRandomGenerator;
         private readonly object _stateCounterLockObj = new object();
         private int _isDisposed = IntCondition.False;
         private int _reseedLockInt = ReseedUnlocked;
@@ -107,32 +113,35 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             digest: new Sha512Digest())
         {
         }
+
         public FastRandomGenerator(IDigest digest) : this(
             safeRng: new SafeRandomGenerator(),
             ownsSafeRng: true,
             digest: digest)
         {
         }
+
         public FastRandomGenerator(IReadOnlyCollection<IEntropyHasher> entropyHashers, IDigest digest) : this(
             safeRng: new SafeRandomGenerator(entropyHashers),
             ownsSafeRng: true,
             digest: digest)
         {
         }
+
         public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator) : this(
             safeRng: safeRandomGenerator,
             ownsSafeRng: false,
             digest: new Sha512Digest())
         {
         }
-        ~FastRandomGenerator() => Dispose(false);
+
         public FastRandomGenerator(SafeRandomGenerator safeRandomGenerator, IDigest digest) : this(
             safeRng: safeRandomGenerator,
             ownsSafeRng: false,
             digest: digest)
         {
-
         }
+
         internal FastRandomGenerator(
             SafeRandomGenerator safeRng,
             bool ownsSafeRng,
@@ -147,13 +156,16 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             Reseed();
         }
 
+        public static FastRandomGenerator StaticInstance => StaticInstanceLazy.Value;
+        ~FastRandomGenerator() => Dispose(false);
+
         public override void GetBytes(byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (data.Length == 0) return;
             lock (_stateCounterLockObj)
             {
-                var newStateCounter = _stateCounter + 1 + data.Length/_digestSize;
+                var newStateCounter = _stateCounter + 1 + data.Length / _digestSize;
                 if (newStateCounter > MaxStateCounterHard)
                     Reseed(); // Guarantees to reset stateCounter = 0
                 else if (newStateCounter > MaxBytesPerSeedSoft)
@@ -161,7 +173,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                         // If more than one thread race here, let the first one through, and others exit
                         ThreadPool.QueueUserWorkItem(ReseedCallback);
                 // Repeat the addition, instead of using newStateCounter, because the above Reseed() might have changed stateCounter
-                _stateCounter += 1 + data.Length/_digestSize;
+                _stateCounter += 1 + data.Length / _digestSize;
                 _myPrng.NextBytes(data);
                 // Internally, DigestRandomGenerator locks all operations, so reseeding cannot occur in the middle of NextBytes()
             }
@@ -176,7 +188,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             var pos = 0;
             while (true)
             {
-                var tempData = new byte[(int) (1.05*(data.Length - pos))];
+                var tempData = new byte[(int) (1.05 * (data.Length - pos))];
                 // Request 5% more data than needed, to reduce the probability of repeating loop
                 GetBytes(tempData);
                 for (var i = 0; i < tempData.Length; i++)
@@ -233,7 +245,5 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 _safeRandomGenerator.Dispose();
             base.Dispose(disposing);
         }
-
- 
     }
 }

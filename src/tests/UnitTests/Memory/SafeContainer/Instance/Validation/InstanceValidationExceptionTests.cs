@@ -4,7 +4,7 @@ using SafeOrbit.Exceptions;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
-    /// <seealso cref="SerializableExceptionTestsBase{InstanceValidationException}" />
+    /// <seealso cref="SerializableExceptionTestsBase{T}" />
     /// <seealso cref="InstanceValidationException" />
     public class InstanceValidationExceptionTests : SerializableExceptionTestsBase<InstanceValidationException>
     {

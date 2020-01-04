@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Infrastructure.Reflection;
+using SafeOrbit.Core.Reflection;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
 using SafeOrbit.Memory.InjectionServices;
@@ -21,7 +21,8 @@ namespace SafeOrbit.Memory
     {
         //TODO: Test inner instance validator call with a stub
 
-        [Test, TestCaseSource(typeof(SafeContainerCases), nameof(SafeContainerCases.ProtectionModes))]
+        [Test]
+        [TestCaseSource(typeof(SafeContainerCases), nameof(SafeContainerCases.ProtectionModes))]
         public void Constructor_Sets_ProtectionMode(SafeContainerProtectionMode mode)
         {
             //arrange
@@ -33,7 +34,8 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_Sets_AlertChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -45,9 +47,9 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test,
-         TestCaseSource(typeof(SafeContainerCases),
-             nameof(SafeContainerCases.SafeContainerProtectionMode_To_SafeObjectProtectionMode_Vector))]
+        [Test]
+        [TestCaseSource(typeof(SafeContainerCases),
+            nameof(SafeContainerCases.SafeContainerProtectionMode_To_SafeObjectProtectionMode_Vector))]
         public void Constructor_Sets_Inner_SafeObject_From_ProtectionMode(SafeContainerProtectionMode protectionMode,
             SafeObjectProtectionMode expected)
         {
@@ -57,7 +59,7 @@ namespace SafeOrbit.Memory
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
-                .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
+                .Returns<IInitialSafeObjectSettings>(settings => safeObjectMock.Object);
             //act
             var sut = GetSut(protectionMode: protectionMode, safeObjectFactory: safeObjectFactory.Object);
             //assert
@@ -68,7 +70,8 @@ namespace SafeOrbit.Memory
                 Times.Once);
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_AlertChannel_SetsToInnerSafeObject(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -77,14 +80,15 @@ namespace SafeOrbit.Memory
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
-                .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
+                .Returns<IInitialSafeObjectSettings>(settings => safeObjectMock.Object);
             //act
             var sut = GetSut(alertChannel: alertChannel, safeObjectFactory: safeObjectFactory.Object);
             //assert
             safeObjectMock.VerifySet(o => o.AlertChannel = alertChannel);
         }
 
-        [Test, TestCase(SafeContainerProtectionMode.NonProtection)]
+        [Test]
+        [TestCase(SafeContainerProtectionMode.NonProtection)]
         public void CanAlert_ForNonProtectedMode_returnsFalse(SafeContainerProtectionMode nonProtectedMode)
         {
             //arrange
@@ -95,7 +99,7 @@ namespace SafeOrbit.Memory
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
-                .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
+                .Returns<IInitialSafeObjectSettings>(settings => safeObjectMock.Object);
             ;
             //act
             var sut = GetSut(protectionMode: nonProtectedMode, safeObjectFactory: safeObjectFactory.Object);
@@ -103,7 +107,8 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCase(SafeContainerProtectionMode.FullProtection)]
+        [Test]
+        [TestCase(SafeContainerProtectionMode.FullProtection)]
         public void CanAlert_ForProtectModes_returnsTrue(SafeContainerProtectionMode protectedMode)
         {
             //arrange
@@ -114,7 +119,7 @@ namespace SafeOrbit.Memory
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
-                .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
+                .Returns<IInitialSafeObjectSettings>(settings => safeObjectMock.Object);
             ;
             //act
             var sut = GetSut(protectionMode: protectedMode, safeObjectFactory: safeObjectFactory.Object);
@@ -123,15 +128,15 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test,
-         TestCaseSource(typeof(SafeContainerCases),
-             nameof(SafeContainerCases.SafeContainerProtectionMode_To_InstanceProtectionMode_Vector))]
+        [Test]
+        [TestCaseSource(typeof(SafeContainerCases),
+            nameof(SafeContainerCases.SafeContainerProtectionMode_To_InstanceProtectionMode_Vector))]
         public void SetProtectionMode_SwitchingProtectionMode_UpdatesProtectionModeForAllInnerInstances(
             SafeContainerProtectionMode protectionMode, InstanceProtectionMode instanceProtectionMode)
         {
             //arrange
             var safeObjectMock = new Mock<ISafeObject<Dictionary<string, IInstanceProvider>>>();
-            var instanceProviders = new []
+            var instanceProviders = new[]
             {
                 new Mock<IInstanceProvider>(),
                 new Mock<IInstanceProvider>(),
@@ -148,7 +153,7 @@ namespace SafeOrbit.Memory
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
-                .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
+                .Returns<IInitialSafeObjectSettings>(settings => safeObjectMock.Object);
             foreach (var provider in instanceProviders)
                 provider.Invocations.Clear();
             var otherProtectionMode = protectionMode == SafeContainerProtectionMode.FullProtection
@@ -160,11 +165,13 @@ namespace SafeOrbit.Memory
             //assert
             foreach (var provider in instanceProviders)
                 provider.Verify(
-                    p => p.SetProtectionMode(It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
+                    p => p.SetProtectionMode(
+                        It.Is<InstanceProtectionMode>(mode => mode.Equals(instanceProtectionMode))),
                     Times.Once);
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void AlertChannel_Sets_InnerSafeObjectAlertChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -174,7 +181,7 @@ namespace SafeOrbit.Memory
             var safeObjectFactory = new Mock<ISafeObjectFactory>();
             safeObjectFactory.Setup(
                     s => s.Get<Dictionary<string, IInstanceProvider>>(It.IsAny<IInitialSafeObjectSettings>()))
-                .Returns<IInitialSafeObjectSettings>((settings) => safeObjectMock.Object);
+                .Returns<IInitialSafeObjectSettings>(settings => safeObjectMock.Object);
             var sut = GetSut(safeObjectFactory: safeObjectFactory.Object);
             //act
             sut.AlertChannel = alertChannel;
@@ -215,17 +222,17 @@ namespace SafeOrbit.Memory
             Assert.That(GetWithoutVerify, Throws.ArgumentException);
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Register_GetsInstanceProvider_With_CurrentAlertChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
             var expected = alertChannel;
             var factoryStub = new Mock<IInstanceProviderFactory>();
             factoryStub.Setup(f => f.Get<InstanceTestClass>(
-                    It.IsAny<LifeTime>(),
-                    It.IsAny<InstanceProtectionMode>(),
-                    It.IsAny<InjectionAlertChannel>())).
-                Returns(Mock.Of<IInstanceProvider>());
+                It.IsAny<LifeTime>(),
+                It.IsAny<InstanceProtectionMode>(),
+                It.IsAny<InjectionAlertChannel>())).Returns(Mock.Of<IInstanceProvider>());
             var sut = GetSut(providerFactory: factoryStub.Object, alertChannel: expected);
             //act
             sut.Register<InstanceTestClass>();
@@ -236,19 +243,18 @@ namespace SafeOrbit.Memory
                 It.Is<InjectionAlertChannel>(a => a.Equals(expected))), Times.Once);
         }
 
-        [Test,
-         TestCaseSource(typeof(SafeContainerCases),
-             nameof(SafeContainerCases.SafeContainerProtectionMode_To_InstanceProtectionMode_Vector))]
+        [Test]
+        [TestCaseSource(typeof(SafeContainerCases),
+            nameof(SafeContainerCases.SafeContainerProtectionMode_To_InstanceProtectionMode_Vector))]
         public void Register_GetsInstanceProvider_With_CurrentProtectionMode(SafeContainerProtectionMode protectionMode,
             InstanceProtectionMode expected)
         {
             //arrange
             var factoryStub = new Mock<IInstanceProviderFactory>();
             factoryStub.Setup(f => f.Get<InstanceTestClass>(
-                    It.IsAny<LifeTime>(),
-                    It.IsAny<InstanceProtectionMode>(),
-                    It.IsAny<InjectionAlertChannel>())).
-                Returns(Mock.Of<IInstanceProvider>());
+                It.IsAny<LifeTime>(),
+                It.IsAny<InstanceProtectionMode>(),
+                It.IsAny<InjectionAlertChannel>())).Returns(Mock.Of<IInstanceProvider>());
             var sut = GetSut(providerFactory: factoryStub.Object, protectionMode: protectionMode);
             //act
             sut.Register<InstanceTestClass>();
@@ -259,17 +265,17 @@ namespace SafeOrbit.Memory
                 It.IsAny<InjectionAlertChannel>()), Times.Once);
         }
 
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.LifeTimes))]
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.LifeTimes))]
         public void Register_GetsInstanceProvider_With_RequestedLifeTime(LifeTime lifeTime)
         {
             //arrange
             var expected = lifeTime;
             var factoryStub = new Mock<IInstanceProviderFactory>();
             factoryStub.Setup(f => f.Get<InstanceTestClass>(
-                    It.IsAny<LifeTime>(),
-                    It.IsAny<InstanceProtectionMode>(),
-                    It.IsAny<InjectionAlertChannel>())).
-                Returns(Mock.Of<IInstanceProvider>());
+                It.IsAny<LifeTime>(),
+                It.IsAny<InstanceProtectionMode>(),
+                It.IsAny<InjectionAlertChannel>())).Returns(Mock.Of<IInstanceProvider>());
             var sut = GetSut(providerFactory: factoryStub.Object);
             //act
             sut.Register<InstanceTestClass>(lifeTime: lifeTime);
@@ -296,6 +302,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             sut.Register<IInstanceTestClass, InstanceTestClass>();
             sut.Verify();
+
             //act
             void VerifyingTwice() => sut.Verify();
             //assert
@@ -333,7 +340,7 @@ namespace SafeOrbit.Memory
                 new TestCaseData(GetSut(SafeContainerProtectionMode.NonProtection),
                     SafeContainerProtectionMode.FullProtection);
             yield return
-                new TestCaseData(GetSut(SafeContainerProtectionMode.FullProtection),
+                new TestCaseData(GetSut(),
                     SafeContainerProtectionMode.NonProtection);
         }
     }

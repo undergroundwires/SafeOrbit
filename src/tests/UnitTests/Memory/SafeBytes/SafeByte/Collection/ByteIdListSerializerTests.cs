@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
-    /// <seealso cref="ByteIdListSerializer"/>>
+    /// <seealso cref="ByteIdListSerializer" />
+    /// >
     [TestFixture]
     internal class ByteIdListSerializerTests : TestsFor<IByteIdListSerializer<int>>
     {
@@ -20,6 +19,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             // arrange
             var sut = GetSut();
             var argument = (byte[]) null;
+
             // act
             async Task CallWithNullArgument() => await sut.DeserializeAsync(argument);
             // assert
@@ -31,7 +31,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             // arrange
             var sut = GetSut();
-            var argument = (IReadOnlyCollection<int>)null;
+            var argument = (IReadOnlyCollection<int>) null;
+
             // act
             async Task CallWithNullArgument() => await sut.SerializeAsync(argument);
             // assert
@@ -56,7 +57,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             // arrange
             var sut = GetSut();
-            var expected = new int[]{5};
+            var expected = new[] {5};
             // act
             var serialized = await sut.SerializeAsync(expected);
             var actual = await sut.DeserializeAsync(serialized);
@@ -69,7 +70,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             // arrange
             var sut = GetSut();
-            var expected = new int[] { 5,50,30,120, 5, 50, 30, 120,70 };
+            var expected = new[] {5, 50, 30, 120, 5, 50, 30, 120, 70};
             // act
             var serialized = await sut.SerializeAsync(expected);
             var actual = await sut.DeserializeAsync(serialized);
@@ -77,13 +78,17 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(-1), TestCase(1), TestCase(0), TestCase(int.MaxValue), TestCase(int.MinValue)]
+        [TestCase(-1)]
+        [TestCase(1)]
+        [TestCase(0)]
+        [TestCase(int.MaxValue)]
+        [TestCase(int.MinValue)]
         public async Task DeserializeAsync_BoundariesAreSerialized_CanDeserialize(
             int boundary)
         {
             // arrange
             var sut = GetSut();
-            var expected = new int[] { 5, boundary, 30 };
+            var expected = new[] {5, boundary, 30};
             // act
             var serialized = await sut.SerializeAsync(expected);
             var actual = await sut.DeserializeAsync(serialized);

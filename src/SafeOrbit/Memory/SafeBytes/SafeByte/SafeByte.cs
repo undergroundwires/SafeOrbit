@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
-using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Cryptography.Encryption;
+using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
+using SafeOrbit.Helpers;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Helpers;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {
@@ -21,17 +21,16 @@ namespace SafeOrbit.Memory.SafeBytesServices
     /// <seealso cref="MemoryCachedSafeByteFactory" />
     internal sealed class SafeByte : ISafeByte
     {
-        private volatile bool _isDisposed;
+        private readonly IByteIdGenerator _byteIdGenerator;
+        private readonly IMemoryProtectedBytes _encryptedByte;
+        private readonly IMemoryProtectedBytes _encryptionKey;
+        private readonly IFastEncryptor _encryptor;
+        private readonly IFastRandom _fastRandom;
 
         private int _encryptedByteLength;
         private int _id;
+        private volatile bool _isDisposed;
         private int _realBytePosition;
-
-        private readonly IByteIdGenerator _byteIdGenerator;
-        private readonly IFastEncryptor _encryptor;
-        private readonly IFastRandom _fastRandom;
-        private readonly IMemoryProtectedBytes _encryptedByte;
-        private readonly IMemoryProtectedBytes _encryptionKey;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SafeByte" /> class.
@@ -133,15 +132,16 @@ namespace SafeOrbit.Memory.SafeBytesServices
                 var encryptedBuffer = new byte[_encryptedByteLength];
                 try
                 {
-                    using(var @byte = _encryptedByte.RevealDecryptedBytes())
+                    using (var @byte = _encryptedByte.RevealDecryptedBytes())
                     {
                         Buffer.BlockCopy(@byte.PlainBytes, 0, encryptedBuffer, 0, _encryptedByteLength);
                     }
 
-                    using(var encryptionKey = _encryptionKey.RevealDecryptedBytes())
+                    using (var encryptionKey = _encryptionKey.RevealDecryptedBytes())
                     {
                         byteBuffer = _encryptor.Decrypt(encryptedBuffer, encryptionKey.PlainBytes);
                     }
+
                     //Extract the byte from arbitrary bytes
                     return byteBuffer[_realBytePosition];
                 }
@@ -189,7 +189,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             if (!IsByteSet && !other.IsByteSet)
                 return true;
             if (IsByteSet && other.IsByteSet)
-                return AreIdsSame(this.Id, other.GetHashCode());
+                return AreIdsSame(Id, other.GetHashCode());
             return false;
         }
 
@@ -198,7 +198,18 @@ namespace SafeOrbit.Memory.SafeBytesServices
             EnsureNotDisposed();
             EnsureByteIsSet();
             var otherId = _byteIdGenerator.Generate(other);
-            return AreIdsSame(this.Id, otherId);
+            return AreIdsSame(Id, otherId);
+        }
+
+        public void Dispose()
+        {
+            EnsureNotDisposed();
+            _encryptionKey.Dispose();
+            _encryptedByte.Dispose();
+            _id = 0;
+            _encryptedByteLength = 0;
+            _realBytePosition = 0;
+            _isDisposed = true;
         }
 
         public override bool Equals(object obj)
@@ -226,17 +237,6 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return _id;
         }
 
-        public void Dispose()
-        {
-            EnsureNotDisposed();
-            _encryptionKey.Dispose();
-            _encryptedByte.Dispose();
-            _id = 0;
-            _encryptedByteLength = 0;
-            _realBytePosition = 0;
-            _isDisposed = true;
-        }
-
         public override string ToString()
         {
 #if DEBUG
@@ -245,6 +245,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return "";
 #endif
         }
+
         private void Initialize(byte b)
         {
             //Mix the with arbitrary bytes
@@ -279,11 +280,9 @@ namespace SafeOrbit.Memory.SafeBytesServices
                     _encryptionKey.Initialize(encryptionKey);
                 },
                 //Cleanup
-                () =>
-                {
-                    Array.Clear(arbitraryBytes, 0, arbitraryBytes.Length);
-                });
+                () => { Array.Clear(arbitraryBytes, 0, arbitraryBytes.Length); });
         }
+
         /// <summary>
         ///     User data must be multiple of 16 in order to be used in ProtectedMemory.Protect
         /// </summary>
@@ -314,7 +313,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
         private static bool AreIdsSame(int id, int other)
         {
             uint result = 0;
-            result |= (uint)id ^ (uint)other; // Protects against timing attacks, see: https://security.stackexchange.com/questions/83660/simple-string-comparisons-not-secure-against-timing-attacks 
+            result |= (uint) id ^
+                      (uint) other; // Protects against timing attacks, see: https://security.stackexchange.com/questions/83660/simple-string-comparisons-not-secure-against-timing-attacks 
             return result == 0;
         }
 

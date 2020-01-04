@@ -5,14 +5,14 @@ namespace SafeOrbit.UnitTests
     internal static class SafeBytesHelper
     {
         /// <summary>
-        /// Class SafeBytesHelper.
+        ///     Class SafeBytesHelper.
         /// </summary>
         /// <summary>
-        /// Appends the and return deep clone.
+        ///     Appends the and return deep clone.
         /// </summary>
         /// <param name="safeBytes">The safe bytes.</param>
         /// <param name="byte">The byte to add.</param>
-        /// <returns>DeepClone of appended <see cref="@byte"/>.</returns>
+        /// <returns>DeepClone of appended <see cref="@byte" />.</returns>
         public static ISafeBytes AppendAndReturnDeepClone(this ISafeBytes safeBytes, byte @byte)
         {
             safeBytes.Append(@byte);

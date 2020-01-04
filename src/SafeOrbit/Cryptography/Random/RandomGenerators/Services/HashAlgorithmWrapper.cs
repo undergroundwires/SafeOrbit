@@ -6,8 +6,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
     /// <summary>
     ///     HashAlgorithmWrapper is an abstraction wrapper class, to contain either .NET
-    ///     System.Security.Cryptography.HashAlgorithm,
-    ///     or Bouncy Castle Org.BouncyCastle.Crypto.IDigest, and make the user agnostic.
+    ///     <see cref="HashAlgorithm" /> or <see cref="IDigest" /> and make the user agnostic.
     /// </summary>
     internal class HashAlgorithmWrapper : IHashAlgorithmWrapper
     {
@@ -25,7 +24,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             HashAlgorithmObject = bciDigest;
             ComputeHashDelegateInstance = BouncyCastleComputeHashDelegateProvider;
-            HashSizeInBits = bciDigest.GetDigestSize()*8; // GetDigestSize() returns a number of bytes
+            HashSizeInBits = bciDigest.GetDigestSize() * 8; // GetDigestSize() returns a number of bytes
         }
 
         public int HashSizeInBits { get; protected set; }
@@ -35,10 +34,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             Dispose(true);
         }
 
-        public byte[] ComputeHash(byte[] data)
-        {
-            return ComputeHashDelegateInstance(data);
-        }
+        /// <inheritdoc cref="ComputeHashDelegateInstance" />
+        public byte[] ComputeHash(byte[] data) => ComputeHashDelegateInstance(data);
 
         protected byte[] BouncyCastleComputeHashDelegateProvider(byte[] data)
         {
@@ -54,26 +51,13 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             lock (this)
             {
-                if (HashAlgorithmObject != null)
-                {
-                    try
-                    {
-                        if (HashAlgorithmObject is IDisposable)
-                            ((IDisposable) HashAlgorithmObject).Dispose();
-                    }
-                    catch
-                    {
-                    }
-                    try
-                    {
-                        if (HashAlgorithmObject is IDigest)
-                            ((IDigest) HashAlgorithmObject).Reset();
-                    }
-                    catch
-                    {
-                    }
-                    HashAlgorithmObject = null;
-                }
+                if (HashAlgorithmObject == null)
+                    return;
+                if (HashAlgorithmObject is IDisposable disposable)
+                    disposable.Dispose();
+                else if (HashAlgorithmObject is IDigest digest)
+                    digest.Reset();
+                HashAlgorithmObject = null;
             }
         }
 

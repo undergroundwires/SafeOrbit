@@ -6,7 +6,7 @@ namespace SafeOrbit.Memory
 {
     /// <seealso cref="SafeString" />
     /// <seealso cref="ISafeString" />
-    [TestFixture] 
+    [TestFixture]
     public class SafeStringTests
     {
         [Test]
@@ -70,16 +70,13 @@ namespace SafeOrbit.Memory
             var revealedAgain = Reveal(sut);
             Assert.AreEqual(expected, revealed);
             Assert.AreEqual(expected, revealedAgain);
+
             string Reveal(ISafeString str)
             {
                 var strBuilder = new StringBuilder(str.Length);
-                for (var i = 0; i < str.Length; i++)
-                {
-                    strBuilder.Append(str.GetAsChar(i));
-                }
+                for (var i = 0; i < str.Length; i++) strBuilder.Append(str.GetAsChar(i));
                 return strBuilder.ToString();
             }
         }
     }
-
 }

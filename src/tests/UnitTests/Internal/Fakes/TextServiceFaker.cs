@@ -1,7 +1,8 @@
 ﻿using Moq;
-using SafeOrbit.Text;
 using SafeOrbit.Memory;
 using SafeOrbit.Tests;
+using SafeOrbit.Text;
+using Encoding = System.Text.Encoding;
 
 namespace SafeOrbit.Fakes
 {
@@ -11,26 +12,24 @@ namespace SafeOrbit.Fakes
         {
             var fake = new Mock<ITextService>();
             var safeStringFactory = Stubs.GetFactory<ISafeString>();
-            var encoding = System.Text.Encoding.Unicode;
-            fake.Setup(x => x.GetBytes(It.IsAny<char>(), It.IsAny<Encoding>())).Returns(
-                (char ch, Encoding e) => encoding.GetBytes(new[] { ch }));
-            fake.Setup(x => x.GetBytes(It.IsAny<string>(), It.IsAny<Encoding>())).Returns(
-                (string text, Encoding e) => encoding.GetBytes(text));
-            fake.Setup(x => x.GetChars(It.IsAny<byte[]>(), It.IsAny<Encoding>())).Returns(
-                (byte[] bytes, Encoding e) => encoding.GetChars(bytes));
-            fake.Setup(x => x.Convert(It.IsAny<Encoding>(), It.IsAny<Encoding>(), It.IsAny<byte[]>())).Returns(
-                (Encoding src, Encoding desc, byte[] bytes) => bytes);
-            fake.Setup(x => x.GetString(It.IsAny<byte[]>(), It.IsAny<Encoding>())).Returns(
-                (byte[] bytes, Encoding e) => encoding.GetString(bytes));
-            fake.Setup(x => x.GetSafeString(It.IsAny<byte[]>(), It.IsAny<Encoding>())).Returns(
-                (byte[] bytes, Encoding e) =>
+            var encoding = Encoding.Unicode;
+            fake.Setup(x => x.GetBytes(It.IsAny<char>(), It.IsAny<Text.Encoding>())).Returns(
+                (char ch, Text.Encoding e) => encoding.GetBytes(new[] {ch}));
+            fake.Setup(x => x.GetBytes(It.IsAny<string>(), It.IsAny<Text.Encoding>())).Returns(
+                (string text, Text.Encoding e) => encoding.GetBytes(text));
+            fake.Setup(x => x.GetChars(It.IsAny<byte[]>(), It.IsAny<Text.Encoding>())).Returns(
+                (byte[] bytes, Text.Encoding e) => encoding.GetChars(bytes));
+            fake.Setup(x => x.Convert(It.IsAny<Text.Encoding>(), It.IsAny<Text.Encoding>(), It.IsAny<byte[]>()))
+                .Returns(
+                    (Text.Encoding src, Text.Encoding desc, byte[] bytes) => bytes);
+            fake.Setup(x => x.GetString(It.IsAny<byte[]>(), It.IsAny<Text.Encoding>())).Returns(
+                (byte[] bytes, Text.Encoding e) => encoding.GetString(bytes));
+            fake.Setup(x => x.GetSafeString(It.IsAny<byte[]>(), It.IsAny<Text.Encoding>())).Returns(
+                (byte[] bytes, Text.Encoding e) =>
                 {
                     var result = safeStringFactory.Create();
                     var chars = encoding.GetChars(bytes);
-                    foreach (var ch in chars)
-                    {
-                        result.Append(ch);
-                    }
+                    foreach (var ch in chars) result.Append(ch);
                     return result;
                 });
             return fake.Object;

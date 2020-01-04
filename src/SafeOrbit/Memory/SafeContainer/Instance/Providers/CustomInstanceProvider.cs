@@ -6,15 +6,16 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
     /// <summary>
     ///     Provides an instance from a custom <see cref="Func{TResult}" />
     /// </summary>
-    /// <seealso cref="SingletonInstanceProvider{TImplementation}"/>
-    /// <seealso cref="TransientInstanceProvider{TImplementation}"/>
-    /// <seealso cref="IInstanceProvider"/>
-    /// <seealso cref="SafeInstanceProviderBase{TImplementation}"/>
+    /// <seealso cref="SingletonInstanceProvider{TImplementation}" />
+    /// <seealso cref="TransientInstanceProvider{TImplementation}" />
+    /// <seealso cref="IInstanceProvider" />
+    /// <seealso cref="SafeInstanceProviderBase{TImplementation}" />
     internal class CustomInstanceProvider<TImplementation> : SafeInstanceProviderBase<TImplementation>
     {
         private readonly Func<TImplementation> _instanceGetter;
 
-        public CustomInstanceProvider(Func<TImplementation> instanceGetter, InstanceProtectionMode protectionMode, LifeTime lifeTime = LifeTime.Unknown)
+        public CustomInstanceProvider(Func<TImplementation> instanceGetter, InstanceProtectionMode protectionMode,
+            LifeTime lifeTime = LifeTime.Unknown)
             : base(lifeTime, protectionMode)
         {
             _instanceGetter = instanceGetter ?? throw new ArgumentNullException(nameof(instanceGetter));
@@ -33,15 +34,15 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             _instanceGetter = instanceGetter ?? throw new ArgumentNullException(nameof(instanceGetter));
         }
 
+        public override bool CanProtectState => LifeTime == LifeTime.Singleton;
+
         /// <summary>
-        /// Returns a service object given the specified instance.
+        ///     Returns a service object given the specified instance.
         /// </summary>
         /// <returns>TInstanceType.</returns>
         public override TImplementation GetInstance()
         {
             return _instanceGetter.Invoke();
         }
-
-        public override bool CanProtectState => this.LifeTime == LifeTime.Singleton;
     }
 }

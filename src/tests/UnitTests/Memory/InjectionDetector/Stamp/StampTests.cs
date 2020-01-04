@@ -15,6 +15,7 @@ namespace SafeOrbit.Memory.Injection
             var actual = sut.Hash;
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         protected override Stamp GetSut() => GetSut(5);
 
         protected override IEnumerable<Stamp> GetDifferentSuts()
@@ -22,6 +23,7 @@ namespace SafeOrbit.Memory.Injection
             yield return GetSut(15);
             yield return GetSut(0);
         }
+
         private static Stamp GetSut(int hash) => new Stamp(hash);
     }
 }

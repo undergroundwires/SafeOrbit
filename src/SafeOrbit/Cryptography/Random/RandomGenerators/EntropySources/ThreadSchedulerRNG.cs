@@ -35,22 +35,18 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 #if !NETSTANDARD1_6
         public override void GetNonZeroBytes(byte[] data)
         {
-            int offset = 0;
+            var offset = 0;
             while (offset < data.Length)
             {
                 var newBytes = new byte[data.Length - offset];
                 if (Core.Read(newBytes, 0, newBytes.Length) != newBytes.Length)
-                {
                     throw new CryptographicException("Failed to return requested number of bytes");
-                }
-                for (int i = 0; i < newBytes.Length; i++)
-                {
+                for (var i = 0; i < newBytes.Length; i++)
                     if (newBytes[i] != 0)
                     {
                         data[offset] = newBytes[i];
                         offset++;
                     }
-                }
             }
         }
 #endif
@@ -69,15 +65,15 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             private const int MaxPoolSize = 4096;
 
             private const int ChunkSize = 16;
-            private readonly object _fifoStreamLock = new object();
-            private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
             private readonly AutoResetEvent _bytesAvailableAre = new AutoResetEvent(false);
             private readonly byte[] _chunk;
+            private readonly object _fifoStreamLock = new object();
+            private readonly Thread _mainThread;
+            private readonly AutoResetEvent _mainThreadLoopAre = new AutoResetEvent(false);
+            private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
             private int _chunkBitIndex;
             private int _chunkByteIndex;
             private int _disposed = IntCondition.False;
-            private readonly Thread _mainThread;
-            private readonly AutoResetEvent _mainThreadLoopAre = new AutoResetEvent(false);
 
             public ThreadSchedulerRngCore()
             {
@@ -102,16 +98,18 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                             if (pos + readCount >= offset + count)
                                 readCount = offset + count - pos; // Don't try to read more than we need
                             var bytesRead = -1;
-                            while ((readCount > 0) && (bytesRead != 0))
+                            while (readCount > 0 && bytesRead != 0)
                             {
-                                bytesRead = _safeStream.Read(buffer, pos, (int)readCount);
+                                bytesRead = _safeStream.Read(buffer, pos, (int) readCount);
                                 _mainThreadLoopAre.Set();
                                 readCount -= bytesRead;
                                 pos += bytesRead;
                             }
+
                             if (pos < offset + count)
                                 _bytesAvailableAre.WaitOne();
                         }
+
                         return count;
                     }
                 }
@@ -159,9 +157,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                             byte newBit = 0;
                             for (var i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
                             {
-                                newBit ^= (byte)(ticks % 2);
+                                newBit ^= (byte) (ticks % 2);
                                 ticks >>= 1;
                             }
+
                             GotBit(newBit);
                             Thread.Sleep(1);
                         }
@@ -172,7 +171,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 }
                 catch
                 {
-                    if (_disposed == IntCondition.False) // If we caught an exception after being disposed, just swallow it.
+                    if (_disposed == IntCondition.False
+                    ) // If we caught an exception after being disposed, just swallow it.
                         throw;
                 }
             }
@@ -180,7 +180,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             private void GotBit(byte bitByte)
             {
                 if (bitByte > 1)
-                    throw new ArgumentOutOfRangeException(nameof(bitByte), $"{nameof(bitByte)} must be equal to 0 or 1");
+                    throw new ArgumentOutOfRangeException(nameof(bitByte),
+                        $"{nameof(bitByte)} must be equal to 0 or 1");
                 _chunk[_chunkByteIndex] <<= 1; // << operator discards msb's and zero-fills lsb's, never causes overflow
                 if (bitByte == 1)
                     _chunk[_chunkByteIndex]++; // By incrementing, we are setting the lsb to 1.

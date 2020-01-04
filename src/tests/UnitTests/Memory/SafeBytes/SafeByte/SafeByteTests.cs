@@ -11,12 +11,11 @@ using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {
-    /// <seealso cref="ISafeByte"/>
-    /// <seealso cref="SafeByte"/>
+    /// <seealso cref="ISafeByte" />
+    /// <seealso cref="SafeByte" />
     [TestFixture]
     internal class SafeByteTests : TestsFor<ISafeByte>
     {
-
         [Test]
         public void Id_Disposed_Throws()
         {
@@ -24,8 +23,13 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             sut.Set(5);
             sut.Dispose();
+
             // Act
-            void GetId() { var temp = sut.Id; }
+            void GetId()
+            {
+                var temp = sut.Id;
+            }
+
             // Assert
             Assert.Throws<ObjectDisposedException>(GetId);
         }
@@ -35,8 +39,13 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             // Arrange
             using var sut = GetSut();
+
             // Act
-            void GetId() { var temp = sut.Id; }
+            void GetId()
+            {
+                var temp = sut.Id;
+            }
+
             // Assert
             Assert.Throws<InvalidOperationException>(GetId);
         }
@@ -84,6 +93,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             //Arrange
             using var sut = GetSut();
+
             //Act
             void CallDeepClone() => sut.DeepClone();
             //Assert
@@ -97,6 +107,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             sut.Set(5);
             sut.Dispose();
+
             // Act
             void DeepClone() => sut.DeepClone();
             // Assert
@@ -116,7 +127,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Act
             sut.DeepClone();
             //Assert
-            mock.Verify(m=>m.DeepClone(), Times.Once);
+            mock.Verify(m => m.DeepClone(), Times.Once);
         }
 
         [Test]
@@ -156,6 +167,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             sut.Set(5);
             sut.Dispose();
+
             //Act
             void Equals() => sut.Equals(GetSut());
             //Assert
@@ -171,6 +183,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var other = GetSut();
             other.Set(5);
             other.Dispose();
+
             //Act
             void Equals() => sut.Equals(other);
             //Assert
@@ -196,6 +209,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             //Arrange
             using var sut = GetSut();
+
             //Act
             void Equals() => sut.Equals(5);
             //Assert
@@ -220,6 +234,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             using var sut = GetSut();
             var unknownType = new SafeByteTests();
+
             //Act
             void Equals() => sut.Equals(unknownType);
             //Assert
@@ -316,6 +331,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             //Arrange
             using var sut = GetSut();
+
             //Act
             void Equals() => sut.Equals(5);
             //Assert
@@ -328,6 +344,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             var sut = GetSut();
             sut.Dispose();
+
             //Act
             void Equals() => sut.Equals(5);
             //Assert
@@ -353,6 +370,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         {
             //Arrange
             using var sut = GetSut();
+
             //Act
             void CallGet() => sut.Get();
             //Assert
@@ -367,6 +385,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var sut = GetSut();
             sut.Set(5);
             sut.Dispose();
+
             //Act
             void CallGet() => sut.Get();
             //Assert
@@ -412,6 +431,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             using var sut = GetSut();
             int temp;
+
             //Act
             void GetIdWithoutSettingByte() => temp = sut.Id;
             //Act
@@ -452,6 +472,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             using var sut = GetSut();
             //Act
             sut.Set(b1);
+
             void CallOneMoreTime() => sut.Set(b2);
             //Assert
             Assert.That(CallOneMoreTime, Throws.TypeOf<InvalidOperationException>());
@@ -463,6 +484,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Arrange
             var sut = GetSut();
             sut.Dispose();
+
             //Act
             void Set() => sut.Set(30);
             //Assert
@@ -480,7 +502,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             // Act
             sut.Dispose();
             // Assert
-            mock.Verify(m=> m.Dispose(), Times.Once);
+            mock.Verify(m => m.Dispose(), Times.Once);
         }
 
         [Test]
@@ -503,6 +525,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             // Arrange
             var sut = GetSut();
             sut.Dispose();
+
             // Act
             void Dispose() => sut.Dispose();
             // Assert
@@ -510,7 +533,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
         }
 
 
-        private static ISafeByte GetSut(IMemoryProtectedBytes encryptedByte = null, IMemoryProtectedBytes encryptionKey = null)
+        private static ISafeByte GetSut(IMemoryProtectedBytes encryptedByte = null,
+            IMemoryProtectedBytes encryptionKey = null)
         {
             return new SafeByte
             (
@@ -521,6 +545,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
                 encryptionKey ?? Stubs.Get<IMemoryProtectedBytes>()
             );
         }
+
         protected override ISafeByte GetSut() => GetSut();
     }
 }

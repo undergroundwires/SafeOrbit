@@ -1,11 +1,10 @@
-﻿using System;
-
-namespace SafeOrbit.Tests
+﻿namespace SafeOrbit.Tests
 {
-    public interface IStubProvider<out T>  : IStubProvider
+    public interface IStubProvider<out T> : IStubProvider
     {
         new T Provide();
     }
+
     public interface IStubProvider
     {
         object Provide();

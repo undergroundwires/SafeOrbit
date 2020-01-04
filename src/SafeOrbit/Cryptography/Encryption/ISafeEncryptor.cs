@@ -4,7 +4,8 @@ namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
     ///     <p>
-    ///         Defines the default <see cref="ISafeEncryptor{TResult,TInput,TKey,TSalt}" /> using <see cref="byte" /> arrays as
+    ///         Defines the default <see cref="ISafeEncryptor{TResult,TInput,TKey,TSalt}" /> using <see cref="byte" /> arrays
+    ///         as
     ///         the types.
     ///     </p>
     /// </summary>
@@ -32,7 +33,7 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <typeparam name="TSalt">The type of the salt.</typeparam>
     /// <seealso cref="IFastEncryptor{TResult,TInput,TKey}" />
     /// <seealso cref="ISafeEncryptor" />
-    public interface ISafeEncryptor<TResult, in TInput, in TKey, in TSalt>  : IEncryptor
+    public interface ISafeEncryptor<TResult, in TInput, in TKey, in TSalt> : IEncryptor
     {
         /// <summary>
         ///     Encrypts the specified input with the given key and the salt.
@@ -41,7 +42,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
         /// <returns>Encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="EncryptAsync"/>
+        /// <seealso cref="EncryptAsync" />
         TResult Encrypt(TInput input, TKey key, TSalt salt);
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
         /// <returns>Encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="DecryptAsync"/>
+        /// <seealso cref="DecryptAsync" />
         TResult Decrypt(TInput input, TKey key, TSalt salt);
 
         /// <summary>
@@ -60,8 +61,8 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
-        /// <returns>A <see cref="Task"/> for encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="Encrypt"/>
+        /// <returns>A <see cref="Task" /> for encrypted <typeparamref name="TResult" /></returns>
+        /// <seealso cref="Encrypt" />
         Task<TResult> EncryptAsync(TInput input, TKey key, TSalt salt);
 
         /// <summary>
@@ -70,8 +71,8 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
-        /// <returns>A <see cref="Task"/> for encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="Decrypt"/>
+        /// <returns>A <see cref="Task" /> for encrypted <typeparamref name="TResult" /></returns>
+        /// <seealso cref="Decrypt" />
         Task<TResult> DecryptAsync(TInput input, TKey key, TSalt salt);
     }
 }

@@ -44,11 +44,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
                             Console.WriteLine($"Thread {threadId} is sleeping for {sleepMs} ms.");
                             Thread.Sleep(sleepMs);
                         }
+
                         count++;
                     }
+
                     Console.WriteLine($"Thread {threadId} is completed");
                 });
             }
+
             // run
             foreach (var thread in threads)
                 thread.Start();
@@ -63,7 +66,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             var buffer = new byte[length];
             for (var i = 0; i < length; i++)
-                buffer[i] = (byte)i;
+                buffer[i] = (byte) i;
             return buffer;
         }
 

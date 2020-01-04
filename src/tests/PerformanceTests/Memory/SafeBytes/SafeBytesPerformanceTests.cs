@@ -16,16 +16,14 @@ namespace SafeOrbit.Memory
             SafeOrbitCore.Current.StartEarly();
             var sut = GetSut();
             var expectedHigherLimit = 3000;
-            for (var i = 0; i < 100; i++)
-            {
-                sut.Append((byte)i);
-            }
+            for (var i = 0; i < 100; i++) sut.Append((byte) i);
             //act
-            var actualPerformance = base.Measure(
+            var actualPerformance = Measure(
                 () => sut.ToByteArray());
             //assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
         }
+
         [Test]
         public void Adding_100_Bytes_Takes_Less_Than_200ms()
         {
@@ -34,16 +32,14 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             var expectedHigherLimit = 200;
             //act
-            long actualPerformance = base.Measure(() =>
+            var actualPerformance = Measure(() =>
             {
-                for (var i = 0; i < 100; i++)
-                {
-                    sut.Append((byte)i);
-                }
+                for (var i = 0; i < 100; i++) sut.Append((byte) i);
             });
             //assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
         }
+
         protected override ISafeBytes GetSut()
         {
             return new SafeBytes();

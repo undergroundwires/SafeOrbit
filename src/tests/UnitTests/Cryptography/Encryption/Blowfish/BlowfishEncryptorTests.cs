@@ -31,7 +31,9 @@ namespace SafeOrbit.Cryptography.Encryption
                     .Returns(padder);
                 factory = factoryMock.Object;
             }
-            return new BlowfishEncryptor(cipherMode ?? BlowfishCipherMode.Cbc, paddingMode, random ?? Stubs.Get<IFastRandom>(), factory ?? Stubs.Get<IPadderFactory>());
+
+            return new BlowfishEncryptor(cipherMode ?? BlowfishCipherMode.Cbc, paddingMode,
+                random ?? Stubs.Get<IFastRandom>(), factory ?? Stubs.Get<IPadderFactory>());
         }
 
 
@@ -42,6 +44,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var input = new byte[0];
+
             //Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key);
             //Assert
@@ -54,7 +57,8 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             //Arrange
             var sut = GetSut();
-            var input = (byte[])null;
+            var input = (byte[]) null;
+
             //Act
             void CallWithNullParameter() => sut.Decrypt(input, key);
             //Assert
@@ -66,8 +70,9 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             //Arrange
             var sut = GetSut();
-            var input = new byte[] { 5, 10, 15 };
+            var input = new byte[] {5, 10, 15};
             var key = new byte[0];
+
             //Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key);
             //Assert
@@ -78,9 +83,10 @@ namespace SafeOrbit.Cryptography.Encryption
         public void Decrypt_KeyParameterIsNull_ThrowsArgumentNullException()
         {
             //Arrange
-            var input = new byte[] { 55 };
+            var input = new byte[] {55};
             var sut = GetSut();
-            var key = (byte[])null;
+            var key = (byte[]) null;
+
             //Act
             void CallWithNullParameter() => sut.Decrypt(input, key);
             //Assert
@@ -94,6 +100,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var key = new byte[sut.MaxKeySizeInBits / 8 + 1];
+
             //Act
             void CallWithWrongKeySize() => sut.Decrypt(input, key);
             //Assert
@@ -107,18 +114,20 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var key = new byte[sut.MinKeySizeInBits / 8 - 1];
+
             //Act
             void CallingWithWrongKeySize() => sut.Decrypt(input, key);
             //Assert
             Assert.That(CallingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
         }
-        
+
         [Test]
-        [TestCase(BlowfishCipherMode.Ecb), TestCase(BlowfishCipherMode.Cbc)]
+        [TestCase(BlowfishCipherMode.Ecb)]
+        [TestCase(BlowfishCipherMode.Cbc)]
         public void Decrypt_KeySizeIsBetweenMinKeyAndLastKey_CanDecrypt(BlowfishCipherMode cipherMode)
         {
             //arrange
-            var input = (byte[])ByteCases.ByteArray32Length[0];
+            var input = (byte[]) ByteCases.ByteArray32Length[0];
             var sut = GetSut(cipherMode);
             for (var i = sut.MinKeySizeInBits / 8; i < sut.MaxKeySizeInBits / 8; i++)
             {
@@ -138,6 +147,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var input = new byte[0];
+
             //Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key);
             //Assert
@@ -150,7 +160,8 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             //Arrange
             var sut = GetSut();
-            var input = (byte[])null;
+            var input = (byte[]) null;
+
             //Act
             void CallWithNullParameter() => sut.Encrypt(input, key);
             //Assert
@@ -164,6 +175,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var key = new byte[0];
+
             //Act
             void CallWithEmptyParameter() => sut.Encrypt(input, key);
             //Assert
@@ -176,7 +188,8 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             //Arrange
             var sut = GetSut();
-            var key = (byte[])null;
+            var key = (byte[]) null;
+
             //Act
             void CallWithNullParameter() => sut.Encrypt(input, key);
             //Assert
@@ -190,6 +203,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var key = new byte[sut.MaxKeySizeInBits / 8 + 1];
+
             //Act
             void CallWithWrongKeySize() => sut.Encrypt(input, key);
             //Assert
@@ -203,6 +217,7 @@ namespace SafeOrbit.Cryptography.Encryption
             //Arrange
             var sut = GetSut();
             var key = new byte[sut.MinKeySizeInBits / 8 - 1];
+
             //Act
             void CallWithWrongKeySize() => sut.Encrypt(input, key);
             //Assert
@@ -225,8 +240,8 @@ namespace SafeOrbit.Cryptography.Encryption
 
             // Assert
             padder.Verify(
-                p=> p.Pad(
-                    It.Is<byte[]>(input => input.SequenceEqual(data)), 
+                p => p.Pad(
+                    It.Is<byte[]>(input => input.SequenceEqual(data)),
                     It.Is<int>(size => size == blockSizeInBytes))
                 , Times.Once);
         }

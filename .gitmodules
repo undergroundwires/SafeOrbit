@@ -1,0 +1,3 @@
+[submodule "docs/SafeOrbit.wiki"]
+	path = docs/SafeOrbit.wiki
+	url = git://github.com/undergroundwires/SafeOrbit.wiki

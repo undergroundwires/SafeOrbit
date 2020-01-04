@@ -1,5 +1,4 @@
-﻿
-namespace SafeOrbit.Cryptography.Encryption
+﻿namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
     ///     An encryption algorithm.

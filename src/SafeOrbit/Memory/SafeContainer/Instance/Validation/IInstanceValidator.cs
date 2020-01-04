@@ -3,9 +3,9 @@
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
     /// <summary>
-    /// Abstracts a service that validates a <see cref="IReadOnlyList{InstanceProvider}"/>
+    ///     Abstracts a service that validates a <see cref="IReadOnlyList{T}" />
     /// </summary>
-    /// <seealso cref="IInstanceProvider"/>
+    /// <seealso cref="IInstanceProvider" />
     internal interface IInstanceValidator
     {
         void ValidateAll(IReadOnlyList<IInstanceProvider> instanceProviders);

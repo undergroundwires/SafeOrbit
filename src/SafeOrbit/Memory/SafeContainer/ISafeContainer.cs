@@ -1,5 +1,5 @@
 ﻿using System;
-using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Core.Protectable;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory
@@ -14,7 +14,7 @@ namespace SafeOrbit.Memory
         IAlerts,
         IProtectable<SafeContainerProtectionMode>,
         IServiceProvider
-   {
+    {
         TComponent Get<TComponent>();
 
         void Register<TComponent>(LifeTime lifeTime = LifeTime.Transient) where TComponent : class, new();
@@ -40,8 +40,9 @@ namespace SafeOrbit.Memory
             LifeTime lifeTime = LifeTime.Unknown)
             where TComponent : class
             where TImplementation : TComponent, new();
+
         /// <summary>
-        /// Registers the specified instance initializer.
+        ///     Registers the specified instance initializer.
         /// </summary>
         /// <typeparam name="TComponent">The type of the the component.</typeparam>
         /// <param name="instanceInitializer">The instance initializer.</param>
@@ -49,6 +50,7 @@ namespace SafeOrbit.Memory
         void Register<TComponent>(Func<TComponent> instanceInitializer,
             LifeTime lifeTime = LifeTime.Unknown)
             where TComponent : class;
+
         /// <summary>
         ///     Verifies this instance.
         /// </summary>

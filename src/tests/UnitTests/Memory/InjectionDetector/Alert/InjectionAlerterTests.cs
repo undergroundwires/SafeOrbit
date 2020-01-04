@@ -7,13 +7,14 @@ using SafeOrbit.Memory.InjectionServices.Alerters;
 
 namespace SafeOrbit.Memory.InjectionServices
 {
-    /// <seealso cref="InjectionAlerter"/>
-    /// <seealso cref="IInjectionAlerter"/>
-    /// <seealso cref="InjectionAlertChannel"/>
+    /// <seealso cref="InjectionAlerter" />
+    /// <seealso cref="IInjectionAlerter" />
+    /// <seealso cref="InjectionAlertChannel" />
     [TestFixture]
     public class InjectionAlerterTests
     {
-        [Test, TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
         public void Alert_ChannelIsRaiseEvent_InvokesRaiseEventAlerter(IInjectionMessage info)
         {
             //arrange
@@ -23,9 +24,11 @@ namespace SafeOrbit.Memory.InjectionServices
             //act
             sut.Alert(info, channel);
             //assert
-            alerterMock.Verify(a=> a.Alert (It.Is<IInjectionMessage>((value) => info.Equals(value))));
+            alerterMock.Verify(a => a.Alert(It.Is<IInjectionMessage>(value => info.Equals(value))));
         }
-        [Test, TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
+
+        [Test]
+        [TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
         public void Alert_ChannelIsDebugFail_InvokesRaiseEventAlerter(IInjectionMessage info)
         {
             //arrange
@@ -35,9 +38,11 @@ namespace SafeOrbit.Memory.InjectionServices
             //act
             sut.Alert(info, channel);
             //assert
-            alerterMock.Verify(a => a.Alert(It.Is<IInjectionMessage>((value) => info.Equals(value))));
+            alerterMock.Verify(a => a.Alert(It.Is<IInjectionMessage>(value => info.Equals(value))));
         }
-        [Test, TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
+
+        [Test]
+        [TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
         public void Alert_ChannelIsThrowException_InvokesRaiseEventAlerter(IInjectionMessage info)
         {
             //arrange
@@ -47,9 +52,11 @@ namespace SafeOrbit.Memory.InjectionServices
             //act
             sut.Alert(info, channel);
             //assert
-            alerterMock.Verify(a => a.Alert(It.Is<IInjectionMessage>((value) => info.Equals(value))));
+            alerterMock.Verify(a => a.Alert(It.Is<IInjectionMessage>(value => info.Equals(value))));
         }
-        [Test, TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
+
+        [Test]
+        [TestCaseSource(typeof(InjectionAlerterTests), nameof(MessageCases))]
         public void Alert_ChannelIsDebugWrite_InvokesRaiseEventAlerter(IInjectionMessage info)
         {
             //arrange
@@ -59,8 +66,9 @@ namespace SafeOrbit.Memory.InjectionServices
             //act
             sut.Alert(info, channel);
             //assert
-            alerterMock.Verify(a => a.Alert(It.Is<IInjectionMessage>((value) => info.Equals(value))));
+            alerterMock.Verify(a => a.Alert(It.Is<IInjectionMessage>(value => info.Equals(value))));
         }
+
         private static IInjectionAlerter GetSut(
             IAlerter raiseEventAlerter = null,
             IAlerter debugWriteAlerter = null,
@@ -81,6 +89,7 @@ namespace SafeOrbit.Memory.InjectionServices
                 if (throwExceptionAlerter != null)
                     mock.Setup(m => m.Get(InjectionAlertChannel.ThrowException)).Returns(throwExceptionAlerter);
             }
+
             return new InjectionAlerter(mock.Object);
         }
 

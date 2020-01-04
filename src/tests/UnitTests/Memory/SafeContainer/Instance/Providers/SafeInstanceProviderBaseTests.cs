@@ -5,12 +5,13 @@ using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
-    /// <seealso cref="SafeInstanceProviderBase{TestInstanceProvider}"/>
-    /// <seealso cref="IInstanceProvider"/>
+    /// <seealso cref="SafeInstanceProviderBase{TestInstanceProvider}" />
+    /// <seealso cref="IInstanceProvider" />
     [TestFixture]
     public class SafeInstanceProviderBaseTests
     {
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.InstanceProtectionModes))]
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.InstanceProtectionModes))]
         public void Constructor_Sets_ProtectionMode(InstanceProtectionMode mode)
         {
             //arrange
@@ -22,7 +23,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.LifeTimes))]
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.LifeTimes))]
         public void Constructor_Sets_LifeTime(LifeTime lifeTime)
         {
             //arrange
@@ -34,7 +36,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.ProtectionModeAndProtectVariables))]
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.ProtectionModeAndProtectVariables))]
         public void Constructor_Sets_Inner_InjectionDetectorSettings_From_ProtectionMode(
             InstanceProtectionMode protectionMode, bool scanState, bool scanCode)
         {
@@ -49,7 +52,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(injectionDetector.ScanCode, Is.EqualTo(scanCode));
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_Sets_AlertChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -61,8 +65,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))
-        ]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void AlertChannel_Sets_InnerInjectionDetectorChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -77,8 +81,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             );
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))
-        ]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void AlertChannel_Gets_InnerInjectionDetectorChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -102,7 +106,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.AlertingInstanceProtectionModes))]
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.AlertingInstanceProtectionModes))]
         public void CanAlert_ForProtectModes_returnsTrue(InstanceProtectionMode protectionMode)
         {
             const bool expected = true;
@@ -111,7 +116,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.ProtectionModeAndProtectVariables))]
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.ProtectionModeAndProtectVariables))]
         public void SetProtectionMode_Sets_Inner_InjectionDetectorSettings(InstanceProtectionMode protectionMode,
             bool scanState, bool scanCode)
         {
@@ -127,8 +133,10 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(injectionDetector.ScanCode, Is.EqualTo(scanCode));
         }
 
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.NonStateProtection_To_StateProtection))]
-        public void SetProtectionMode_From_NonStateProtection_To_StateProtection_NotifiesInnerInjectionDetector(InstanceProtectionMode from, InstanceProtectionMode to)
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.NonStateProtection_To_StateProtection))]
+        public void SetProtectionMode_From_NonStateProtection_To_StateProtection_NotifiesInnerInjectionDetector(
+            InstanceProtectionMode from, InstanceProtectionMode to)
         {
             //arrange
             var detectorMock = new Mock<IInjectionDetector>();
@@ -144,8 +152,10 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             detectorMock.Verify(d => d.NotifyChanges(It.IsAny<object>()), Times.Once);
         }
 
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.StateProtection_To_NonStateProtection))]
-        public void SetProtectionMode_From_StateProtection_To_NonStateProtection_DoesNotNotifyInnerInjectionDetector(InstanceProtectionMode from, InstanceProtectionMode to)
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.StateProtection_To_NonStateProtection))]
+        public void SetProtectionMode_From_StateProtection_To_NonStateProtection_DoesNotNotifyInnerInjectionDetector(
+            InstanceProtectionMode from, InstanceProtectionMode to)
         {
             //arrange
             var detectorMock = new Mock<IInjectionDetector>();

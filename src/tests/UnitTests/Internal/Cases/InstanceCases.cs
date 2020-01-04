@@ -22,7 +22,7 @@ namespace SafeOrbit.Memory
         };
 
         /// <summary>
-        /// Arg[0] = ProtectionMode, Arg[1] = JustState, Arg[1] = JustCode
+        ///     Arg[0] = ProtectionMode, Arg[1] = JustState, Arg[1] = JustCode
         /// </summary>
         public static IEnumerable<TestCaseData> ProtectionModeAndProtectVariables
         {
@@ -46,6 +46,7 @@ namespace SafeOrbit.Memory
                 yield return new TestCaseData(InstanceProtectionMode.StateAndCode, InstanceProtectionMode.JustState);
             }
         }
+
         public static IEnumerable<TestCaseData> NonStateProtection_To_StateProtection
         {
             get

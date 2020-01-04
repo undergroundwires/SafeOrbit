@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
-using SafeOrbit.Memory;
 using SafeOrbit.Memory.SafeContainerServices.Instance.Providers;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
-    /// <seealso cref="SingletonShouldNotImplementIDisposableTests"/>
-    /// <seealso cref="IInstanceProviderRule"/>
+    /// <seealso cref="SingletonShouldNotImplementIDisposableTests" />
+    /// <seealso cref="IInstanceProviderRule" />
     internal class SingletonShouldNotImplementIDisposableTests : TestsFor<SingletonShouldNotImplementIDisposable>
     {
         [Test]
@@ -48,7 +44,11 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
         {
             return new SingletonShouldNotImplementIDisposable();
         }
-        private class NotDisposableClass { }
+
+        private class NotDisposableClass
+        {
+        }
+
         private class DisposableClass : IDisposable
         {
             public void Dispose()

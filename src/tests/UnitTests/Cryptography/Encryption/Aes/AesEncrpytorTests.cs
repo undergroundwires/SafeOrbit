@@ -50,6 +50,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var input = new byte[0];
+
             // Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             // Assert
@@ -63,6 +64,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var input = (byte[]) null;
+
             // Act
             void CallWithNullParameter() => sut.Decrypt(input, key, salt);
             // Assert
@@ -76,6 +78,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var key = new byte[0];
+
             // Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             // Assert
@@ -89,6 +92,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var key = (byte[]) null;
+
             // Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             // Assert
@@ -102,6 +106,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var salt = new byte[0];
+
             // Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             // Assert
@@ -115,6 +120,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var salt = (byte[]) null;
+
             // Act
             void CallWithEmptyParameter() => sut.Decrypt(input, key, salt);
             // Assert
@@ -128,6 +134,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var input = new byte[0];
+
             // Act
             void CallWithEmptyParameter() => sut.Encrypt(input, key, salt);
             // Assert
@@ -141,6 +148,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var input = (byte[]) null;
+
             // Act
             void CallWithNullParameter() => sut.Encrypt(input, key, salt);
             // Assert
@@ -154,6 +162,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var key = new byte[0];
+
             // Act
             void CallWithEmptyParameter() => sut.Encrypt(input, key, salt);
             // Assert
@@ -167,6 +176,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var key = (byte[]) null;
+
             // Act
             void CallWithNullParameter() => sut.Encrypt(input, key, salt);
             // Assert
@@ -180,6 +190,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var salt = new byte[0];
+
             // Act
             void CallWithEmptyParameter() => sut.Encrypt(input, key, salt);
             // Assert
@@ -193,6 +204,7 @@ namespace SafeOrbit.Cryptography.Encryption
             // Arrange
             var sut = GetSut();
             var salt = (byte[]) null;
+
             // Act
             void CallWithNullParameter() => sut.Encrypt(input, key, salt);
             // Assert
@@ -206,7 +218,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             // Arrange
             var sut = GetSut();
-            var keySize = sut.MinKeySizeInBits/8; 
+            var keySize = sut.MinKeySizeInBits / 8;
             // Act
             var key = new byte[keySize];
             var encrypted = sut.Encrypt(input, key, salt);
@@ -243,7 +255,11 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         [Test]
-        [TestCase(1), TestCase(15), TestCase(16), TestCase(17), TestCase(300)]
+        [TestCase(1)]
+        [TestCase(15)]
+        [TestCase(16)]
+        [TestCase(17)]
+        [TestCase(300)]
         public void Encrypt_ForDifferentSizes_CanDecrypt(int size) // a.k.a. padding works
         {
             // Arrange

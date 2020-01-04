@@ -16,16 +16,16 @@ namespace SafeOrbit.Library
         ISafeContainer Factory { get; }
 
         /// <summary>
+        ///     Gets the information regarding to current build of SafeOrbit.
+        /// </summary>
+        IBuildInfo BuildInfo { get; }
+
+        /// <summary>
         ///     Loads the necessary data early on. For better performance, it's highly recommended to start the
         ///     application early in your application start.
         /// </summary>
         void StartEarly();
 
         event EventHandler<IInjectionMessage> LibraryInjected;
-
-        /// <summary>
-        /// Gets the information regarding to current build of SafeOrbit.
-        /// </summary>
-        IBuildInfo BuildInfo { get; }
     }
 }

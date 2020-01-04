@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SafeOrbit.Core.Protectable;
+using SafeOrbit.Core.Reflection;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
-using SafeOrbit.Infrastructure.Protectable;
-using SafeOrbit.Infrastructure.Reflection;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.SafeContainerServices.Instance;
@@ -143,13 +143,16 @@ namespace SafeOrbit.Memory
         /// <exception cref="T:System.ArgumentException"><see cref="M:SafeOrbit.Memory.SafeContainer.Verify" /> is not called.</exception>
         /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
         /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">If the <paramref name="serviceType" /> is not registered.</exception>
+        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">
+        ///     If the <paramref name="serviceType" /> is not
+        ///     registered.
+        /// </exception>
         public object GetService(Type serviceType)
         {
             if (!_isVerified) throw new ArgumentException($"Please call {nameof(Verify)} before using the factory");
             SpinUntilSecurityModeIsAvailable();
             var key = _typeIdGenerator.Generate(serviceType);
-            if(!_typeInstancesSafe.Object.TryGetValue(key, out var instanceProvider))
+            if (!_typeInstancesSafe.Object.TryGetValue(key, out var instanceProvider))
                 throw new KeyNotFoundException($"{serviceType.FullName} is not registered.");
             var result = instanceProvider.Provide();
             return result;
@@ -228,7 +231,9 @@ namespace SafeOrbit.Memory
 
         private void SetAlertChannelInternal(InjectionAlertChannel value)
         {
-            if (!Enum.IsDefined(typeof(InjectionAlertChannel), value)) throw new ArgumentOutOfRangeException(nameof(value), "Value should be defined in the InjectionAlertChannel enum.");
+            if (!Enum.IsDefined(typeof(InjectionAlertChannel), value))
+                throw new ArgumentOutOfRangeException(nameof(value),
+                    "Value should be defined in the InjectionAlertChannel enum.");
             _alertChannel = value;
             _typeInstancesSafe.AlertChannel = value;
             var dict = _typeInstancesSafe.Object;
@@ -255,6 +260,7 @@ namespace SafeOrbit.Memory
                 newDictionary.Values.ForEach(instance => instance.SetProtectionMode(innerInstanceProtection));
                 _typeInstancesSafe.Dispose();
             }
+
             //re-create inner safe object
             _typeInstancesSafe = CreateInnerDictionary(context.NewValue, AlertChannel, newDictionary);
         }

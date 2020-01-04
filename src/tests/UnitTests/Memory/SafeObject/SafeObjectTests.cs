@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Threading;
 using Moq;
 using NUnit.Framework;
+using SafeOrbit.Core.Protectable;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Fakes;
-using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
+using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory
 {
     /// <seealso cref="SafeObject{TObject}" />
     /// <seealso cref="ISafeObject{TObject}" />
     /// <seealso cref="SafeObjectProtectionMode" />
-    /// <seealso cref="IProtectable{TProtectionLevel}"/>
+    /// <seealso cref="IProtectable{TProtectionLevel}" />
     [TestFixture]
     public class SafeObjectTests : ProtectableBaseTests<SafeObjectProtectionMode>
     {
-        [Test, TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.SafeObjectProtectionModeCases))]
+        [Test]
+        [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.SafeObjectProtectionModeCases))]
         public void Constructor_Sets_ProtectionMode(SafeObjectProtectionMode mode)
         {
             //arrange
@@ -38,7 +39,8 @@ namespace SafeOrbit.Memory
             Assert.That(initialObject, Is.EqualTo(sut.Object));
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_Sets_AlertChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -53,7 +55,7 @@ namespace SafeOrbit.Memory
         [Test]
         public void Constructor_Sets_IsReadOnly()
         {
-            var modifiableSut = GetSut(isReadOnly: false);
+            var modifiableSut = GetSut();
             var nonModifiableSut = GetSut(isReadOnly: true);
             Assert.That(modifiableSut.IsReadOnly, Is.False);
             Assert.That(nonModifiableSut.IsReadOnly, Is.True);
@@ -88,7 +90,8 @@ namespace SafeOrbit.Memory
             mockInjProtector.Verify(p => p.NotifyChanges(It.IsAny<TestObject>()), Times.Once);
         }
 
-        [Test, TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.ProtectionModeAndProtectVariables))]
+        [Test]
+        [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.ProtectionModeAndProtectVariables))]
         public void Constructor_Sets_Inner_InjectionDetectorSettings_From_ProtectionMode(
             SafeObjectProtectionMode protectionMode, bool scanState, bool scanCode)
         {
@@ -103,7 +106,8 @@ namespace SafeOrbit.Memory
             Assert.That(injectionDetector.ScanCode, Is.EqualTo(scanCode));
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_Sets_InnerInjectionDetectorsAlertChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -128,7 +132,8 @@ namespace SafeOrbit.Memory
             Assert.That(sut.IsReadOnly, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.ProtectionModeAndProtectVariables))]
+        [Test]
+        [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.ProtectionModeAndProtectVariables))]
         public void SetProtectionMode_Sets_Inner_InjectionDetectorSettings(SafeObjectProtectionMode protectionMode,
             bool scanState, bool scanCode)
         {
@@ -156,7 +161,8 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.AlertingProtectionModes))]
+        [Test]
+        [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.AlertingProtectionModes))]
         public void CanAlert_ForProtectModes_returnsTrue(SafeObjectProtectionMode protectionMode)
         {
             //arrange
@@ -170,7 +176,8 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void AlertChannel_Sets_InnerInjectionDetectorChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -185,7 +192,8 @@ namespace SafeOrbit.Memory
             );
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void AlertChannel_Gets_InnerInjectionDetectorChannel(InjectionAlertChannel alertChannel)
         {
             //arrange
@@ -246,7 +254,7 @@ namespace SafeOrbit.Memory
         [Test]
         public void Object_WhenRetrieving_IfChangesAreVerified_returnsChangedObject()
         {
-            var sut = GetSut(isReadOnly: false);
+            var sut = GetSut();
             sut.ApplyChanges(obj => obj.TestProperty = "change_without_verify");
             Assert.That(sut.Object.TestProperty, Is.EqualTo("change_without_verify"));
         }
@@ -288,7 +296,7 @@ namespace SafeOrbit.Memory
         }
 
 
-        /// <seealso cref="ReadOnlyAccessForbiddenException"/>
+        /// <seealso cref="ReadOnlyAccessForbiddenException" />
         [Test]
         public void ApplyChanges_IfObjectIsNotModifiable_throwsReadOnlyAccessForbiddenException()
         {
@@ -296,6 +304,7 @@ namespace SafeOrbit.Memory
             var initialObject = new TestObject();
             var sut = GetSut(initialObject);
             sut.MakeReadOnly();
+
             //act
             void CallVerifyChanges() => sut.ApplyChanges(a => { });
             //assert
@@ -337,8 +346,10 @@ namespace SafeOrbit.Memory
             Assert.That(actual.TestProperty, Is.EqualTo(expectedString));
         }
 
-        [Test, TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.NonStateProtectionToStateProtectionCases))]
-        public void SetProtectionMode_From_NonStateProtection_To_StateProtection_NotifiesInnerInjectionDetector(SafeObjectProtectionMode from, SafeObjectProtectionMode to)
+        [Test]
+        [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.NonStateProtectionToStateProtectionCases))]
+        public void SetProtectionMode_From_NonStateProtection_To_StateProtection_NotifiesInnerInjectionDetector(
+            SafeObjectProtectionMode from, SafeObjectProtectionMode to)
         {
             //arrange
             var detectorMock = new Mock<IInjectionDetector>();
@@ -353,8 +364,10 @@ namespace SafeOrbit.Memory
             detectorMock.Verify(d => d.NotifyChanges(obj), Times.Once);
         }
 
-        [Test, TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.StateProtectionToNonStateProtectionCases))]
-        public void SetProtectionMode_From_StateProtection_To_NonStateProtection_DoesNotNotifyInnerInjectionDetector(SafeObjectProtectionMode from, SafeObjectProtectionMode to)
+        [Test]
+        [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.StateProtectionToNonStateProtectionCases))]
+        public void SetProtectionMode_From_StateProtection_To_NonStateProtection_DoesNotNotifyInnerInjectionDetector(
+            SafeObjectProtectionMode from, SafeObjectProtectionMode to)
         {
             //arrange
             var detectorMock = new Mock<IInjectionDetector>();
@@ -391,19 +404,20 @@ namespace SafeOrbit.Memory
         }
 
         /// <summary>
-        /// Gets the protection mode test cases where first argument is the sut and the second is <see cref="SafeObjectProtectionMode"/> to be set and expected.
+        ///     Gets the protection mode test cases where first argument is the sut and the second is
+        ///     <see cref="SafeObjectProtectionMode" /> to be set and expected.
         /// </summary>
-        /// <seealso cref="ProtectableBaseTests{TProtectionMode}"/>
+        /// <seealso cref="ProtectableBaseTests{TProtectionMode}" />
         protected override IEnumerable<TestCaseData> GetProtectionModeTestCases()
         {
             yield return
-                new TestCaseData(GetSut(protectionMode: SafeObjectProtectionMode.StateAndCode),
+                new TestCaseData(GetSut(),
                     SafeObjectProtectionMode.JustState);
             yield return
-                new TestCaseData(GetSut(protectionMode: SafeObjectProtectionMode.StateAndCode),
+                new TestCaseData(GetSut(),
                     SafeObjectProtectionMode.JustCode);
             yield return
-                new TestCaseData(GetSut(protectionMode: SafeObjectProtectionMode.StateAndCode),
+                new TestCaseData(GetSut(),
                     SafeObjectProtectionMode.NoProtection);
             yield return
                 new TestCaseData(GetSut(protectionMode: SafeObjectProtectionMode.JustState),

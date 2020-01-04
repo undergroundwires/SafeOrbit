@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
-using SafeOrbit.Memory;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
-    /// <seealso cref="TransientInstanceProvider{TImplementation}"/>
-    /// <seealso cref="IInstanceProvider"/>
+    /// <seealso cref="TransientInstanceProvider{TImplementation}" />
+    /// <seealso cref="IInstanceProvider" />
     [TestFixture]
     public class TransientInstanceProviderTests
     {
@@ -26,23 +21,26 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         public void CanProtectState_Is_False()
         {
             var sut = GetSut<DateTime>();
             Assert.That(sut.CanProtectState, Is.False);
         }
+
         [Test]
         public void GetInstance_Returns_Instance_Of_Argument()
         {
             //arrange
-            var expected = typeof (DateTime);
+            var expected = typeof(DateTime);
             var sut = GetSut<DateTime>();
             //act
             var actual = sut.GetInstance();
             //assert
             Assert.That(actual, Is.InstanceOf(expected));
         }
+
         [Test]
         public void GetInstance_Returns_New_Instance_On_Each_Call()
         {
@@ -61,10 +59,10 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         private static TransientInstanceProvider<T> GetSut<T>() where T : new()
         {
             return new TransientInstanceProvider<T>(
-                protectionMode : InstanceProtectionMode.NoProtection,
-                injectionDetector : Stubs.Get<IInjectionDetector>(),
-                alertChannel : InjectionAlertChannel.ThrowException
-                );
+                protectionMode: InstanceProtectionMode.NoProtection,
+                injectionDetector: Stubs.Get<IInjectionDetector>(),
+                alertChannel: InjectionAlertChannel.ThrowException
+            );
         }
     }
 }

@@ -12,11 +12,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
     internal class MemoryCachedSafeByteFactoryTests
     {
         private ISafeByteFactory _sut;
+
         [OneTimeSetUp]
         public void Init()
         {
             _sut = GetSut();
         }
+
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
         public void GetByte_returnsRightSafeByte(byte b)
@@ -30,6 +32,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
         public void GetInt_returnsRightSafeByte(byte b)
@@ -41,6 +44,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var actual = safeByte.Get();
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         public void GetByte_WithoutInitialization_invokesInitializeMethod()
         {
@@ -48,11 +52,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var sut = mock.Object;
             try
             {
-                sut.GetByByte((byte) 5);
+                sut.GetByByte(5);
             }
-            catch { /*swallow exceptions*/ }
+            catch
+            {
+                /*swallow exceptions*/
+            }
+
             mock.Verify(f => f.Initialize(), Times.Once);
         }
+
         [Test]
         public void GetInt_WithoutInitialization_invokesInitializeMethod()
         {
@@ -62,10 +71,17 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             {
                 sut.GetById(5);
             }
-            catch { /*swallow exceptions*/ }
+            catch
+            {
+                /*swallow exceptions*/
+            }
+
             mock.Verify(f => f.Initialize(), Times.Once);
         }
-        private static ISafeByteFactory GetSut(SafeObjectProtectionMode innerDictionaryProtectionMode = MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection)
+
+        private static ISafeByteFactory GetSut(
+            SafeObjectProtectionMode innerDictionaryProtectionMode =
+                MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection)
         {
             return new MemoryCachedSafeByteFactory(
                 Stubs.Get<IByteIdGenerator>(),
@@ -77,10 +93,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
 
         private static Mock<MemoryCachedSafeByteFactory> GetMock()
             =>
-            new Mock<MemoryCachedSafeByteFactory>(
-                Stubs.Get<IByteIdGenerator>(),
-                Stubs.GetFactory<ISafeByte>(),
-                Stubs.Get<ISafeObjectFactory>(),
-                MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection) {CallBase = true};
+                new Mock<MemoryCachedSafeByteFactory>(
+                    Stubs.Get<IByteIdGenerator>(),
+                    Stubs.GetFactory<ISafeByte>(),
+                    Stubs.Get<ISafeObjectFactory>(),
+                    MemoryCachedSafeByteFactory.DefaultInnerDictionaryProtection) {CallBase = true};
     }
 }

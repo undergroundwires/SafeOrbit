@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SafeOrbit.Memory;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
@@ -13,14 +12,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
     {
         int Length { get; }
         void Append(ISafeByte safeByte);
+
         /// <summary>
         ///     Gets the byte as <see cref="ISafeByte" /> for the specified index asynchronously.
         /// </summary>
         /// <param name="index">The position of the byte.</param>
         Task<ISafeByte> GetAsync(int index);
+
         /// <summary>
-        /// Returns all of the real byte values that <see cref="ISafeByteCollection"/> holds.
-        /// CAUTION: Reveals all protected data in memory. Use with <see cref="SafeMemoryStream"/>.
+        ///     Returns all of the real byte values that <see cref="ISafeByteCollection" /> holds.
+        ///     CAUTION: Reveals all protected data in memory. Use with <see cref="SafeMemoryStream" />.
         /// </summary>
         byte[] ToDecryptedBytes();
     }

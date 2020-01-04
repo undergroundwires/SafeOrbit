@@ -16,7 +16,7 @@ namespace SafeOrbit.Cryptography.Encryption.Kdf
         private const int DefaultTotalIterations = 100;
 
         /// <summary>
-        /// Uses key derivation function to strengthen the given <paramref name="key" />.
+        ///     Uses key derivation function to strengthen the given <paramref name="key" />.
         /// </summary>
         /// <param name="key">The master password from which a derived key is generated,</param>
         /// <param name="salt">The cryptographic salt.</param>

@@ -13,12 +13,13 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             var sut = GetSut();
-            var nullSafeString = (ISafeString)null;
+            var nullSafeString = (ISafeString) null;
             //Act
             TestDelegate settingNullSafeString = () => sut.SafeString = nullSafeString;
             //Assert
             Assert.That(settingNullSafeString, Throws.TypeOf<ArgumentNullException>());
         }
+
         [Test]
         public void SafeString_SettingDisposedSafeString_throwsObjectDisposedException()
         {
@@ -31,6 +32,7 @@ namespace SafeOrbit.Memory
             //Assert
             Assert.That(settingDisposedSafeString, Throws.TypeOf<ObjectDisposedException>());
         }
+
         [Test]
         public void SafeString_SettingEmptySafeString_returnsEmptyString()
         {
@@ -44,6 +46,7 @@ namespace SafeOrbit.Memory
             //Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         public void String_AfterSettingSafeString_returnsStringOfSafeString()
         {
@@ -51,10 +54,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             const string expected = "갿äÅ++¨¨'e";
             var safeString = Stubs.Get<ISafeString>();
-            foreach (var ch in expected.ToCharArray())
-            {
-                safeString.Append(ch);
-            }
+            foreach (var ch in expected.ToCharArray()) safeString.Append(ch);
             //Act
             sut.SafeString = safeString;
             var actual = sut.String;
@@ -69,10 +69,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             const string plainText = "testString";
             var safeString = Stubs.Get<ISafeString>();
-            foreach (var ch in plainText.ToCharArray())
-            {
-                safeString.Append(ch);
-            }
+            foreach (var ch in plainText.ToCharArray()) safeString.Append(ch);
             //Act
             sut.SafeString = safeString;
             sut.Dispose();
@@ -80,6 +77,7 @@ namespace SafeOrbit.Memory
             //assert
             Assert.That(actual, Is.Not.EqualTo(plainText));
         }
+
         [Test]
         public void String_AfterSettingSafeStringToDisposedObject_returnsStringOfSafeString()
         {
@@ -88,16 +86,14 @@ namespace SafeOrbit.Memory
             sut.Dispose();
             const string expected = "갿äÅ++¨¨'e";
             var safeString = Stubs.Get<ISafeString>();
-            foreach (var ch in expected.ToCharArray())
-            {
-                safeString.Append(ch);
-            }
+            foreach (var ch in expected.ToCharArray()) safeString.Append(ch);
             //Act
             sut.SafeString = safeString;
             var actual = sut.String;
             //Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         private static SafeStringToStringMarshaler GetSut() => new SafeStringToStringMarshaler();
     }
 }

@@ -6,7 +6,7 @@ namespace SafeOrbit.Memory
     public class SafeObjectCases
     {
         /// <summary>
-        /// Arg[0] = ProtectionMode, Arg[1] = JustState, Arg[1] = JustCode
+        ///     Arg[0] = ProtectionMode, Arg[1] = JustState, Arg[1] = JustCode
         /// </summary>
         public static IEnumerable<TestCaseData> ProtectionModeAndProtectVariables
         {
@@ -34,21 +34,25 @@ namespace SafeOrbit.Memory
         {
             get
             {
-                yield return new TestCaseData(SafeObjectProtectionMode.JustState, SafeObjectProtectionMode.NoProtection);
-                yield return new TestCaseData(SafeObjectProtectionMode.StateAndCode, SafeObjectProtectionMode.NoProtection);
+                yield return new TestCaseData(SafeObjectProtectionMode.JustState,
+                    SafeObjectProtectionMode.NoProtection);
+                yield return new TestCaseData(SafeObjectProtectionMode.StateAndCode,
+                    SafeObjectProtectionMode.NoProtection);
                 yield return new TestCaseData(SafeObjectProtectionMode.StateAndCode, SafeObjectProtectionMode.JustCode);
             }
         }
+
         public static IEnumerable<TestCaseData> NonStateProtectionToStateProtectionCases
         {
             get
             {
-                yield return new TestCaseData(SafeObjectProtectionMode.NoProtection, SafeObjectProtectionMode.JustState);
-                yield return new TestCaseData(SafeObjectProtectionMode.NoProtection, SafeObjectProtectionMode.StateAndCode);
+                yield return new TestCaseData(SafeObjectProtectionMode.NoProtection,
+                    SafeObjectProtectionMode.JustState);
+                yield return new TestCaseData(SafeObjectProtectionMode.NoProtection,
+                    SafeObjectProtectionMode.StateAndCode);
                 yield return new TestCaseData(SafeObjectProtectionMode.JustCode, SafeObjectProtectionMode.JustState);
                 yield return new TestCaseData(SafeObjectProtectionMode.JustCode, SafeObjectProtectionMode.StateAndCode);
             }
         }
-
     }
 }

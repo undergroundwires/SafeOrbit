@@ -11,8 +11,8 @@ using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
-    /// <seealso cref="ISafeByteCollection"/>
-    /// <seealso cref="EncryptedSafeByteCollection"/>
+    /// <seealso cref="ISafeByteCollection" />
+    /// <seealso cref="EncryptedSafeByteCollection" />
     [TestFixture]
     internal class EncryptedSafeByteCollectionTests : TestsFor<ISafeByteCollection>
     {
@@ -39,6 +39,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             //Arrange
             var sut = GetSut();
             sut.Dispose();
+
             //Act
             void AppendByte() => sut.Append(GetSafeByteFor(b));
             //Act
@@ -81,6 +82,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             //Arrange
             var sut = GetSut();
             ISafeByte nullInstance = null;
+
             //Act
             void AppendNull() => sut.Append(nullInstance);
             //Act
@@ -114,6 +116,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var position = 0;
             //Act
             sut.Dispose();
+
             async Task CallOnDisposedObject() => await sut.GetAsync(position);
             //Assert
             Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
@@ -125,6 +128,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             //Arrange
             var sut = GetSut();
             var position = 0;
+
             //Act
             async Task CallOnEmptyInstance() => await sut.GetAsync(position);
             //Assert
@@ -139,6 +143,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b));
             var position = -1;
+
             //Act
             async Task CallWithBadParameter() => await sut.GetAsync(position);
             //Assert
@@ -153,6 +158,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b));
             const int position = 1;
+
             //Act
             async Task CallWithBadParameter() => await sut.GetAsync(position);
             //Assert
@@ -195,13 +201,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public async Task GetAsync_AfterModifications_ReturnsAsExpected()
         {
             //Arrange
-            var expected = new []{ GetSafeByteFor(5), GetSafeByteFor(10) };
+            var expected = new[] {GetSafeByteFor(5), GetSafeByteFor(10)};
             var sut = GetSut();
             sut.Append(expected[0]);
             //Act
             await sut.GetAsync(0); // Calling once first to test the encryption/decryption harmony with Append
             sut.Append(expected[1]);
-            var actual = new []
+            var actual = new[]
             {
                 await sut.GetAsync(0),
                 await sut.GetAsync(1)
@@ -280,7 +286,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
             //Arrange
-            var bytes = new[] { b1, b2, b3 };
+            var bytes = new[] {b1, b2, b3};
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b1));
             sut.Append(GetSafeByteFor(b2));
@@ -295,7 +301,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public void ToByteArray_ForInstanceHoldingSingleByte_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b)
         {
             //Arrange
-            var bytes = new[] { b };
+            var bytes = new[] {b};
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b));
             //Act
@@ -313,6 +319,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             const int position = 0;
             //Act
             sut.Dispose();
+
             async Task CallingOnDisposedObject() => await sut.GetAsync(position);
             //Assert
             Assert.ThrowsAsync<ObjectDisposedException>(CallingOnDisposedObject);
@@ -323,6 +330,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             //Arrange
             var sut = GetSut();
+
             //Act
             void CallingOnEmptyInstance() => sut.ToDecryptedBytes();
             //Assert
@@ -347,8 +355,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public void ToDecryptedBytes_ForSingleByte_returnsAsExpected()
         {
             //Arrange
-            var expected = new byte[] { 5 };
-            var sut = GetSut(); 
+            var expected = new byte[] {5};
+            var sut = GetSut();
             sut.Append(GetSafeByteFor(5));
             //Act
             var actual = sut.ToDecryptedBytes();
@@ -360,7 +368,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public void ToDecryptedBytes_CalledMultipleTimes_returnsExpected()
         {
             //Arrange
-            var expected = new byte[] { 5, 10, 15 };
+            var expected = new byte[] {5, 10, 15};
             var sut = GetSut();
             foreach (var @byte in expected)
                 sut.Append(GetSafeByteFor(@byte));
@@ -376,11 +384,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public void ToDecryptedBytes_CalledAgainAfterModifications_returnsExpected()
         {
             //Arrange
-            var raw = new byte[] { 5, 10, 15 };
+            var raw = new byte[] {5, 10, 15};
             var sut = GetSut();
             foreach (var @byte in raw)
                 sut.Append(GetSafeByteFor(@byte));
-            var modifications = new byte[] { 10, 15, 30 };
+            var modifications = new byte[] {10, 15, 30};
             //Act
             sut.ToDecryptedBytes(); // Calling once first to test the encryption/decryption harmony with Append
             foreach (var @byte in modifications)

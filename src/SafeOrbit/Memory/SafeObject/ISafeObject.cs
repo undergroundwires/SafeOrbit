@@ -1,5 +1,5 @@
 ﻿using System;
-using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Core.Protectable;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory
@@ -13,9 +13,9 @@ namespace SafeOrbit.Memory
     /// <seealso cref="IDisposable" />
     /// <seealso cref="SafeObjectProtectionMode" />
     public interface ISafeObject<out TObject> :
-            IProtectable<SafeObjectProtectionMode>,
-            IAlerts,
-            IDisposable
+        IProtectable<SafeObjectProtectionMode>,
+        IAlerts,
+        IDisposable
         where TObject : class
     {
         /// <summary>
@@ -39,6 +39,7 @@ namespace SafeOrbit.Memory
 
         /// <summary>
         ///     Verifies the last changes on the object.
+        ///     The object should only be modified with this method to authorize the modification.
         /// </summary>
         /// <seealso cref="IsReadOnly" />
         /// <param name="modification">The modification.</param>

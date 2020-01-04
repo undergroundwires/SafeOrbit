@@ -14,6 +14,7 @@ namespace SafeOrbit.Memory
         /// <seealso cref="ISafeObject{TObject}" />
         /// <seealso cref="SafeObjectProtectionMode" />
         object InitialValue { get; }
+
         /// <summary>
         ///     Gets or sets a value indicating whether the requested <see cref="ISafeObject{TObject}" />  instance is modifiable
         ///     after its created.
@@ -22,6 +23,7 @@ namespace SafeOrbit.Memory
         /// <seealso cref="SafeObjectProtectionMode" />
         /// <value><c>true</c> if this instance is read only; if modifiable, <c>false</c>.</value>
         bool IsReadOnly { get; }
+
         /// <summary>
         ///     Gets or sets the initial protection mode of the <see cref="ISafeObject{TObject}" /> instance.
         /// </summary>
@@ -30,6 +32,9 @@ namespace SafeOrbit.Memory
         /// <value>The protection mode.</value>
         SafeObjectProtectionMode ProtectionMode { get; }
 
+        /// <summary>
+        ///     Preferred way to notify injections.
+        /// </summary>
         InjectionAlertChannel AlertChannel { get; }
     }
 }

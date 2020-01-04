@@ -7,6 +7,7 @@ namespace RandomComparisonApp
         public string AlgorithmName { get; }
         public double CompressionRatio { get; }
         public TimeSpan TimeSpan { get; }
+
         public RandomResult(string algorithmName, double compressionRatio, TimeSpan timeSpan)
         {
             if (string.IsNullOrEmpty(algorithmName))

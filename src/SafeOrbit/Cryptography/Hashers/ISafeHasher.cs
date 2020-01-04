@@ -7,6 +7,7 @@
     {
         TResult Compute(byte[] input);
     }
+
     /// <summary>
     ///     Abstracts interface for a slow cryptographic hash function returning an array of bytes.
     /// </summary>

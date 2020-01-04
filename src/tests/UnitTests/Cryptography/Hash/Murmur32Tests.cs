@@ -20,7 +20,8 @@ namespace SafeOrbit.Cryptography.Hashers
         public void ComputeBytesFast_VerifyTheVerificationKey_returnsTrue()
         {
             //Arrange
-            uint verificationKey = 0xB0F57EE3; //https://github.com/rurban/smhasher/blob/8542a35b4d682f6c80754668cff32069a70eecc0/main.cpp
+            var verificationKey =
+                0xB0F57EE3; //https://github.com/rurban/smhasher/blob/8542a35b4d682f6c80754668cff32069a70eecc0/main.cpp
             var sut = GetSut();
             //Act
             int result;
@@ -31,8 +32,8 @@ namespace SafeOrbit.Cryptography.Hashers
 
                 for (var i = 0; i < 256; i++)
                 {
-                    key[i] = (byte)i;
-                    var seed = (uint)(256 - i);
+                    key[i] = (byte) i;
+                    var seed = (uint) (256 - i);
                     var computed = sut.ComputeFast(key.Take(i).ToArray(), seed);
                     stream.Write(BitConverter.GetBytes(computed), 0, 4);
                 }
@@ -40,16 +41,18 @@ namespace SafeOrbit.Cryptography.Hashers
                 var buffer = stream.GetBuffer();
                 result = sut.ComputeFast(buffer.ToArray(), 0);
 #else
-                if(!stream.TryGetBuffer(out var buffer))
+                if (!stream.TryGetBuffer(out var buffer))
                     Assert.False(false, "Could not get the buffer.");
                 result = sut.ComputeFast(buffer.Array, 0);
 #endif
             }
+
             //Assert
-            Assert.That(result, Is.EqualTo((int)verificationKey));
+            Assert.That(result, Is.EqualTo((int) verificationKey));
         }
+
         [Test]
-        [TestCase(0xCC9E2D51, new byte[] { 0x22, 0x90, 0x63, 0xfa })]
+        [TestCase(0xCC9E2D51, new byte[] {0x22, 0x90, 0x63, 0xfa})]
         public void ComputeBytesFast_ForSameSeed_FromDifferentInstances_returnsSame(uint seed, byte[] bytes)
         {
             //Arrange
@@ -57,17 +60,19 @@ namespace SafeOrbit.Cryptography.Hashers
             var expected = sut.ComputeFast(bytes, seed);
             var hashes = new List<int>();
             //act
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
                 var differentInstance = GetSut();
                 var hash = differentInstance.ComputeFast(bytes, seed);
                 hashes.Add(hash);
             }
+
             //Assert
             Assert.That(hashes, Has.All.EqualTo(expected));
         }
+
         [Test]
-        [TestCase(0xCC9E2D51, new byte[] { 0x22, 0x90, 0x63, 0xfa })]
+        [TestCase(0xCC9E2D51, new byte[] {0x22, 0x90, 0x63, 0xfa})]
         public void ComputeBytesFast_ForSameSeed_FromDifferentInstancesAndThreads_returnsSame(uint seed, byte[] bytes)
         {
             //Arrange
@@ -87,16 +92,16 @@ namespace SafeOrbit.Cryptography.Hashers
                 });
                 threads[i].Start();
             }
-            for (var i = 0; i < totalTests; i++)
-            {
-                threads[i].Join();
-            }
+
+            for (var i = 0; i < totalTests; i++) threads[i].Join();
             //Assert
             Assert.That(hashes, Has.All.EqualTo(expected));
         }
+
         [Test]
-        [TestCase(0xCC9E2D51, 0xE6546B64, new byte[] { 0x22, 0x90, 0x63, 0xfa })]
-        public void ComputeBytesFast_ResultsForTheSameBytesWithDifferentSeeds_areDifferent(uint seed1, uint seed2, byte[] bytes)
+        [TestCase(0xCC9E2D51, 0xE6546B64, new byte[] {0x22, 0x90, 0x63, 0xfa})]
+        public void ComputeBytesFast_ResultsForTheSameBytesWithDifferentSeeds_areDifferent(uint seed1, uint seed2,
+            byte[] bytes)
         {
             //Arrange
             var sut = GetSut();

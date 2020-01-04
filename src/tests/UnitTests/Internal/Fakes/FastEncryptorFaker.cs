@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Moq;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Tests;
@@ -12,13 +11,14 @@ namespace SafeOrbit.Fakes
         public override IFastEncryptor Provide()
         {
             static byte[] Encrypt(byte[] input, byte[] key) =>
-                input.Select(b => (byte)(b ^ (key.Sum(k => k) + 1))).ToArray();
+                input.Select(b => (byte) (b ^ (key.Sum(k => k) + 1))).ToArray();
+
             static byte[] Decrypt(byte[] input, byte[] key) =>
-                input.Select(b => (byte)(b ^ (key.Sum(k => k) + 1))).ToArray();
+                input.Select(b => (byte) (b ^ (key.Sum(k => k) + 1))).ToArray();
 
             var fake = new Mock<IFastEncryptor>();
             fake.Setup(f => f.Encrypt(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
-                .Returns<byte[],byte[]>(Encrypt);
+                .Returns<byte[], byte[]>(Encrypt);
             fake.Setup(f => f.Decrypt(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
                 .Returns<byte[], byte[]>(Decrypt);
             fake.Setup(f => f.EncryptAsync(It.IsAny<byte[]>(), It.IsAny<byte[]>()))

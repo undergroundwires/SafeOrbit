@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using SafeOrbit.Tests.Cases;
 using SafeOrbit.Tests;
+using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {
@@ -21,6 +21,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             //Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         protected override ISafeByte GetSut() => new SafeByte();
     }
 }

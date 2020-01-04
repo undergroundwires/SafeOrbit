@@ -48,6 +48,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             //Assert
             Assert.AreNotEqual(actual, expected);
         }
+
         protected override HashedByteIdGenerator GetSut() => new HashedByteIdGenerator();
     }
 }

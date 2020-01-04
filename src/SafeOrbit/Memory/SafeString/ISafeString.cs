@@ -19,6 +19,10 @@ namespace SafeOrbit.Memory
         ISafeBytes ToSafeBytes();
         char GetAsChar(int index);
         ISafeBytes GetAsSafeBytes(int index);
+
+        /// <summary>
+        ///     Appends a <see cref="String" /> that's already revealed in the memory.
+        /// </summary>
         void Append(char ch);
 
         /// <summary>

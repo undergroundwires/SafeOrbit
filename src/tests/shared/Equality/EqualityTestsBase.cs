@@ -1,35 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace SafeOrbit.Tests.Equality
 {
     [TestFixture]
-    public abstract class EqualityTestsBase<T> : TestsFor<T>, IEqualityTests where T:class
+    public abstract class EqualityTestsBase<T> : TestsFor<T>, IEqualityTests where T : class
     {
         /// <summary>
-        /// Gets suts thats are different than (unequal to) the one from <see cref="TestsFor{T}.GetSut()"/>.
-        /// There is no need to give <see langword="null"/> instances as they'll be tested automatically.
+        ///     Gets suts thats are different than (unequal to) the one from <see cref="TestsFor{T}.GetSut()" />.
+        ///     There is no need to give <see langword="null" /> instances as they'll be tested automatically.
         /// </summary>
         protected abstract IEnumerable<T> GetDifferentSuts();
 
         #region Equals
-        ///<summary>
-        /// A test for Equals : Instances are equal
-        ///</summary>
+
+        /// <summary>
+        ///     A test for Equals : Instances are equal
+        /// </summary>
         [Test]
         public void Equals_EqualInstances_ReturnsTrue()
         {
-            foreach (var instance in AllDifferentInstances)
-            {
-                Assert.That(instance, Is.EqualTo(instance));
-            }
+            foreach (var instance in AllDifferentInstances) Assert.That(instance, Is.EqualTo(instance));
         }
-        ///<summary>
-        /// A test for Equals : Instances are unequal
-        ///</summary>
+
+        /// <summary>
+        ///     A test for Equals : Instances are unequal
+        /// </summary>
         [Test]
         public void Equals_UnequalInstances_returnsFalse()
         {
@@ -41,23 +39,25 @@ namespace SafeOrbit.Tests.Equality
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
-        ///<summary>
-        /// A test for Equals : Instances as <see cref="object"/> are equal
-        ///</summary>
+
+        /// <summary>
+        ///     A test for Equals : Instances as <see cref="object" /> are equal
+        /// </summary>
         [Test]
         public void Equals_EqualInstancesAsObjects_ReturnsTrue()
         {
             foreach (var instance in AllDifferentInstances)
             {
                 const bool expected = true;
-                var targets = new object[] { instance, instance };
+                var targets = new object[] {instance, instance};
                 var actual = targets[0].Equals(targets[1]);
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
-        ///<summary>
-        /// A test for Equals : Instances as <see cref="object"/> are unequal
-        ///</summary>
+
+        /// <summary>
+        ///     A test for Equals : Instances as <see cref="object" /> are unequal
+        /// </summary>
         [Test]
         public void Equals_UnequalInstancesAsObjects_returnsFalse()
         {
@@ -69,34 +69,38 @@ namespace SafeOrbit.Tests.Equality
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
-        ///<summary>
-        /// A test for Equals : Parameter is null
-        ///</summary>
+
+        /// <summary>
+        ///     A test for Equals : Parameter is null
+        /// </summary>
         [Test]
         public void Equals_SingleInstanceIsNull_returnsFalse()
         {
             const bool expected = false;
-            var targets = new[] { GetSut(), null };
+            var targets = new[] {GetSut(), null};
             var actual = targets[0].Equals(targets[1]);
             Assert.That(actual, Is.EqualTo(expected));
         }
-        ///<summary>
-        /// A test for Equals object : Type inequality
-        ///</summary>
+
+        /// <summary>
+        ///     A test for Equals object : Type inequality
+        /// </summary>
         [Test]
         public void Equals_OneInstanceIsDifferentType_returnsTrue()
         {
             const bool expected = false;
-            var targets = new object[] { GetSut(), 0d };
+            var targets = new object[] {GetSut(), 0d};
             var actual = targets[0].Equals(targets[1]);
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         #endregion
 
         #region Inequality Operator (==)
-        ///<summary>
-        /// A test for operator == : Equality
-        ///</summary>
+
+        /// <summary>
+        ///     A test for operator == : Equality
+        /// </summary>
         [Test]
         public void EqualityOperator_EqualInstances_returnsTrue()
         {
@@ -106,11 +110,11 @@ namespace SafeOrbit.Tests.Equality
                 var actual = GetEqualityOperatorResult(instance, instance);
                 Assert.That(actual, Is.EqualTo(expected));
             }
-
         }
-        ///<summary>
-        /// A test for operator == : Inequality
-        ///</summary>
+
+        /// <summary>
+        ///     A test for operator == : Inequality
+        /// </summary>
         [Test]
         public void EqualityOperator_UnequalInstances_returnsFalse()
         {
@@ -122,34 +126,38 @@ namespace SafeOrbit.Tests.Equality
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
+
         /// <summary>
-        ///A test for operator == : Null inequality
-        ///</summary>
+        ///     A test for operator == : Null inequality
+        /// </summary>
         [Test]
         public void EqualityOperator_SingleInstanceIsNull_returnsTrue()
         {
             const bool expected = false;
-            var targets = new T[] { null, GetSut() };
+            var targets = new[] {null, GetSut()};
             var actual = GetEqualityOperatorResult(targets[0], targets[1]);
             Assert.That(actual, Is.EqualTo(expected));
         }
-        ///<summary>
-        /// A test for operator == : Null equality
-        ///</summary>
+
+        /// <summary>
+        ///     A test for operator == : Null equality
+        /// </summary>
         [Test]
         public void EqualityOperator_BothInstancesAreNull_returnsTrue()
         {
             const bool expected = true;
-            var targets = new T[] { null, null };
+            var targets = new T[] {null, null};
             var actual = GetEqualityOperatorResult(targets[0], targets[1]);
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         #endregion
 
         #region Inequality Operator (!=)
-        ///<summary>
-        /// A test for operator != : Equality
-        ///</summary>
+
+        /// <summary>
+        ///     A test for operator != : Equality
+        /// </summary>
         [Test]
         public void InequalityOperator_EqualInstances_returnsFalse()
         {
@@ -160,9 +168,10 @@ namespace SafeOrbit.Tests.Equality
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
-        ///<summary>
-        /// A test for operator != : Inequality
-        ///</summary>
+
+        /// <summary>
+        ///     A test for operator != : Inequality
+        /// </summary>
         [Test]
         public void InequalityOperator_UnequalInstances_returnsTrue()
         {
@@ -174,27 +183,28 @@ namespace SafeOrbit.Tests.Equality
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
-        ///<summary>
-        /// A test for operator != : Null inequality
-        ///</summary>
+
+        /// <summary>
+        ///     A test for operator != : Null inequality
+        /// </summary>
         [Test]
         public void InequalityOperator_SingleInstanceIsNull_returnsTrue()
         {
             const bool expected = true;
-            var targets = new[] { null, GetSut() };
+            var targets = new[] {null, GetSut()};
             var actual = GetInequalityOperatorResult(targets[0], targets[1]);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
 
-        ///<summary>
-        /// A test for operator != : Null Equality
-        ///</summary>
+        /// <summary>
+        ///     A test for operator != : Null Equality
+        /// </summary>
         [Test]
         public void InequalityOperator_BothInstancesAreNull_returnsTrue()
         {
             const bool expected = false;
-            var targets = new T[] { null, null };
+            var targets = new T[] {null, null};
             var actual = GetInequalityOperatorResult(targets[0], targets[1]);
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -202,30 +212,26 @@ namespace SafeOrbit.Tests.Equality
         #endregion
 
         #region GetHashCode
+
         /// <summary>
-        /// A test for GetHashCode : Equality
-        ///</summary>
+        ///     A test for GetHashCode : Equality
+        /// </summary>
         [Test]
         public void GetHashCode_ForEqualInstances_areEqual()
         {
-            foreach (var instance in AllDifferentInstances)
-            {
-                Assert.That(instance, Is.EqualTo(instance));
-            }
+            foreach (var instance in AllDifferentInstances) Assert.That(instance, Is.EqualTo(instance));
         }
+
         /// <summary>
-        /// A test for GetHashCode : Inequality
-        ///</summary>
+        ///     A test for GetHashCode : Inequality
+        /// </summary>
         [Test]
         public void GetHashCode_ForUnequalInstances_areDifferent()
         {
             var instance = GetSut();
-                foreach (var unequalInstance in GetDifferentSuts())
-                {
-                    Assert.That(instance, Is.Not.EqualTo(unequalInstance));
-                }
-            
+            foreach (var unequalInstance in GetDifferentSuts()) Assert.That(instance, Is.Not.EqualTo(unequalInstance));
         }
+
         #endregion
 
         private IEnumerable<T> AllDifferentInstances
@@ -233,19 +239,14 @@ namespace SafeOrbit.Tests.Equality
             get
             {
                 yield return GetSut();
-                foreach(var differentSut in GetDifferentSuts())
-                {
-                    yield return differentSut;
-                }
+                foreach (var differentSut in GetDifferentSuts()) yield return differentSut;
             }
         }
 
-     
-
 
         /// <summary>
-        /// Gets the result of "a == b"
-        /// Note that operator == can't be applied directly generic types in C#, use this method instead
+        ///     Gets the result of "a == b"
+        ///     Note that operator == can't be applied directly generic types in C#, use this method instead
         /// </summary>
         private static bool GetEqualityOperatorResult<TClass>(TClass a, TClass b)
         {
@@ -259,9 +260,10 @@ namespace SafeOrbit.Tests.Equality
             // call it
             return invokeEqualityOperator(a, b);
         }
+
         /// <summary>
-        /// Gets the result of "a =! b"
-        /// Note that operator =! can't be applied directly generic types in C#, use this method instead
+        ///     Gets the result of "a =! b"
+        ///     Note that operator =! can't be applied directly generic types in C#, use this method instead
         /// </summary>
         private static bool GetInequalityOperatorResult<TClass>(TClass a, TClass b)
         {
@@ -271,10 +273,10 @@ namespace SafeOrbit.Tests.Equality
             // add the parameters together
             var body = Expression.NotEqual(paramA, paramB);
             // compile it
-            var invokeInequalityOperator = Expression.Lambda<Func<TClass, TClass, bool>>(body, paramA, paramB).Compile();
+            var invokeInequalityOperator =
+                Expression.Lambda<Func<TClass, TClass, bool>>(body, paramA, paramB).Compile();
             // call it
             return invokeInequalityOperator(a, b);
         }
     }
-
 }

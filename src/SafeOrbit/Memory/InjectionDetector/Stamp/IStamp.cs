@@ -6,5 +6,8 @@ namespace SafeOrbit.Memory.Injection
     {
         THash Hash { get; }
     }
-    internal interface IStamp : IStamp<int>{ }
+
+    internal interface IStamp : IStamp<int>
+    {
+    }
 }

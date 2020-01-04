@@ -12,9 +12,10 @@ namespace SafeOrbit.Fakes
         {
             var fake = new Mock<IPkcs7Padder>();
             fake.Setup(f => f.Pad(It.IsAny<byte[]>(), It.IsAny<int>()))
-                .Returns<byte[], int>((bytes, length) => bytes.Concat(new byte[length].Select(b=> (byte)length)).ToArray());
+                .Returns<byte[], int>((bytes, length) =>
+                    bytes.Concat(new byte[length].Select(b => (byte) length)).ToArray());
             fake.Setup(f => f.Unpad(It.IsAny<byte[]>()))
-                .Returns<byte[]>((bytes) => bytes.Take(bytes.Length - bytes[bytes.Length - 1]).ToArray());
+                .Returns<byte[]>(bytes => bytes.Take(bytes.Length - bytes[bytes.Length - 1]).ToArray());
             return fake.Object;
         }
     }
