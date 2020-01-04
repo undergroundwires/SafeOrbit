@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
-using SafeOrbit.Helpers;
 using SafeOrbit.Library;
 
 namespace SafeOrbit.Cryptography.Encryption
@@ -78,13 +76,7 @@ namespace SafeOrbit.Cryptography.Encryption
             => TaskContext.RunSync(() => DecryptAsync(input, key, salt));
 
         /// <inheritdoc />
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MinKeySize" /> and
-        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MaxKeySize" /> values.
-        /// </exception>
+        /// <inheritdoc cref="ValidateParameters"/>
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key, byte[] salt)
         {
             ValidateParameters(input, key, salt);
@@ -92,13 +84,7 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         /// <inheritdoc />
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="input" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="salt" /> is <see langword="null" /> or empty.</exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MinKeySize" /> and
-        ///     <see cref="P:SafeOrbit.Cryptography.Encryption.AesEncryptor.MaxKeySize" /> values.
-        /// </exception>
+        /// <inheritdoc cref="ValidateParameters"/>
         public Task<byte[]> DecryptAsync(byte[] input, byte[] key, byte[] salt)
         {
             ValidateParameters(input, key, salt);

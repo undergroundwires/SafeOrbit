@@ -1,14 +1,14 @@
 ﻿using System;
 using SafeOrbit.Exceptions;
 
-#if NETFRAMEWORK
+#if !NETSTANDARD1_6
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
-#if NETFRAMEWORK
+#if !NETSTANDARD1_6
     [Serializable]
 #endif
     public class InstanceValidationException : SafeOrbitException
@@ -17,7 +17,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
         {
         }
 
-#if NETFRAMEWORK
+#if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public InstanceValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
         {

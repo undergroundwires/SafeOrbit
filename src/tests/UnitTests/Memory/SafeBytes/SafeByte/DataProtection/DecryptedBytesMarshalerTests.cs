@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
-using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 
-namespace UnitTests.Memory.SafeBytes.SafeByte.DataProtection
+namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
     /// <seealso cref="DecryptedBytesMarshaler" />
     /// <seealso cref="IDecryptedBytesMarshaler" />

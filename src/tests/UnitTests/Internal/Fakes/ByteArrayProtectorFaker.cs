@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using System;
+using Moq;
+using SafeOrbit.Exceptions;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 using SafeOrbit.Tests;
 
@@ -9,12 +11,14 @@ namespace SafeOrbit.Fakes
     {
         public override IByteArrayProtector Provide()
         {
+            const int blockSize = 16;
             var fake = new Mock<IByteArrayProtector>();
             const byte xorConstant = 0x53;
-            fake.Setup(x => x.BlockSizeInBytes).Returns(16);
+            fake.Setup(x => x.BlockSizeInBytes).Returns(blockSize);
             fake.Setup(x => x.Protect(It.IsAny<byte[]>()))
                 .Callback<byte[]>((bytes) =>
                 {
+                    if(bytes.Length % blockSize != 0) throw new ArgumentException();
                     for (var i = 0; i < bytes.Length; i++)
                         bytes[i] = (byte)(bytes[i] ^ xorConstant);
 
@@ -22,6 +26,7 @@ namespace SafeOrbit.Fakes
             fake.Setup(x => x.Unprotect(It.IsAny<byte[]>()))
                 .Callback<byte[]>((bytes) =>
                 {
+                    if (bytes.Length % blockSize != 0) throw new ArgumentException();
                     for (var i = 0; i < bytes.Length; i++)
                         bytes[i] = (byte)(bytes[i] ^ xorConstant);
                 });

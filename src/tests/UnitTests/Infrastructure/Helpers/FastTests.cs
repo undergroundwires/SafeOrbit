@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Helpers;
 
-namespace UnitTests.Infrastructure.Helpers
+namespace SafeOrbit.Infrastructure.Helpers
 {
     /// <seealso cref="Fast"/>
     [TestFixture]

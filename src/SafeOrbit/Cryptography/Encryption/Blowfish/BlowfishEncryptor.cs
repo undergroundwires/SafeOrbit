@@ -1,11 +1,15 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using SafeOrbit.Cryptography.Encryption.Padding;
+using SafeOrbit.Cryptography.Encryption.Padding.Factory;
+using SafeOrbit.Cryptography.Encryption.Padding.Padders;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
+using SafeOrbit.Library;
+using PaddingMode = SafeOrbit.Cryptography.Encryption.Padding.PaddingMode;
 
 namespace SafeOrbit.Cryptography.Encryption
 {
@@ -25,60 +29,37 @@ namespace SafeOrbit.Cryptography.Encryption
     ///     </p>
     ///     <p>https://www.schneier.com/academic/blowfish/</p>
     /// </remarks>
-    /// <seealso cref="T:SafeOrbit.Cryptography.Encryption.IFastEncryptor" />
+    /// <seealso cref="IFastEncryptor" />
     /// <inheritdoc cref="EncryptorBase" />
     /// <inheritdoc cref="IFastEncryptor" />
-    public class BlowfishEncryptor : EncryptorBase, IFastEncryptor
+    public class BlowfishEncryptor : PaddedEncryptorBase, IFastEncryptor
     {
         public const BlowfishCipherMode DefaultCipherMode = BlowfishCipherMode.Cbc;
+        public const PaddingMode DefaultPaddingMode = PaddingMode.PKCS7;
         public static IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
-
         /// <summary>
-        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class.
+        /// Initialized BlowfishEncryptor with <see cref="DefaultCipherMode"/> and <see cref="DefaultPaddingMode"/>
         /// </summary>
-        public BlowfishEncryptor() : base(FastRandom.StaticInstance)
+        public BlowfishEncryptor() :this(cipherMode: DefaultCipherMode)
         {
+            
         }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
-        ///     <see cref="ICryptoRandom" />.
-        /// </summary>
-        /// <param name="random">The random generator to be used for creation of IV's.</param>
-        public BlowfishEncryptor(ICryptoRandom random) : base(random)
-        {
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="T:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor" /> class with a defined
-        ///     <see cref="T:SafeOrbit.Cryptography.Encryption.BlowfishCipherMode" />.
-        /// </summary>
         /// <param name="cipherMode">The cipher mode.</param>
-        /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}">
-        ///     <paramref name="cipherMode" /> is not defined in <see cref="BlowfishCipherMode" />.
-        /// </exception>
-        /// <seealso cref="BlowfishCipherMode" />
-        /// <seealso cref="IvSizeInBits" />
-        public BlowfishEncryptor(BlowfishCipherMode cipherMode, ICryptoRandom random) : base(random)
+        /// <param name="paddingMode">Padding algorithm to use</param>
+        public BlowfishEncryptor(
+            BlowfishCipherMode cipherMode,
+            PaddingMode paddingMode = DefaultPaddingMode
+            ) : this(cipherMode, paddingMode, FastRandom.StaticInstance, SafeOrbitCore.Current.Factory.Get<IPadderFactory>())
+        {
+        }
+
+        /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}"> <paramref name="cipherMode" /> is not defined in <see cref="BlowfishCipherMode" />. </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="random" /> is <see langword="null" /></exception>
+        internal BlowfishEncryptor(BlowfishCipherMode cipherMode, PaddingMode paddingMode, ICryptoRandom random, IPadderFactory padderFactory) : base(random, paddingMode, padderFactory)
         {
             if (((int) cipherMode != 0) && ((int) cipherMode != 1))
                 throw new UnexpectedEnumValueException<BlowfishCipherMode>(cipherMode);
             CipherMode = cipherMode;
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BlowfishEncryptor" /> class with a defined
-        ///     <see cref="BlowfishCipherMode" />.
-        /// </summary>
-        /// <param name="cipherMode">The cipher mode.</param>
-        /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}">
-        ///     <paramref name="cipherMode" /> is not defined in <see cref="BlowfishCipherMode" />.
-        /// </exception>
-        /// <seealso cref="BlowfishCipherMode" />
-        /// <seealso cref="IvSizeInBits" />
-        public BlowfishEncryptor(BlowfishCipherMode cipherMode) : this(cipherMode, FastRandom.StaticInstance)
-        {
         }
 
         public BlowfishCipherMode CipherMode { get; } = DefaultCipherMode;
@@ -94,20 +75,11 @@ namespace SafeOrbit.Cryptography.Encryption
         public byte[] Decrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => DecryptAsync(input, key));
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Encrypts the specified input using <see cref="CipherMode" />.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">
-        ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
-        ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
-        /// </exception>
-        /// <exception cref="KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySizeInbits" /> and <see cref="MaxKeySizeInBits" /> values.
-        /// </exception>
-        /// <exception cref="DataLengthException"> Length of the <paramref name="input" /> is empty </exception>
+        /// <inheritdoc cref="EnsureParameters" />
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
+            input = AddPadding(input);
             return CipherMode switch
             {
                 BlowfishCipherMode.Ecb => InternalCryptEcbAsync(input, key, true),
@@ -117,23 +89,17 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         /// <inheritdoc />
-        /// <exception cref="ArgumentNullException">
-        ///     <p><paramref name="input" /> is <see langword="null" /> or empty.</p>
-        ///     <p><paramref name="key" /> is <see langword="null" /> or empty.</p>
-        /// </exception>
-        /// <exception cref=KeySizeException">
-        ///     Length of the <paramref name="key" /> must be between <see cref="MinKeySizeInBits" /> and <see cref="MaxKeySizeInBits" /> values.
-        /// </exception>
-        /// <exception cref="DataLengthException"> Length of the <paramref name="input" /> is empty </exception>
-        public Task<byte[]> DecryptAsync(byte[] input, byte[] key)
+        /// <inheritdoc cref="EnsureParameters" />
+        public async Task<byte[]> DecryptAsync(byte[] input, byte[] key)
         {
             EnsureParameters(input, key);
-            return CipherMode switch
+            var decrypted = await (CipherMode switch
             {
                 BlowfishCipherMode.Ecb => InternalCryptEcbAsync(input, key, false),
                 BlowfishCipherMode.Cbc => InternalCryptCbcAsync(input, key, false),
                 _ => throw new UnexpectedEnumValueException<BlowfishCipherMode>(CipherMode)
-            };
+            }).ConfigureAwait(false);
+            return Unpad(decrypted);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="data" /> is null</exception>
@@ -183,8 +149,8 @@ namespace SafeOrbit.Cryptography.Encryption
 
         private async Task<byte[]> InternalEncryptCbcAsync(byte[] input, byte[] key)
         {
-            byte[] iv = null;
-            byte[] encryptedContent = null;
+            byte[] iv;
+            byte[] encryptedContent;
             using (var ms = new MemoryStream())
             {
                 iv = GetIv();
@@ -195,10 +161,8 @@ namespace SafeOrbit.Cryptography.Encryption
                 }
                 encryptedContent = ms.ToArray();
             }
-            //Create new byte array that should contain both unencrypted iv and encrypted data
             var result = iv.Combine(encryptedContent);
             return result;
         }
-        
     }
 }

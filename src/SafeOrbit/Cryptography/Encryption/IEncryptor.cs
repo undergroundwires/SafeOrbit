@@ -1,7 +1,8 @@
-﻿namespace SafeOrbit.Cryptography.Encryption
+﻿
+namespace SafeOrbit.Cryptography.Encryption
 {
     /// <summary>
-    ///     Common interface for all encryption algorithms.
+    ///     An encryption algorithm.
     /// </summary>
     public interface IEncryptor
     {

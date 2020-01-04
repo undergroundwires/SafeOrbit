@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SafeOrbit.Cryptography.Encryption.Padding;
 
 namespace SafeOrbit.Cryptography.Encryption
 {
@@ -32,7 +33,7 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <typeparam name="TKey">The type of key.</typeparam>
     /// <seealso cref="ISafeEncryptor{TResult,TInput,TKey,TSalt}" />
     /// <seealso cref="IFastEncryptor" />
-    public interface IFastEncryptor<TResult, in TInput, in TKey> : IEncryptor
+    public interface IFastEncryptor<TResult, in TInput, in TKey> : IPaddedEncryptor
     {
         /// <inheritdoc cref="EncryptAsync"/>
         TResult Encrypt(TInput input, TKey key);

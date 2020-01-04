@@ -1,4 +1,5 @@
 ﻿using System;
+using SafeOrbit.Exceptions;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 {
@@ -9,11 +10,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
     /// <seealso cref="IByteArrayProtector" />
     public partial class MemoryProtector
     {
+        /// <exception cref="ArgumentNullException"><paramref name="userData" /> is <see langword="null" />.</exception>
+        /// <exception cref="DataLengthException"><paramref name="userData" /> has not the size of the block.</exception>
         private void EnsureParameter(byte[] userData)
         {
             if (userData == null) throw new ArgumentNullException(nameof(userData));
             if (userData.Length % BlockSizeInBytes != 0)
-                throw new ArgumentOutOfRangeException($"Size of {nameof(userData)} must be" +
+                throw new DataLengthException(nameof(userData), $"Size of {nameof(userData)} must be" +
                                                       $"multiple of {BlockSizeInBytes}");
         }
     }
