@@ -10,16 +10,15 @@
 
  **SafeOrbit** is a security toolset including different high performance algorithms and easy to use classes for advanced memory protection.
 
-**SafeOrbit**'s primarly focus is [**strong memory protection**](#memory-security). It protects every byte in your application with encryption in transit and at rest. It safeguards your application against memory injections and timing attacks.
+**SafeOrbit**'s primarily focus is [**strong memory protection**](#memory-security). It protects every byte in your application with encryption in transit and at rest. It safeguards your application against memory injections and timing attacks.
 
-* You have [SafeBytes](#safebytes#) to protect binaries,
-* [SafeString](#safestring#) to protect strings,
-* [and even more to detect memory injections](#protect-your-classes#).
+* You have [SafeBytes](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes) to protect binaries,
+* [SafeString](https://github.com/undergroundwires/SafeOrbit/wiki/SafeString) to protect strings,
+* injection aware [SafeObject](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject), [SafeContainer](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject) the DI container and [more](https://github.com/undergroundwires/SafeOrbit/wiki) to detect memory injections.
 
 **SafeOrbit** is **easy to use** as it does not require you to have any knowledge of cryptology to take advantage of high security with simple abstractions that's implemented with security best-practices.
 
 **SafeOrbit** provides also bunch of crypto tools to use strong and high performance algorithms for [encryption, hashing and random](#cryptography).
-
 
 **SafeOrbit** is **performance friendly**. It's up to you to decide for trade-off between speed and more security. Services have `Safe` or `Fast` prefixes. `Fast` classes strive for both performance and security, but `Safe` classes focuses the security over performance. **For example** while [SafeEncryptor](#aes-the-ISafeEncrpytor) uses lots of iterations, salts, and IV, [FastEncryptor](#blowfish-the-IFastEncryptor) uses a faster encryption algorithm without any key deriving function. **Furthermore** most of the classes has a way to disable its protection. They let you change/disable the security level of the protection dynamically to gain more performance.
 
@@ -104,7 +103,7 @@ An object that can detect memory injections to itself.
 
 Supported:
 
-* Asynchronous encryption
+* Asynchronous encryption using [cryptostream](https://msdn.microsoft.com/en-us/library/hh472379(v=vs.110).aspx)s.
 * `ISafeEncryptor` a.k.a. **AES-256**
   * Considered as one of the strongest encryption algorithms.
   * Easy-to-use interface using best-practices such as PBKDF2 key derivation, random IV, salt and PKCS7 padding.
@@ -123,15 +122,14 @@ Supported :
 
 > What if your OS crypto random has in any way been undermined (for example, by a nefarious government agency, or simple incompetence)?
 
-`SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random.
+`SafeOrbit` guarantees not to reduce the strength of your crypto random. It has the ability to improve the strength of your crypto random:
+
+* `SafeRandom` combines different entropy sources
+* `FastRandom` is a simple wrapper around a PRNG, which uses `SafeRandom` for seed material.
 
 ## Speed up
 
-* **For better performance**, it's **highly recommended** to start the application early in your application start with this line :
-
-    ```C#
-    SafeOrbitCore.Current.StartEarly();
-    ```
+* **For better performance**, it's **highly recommended** to start the application early in your application start with `SafeOrbitCore.Current.StartEarly();`.
 
 * Memory injection is enabled as default.
   * It provides self security on client side applications, but on a protected server disabling the memory injection for more performance is recommended. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Library-settings#change-security-settings).
