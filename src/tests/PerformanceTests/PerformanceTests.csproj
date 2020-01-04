@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>SafeOrbit.PerformanceTests</AssemblyName>
-    <TargetFrameworks>net45;netcoreapp1.1;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>SafeOrbit</RootNamespace>
+    <TargetFrameworks>net45;netcoreapp1.1;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>

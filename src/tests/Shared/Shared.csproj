@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <RootNamespace>SafeOrbit.Tests</RootNamespace>
     <TargetFrameworks>net45;netstandard2.0;netstandard1.6</TargetFrameworks>
-    <PackageId>SafeOrbit.Shared</PackageId>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
