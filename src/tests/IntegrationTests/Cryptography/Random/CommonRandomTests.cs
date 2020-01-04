@@ -18,7 +18,7 @@ namespace SafeOrbit.Cryptography.Random
     public abstract class CommonRandomTests<TRandom> where TRandom: ICryptoRandom
     {
         protected abstract TRandom GetStaticInstance();
-        [Test]
+        [Test, Explicit]
         public void StaticInstance_InMultipleThreads_CanBeAccessedAndConsumed()
         {
             var sut = GetStaticInstance();
