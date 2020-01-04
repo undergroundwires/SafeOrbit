@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Memory.SafeBytesServices;
-using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory
 {
@@ -25,7 +24,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        [TestCase(1), TestCase(7), TestCase(8), TestCase(9), TestCase(15), TestCase(16), TestCase(17), TestCase(300)]
+        [TestCase(1), TestCase(7), TestCase(8), TestCase(9), TestCase(15), TestCase(16), TestCase(17)]
         public void ToByteArray_BytesAppended_ReturnsExpected(int size)
         {
             // Arrange
