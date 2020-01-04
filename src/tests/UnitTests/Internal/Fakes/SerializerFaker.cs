@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Moq;
 using SafeOrbit.Memory.Common;
-using SafeOrbit.Infrastructure.Serialization;
+using SafeOrbit.Core.Serialization;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using SafeOrbit.Infrastructure.Reflection;
+using SafeOrbit.Core.Reflection;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Stampers;
 

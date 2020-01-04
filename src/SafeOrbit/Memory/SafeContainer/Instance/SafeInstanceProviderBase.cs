@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Core.Protectable;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 

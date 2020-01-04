@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Core.Protectable;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;

@@ -1,7 +1,7 @@
 ﻿using System;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Infrastructure.Reflection;
+using SafeOrbit.Core.Reflection;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Stampers;

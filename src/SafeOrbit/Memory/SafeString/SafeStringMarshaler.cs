@@ -20,7 +20,7 @@ namespace SafeOrbit.Memory
     /// <remarks>
     ///     <p>
     ///         Based on a marshaler for SecureString :
-    ///         https://github.com/hilalsaim/sambapos/blob/master/Samba.Infrastructure/SecureStringToStringMarshaller.cs
+    ///         https://github.com/hilalsaim/sambapos/blob/master/Samba.Core/SecureStringToStringMarshaller.cs
     ///     </p>
     /// </remarks>
     /// <example>

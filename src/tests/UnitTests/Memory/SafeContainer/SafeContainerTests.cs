@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using SafeOrbit.Infrastructure.Reflection;
+using SafeOrbit.Core.Reflection;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
 using SafeOrbit.Memory.InjectionServices;

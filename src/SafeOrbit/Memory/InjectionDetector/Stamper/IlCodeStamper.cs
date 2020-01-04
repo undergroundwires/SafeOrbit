@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using SafeOrbit.Infrastructure.Reflection;
+using SafeOrbit.Core.Reflection;
 using SafeOrbit.Cryptography.Hashers;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers

@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Fakes;
-using SafeOrbit.Infrastructure.Serialization;
+using SafeOrbit.Core.Serialization;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {

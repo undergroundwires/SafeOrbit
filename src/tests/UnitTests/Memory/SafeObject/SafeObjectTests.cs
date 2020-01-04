@@ -6,7 +6,7 @@ using NUnit.Framework;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Fakes;
-using SafeOrbit.Infrastructure.Protectable;
+using SafeOrbit.Core.Protectable;
 using SafeOrbit.Memory.Common.ProtectionLevelSwitch;
 
 namespace SafeOrbit.Memory

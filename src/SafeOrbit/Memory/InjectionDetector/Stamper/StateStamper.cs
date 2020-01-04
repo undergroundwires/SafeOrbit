@@ -1,6 +1,6 @@
 ﻿using System;
 using SafeOrbit.Cryptography.Hashers;
-using SafeOrbit.Infrastructure.Serialization;
+using SafeOrbit.Core.Serialization;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {
@@ -10,7 +10,7 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
     /// </summary>
     /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.Stampers.StamperBase`1" />
     /// <seealso cref="T:SafeOrbit.Memory.InjectionServices.Stampers.IStamper`1" />
-    /// <seealso cref="T:SafeOrbit.Infrastructure.Serialization.ISerializer" />
+    /// <seealso cref="T:SafeOrbit.Core.Serialization.ISerializer" />
     internal class StateStamper : StamperBase<object>
     {
         private static readonly Lazy<StateStamper> StaticInstanceLazy = new Lazy<StateStamper>();
