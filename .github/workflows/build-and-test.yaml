@@ -28,7 +28,3 @@ jobs:
       name: Integration tests
       working-directory: src/tests/IntegrationTests
       run: dotnet test
-    -
-      name: Performance tests
-      working-directory: src/tests/PerformanceTests
-      run: dotnet test
