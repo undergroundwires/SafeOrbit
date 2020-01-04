@@ -17,7 +17,7 @@ namespace SafeOrbit.Exceptions
 #if !NETSTANDARD1_6
     [Serializable]
 #endif
-    public class UnexpectedEnumValueException<TEnum> : SafeOrbitException where TEnum: IComparable, IFormattable, IConvertible
+    public class UnexpectedEnumValueException<TEnum> : SafeOrbitException where TEnum: Enum
     {
         public TEnum Value { get; set; }
         public UnexpectedEnumValueException(TEnum value)
