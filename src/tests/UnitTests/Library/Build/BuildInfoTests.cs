@@ -2,8 +2,8 @@
 
 namespace SafeOrbit.Library.Build
 {
-    /// <see cref="IBuildInfo"/>
-    /// <see cref="BuildInfo"/>
+    /// <see cref="IBuildInfo" />
+    /// <see cref="BuildInfo" />
     [TestFixture]
     public class BuildInfoTests
     {

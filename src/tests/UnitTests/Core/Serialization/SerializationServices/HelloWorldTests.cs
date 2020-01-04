@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using SafeOrbit.Core.Serialization.SerializationServices;
 using SafeOrbit.Memory.SafeObject.SharpSerializer;
 
 namespace SafeOrbit.Core.Serialization.SerializationServices
@@ -28,7 +27,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
 
         #region HelloWorldTests
 
-        private static void Serialize(HelloWorldTestCase testCase, SafeOrbit.Core.Serialization.SerializationServices.SharpSerializer serializer)
+        private static void Serialize(HelloWorldTestCase testCase, SharpSerializer serializer)
         {
             using (var stream = new MemoryStream())
             {
@@ -56,9 +55,9 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
         private static IEnumerable<HelloWorldTestCase> GetHelloWorldTestCases()
         {
             yield return new SimplePropertyTestCase(Convert.ToSByte(-57));
-            yield return new SimplePropertyTestCase((int)42);
+            yield return new SimplePropertyTestCase(42);
             yield return new SimplePropertyTestCase(Convert.ToSingle(-352));
-            yield return new SimplePropertyTestCase((double)42.42);
+            yield return new SimplePropertyTestCase(42.42);
             yield return new SimplePropertyTestCase(new DateTime(2010, 9, 8));
             yield return new SimplePropertyTestCase(new TimeSpan(5, 4, 3));
             yield return new SimplePropertyTestCase(SimpleEnum.Three);
@@ -68,25 +67,24 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             yield return new SimplePropertyTestCase(string.Empty);
 
             // very long string
-            char[] c = new char[70000];
+            var c = new char[70000];
             var c1 = from cc in c select 'a';
-            string veryLongString = new string(c1.ToArray());
+            var veryLongString = new string(c1.ToArray());
             yield return new SimplePropertyTestCase(veryLongString);
 
 
             yield return
-                new AdvancedStructTestCase(new AdvancedStruct()
-                { DateTime = new DateTime(2010, 4, 10), SimpleText = "nix" });
+                new AdvancedStructTestCase(
+                    new AdvancedStruct {DateTime = new DateTime(2010, 4, 10), SimpleText = "nix"});
 
-            yield return new SingleArrayTestCase<string>(new[] { "ala", "ma", null, "kota" });
-            yield return new DoubleArrayTestCase(new[,] { { "k1", "k2" }, { "b1", "b2" }, { "z1", "z2" } });
+            yield return new SingleArrayTestCase<string>(new[] {"ala", "ma", null, "kota"});
+            yield return new DoubleArrayTestCase(new[,] {{"k1", "k2"}, {"b1", "b2"}, {"z1", "z2"}});
             yield return new DoubleArrayWithLowerBoundsTestCase();
 
             yield return new PolymorphicSingleArrayTestCase();
 
             yield return new GenericDictionaryTestCase();
             yield return new ComplexObjectPolymorphicCollectionTestCase();
-
         }
 
         private abstract class HelloWorldTestCase
@@ -128,8 +126,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
 
             public override void MakeAssertion(object result)
             {
-                var s = (AdvancedStruct)Source;
-                var r = (AdvancedStruct)result;
+                var s = (AdvancedStruct) Source;
+                var r = (AdvancedStruct) result;
 
                 Assert.AreEqual(s.DateTime, r.DateTime);
                 Assert.AreEqual(s.SimpleInt, r.SimpleInt);
@@ -145,13 +143,10 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
 
             public override void MakeAssertion(object result)
             {
-                var s = (TElement[])Source;
-                var r = (TElement[])result;
+                var s = (TElement[]) Source;
+                var r = (TElement[]) result;
 
-                for (var i = 0; i < s.Length; i++)
-                {
-                    Assert.AreEqual(s[i], r[i]);
-                }
+                for (var i = 0; i < s.Length; i++) Assert.AreEqual(s[i], r[i]);
             }
         }
 
@@ -163,55 +158,46 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
 
             public override void MakeAssertion(object result)
             {
-                var s = (string[,])Source;
-                var r = (string[,])result;
-
+                var s = (string[,]) Source;
+                var r = (string[,]) result;
 
 
                 for (var i = 0; i < s.GetLength(0); i++)
-                {
-                    for (var j = 0; j < s.GetLength(1); j++)
-                    {
-                        Assert.AreEqual(s[i, j], r[i, j]);
-                    }
-
-                }
+                for (var j = 0; j < s.GetLength(1); j++)
+                    Assert.AreEqual(s[i, j], r[i, j]);
             }
         }
 
         /// <summary>
-        /// Multidimensional array with lower bounds bigger then 0
+        ///     Multidimensional array with lower bounds bigger then 0
         /// </summary>
         private class DoubleArrayWithLowerBoundsTestCase : HelloWorldTestCase
         {
             public DoubleArrayWithLowerBoundsTestCase()
             {
                 // Creates and initializes a multidimensional Array of type String.
-                var myLengthsArray = new int[] { 3, 5 };
-                var myBoundsArray = new int[] { 2, 3 };
+                var myLengthsArray = new[] {3, 5};
+                var myBoundsArray = new[] {2, 3};
                 var myArray = Array.CreateInstance(typeof(string), myLengthsArray, myBoundsArray);
                 for (var i = myArray.GetLowerBound(0); i <= myArray.GetUpperBound(0); i++)
+                for (var j = myArray.GetLowerBound(1); j <= myArray.GetUpperBound(1); j++)
                 {
-                    for (var j = myArray.GetLowerBound(1); j <= myArray.GetUpperBound(1); j++)
-                    {
-                        var myIndicesArray = new int[] { i, j };
-                        myArray.SetValue(Convert.ToString(i) + j, myIndicesArray);
-                    }
+                    var myIndicesArray = new[] {i, j};
+                    myArray.SetValue(Convert.ToString(i) + j, myIndicesArray);
                 }
+
                 Source = myArray;
             }
 
             public override void MakeAssertion(object result)
             {
-                var s = (Array)Source;
-                var r = (Array)result;
-                for (int i = s.GetLowerBound(0); i <= s.GetUpperBound(0); i++)
+                var s = (Array) Source;
+                var r = (Array) result;
+                for (var i = s.GetLowerBound(0); i <= s.GetUpperBound(0); i++)
+                for (var j = s.GetLowerBound(1); j <= s.GetUpperBound(1); j++)
                 {
-                    for (int j = s.GetLowerBound(1); j <= s.GetUpperBound(1); j++)
-                    {
-                        int[] myIndicesArray = new int[2] { i, j };
-                        Assert.AreEqual(s.GetValue(myIndicesArray), r.GetValue(myIndicesArray));
-                    }
+                    var myIndicesArray = new int[2] {i, j};
+                    Assert.AreEqual(s.GetValue(myIndicesArray), r.GetValue(myIndicesArray));
                 }
             }
         }
@@ -219,19 +205,16 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
         private class PolymorphicSingleArrayTestCase : HelloWorldTestCase
         {
             public PolymorphicSingleArrayTestCase()
-                : base(new IComplexObject[] { new ComplexObject() { SimpleInt = 999 } })
+                : base(new IComplexObject[] {new ComplexObject {SimpleInt = 999}})
             {
             }
 
             public override void MakeAssertion(object result)
             {
-                var s = (IComplexObject[])Source;
-                var r = (IComplexObject[])result;
+                var s = (IComplexObject[]) Source;
+                var r = (IComplexObject[]) result;
 
-                for (int i = 0; i < s.Length; i++)
-                {
-                    Assert.AreEqual(s[i].SimpleInt, r[i].SimpleInt);
-                }
+                for (var i = 0; i < s.Length; i++) Assert.AreEqual(s[i].SimpleInt, r[i].SimpleInt);
             }
         }
 
@@ -244,13 +227,13 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
                 genericDictionary.Add(10, "ten");
                 genericDictionary.Add(20, "twenty");
 
-                this.Source = genericDictionary;
+                Source = genericDictionary;
             }
 
             public override void MakeAssertion(object result)
             {
-                var s = (Dictionary<int, string>)Source;
-                var r = (Dictionary<int, string>)result;
+                var s = (Dictionary<int, string>) Source;
+                var r = (Dictionary<int, string>) result;
 
                 Assert.AreEqual(s[5], r[5]);
                 Assert.AreEqual(s[10], r[10]);
@@ -263,28 +246,31 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             public ComplexObjectPolymorphicCollectionTestCase()
             {
                 var complexObjectCollection =
-                    new Collection<IComplexObject> { new ComplexObject { SimpleInt = 11 }, new ComplexObject { SimpleInt = 12 } };
+                    new Collection<IComplexObject>
+                        {new ComplexObject {SimpleInt = 11}, new ComplexObject {SimpleInt = 12}};
                 Source = complexObjectCollection;
             }
 
             public override void MakeAssertion(object result)
             {
-                var s = (Collection<IComplexObject>)Source;
-                var r = (Collection<IComplexObject>)result;
+                var s = (Collection<IComplexObject>) Source;
+                var r = (Collection<IComplexObject>) result;
 
-                for (int i = 0; i < s.Count; i++)
-                {
-                    Assert.AreEqual(s[i].SimpleInt, r[i].SimpleInt);
-                }
+                for (var i = 0; i < s.Count; i++) Assert.AreEqual(s[i].SimpleInt, r[i].SimpleInt);
             }
         }
+
         public struct AdvancedStruct
         {
             public int SimpleInt { get; set; }
             public string SimpleText { get; set; }
             public DateTime DateTime { get; set; }
         }
-        public interface IComplexObject { int SimpleInt { get; set; } }
+
+        public interface IComplexObject
+        {
+            int SimpleInt { get; set; }
+        }
 
         public class ComplexObject : IComplexObject
         {
@@ -297,6 +283,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
         {
             public object ReferenceObject { get; set; }
         }
+
         [Flags]
         public enum FlagEnum
         {
@@ -304,12 +291,14 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             Beta = 4,
             Gamma = 8
         }
+
         public enum SimpleEnum
         {
             One,
             Two,
             Three
         }
+
         private SharpSerializer GetSut() => new SharpSerializer();
         private SharpSerializer GetSut(BinarySettings settings) => new SharpSerializer(settings);
     }

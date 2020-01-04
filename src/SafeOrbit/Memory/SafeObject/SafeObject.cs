@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
-using SafeOrbit.Exceptions;
 using SafeOrbit.Core.Protectable;
-using SafeOrbit.Library;
+using SafeOrbit.Exceptions;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 
@@ -108,7 +106,10 @@ namespace SafeOrbit.Memory
         /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     <p><paramref name="injectionDetector" /> is <see langword="null" />.</p>
-        ///     <p>Initial object value from <paramref name="settings" /> is null or cannot be casted to <typeparamref name="TObject" /></p>
+        ///     <p>
+        ///         Initial object value from <paramref name="settings" /> is null or cannot be casted to
+        ///         <typeparamref name="TObject" />
+        ///     </p>
         /// </exception>
         internal SafeObject(IInitialSafeObjectSettings settings, IInjectionDetector injectionDetector)
             : base(settings.ProtectionMode)
@@ -145,7 +146,7 @@ namespace SafeOrbit.Memory
         /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.AlertChannel" />
         /// <value>If this instance is allowed to alert.</value>
         public bool CanAlert
-            => (CurrentProtectionMode != SafeObjectProtectionMode.NoProtection) && _injectionDetector.CanAlert;
+            => CurrentProtectionMode != SafeObjectProtectionMode.NoProtection && _injectionDetector.CanAlert;
 
         /// <inheritdoc />
         /// <exception cref="MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
@@ -166,7 +167,10 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <typeparamref name="TObject" /> is marked as ReadOnly.</exception>
+        /// <exception cref="ReadOnlyAccessForbiddenException">
+        ///     This instance of <typeparamref name="TObject" /> is marked as
+        ///     ReadOnly.
+        /// </exception>
         /// <exception cref="ArgumentNullException"><paramref name="modification" /> is <see langword="null" /> </exception>
         public void ApplyChanges(Action<TObject> modification)
         {
@@ -193,10 +197,12 @@ namespace SafeOrbit.Memory
         private void SetInitialValue(object initialValue, ref TObject obj)
         {
             if (initialValue == null)
+            {
                 lock (_syncRoot)
                 {
                     obj = new TObject();
                 }
+            }
             else
             {
                 if (!(initialValue is TObject))
@@ -214,7 +220,7 @@ namespace SafeOrbit.Memory
 
 
         /// <summary>
-        /// Gets internal object.
+        ///     Gets internal object.
         /// </summary>
         /// <param name="alertUnnotifiedChanges">This method alerts unverified changes.</param>
         /// <exception cref="MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
@@ -225,7 +231,10 @@ namespace SafeOrbit.Memory
             return _object;
         }
 
-        /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <typeparamref name="TObject" /> is marked as ReadOnly.</exception>
+        /// <exception cref="ReadOnlyAccessForbiddenException">
+        ///     This instance of <typeparamref name="TObject" /> is marked as
+        ///     ReadOnly.
+        /// </exception>
         private void ThrowIfReadOnly()
         {
             if (IsReadOnly)
@@ -237,7 +246,7 @@ namespace SafeOrbit.Memory
         {
             var isDic = typeof(IDictionary).GetTypeInfo().IsAssignableFrom(t);
             if (isDic) return true;
-            var isGenericDic = t.GetTypeInfo().IsGenericType && (t.GetGenericTypeDefinition() == typeof(Dictionary<,>));
+            var isGenericDic = t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>);
             return isGenericDic;
         }
 
@@ -258,7 +267,7 @@ namespace SafeOrbit.Memory
                             $"{typeof(TObject).Name} is a dictionary. Code protection for dictionary types are not yet supported.");
                     _injectionDetector.ScanCode = true;
                     _injectionDetector.ScanState = true;
-                    if(context.OldValue != SafeObjectProtectionMode.JustState) VerifyChangesInternal(null, false);
+                    if (context.OldValue != SafeObjectProtectionMode.JustState) VerifyChangesInternal(null, false);
                     break;
                 case SafeObjectProtectionMode.JustState:
                     _injectionDetector.ScanCode = false;
@@ -282,6 +291,7 @@ namespace SafeOrbit.Memory
         }
 
         #region [IDisposable]
+
         private bool _isDisposed; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -294,6 +304,7 @@ namespace SafeOrbit.Memory
             {
                 _object = null;
             }
+
             _isDisposed = true;
         }
 

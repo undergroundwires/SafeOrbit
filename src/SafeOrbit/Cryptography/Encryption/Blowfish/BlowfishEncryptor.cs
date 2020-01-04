@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Encryption.Padding;
 using SafeOrbit.Cryptography.Encryption.Padding.Factory;
-using SafeOrbit.Cryptography.Encryption.Padding.Padders;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
@@ -37,27 +36,33 @@ namespace SafeOrbit.Cryptography.Encryption
         public const BlowfishCipherMode DefaultCipherMode = BlowfishCipherMode.Cbc;
         public const PaddingMode DefaultPaddingMode = PaddingMode.PKCS7;
         public static IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
+
         /// <summary>
-        /// Initialized BlowfishEncryptor with <see cref="DefaultCipherMode"/> and <see cref="DefaultPaddingMode"/>
+        ///     Initialized BlowfishEncryptor with <see cref="DefaultCipherMode" /> and <see cref="DefaultPaddingMode" />
         /// </summary>
-        public BlowfishEncryptor() :this(cipherMode: DefaultCipherMode)
+        public BlowfishEncryptor() : this(cipherMode: DefaultCipherMode)
         {
-            
         }
+
         /// <param name="cipherMode">The cipher mode.</param>
         /// <param name="paddingMode">Padding algorithm to use</param>
         public BlowfishEncryptor(
             BlowfishCipherMode cipherMode,
             PaddingMode paddingMode = DefaultPaddingMode
-            ) : this(cipherMode, paddingMode, FastRandom.StaticInstance, SafeOrbitCore.Current.Factory.Get<IPadderFactory>())
+        ) : this(cipherMode, paddingMode, FastRandom.StaticInstance,
+            SafeOrbitCore.Current.Factory.Get<IPadderFactory>())
         {
         }
 
-        /// <exception cref="UnexpectedEnumValueException{BlowfishCipherMode}"> <paramref name="cipherMode" /> is not defined in <see cref="BlowfishCipherMode" />. </exception>
+        /// <exception cref="UnexpectedEnumValueException{TEnum}">
+        ///     <paramref name="cipherMode" /> is not defined in
+        ///     <see cref="BlowfishCipherMode" />.
+        /// </exception>
         /// <exception cref="ArgumentNullException"><paramref name="random" /> is <see langword="null" /></exception>
-        internal BlowfishEncryptor(BlowfishCipherMode cipherMode, PaddingMode paddingMode, ICryptoRandom random, IPadderFactory padderFactory) : base(random, paddingMode, padderFactory)
+        internal BlowfishEncryptor(BlowfishCipherMode cipherMode, PaddingMode paddingMode, ICryptoRandom random,
+            IPadderFactory padderFactory) : base(random, paddingMode, padderFactory)
         {
-            if (((int) cipherMode != 0) && ((int) cipherMode != 1))
+            if ((int) cipherMode != 0 && (int) cipherMode != 1)
                 throw new UnexpectedEnumValueException<BlowfishCipherMode>(cipherMode);
             CipherMode = cipherMode;
         }
@@ -66,7 +71,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public override int MinKeySizeInBits { get; } = 32;
         public override int MaxKeySizeInBits { get; } = 448;
         public override int BlockSizeInBits { get; } = 64;
-        public override int IvSizeInBits => this.CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
+        public override int IvSizeInBits => CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
 
         /// <inheritdoc cref="EncryptAsync" />
         public byte[] Encrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => EncryptAsync(input, key));
@@ -115,7 +120,7 @@ namespace SafeOrbit.Cryptography.Encryption
             if (data.Length == 0)
                 throw new DataLengthException(nameof(data), "Data is empty");
         }
-        
+
         private static async Task<byte[]> InternalCryptEcbAsync(byte[] input, byte[] key, bool forEncryption)
         {
             using var ms = new MemoryStream();
@@ -124,6 +129,7 @@ namespace SafeOrbit.Cryptography.Encryption
                 using var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write);
                 await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
             }
+
             return ms.ToArray();
         }
 
@@ -144,6 +150,7 @@ namespace SafeOrbit.Cryptography.Encryption
                 using var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write);
                 await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
             }
+
             return ms.ToArray();
         }
 
@@ -159,8 +166,10 @@ namespace SafeOrbit.Cryptography.Encryption
                     using var cs = new CryptoStream(ms, blowfish, CryptoStreamMode.Write);
                     await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
                 }
+
                 encryptedContent = ms.ToArray();
             }
+
             var result = iv.Combine(encryptedContent);
             return result;
         }

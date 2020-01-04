@@ -13,9 +13,9 @@ namespace SafeOrbit.Memory
     /// <seealso cref="IDisposable" />
     /// <seealso cref="SafeObjectProtectionMode" />
     public interface ISafeObject<out TObject> :
-            IProtectable<SafeObjectProtectionMode>,
-            IAlerts,
-            IDisposable
+        IProtectable<SafeObjectProtectionMode>,
+        IAlerts,
+        IDisposable
         where TObject : class
     {
         /// <summary>

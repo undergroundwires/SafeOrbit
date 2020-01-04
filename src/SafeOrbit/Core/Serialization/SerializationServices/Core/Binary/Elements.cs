@@ -194,8 +194,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
         public static byte GetNumberSize(int value)
         {
             if (value == 0) return Zero;
-            if ((value > short.MaxValue) || (value < short.MinValue)) return B4;
-            if ((value < byte.MinValue) || (value > byte.MaxValue)) return B2;
+            if (value > short.MaxValue || value < short.MinValue) return B4;
+            if (value < byte.MinValue || value > byte.MaxValue) return B2;
             return B1;
         }
     }

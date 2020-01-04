@@ -23,9 +23,10 @@ namespace SafeOrbit.Cryptography.Random
     public class FastRandom : RandomBase, IFastRandom
     {
         /// <summary>
-        ///     Gets the static instance of <see cref="FastRandom"/>.
+        ///     Gets the static instance of <see cref="FastRandom" />.
         /// </summary>
         public static IFastRandom StaticInstance = new FastRandom();
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="FastRandom" /> class.
         /// </summary>

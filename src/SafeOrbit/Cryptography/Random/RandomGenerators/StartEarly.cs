@@ -24,6 +24,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             // Initializing FastRandomGenerator, initializes also SafeRandomGenerator
             var junk = FastRandomGenerator.StaticInstance.ToString();
         }
+
         private static void InvokeStaticConstructorFor<T>()
             => RuntimeHelpers.RunClassConstructor(typeof(T).TypeHandle);
     }

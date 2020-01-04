@@ -9,7 +9,7 @@
 #if !NETSTANDARD1_6
 
         /// <summary>
-        /// Gets the non zero bytes.
+        ///     Gets the non zero bytes.
         /// </summary>
         /// <param name="length">The length.</param>
         /// <returns>System.Byte[].</returns>

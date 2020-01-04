@@ -1,9 +1,9 @@
 ﻿using System;
 using SafeOrbit.Exceptions;
-
 #if !NETSTANDARD1_6
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+
 #endif
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation

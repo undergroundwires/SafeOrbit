@@ -12,8 +12,8 @@ using SafeOrbit.Memory.SafeBytesServices.Factory;
 namespace SafeOrbit.Memory
 {
     /// <remarks>
-    ///     Wraps <see cref="ISafeByteCollection"/>.
-    ///     Adds arbitrary bytes during modifications to avoid having real sequences in the memory. 
+    ///     Wraps <see cref="ISafeByteCollection" />.
+    ///     Adds arbitrary bytes during modifications to avoid having real sequences in the memory.
     /// </remarks>
     public class SafeBytes : ISafeBytes
     {
@@ -47,7 +47,9 @@ namespace SafeOrbit.Memory
         /// <summary>
         ///     Returns to real length of the bytes inside
         /// </summary>
-        public int Length => (_safeByteCollection?.Length ?? 0) == 0 ? 0 : _safeByteCollection.Length / (TotalArbitraryBytesPerByte + 1);
+        public int Length => (_safeByteCollection?.Length ?? 0) == 0
+            ? 0
+            : _safeByteCollection.Length / (TotalArbitraryBytesPerByte + 1);
 
         public bool IsDisposed { get; private set; }
 
@@ -87,16 +89,6 @@ namespace SafeOrbit.Memory
                 }
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
-        private void Append(ISafeByte safeByte)
-        {
-            EnsureNotDisposed();
-            if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
-            _safeByteCollection.Append(safeByte);
-            AddArbitraryByte();
-        }
-
         /// <summary>
         ///     Gets the byte in the safe list
         /// </summary>
@@ -112,7 +104,7 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             EnsureNotEmpty();
-            if ((position < 0) && (position >= Length)) throw new ArgumentOutOfRangeException(nameof(position));
+            if (position < 0 && position >= Length) throw new ArgumentOutOfRangeException(nameof(position));
             var safeByte = TaskContext.RunSync(() => GetAsSafeByteAsync(position));
             return safeByte.Get();
         }
@@ -122,7 +114,7 @@ namespace SafeOrbit.Memory
         public byte[] ToByteArray()
         {
             EnsureNotDisposed();
-            if(Length == 0) 
+            if (Length == 0)
                 return new byte[0];
             var decryptedBytes = _safeByteCollection.ToDecryptedBytes();
             var withoutArbitraryBytes = decryptedBytes.Where((x, i) => i % (TotalArbitraryBytesPerByte + 1) == 0)
@@ -142,16 +134,27 @@ namespace SafeOrbit.Memory
                     asSafeBytes.Append(TaskContext.RunSync(() => GetAsSafeByteAsync(i)));
                 return asSafeBytes;
             }
+
             //If it's not, then reveals each byte in memory.
             for (var i = 0; i < Length; i++)
                 clone.Append(GetByte(i));
             return clone;
         }
 
+        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
+        private void Append(ISafeByte safeByte)
+        {
+            EnsureNotDisposed();
+            if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
+            _safeByteCollection.Append(safeByte);
+            AddArbitraryByte();
+        }
+
         /// <summary>
         ///     Indicates whether the specified SafeBytes object is null or holds zero bytes.
         /// </summary>
-        public static bool IsNullOrEmpty(ISafeBytes safeBytes) => (safeBytes == null) || (safeBytes.Length == 0);
+        public static bool IsNullOrEmpty(ISafeBytes safeBytes) => safeBytes == null || safeBytes.Length == 0;
 
 
         /// <summary>
@@ -160,7 +163,8 @@ namespace SafeOrbit.Memory
         internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
             var realPosition = position * (TotalArbitraryBytesPerByte + 1);
-            if ((realPosition < 0) || (realPosition >= _safeByteCollection.Length)) throw new ArgumentOutOfRangeException(nameof(position));
+            if (realPosition < 0 || realPosition >= _safeByteCollection.Length)
+                throw new ArgumentOutOfRangeException(nameof(position));
             return await _safeByteCollection.GetAsync(realPosition).ConfigureAwait(false);
         }
 
@@ -169,9 +173,9 @@ namespace SafeOrbit.Memory
         /// </summary>
         private void AddArbitraryByte()
         {
-            for(var i = 0; i < TotalArbitraryBytesPerByte; i++)
+            for (var i = 0; i < TotalArbitraryBytesPerByte; i++)
             {
-                var safeByte = _safeByteFactory.GetByByte((byte)_fastRandom.GetInt(0, 256));
+                var safeByte = _safeByteFactory.GetByByte((byte) _fastRandom.GetInt(0, 256));
                 _safeByteCollection.Append(safeByte);
             }
         }
@@ -216,30 +220,31 @@ namespace SafeOrbit.Memory
 
         public bool Equals(byte[] other)
         {
-            if (other == null || !other.Any()) return this.Length == 0;
+            if (other == null || !other.Any()) return Length == 0;
             // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
-            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            var comparisonBit = (uint) Length ^ (uint) other.Length;
             // TODO: Can run in parallel
             for (var i = 0; i < Length && i < other.Length; i++)
             {
-                var existingByte = TaskContext.RunSync(() => this.GetAsSafeByteAsync(i));
+                var existingByte = TaskContext.RunSync(() => GetAsSafeByteAsync(i));
                 var result = existingByte.Equals(other[i]);
-                comparisonBit |= (uint)(result ? 0 : 1);
+                comparisonBit |= (uint) (result ? 0 : 1);
             }
+
             return comparisonBit == 0;
         }
 
         public bool Equals(ISafeBytes other)
         {
-            if (other == null || other.Length == 0) return this.Length == 0;
+            if (other == null || other.Length == 0) return Length == 0;
             // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
-            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+            var comparisonBit = (uint) Length ^ (uint) other.Length;
             // TODO: Can run in parallel
             for (var i = 0; i < Length && i < other.Length; i++)
             {
-                var existingByte = TaskContext.RunSync(() => this.GetAsSafeByteAsync(i));
+                var existingByte = TaskContext.RunSync(() => GetAsSafeByteAsync(i));
                 bool bytesEqual;
-                if (other is SafeBytes safeBytes) 
+                if (other is SafeBytes safeBytes)
                 {
                     // No need to reveal the bytes
                     var otherByte = TaskContext.RunSync(() => safeBytes.GetAsSafeByteAsync(i));
@@ -249,8 +254,10 @@ namespace SafeOrbit.Memory
                 {
                     bytesEqual = existingByte.Equals(other.GetByte(i)); // reveal the byte;
                 }
-                comparisonBit |= (uint)(bytesEqual ? 0 : 1);
+
+                comparisonBit |= (uint) (bytesEqual ? 0 : 1);
             }
+
             return comparisonBit == 0;
         }
 
@@ -272,7 +279,7 @@ namespace SafeOrbit.Memory
                 const int multiplier = 26;
                 var hashCode = 1;
                 for (var i = 0; i < Length; i++)
-                    hashCode *= multiplier* TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Id;
+                    hashCode *= multiplier * TaskContext.RunSync(() => GetAsSafeByteAsync(i)).Id;
                 return hashCode;
             }
         }

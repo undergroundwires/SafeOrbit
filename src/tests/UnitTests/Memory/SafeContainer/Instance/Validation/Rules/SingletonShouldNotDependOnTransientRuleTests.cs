@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SafeOrbit.Memory;
 using NUnit.Framework;
 using SafeOrbit.Memory.SafeContainerServices.Instance.Providers;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
 {
-    /// <seealso cref="SingletonShouldNotDependOnTransientRule"/>
-    /// <seealso cref="IInstanceProviderRule"/>
+    /// <seealso cref="SingletonShouldNotDependOnTransientRule" />
+    /// <seealso cref="IInstanceProviderRule" />
     [TestFixture]
     public class SingletonShouldNotDependOnTransientRuleTests
     {
@@ -29,14 +28,19 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
             Assert.That(errors, Is.Not.Null.Or.Empty);
             Assert.That(errors.Count(), Is.EqualTo(1));
         }
-        private class Transient { }
+
+        private class Transient
+        {
+        }
+
         private class Singleton
         {
             private readonly Transient _transient;
+
             public Singleton()
             {
-                
             }
+
             internal Singleton(Transient transient)
             {
                 _transient = transient;

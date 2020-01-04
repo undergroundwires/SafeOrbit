@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Moq;
-using SafeOrbit.Memory.Common;
 using SafeOrbit.Core.Serialization;
 using SafeOrbit.Tests;
 
@@ -18,7 +17,9 @@ namespace SafeOrbit.Fakes
             fake.Setup(s => s.Serialize(It.IsAny<object>())).Returns((object obj) =>
             {
                 var serializedBytes = BitConverter.GetBytes(obj.GetHashCode()); //get bulk bytes
-                var @object = Serializer.StaticInstance.Deserialize<object>(Serializer.StaticInstance.Serialize(obj)); // deeply clone
+                var @object =
+                    Serializer.StaticInstance.Deserialize<object>(Serializer.StaticInstance
+                        .Serialize(obj)); // deeply clone
                 if (!innerValues.ContainsKey(serializedBytes))
                     innerValues.Add(serializedBytes, @object);
                 else

@@ -8,19 +8,19 @@ namespace SafeOrbit.Memory.SafeBytesServices
     [TestFixture]
     internal class SafeBytePerformanceTests : TestsFor<ISafeByte>
     {
-
         [Test]
-        public void Get_Takes_Less_Than_5MS([Random(0, 256, 1)]byte b)
+        public void Get_Takes_Less_Than_5MS([Random(0, 256, 1)] byte b)
         {
             //arrange
             const int expectedUpperLimit = 5;
             var sut = GetSut();
             sut.Set(b);
             //act
-            var actual = base.Measure(() => sut.Get());
+            var actual = Measure(() => sut.Get());
             //assert
             Assert.That(actual, Is.LessThan(expectedUpperLimit));
         }
+
         protected override ISafeByte GetSut() => new SafeByte();
     }
 }

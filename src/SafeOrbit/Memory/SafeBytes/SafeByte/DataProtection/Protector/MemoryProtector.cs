@@ -17,7 +17,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
             if (userData == null) throw new ArgumentNullException(nameof(userData));
             if (userData.Length % BlockSizeInBytes != 0)
                 throw new DataLengthException(nameof(userData), $"Size of {nameof(userData)} must be" +
-                                                      $"multiple of {BlockSizeInBytes}");
+                                                                $"multiple of {BlockSizeInBytes}");
         }
     }
 }

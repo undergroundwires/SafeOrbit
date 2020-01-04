@@ -3,6 +3,7 @@
 using System;
 #if !NETSTANDARD1_6
 using System.Runtime.Serialization;
+
 #endif
 
 namespace SafeOrbit.Core.Serialization.SerializationServices.Core

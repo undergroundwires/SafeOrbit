@@ -25,7 +25,9 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             public ParentChildTestClass Mother { get; set; }
             public ParentChildTestClass Father { get; set; }
         }
+
         private SharpSerializer GetSut(BinarySettings settings) => new SharpSerializer(settings);
+
         [Test]
         public void BinSerial_ShouldSerializeGuid()
         {

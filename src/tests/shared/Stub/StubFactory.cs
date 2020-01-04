@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SafeOrbit.Tests
 {
@@ -12,32 +10,35 @@ namespace SafeOrbit.Tests
         private readonly Dictionary<string, Func<object>> _typeFuncs = new Dictionary<string, Func<object>>();
         public void Register<T>(IStubProvider<T> stubProvider) => Register(typeof(T).FullName, stubProvider);
         public void Register(Type type, IStubProvider stubProvider) => Register(type.FullName, stubProvider);
+
         /// <summary>
-        /// Registers all stub providers that implements <see cref="IStubProvider{T}"/> in the assembly.
+        ///     Registers all stub providers that implements <see cref="IStubProvider{T}" /> in the assembly.
         /// </summary>
-        /// <param name="assembly">The assembly to look for instances that implements <see cref="IStubProvider{T}"/>.</param>
+        /// <param name="assembly">The assembly to look for instances that implements <see cref="IStubProvider{T}" />.</param>
         public void RegisterAll(Assembly assembly)
         {
             var allStubProviderTypes = from type in assembly.GetTypes()
-                                       where typeof(IStubProvider).GetTypeInfo().IsAssignableFrom(type)
-                                       select type;
+                where typeof(IStubProvider).GetTypeInfo().IsAssignableFrom(type)
+                select type;
             foreach (var instanceProviderType in allStubProviderTypes)
             {
                 var instanceProvider = Activator.CreateInstance(instanceProviderType) as IStubProvider;
                 var stubType = instanceProviderType
                     .GetTypeInfo().GetInterfaces()
-                    .Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IStubProvider<>))
+                    .Where(i => i.GetTypeInfo().IsGenericType &&
+                                i.GetGenericTypeDefinition() == typeof(IStubProvider<>))
                     .SelectMany(i => i.GetTypeInfo().GetGenericArguments())
                     .FirstOrDefault();
-                this.Register(stubType, instanceProvider);
+                Register(stubType, instanceProvider);
             }
         }
+
         public TStub Provide<TStub>()
         {
-            if(!_typeFuncs.ContainsKey(typeof(TStub).FullName))
+            if (!_typeFuncs.ContainsKey(typeof(TStub).FullName))
                 throw new KeyNotFoundException(
                     $"Stub \"{typeof(TStub).Name}\" is not registered.\nFull name {typeof(TStub).FullName}");
-            return (TStub) _typeFuncs[typeof (TStub).FullName].Invoke();
+            return (TStub) _typeFuncs[typeof(TStub).FullName].Invoke();
         }
 
         private void Register(string typeName, IStubProvider stubProvider)
@@ -50,6 +51,7 @@ namespace SafeOrbit.Tests
                     $"¨{Environment.NewLine}" +
                     $"The type is already registered with: {existing.GetType().FullName}");
             }
+
             _typeFuncs.Add(typeName, stubProvider.Provide);
         }
     }

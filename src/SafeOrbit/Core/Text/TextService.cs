@@ -72,7 +72,7 @@ namespace SafeOrbit.Text
         /// </exception>
         public byte[] Convert(Encoding sourceEncoding, Encoding destinationEncoding, byte[] bytes)
         {
-            if ((bytes == null) || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
+            if (bytes == null || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
             return System.Text.Encoding.Convert(
                 GetEncodingObject(sourceEncoding),
                 GetEncodingObject(destinationEncoding),
@@ -127,7 +127,7 @@ namespace SafeOrbit.Text
         /// </exception>
         public byte[] GetBytes(char @char, Encoding encoding = DefaultEncoding)
         {
-            return GetBytes(new[] { @char }, encoding);
+            return GetBytes(new[] {@char}, encoding);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace SafeOrbit.Text
         /// </exception>
         public byte[] GetBytes(char[] chars, Encoding encoding = DefaultEncoding)
         {
-            if ((chars == null) || !chars.Any()) throw new ArgumentNullException(nameof(chars));
+            if (chars == null || !chars.Any()) throw new ArgumentNullException(nameof(chars));
             return GetEncodingObject(encoding).GetBytes(chars);
         }
 
@@ -172,7 +172,7 @@ namespace SafeOrbit.Text
         /// </exception>
         public string GetString(byte[] bytes, Encoding encoding = DefaultEncoding)
         {
-            if ((bytes == null) || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
+            if (bytes == null || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
             return GetEncodingObject(encoding).GetString(bytes);
         }
 
@@ -194,7 +194,7 @@ namespace SafeOrbit.Text
         /// </exception>
         public char[] GetChars(byte[] bytes, Encoding encoding)
         {
-            if ((bytes == null) || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
+            if (bytes == null || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
             return GetEncodingObject(encoding).GetChars(bytes);
         }
 
@@ -218,7 +218,7 @@ namespace SafeOrbit.Text
         /// <seealso cref="_safeStringFactory" />
         public ISafeString GetSafeString(byte[] bytes, Encoding encoding)
         {
-            if ((bytes == null) || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
+            if (bytes == null || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
             var result = _safeStringFactory.Create();
             using (var stream = new MemoryStream(bytes))
             {
@@ -226,11 +226,12 @@ namespace SafeOrbit.Text
                 {
                     do
                     {
-                        var ch = (char)streamReader.Read();
+                        var ch = (char) streamReader.Read();
                         result.Append(ch);
                     } while (!streamReader.EndOfStream);
                 }
             }
+
             return result;
         }
 

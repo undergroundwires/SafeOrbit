@@ -17,7 +17,7 @@ namespace SafeOrbit.Exceptions.SerializableException
                 value: value,
                 propertyName: name,
                 type: typeof(T)
-                ));
+            ));
         }
 
         private static string GetName<T>(Expression<Func<T>> exp)

@@ -3,7 +3,7 @@
 namespace SafeOrbit.Exceptions.SerializableException
 {
     /// <summary>
-    /// Abstracts serialization property.
+    ///     Abstracts serialization property.
     /// </summary>
     public interface ISerializationPropertyInfo
     {

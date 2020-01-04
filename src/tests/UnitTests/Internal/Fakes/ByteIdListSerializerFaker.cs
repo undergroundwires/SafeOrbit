@@ -20,7 +20,8 @@ namespace SafeOrbit.Fakes
                     Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(list)));
             mock.Setup(s => s.DeserializeAsync(It.IsAny<byte[]>()))
                 .ReturnsAsync((byte[] list) =>
-                    JsonConvert.DeserializeObject<Collection<int>>(Encoding.Unicode.GetString(list)).EmptyIfNull().AsEnumerable());
+                    JsonConvert.DeserializeObject<Collection<int>>(Encoding.Unicode.GetString(list)).EmptyIfNull()
+                        .AsEnumerable());
             return mock.Object;
         }
     }

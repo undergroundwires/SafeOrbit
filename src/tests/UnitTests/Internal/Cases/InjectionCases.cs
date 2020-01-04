@@ -12,8 +12,9 @@ namespace SafeOrbit.Memory
             InjectionAlertChannel.RaiseEvent,
             InjectionAlertChannel.ThrowException
         };
+
         /// <summary>
-        /// arg[0] = protectCode, arg[1] = protectState, returns CanAlert
+        ///     arg[0] = protectCode, arg[1] = protectState, returns CanAlert
         /// </summary>
         public static IEnumerable<TestCaseData> CanAlertCases
         {

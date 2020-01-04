@@ -6,7 +6,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance
 {
     internal interface IInstanceProvider :
         IProtectable<InstanceProtectionMode>,
-        IAlerts        
+        IAlerts
     {
         Type ImplementationType { get; }
         LifeTime LifeTime { get; }

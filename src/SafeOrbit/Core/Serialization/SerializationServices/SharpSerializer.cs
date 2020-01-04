@@ -130,6 +130,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             using Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
             Serialize(data, stream);
         }
+
         private static void CreateDirectoryIfNecessary(string filename)
         {
             var directory = Path.GetDirectoryName(filename);

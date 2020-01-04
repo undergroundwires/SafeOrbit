@@ -16,10 +16,7 @@ namespace SafeOrbit.Helpers
         public static void For(int startIndex, int endIndex, Action<int> @delegate)
         {
             if (@delegate == null) throw new ArgumentNullException(nameof(@delegate));
-            for (var i = startIndex; i < endIndex; i++)
-            {
-                @delegate.Invoke(i);
-            }
+            for (var i = startIndex; i < endIndex; i++) @delegate.Invoke(i);
 //#if !NETSTANDARD1_6
 //            var partitioner = Partitioner.Create(0, endIndex);
 //            Parallel.ForEach(partitioner, range =>

@@ -1,9 +1,9 @@
 ﻿using System;
-
 #if !NETSTANDARD1_6
 using System.Security.Permissions;
 using System.Linq;
 using System.Runtime.Serialization;
+
 #endif
 
 namespace SafeOrbit.Exceptions.SerializableException
@@ -16,9 +16,9 @@ namespace SafeOrbit.Exceptions.SerializableException
     /// <remarks>
     ///     <p>Override <see cref="ConfigureSerialize" /> method to add different properties to the serialization.</p>
     /// </remarks>
-    /// <seealso cref="Exception"/>
-    /// <seealso cref="ConfigureSerialize"/>
-    /// <seealso cref="SerializableAttribute"/>
+    /// <seealso cref="Exception" />
+    /// <seealso cref="ConfigureSerialize" />
+    /// <seealso cref="SerializableAttribute" />
     [Serializable]
 #endif
 #pragma warning restore 587
@@ -52,16 +52,19 @@ namespace SafeOrbit.Exceptions.SerializableException
             var serializationContext = ConfigureAndGetSerializationContext();
             DeserializeProperties(serializationContext, info);
         }
+
         private ISerializationContext ConfigureAndGetSerializationContext()
         {
             var serializationContext = new SerializationContext();
             ConfigureSerialize(serializationContext);
             return serializationContext;
         }
+
         protected virtual void ConfigureSerialize(ISerializationContext serializationContext)
         {
             serializationContext.Add(() => ResourceReferenceProperty);
         }
+
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -69,15 +72,16 @@ namespace SafeOrbit.Exceptions.SerializableException
             var serializationContext = ConfigureAndGetSerializationContext();
             SerializeProperties(serializationContext, info);
             base.GetObjectData(info, context);
-        }        private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
+        }
+
+        private void SerializeProperties(ISerializationContext serializationContext, SerializationInfo info)
         {
             var propertiesToSerialize = serializationContext.PropertyInfos;
             if (propertiesToSerialize == null && !propertiesToSerialize.Any()) return;
             foreach (var propertyInfo in propertiesToSerialize)
-            {
                 info.AddValue(propertyInfo.PropertyName, propertyInfo.Value, propertyInfo.Type);
-            }
         }
+
         private void DeserializeProperties(ISerializationContext serializationContext, SerializationInfo info)
         {
             var propertiesToDeserialize = serializationContext.PropertyInfos;
@@ -85,7 +89,7 @@ namespace SafeOrbit.Exceptions.SerializableException
             foreach (var propertyInfo in propertiesToDeserialize)
             {
                 var propertyName = propertyInfo.PropertyName;
-                var prop = this.GetType().GetProperty(propertyName);
+                var prop = GetType().GetProperty(propertyName);
                 var propertyType = propertyInfo.Type;
                 if (propertyType == null) continue; //nullable types are not necessary
                 var value = info.GetValue(propertyName, propertyType);

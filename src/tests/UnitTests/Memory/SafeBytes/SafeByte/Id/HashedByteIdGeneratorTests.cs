@@ -1,17 +1,15 @@
-﻿using System.Linq;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
-using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Id
 {
     /// <seealso cref="IByteIdGenerator" />
     /// <seealso cref="HashedByteIdGenerator" />
-    /// <seealso cref="ByteIdGeneratorFaker"/>
+    /// <seealso cref="ByteIdGeneratorFaker" />
     public class HashedByteIdGeneratorTests
     {
         [Test]
@@ -65,10 +63,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             sut.Generate(It.IsAny<byte>());
             //Assert
             mockHasher.Verify(x =>
-                    x.ComputeFast(It.IsNotNull<byte[]>()), Times.Exactly(1));
+                x.ComputeFast(It.IsNotNull<byte[]>()), Times.Exactly(1));
         }
 
-        private HashedByteIdGenerator GetSut(IFastHasher hasher = null, ISafeRandom random = null, IMemoryProtectedBytes sessionSalt = null)
+        private HashedByteIdGenerator GetSut(IFastHasher hasher = null, ISafeRandom random = null,
+            IMemoryProtectedBytes sessionSalt = null)
         {
             if (hasher == null)
             {
@@ -81,6 +80,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
 #endif
                 hasher = mockHasher.Object;
             }
+
             return new HashedByteIdGenerator(
                 hasher, random ?? Stubs.Get<ISafeRandom>(),
                 sessionSalt ?? Stubs.Get<IMemoryProtectedBytes>());

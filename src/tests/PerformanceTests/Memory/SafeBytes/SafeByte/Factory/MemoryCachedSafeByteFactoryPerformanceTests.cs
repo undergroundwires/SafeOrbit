@@ -23,7 +23,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         public void GetByByte_Takes_Less_Than_2ms()
         {
             const double expectedMax = 100;
-            var actual = base.Measure(() => _sut.GetByByte((byte)5));
+            var actual = Measure(() => _sut.GetByByte(5));
             Assert.That(actual, Is.LessThan(expectedMax));
         }
 
@@ -33,7 +33,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             const double expectedMax = 50;
             var idGenerator = SafeOrbitCore.Current.Factory.Get<IByteIdGenerator>();
             var id = idGenerator.Generate(5);
-            var actual = base.Measure(() => _sut.GetById(id));
+            var actual = Measure(() => _sut.GetById(id));
             Assert.That(actual, Is.LessThan(expectedMax));
         }
     }

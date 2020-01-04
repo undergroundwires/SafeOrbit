@@ -125,6 +125,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Deserializing
                     var value = CreateObject(item);
                     methodInfo.Invoke(collection, new[] {value});
                 }
+
             return collection;
         }
 
@@ -180,7 +181,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Deserializing
 
         private object CreateObjectFromSingleDimensionalArrayProperty(SingleDimensionalArrayProperty property)
         {
-            int itemsCount = property.Items.Count;
+            var itemsCount = property.Items.Count;
 
             var array = CreateArrayInstance(property.ElementType, new[] {itemsCount}, new[] {property.LowerBound});
 
@@ -190,7 +191,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Deserializing
             // Items
             for (var index = property.LowerBound; index < property.LowerBound + itemsCount; index++)
             {
-                Property item = property.Items[index];
+                var item = property.Items[index];
                 var value = CreateObject(item);
                 if (value != null)
                     array.SetValue(value, index);

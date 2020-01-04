@@ -1,16 +1,16 @@
 ﻿#if !NETSTANDARD1_6
 using System;
-using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Runtime.Serialization;
 #endif
 
 namespace SafeOrbit.Exceptions
 {
     /// <summary>
-    /// This type of exception is thrown when trying to modify an object with only read only access.
+    ///     This type of exception is thrown when trying to modify an object with only read only access.
     /// </summary>
     /// <remarks>
-    /// TODO: rename this class.
+    ///     TODO: rename this class.
     /// </remarks>
 #if !NETSTANDARD1_6
     [Serializable]

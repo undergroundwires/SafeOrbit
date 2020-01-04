@@ -6,15 +6,10 @@ using SafeOrbit.Core.Serialization.SerializationServices.Serializing;
 
 namespace SafeOrbit.Core.Serialization.SerializationServices
 {
+    /// <see cref="PropertyFactory"/>
     [TestFixture]
     public class PropertyFactoryTests
     {
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext { get; set; }
-
         [Test]
         public void Test_List1AndList1AsPropertiesAtSameDepth()
         {
@@ -22,7 +17,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             var root = new Root(list1, list1);
 
             var factory = new PropertyFactory(new PropertyProvider());
-            Property p = factory.CreateProperty("Root", root);
+            var p = factory.CreateProperty("Root", root);
 
             // Always 2 properties in Root
             var complexProperty = p as ComplexProperty;
@@ -50,7 +45,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             list1.Add(list2);
 
             var factory = new PropertyFactory(new PropertyProvider());
-            Property p = factory.CreateProperty("Root", root);
+            var p = factory.CreateProperty("Root", root);
 
             // Always 2 properties in Root
             var complexProperty = p as ComplexProperty;
@@ -85,15 +80,15 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             list2.Add(list3);
 
             var factory = new PropertyFactory(new PropertyProvider());
-            Property p = factory.CreateProperty("Root", root);
+            var p = factory.CreateProperty("Root", root);
 
-            var rootProperty = (ComplexProperty)p;
+            var rootProperty = (ComplexProperty) p;
             // Both lists are of CollectionProperty
-            var lp1 = (CollectionProperty)rootProperty.Properties[0];
-            var lp2 = (CollectionProperty)rootProperty.Properties[1];
+            var lp1 = (CollectionProperty) rootProperty.Properties[0];
+            var lp2 = (CollectionProperty) rootProperty.Properties[1];
 
-            var lp1i1 = (CollectionProperty)lp1.Items[0];
-            var lp2i1 = (CollectionProperty)lp2.Items[0];
+            var lp1i1 = (CollectionProperty) lp1.Items[0];
+            var lp2i1 = (CollectionProperty) lp2.Items[0];
             Assert.AreNotEqual(lp1i1, lp2i1);
 
             Assert.AreEqual(lp1i1.Reference, lp2i1.Reference);

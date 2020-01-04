@@ -9,9 +9,9 @@ using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory.Injection
 {
-    /// <seealso cref="IInjectionDetector"/>
-    /// <seealso cref="InjectionDetector"/>
-    /// <seealso cref="InjectionDetectorFaker"/>
+    /// <seealso cref="IInjectionDetector" />
+    /// <seealso cref="InjectionDetector" />
+    /// <seealso cref="InjectionDetectorFaker" />
     [TestFixture]
     internal class InjectionDetectorTests
     {
@@ -26,21 +26,27 @@ namespace SafeOrbit.Memory.Injection
             Assert.That(actualStateProtection, Is.EqualTo(expectedStateProtection));
             Assert.That(actualCodeProtection, Is.EqualTo(expectedCodeProtection));
         }
-        [Test, TestCaseSource(typeof(CommonCases), nameof(CommonCases.TrueFalse))]
+
+        [Test]
+        [TestCaseSource(typeof(CommonCases), nameof(CommonCases.TrueFalse))]
         public void Constructor_Sets_JustState(bool expected)
         {
             var sut = GetSut(protectState: expected);
             var actual = sut.ScanState;
             Assert.That(actual, Is.EqualTo(expected));
         }
-        [Test, TestCaseSource(typeof(CommonCases), nameof(CommonCases.TrueFalse))]
+
+        [Test]
+        [TestCaseSource(typeof(CommonCases), nameof(CommonCases.TrueFalse))]
         public void Constructor_Sets_JustCode(bool expected)
         {
             var sut = GetSut(protectCode: expected);
             var actual = sut.ScanCode;
             Assert.That(actual, Is.EqualTo(expected));
         }
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_Sets_InjectionAlertChannel(InjectionAlertChannel expected)
         {
             //arrange
@@ -56,10 +62,10 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.IsAny<IInjectionMessage>(),
-                It.Is<InjectionAlertChannel>((m) => m.Equals(expected))));
+            alerterMock.Verify(alerter =>
+                alerter.Alert(
+                    It.IsAny<IInjectionMessage>(),
+                    It.Is<InjectionAlertChannel>(m => m.Equals(expected))));
         }
 
         [Test]
@@ -67,9 +73,10 @@ namespace SafeOrbit.Memory.Injection
         {
             var sut = GetSut();
             var nullArgument = (object) null;
-            TestDelegate invokingWithNullArgument = () => sut.NotifyChanges(nullArgument);
-            Assert.That(invokingWithNullArgument, Throws.ArgumentNullException);
+            void InvokingWithNullArgument() => sut.NotifyChanges(nullArgument);
+            Assert.That(InvokingWithNullArgument, Throws.ArgumentNullException);
         }
+
         [Test]
         public void NotifyChanges_JustStateIsTrue_invokesStateStamper()
         {
@@ -83,6 +90,7 @@ namespace SafeOrbit.Memory.Injection
             //assert
             stateStamperMock.Verify(stamper => stamper.GetStamp(testObject), Times.Once);
         }
+
         [Test]
         public void NotifyChanges_ProtectStateIsFalse_doesNotInvokeStateStamper()
         {
@@ -97,6 +105,7 @@ namespace SafeOrbit.Memory.Injection
             //assert
             stateStamperMock.Verify(stamper => stamper.GetStamp(It.IsAny<object>()), Times.Never);
         }
+
         [Test]
         public void NotifyChanges_ProtectCodeIsFalse_doesNotInvokeCodeStamper()
         {
@@ -105,7 +114,7 @@ namespace SafeOrbit.Memory.Injection
             var codeStamperMock = new Mock<IStamper<Type>>();
             var sut = GetSut(
                 codeStamper: codeStamperMock.Object,
-                protectCode:false);
+                protectCode: false);
             //act
             sut.NotifyChanges(testObject);
             //assert
@@ -116,10 +125,11 @@ namespace SafeOrbit.Memory.Injection
         public void AlertUnnotifiedChanges_WhenObjectParameterIsNull_throwsArgumentNullException()
         {
             var sut = GetSut();
-            var nullObject = (object)null;
-            TestDelegate invokingWithNullObject = () => sut.AlertUnnotifiedChanges(nullObject);
-            Assert.That(invokingWithNullObject, Throws.ArgumentNullException);
+            var nullObject = (object) null;
+            void InvokingWithNullObject() => sut.AlertUnnotifiedChanges(nullObject);
+            Assert.That(InvokingWithNullObject, Throws.ArgumentNullException);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithOnlyStateProtection_ForSameStamps__doesNotAlert()
         {
@@ -132,12 +142,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.IsAny<IInjectionMessage>(),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.IsAny<IInjectionMessage>(),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Never);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithOnlyCodeProtection_ForSameStamps_doesNotAlert()
         {
@@ -152,12 +163,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.IsAny<IInjectionMessage>(),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.IsAny<IInjectionMessage>(),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Never);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithOnlyStateProtection_ForDifferentCodeStamps_doesNotAlert()
         {
@@ -172,12 +184,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.IsAny<IInjectionMessage>(),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.IsAny<IInjectionMessage>(),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Never);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithOnlyCodeProtection_ForDifferentStateStamps_doesNotAlert()
         {
@@ -192,12 +205,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.IsAny<IInjectionMessage>(),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.IsAny<IInjectionMessage>(),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Never);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithAllProtections_ForSameStamps_doesNotAlert()
         {
@@ -212,12 +226,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.IsAny<IInjectionMessage>(),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.IsAny<IInjectionMessage>(),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Never);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithAllProtections_ForDifferentStateStamps_alerts()
         {
@@ -233,12 +248,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.Is<IInjectionMessage>(m=>m.InjectionType == expectedInjectionType),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Once);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithAllProtections_ForDifferentCodeStamps_alerts()
         {
@@ -252,12 +268,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-              alerter.Alert(
-                  It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
-                  It.IsAny<InjectionAlertChannel>()),
-                  Times.Once);
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
+                        It.IsAny<InjectionAlertChannel>()),
+                Times.Once);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithAllProtections_ForDifferentCodeAndStateStamps_alerts()
         {
@@ -271,12 +288,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Once);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithOnlyStateProtection_ForDifferentStateStamps_alerts()
         {
@@ -290,12 +308,13 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Once);
         }
+
         [Test]
         public void AlertUnnotifiedChanges_WithOnlyCodeProtection_ForDifferentCodeStamps_alerts()
         {
@@ -309,15 +328,16 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(obj);
             sut.AlertUnnotifiedChanges(obj);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
-                It.IsAny<InjectionAlertChannel>()),
+            alerterMock.Verify(alerter =>
+                    alerter.Alert(
+                        It.Is<IInjectionMessage>(m => m.InjectionType == expectedInjectionType),
+                        It.IsAny<InjectionAlertChannel>()),
                 Times.Once);
         }
 
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void InjectionAlertChannel_WhenAlerting_UsedForInternalAlerter(InjectionAlertChannel expected)
         {
             //arrange
@@ -332,30 +352,36 @@ namespace SafeOrbit.Memory.Injection
             sut.NotifyChanges(testObject);
             sut.AlertUnnotifiedChanges(testObject);
             //assert
-            alerterMock.Verify((alerter) =>
-            alerter.Alert(
-                It.IsAny<IInjectionMessage>(),
-                It.Is<InjectionAlertChannel>((m) => m.Equals(expected))));
+            alerterMock.Verify(alerter =>
+                alerter.Alert(
+                    It.IsAny<IInjectionMessage>(),
+                    It.Is<InjectionAlertChannel>(m => m.Equals(expected))));
         }
 
-        [Test, TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.CanAlertCases))]
+        [Test]
+        [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.CanAlertCases))]
         public bool CanAlert_WithDifferentProtectionSettings_returnsVector(bool protectCode, bool protectState)
         {
             var sut = GetSut(protectState: protectState, protectCode: protectCode);
             return sut.CanAlert;
         }
 
-        private static IInjectionDetector GetSut(bool protectCode = true, bool protectState = true, bool isStateValid = true, bool isCodeValid = true, IStamper<object> stateStamper = null, IStamper<Type> codeStamper = null, IInjectionAlerter alerter = null, InjectionAlertChannel channel = Defaults.AlertChannel)
+        private static IInjectionDetector GetSut(bool protectCode = true, bool protectState = true,
+            bool isStateValid = true, bool isCodeValid = true, IStamper<object> stateStamper = null,
+            IStamper<Type> codeStamper = null, IInjectionAlerter alerter = null,
+            InjectionAlertChannel channel = Defaults.AlertChannel)
         {
             var codeStampMock = new Mock<IStamp>();
             codeStampMock.Setup(m => m.Equals(It.IsAny<IStamp<int>>())).Returns(isCodeValid);
             var stateStampMock = new Mock<IStamp>();
             stateStampMock.Setup(m => m.Equals(It.IsAny<IStamp<int>>())).Returns(isStateValid);
             var stateStamperMock = new Mock<IStamper<object>>();
-            stateStamperMock.Setup((m) => m.GetStamp(It.IsAny<object>())).Returns(stateStampMock.Object);
+            stateStamperMock.Setup(m => m.GetStamp(It.IsAny<object>())).Returns(stateStampMock.Object);
             var codeStamperMock = new Mock<IStamper<Type>>();
-            codeStamperMock.Setup((m) => m.GetStamp(It.IsAny<Type>())).Returns(codeStampMock.Object);
-            return new InjectionDetector(alerter ?? Mock.Of<IInjectionAlerter>(), Stubs.Get<ITypeIdGenerator>(), stateStamper ?? stateStamperMock.Object, codeStamper ?? codeStamperMock.Object, protectCode, protectState, channel);
+            codeStamperMock.Setup(m => m.GetStamp(It.IsAny<Type>())).Returns(codeStampMock.Object);
+            return new InjectionDetector(alerter ?? Mock.Of<IInjectionAlerter>(), Stubs.Get<ITypeIdGenerator>(),
+                stateStamper ?? stateStamperMock.Object, codeStamper ?? codeStamperMock.Object, protectCode,
+                protectState, channel);
         }
     }
 }

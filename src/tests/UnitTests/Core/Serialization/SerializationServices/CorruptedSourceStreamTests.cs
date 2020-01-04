@@ -14,7 +14,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
         {
             //arrange
             var sut = GetSut();
-            var myArray = new[] { "ala", "ma", null, "kota" };
+            var myArray = new[] {"ala", "ma", null, "kota"};
             //act
             TestDelegate action = () => Serialize(myArray, sut, ReplaceSomeBytesInData);
             //assert
@@ -25,7 +25,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
         public void BurstBinaryStream_StreamIsCorrupted_throwsDeserializingException()
         {
             //arrange
-            var myArray = new[] { "ala", "ma", null, "kota" };
+            var myArray = new[] {"ala", "ma", null, "kota"};
             var settings = new BinarySettings(BinarySerializationMode.Burst);
             var sut = GetSut(settings);
             //act
@@ -39,11 +39,11 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
         public void OptimizedBinaryStream_SizeIsTooShort_throwsDeserializingException()
         {
             //arrange
-            var myArray = new[] { "ala", "ma", null, "kota" };
+            var myArray = new[] {"ala", "ma", null, "kota"};
             var settings = new BinarySettings(BinarySerializationMode.SizeOptimized);
             var sut = GetSut(settings);
             //act
-            TestDelegate action = () => Serialize(myArray, sut,ShortenData);
+            TestDelegate action = () => Serialize(myArray, sut, ShortenData);
             //assert
             Assert.Throws<DeserializingException>(action);
         }
@@ -52,7 +52,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
         public void BurstBinaryStream_SizeIsTooShort_throwsDeserializingException()
         {
             //arrange
-            var myArray = new[] { "ala", "ma", null, "kota" };
+            var myArray = new[] {"ala", "ma", null, "kota"};
             var settings = new BinarySettings(BinarySerializationMode.Burst);
             var sut = GetSut(settings);
             //act
@@ -61,7 +61,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             Assert.Throws<DeserializingException>(action);
         }
 
-        private static void Serialize(object source, SafeOrbit.Core.Serialization.SerializationServices.SharpSerializer serializer, Func<byte[], byte[]> dataCallback)
+        private static void Serialize(object source, SharpSerializer serializer, Func<byte[], byte[]> dataCallback)
         {
             byte[] data;
 
@@ -76,10 +76,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
 
 
             // Modifying data
-            if (dataCallback != null)
-            {
-                data = dataCallback(data);
-            }
+            if (dataCallback != null) data = dataCallback(data);
 
             // Deserializing
             using (var stream = new MemoryStream(data))
@@ -96,12 +93,11 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             var startIndex = Convert.ToInt32(data.Length * 0.7);
             var endIndex = Convert.ToInt32(data.Length * 0.9);
             for (var i = startIndex; i <= endIndex; i++)
-            {
                 unchecked
                 {
-                    data[i] = Convert.ToByte(new System.Random().Next(255));
+                    data[i] = Convert.ToByte(new Random().Next(255));
                 }
-            }
+
             return data;
         }
 
@@ -112,6 +108,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices
             {
                 stream.Read(result, 0, result.Length);
             }
+
             return result;
         }
 

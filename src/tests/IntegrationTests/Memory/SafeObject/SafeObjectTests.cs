@@ -27,11 +27,11 @@ namespace SafeOrbit.Memory
             //assert
             Assert.That(callingGetter, Throws.TypeOf<MemoryInjectionException>());
         }
+
         private class TestClass
         {
             public TestClass Class { get; set; }
             public string Property { get; set; }
         }
-
     }
 }

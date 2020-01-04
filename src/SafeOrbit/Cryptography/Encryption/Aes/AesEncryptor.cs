@@ -33,13 +33,39 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="ISafeEncryptor" />
     public class AesEncryptor : EncryptorBase, ISafeEncryptor
     {
-        /// <summary> Gets the padding to apply when the message data block is shorter than the full number of bytes needed for a cryptographic operation. </summary>
+        /// <summary>
+        ///     Gets the padding to apply when the message data block is shorter than the full number of bytes needed for a
+        ///     cryptographic operation.
+        /// </summary>
         public const PaddingMode Padding = PaddingMode.PKCS7;
+
         /// <summary> Gets the mode of the encryption operation. </summary>
         public const CipherMode Mode = CipherMode.CBC;
+
         /// <summary> Gets or sets the size, in bits, of the secret key. </summary>
         /// <remarks> The minimum size of the key is 128 bits, and the maximum size is 256 bits. </remarks>
         public const int KeySize = 256;
+
+        /// <summary>
+        ///     The key derivation function to strengthen the key.
+        /// </summary>
+        private readonly IKeyDerivationFunction _keyDeriver;
+
+        public AesEncryptor() : this(SafeOrbitCore.Current.Factory.Get<IKeyDerivationFunction>())
+        {
+        }
+
+        public AesEncryptor(IKeyDerivationFunction keyDeriver) : this(
+            keyDeriver,
+            SafeOrbitCore.Current.Factory.Get<IFastRandom>())
+        {
+        }
+
+        public AesEncryptor(IKeyDerivationFunction keyDeriver, IFastRandom fastRandom) : base(fastRandom)
+        {
+            _keyDeriver = keyDeriver ?? throw new ArgumentNullException(nameof(keyDeriver));
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     <p>Gets the size of the block in bits.</p>
@@ -48,35 +74,21 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <value>The size of the block in bits.</value>
         /// <remarks>https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</remarks>
         public override int BlockSizeInBits { get; } = 128;
+
         public override int MinKeySizeInBits { get; } = 8;
         public override int MaxKeySizeInBits { get; } = int.MaxValue;
         public override int IvSizeInBits { get; } = 16;
-        /// <summary>
-        ///     The key derivation function to strengthen the key.
-        /// </summary>
-        private readonly IKeyDerivationFunction _keyDeriver;
-        public AesEncryptor() : this(SafeOrbitCore.Current.Factory.Get<IKeyDerivationFunction>())
-        {
-        }
-        public AesEncryptor(IKeyDerivationFunction keyDeriver) : this(
-            keyDeriver,
-            SafeOrbitCore.Current.Factory.Get<IFastRandom>())
-        {
-        }
-        public AesEncryptor(IKeyDerivationFunction keyDeriver, IFastRandom fastRandom) : base(fastRandom)
-        {
-            _keyDeriver = keyDeriver ?? throw new ArgumentNullException(nameof(keyDeriver));
-        }
-        /// <inheritdoc cref="EncryptAsync"/>
+
+        /// <inheritdoc cref="EncryptAsync" />
         public byte[] Encrypt(byte[] input, byte[] key, byte[] salt)
             => TaskContext.RunSync(() => EncryptAsync(input, key, salt));
 
-        /// <inheritdoc cref="DecryptAsync"/>
+        /// <inheritdoc cref="DecryptAsync" />
         public byte[] Decrypt(byte[] input, byte[] key, byte[] salt)
             => TaskContext.RunSync(() => DecryptAsync(input, key, salt));
 
         /// <inheritdoc />
-        /// <inheritdoc cref="ValidateParameters"/>
+        /// <inheritdoc cref="ValidateParameters" />
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key, byte[] salt)
         {
             ValidateParameters(input, key, salt);
@@ -84,7 +96,7 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="ValidateParameters"/>
+        /// <inheritdoc cref="ValidateParameters" />
         public Task<byte[]> DecryptAsync(byte[] input, byte[] key, byte[] salt)
         {
             ValidateParameters(input, key, salt);
@@ -112,7 +124,7 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             byte[] iv = null;
             byte[] encryptedContent = null;
-            var derivedKey = _keyDeriver.Derive(key, salt, KeySize/8);
+            var derivedKey = _keyDeriver.Derive(key, salt, KeySize / 8);
             using (var ms = new MemoryStream())
             {
                 using (var algorithm = GetAlgorithm(derivedKey))
@@ -122,8 +134,10 @@ namespace SafeOrbit.Cryptography.Encryption
                     using var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
                     await cs.WriteAsync(input, 0, input.Length).ConfigureAwait(false);
                 }
+
                 encryptedContent = ms.ToArray();
             }
+
             //Create new byte array that should contain both unencrypted iv and encrypted data
             var result = iv.Combine(encryptedContent);
             return result;
@@ -135,7 +149,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var encryptedContent = new byte[input.Length - IvSizeInBits];
             Buffer.BlockCopy(input, 0, iv, 0, iv.Length);
             Buffer.BlockCopy(input, iv.Length, encryptedContent, 0, encryptedContent.Length);
-            var derivedKey = _keyDeriver.Derive(key, salt, KeySize/8);
+            var derivedKey = _keyDeriver.Derive(key, salt, KeySize / 8);
             using var ms = new MemoryStream();
             using (var algorithm = GetAlgorithm(derivedKey))
             {
@@ -143,6 +157,7 @@ namespace SafeOrbit.Cryptography.Encryption
                 using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Write);
                 await cs.WriteAsync(encryptedContent, 0, encryptedContent.Length).ConfigureAwait(false);
             }
+
             return ms.ToArray();
         }
 

@@ -20,7 +20,7 @@ namespace SafeOrbit.Core.Reflection
 
         /// <inheritdoc />
         /// <summary>
-        /// Generates a new id for the type.
+        ///     Generates a new id for the type.
         /// </summary>
         /// <typeparam name="T">The type that the id will be returned for.</typeparam>
         /// <returns>The id.</returns>
@@ -28,7 +28,7 @@ namespace SafeOrbit.Core.Reflection
 
         /// <inheritdoc />
         /// <summary>
-        /// Generates a new id for the type.
+        ///     Generates a new id for the type.
         /// </summary>
         /// <param name="type">The type that the id will be returned for.</param>
         /// <returns>The id.</returns>

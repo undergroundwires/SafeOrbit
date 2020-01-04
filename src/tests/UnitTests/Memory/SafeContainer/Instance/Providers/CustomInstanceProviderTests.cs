@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
-using SafeOrbit.Memory;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
-    /// <seealso cref="CustomInstanceProvider{TImplementation}"/>
-    /// <seealso cref="IInstanceProvider"/>
+    /// <seealso cref="CustomInstanceProvider{TImplementation}" />
+    /// <seealso cref="IInstanceProvider" />
     [TestFixture]
     public class CustomInstanceProviderTests
     {
@@ -27,7 +23,9 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
-        [Test, TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.LifeTimes))]
+
+        [Test]
+        [TestCaseSource(typeof(InstanceCases), nameof(InstanceCases.LifeTimes))]
         public void Constructor_Sets_LifeTime(LifeTime lifeTime)
         {
             //arrange
@@ -39,13 +37,16 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
-        [Test, TestCaseSource(typeof(CustomInstanceProviderTests), nameof(CustomInstanceProviderTests.LifeTime_Argument_Returns_CanProtectState))]
+
+        [Test]
+        [TestCaseSource(typeof(CustomInstanceProviderTests), nameof(LifeTime_Argument_Returns_CanProtectState))]
         public bool CanProtectState_DifferentLifeTimes_ReturnsVector(LifeTime lifeTime)
         {
             var dummyObject = new DateTime();
             var sut = GetSut(() => dummyObject, lifeTime);
             return sut.CanProtectState;
         }
+
         [Test]
         public void GetInstance_Returns_Instance_Of_Argument()
         {
@@ -58,6 +59,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             //assert
             Assert.That(actual, Is.InstanceOf(expected));
         }
+
         [Test]
         public void GetInstance_Returns_The_Result_Of_Func_Each_time()
         {
@@ -76,7 +78,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(expected, Is.EqualTo(instance3));
         }
 
-        private static CustomInstanceProvider<T> GetSut<T>(Func<T> func, LifeTime? lifeTime = null) where T:new()
+        private static CustomInstanceProvider<T> GetSut<T>(Func<T> func, LifeTime? lifeTime = null) where T : new()
         {
             return
                 lifeTime.HasValue

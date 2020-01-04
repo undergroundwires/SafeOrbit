@@ -14,7 +14,7 @@ namespace SafeOrbit.Extensions
         public static byte[] Combine(this byte[] byteArray, params byte[][] byteArrays)
         {
             if (byteArray == null) throw new ArgumentNullException(nameof(byteArray));
-            if ((byteArrays == null) || byteArrays.Any(b => b == null))
+            if (byteArrays == null || byteArrays.Any(b => b == null))
                 throw new ArgumentNullException(nameof(byteArrays));
             var newArrayLength = byteArrays.Sum(b => b.Length) + byteArray.Length;
             var combinedByte = new byte[newArrayLength];
@@ -28,6 +28,7 @@ namespace SafeOrbit.Extensions
                 Buffer.BlockCopy(array, 0, combinedByte, offset, array.Length);
                 offset += array.Length;
             }
+
             return combinedByte;
         }
 
@@ -62,11 +63,12 @@ namespace SafeOrbit.Extensions
              If we apply that to all the bits in both integers, the result will be zero only if all the bits matched. 
              */
             var diff = a.Length ^ b.Length;
-            for (var i = 0; (i < a.Length) && (i < b.Length); i++)
+            for (var i = 0; i < a.Length && i < b.Length; i++)
                 diff |= a[i] ^ b[i];
             return diff == 0;
         }
-        /// <exception cref="ArgumentNullException"><paramref name="byteArray"/> is <see langword="null"/></exception>
+
+        /// <exception cref="ArgumentNullException"><paramref name="byteArray" /> is <see langword="null" /></exception>
         public static byte[] CopyToNewArray(this byte[] byteArray)
         {
             if (byteArray == null) throw new ArgumentNullException(nameof(byteArray));

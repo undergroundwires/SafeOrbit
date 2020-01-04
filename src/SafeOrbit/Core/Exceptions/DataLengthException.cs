@@ -1,6 +1,6 @@
-﻿#if !NETSTANDARD1_6
+﻿using System;
+#if !NETSTANDARD1_6
 using System.Runtime.Serialization;
-using System;
 using System.Security.Permissions;
 #endif
 
@@ -11,7 +11,7 @@ namespace SafeOrbit.Exceptions
     ///     insufficient input was given..
     /// </summary>
 #if !NETSTANDARD1_6
-  [Serializable]
+    [Serializable]
 #endif
     public class DataLengthException : SafeOrbitException
     {

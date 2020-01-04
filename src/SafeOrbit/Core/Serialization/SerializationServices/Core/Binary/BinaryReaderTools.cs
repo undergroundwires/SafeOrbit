@@ -9,24 +9,24 @@ using SafeOrbitNetCore.Core.Serialization.SharpSerializer.Common;
 namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
 {
     /// <summary>
-    ///   Some methods which are used by IBinaryReader
+    ///     Some methods which are used by IBinaryReader
     /// </summary>
     internal static class BinaryReaderTools
     {
-        ///<summary>
-        ///</summary>
-        ///<param name = "reader"></param>
-        ///<returns></returns>
+        /// <summary>
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static string ReadString(BinaryReader reader)
         {
             if (!reader.ReadBoolean()) return null;
             return reader.ReadString();
         }
 
-        ///<summary>
-        ///</summary>
-        ///<param name = "reader"></param>
-        ///<returns></returns>
+        /// <summary>
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static int ReadNumber(BinaryReader reader)
         {
             // Size
@@ -54,18 +54,15 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
 
             // Items
             var result = new List<int>();
-            for (var i = 0; i < count; i++)
-            {
-                result.Add(ReadNumber(reader));
-            }
+            for (var i = 0; i < count; i++) result.Add(ReadNumber(reader));
             return result.ToArray();
         }
 
-        ///<summary>
-        ///</summary>
-        ///<param name = "expectedType"></param>
-        ///<param name = "reader"></param>
-        ///<returns></returns>
+        /// <summary>
+        /// </summary>
+        /// <param name="expectedType"></param>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static object ReadValue(Type expectedType, BinaryReader reader)
         {
             if (!reader.ReadBoolean()) return null;
@@ -78,9 +75,9 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
             {
                 if (type == typeof(byte[])) return ReadArrayOfByte(reader);
                 if (type == typeof(string)) return reader.ReadString();
-                if (type == typeof(Boolean)) return reader.ReadBoolean();
-                if (type == typeof(Byte)) return reader.ReadByte();
-                if (type == typeof(Char)) return reader.ReadChar();
+                if (type == typeof(bool)) return reader.ReadBoolean();
+                if (type == typeof(byte)) return reader.ReadByte();
+                if (type == typeof(char)) return reader.ReadChar();
                 if (type == typeof(DateTime)) return new DateTime(reader.ReadInt64());
                 if (type == typeof(Guid)) return new Guid(reader.ReadBytes(16));
 #if DEBUG || PORTABLE || SILVERLIGHT
@@ -88,15 +85,15 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
 #else
                 if (type == typeof (Decimal)) return reader.ReadDecimal();
 #endif
-                if (type == typeof(Double)) return reader.ReadDouble();
-                if (type == typeof(Int16)) return reader.ReadInt16();
-                if (type == typeof(Int32)) return reader.ReadInt32();
-                if (type == typeof(Int64)) return reader.ReadInt64();
-                if (type == typeof(SByte)) return reader.ReadSByte();
-                if (type == typeof(Single)) return reader.ReadSingle();
-                if (type == typeof(UInt16)) return reader.ReadUInt16();
-                if (type == typeof(UInt32)) return reader.ReadUInt32();
-                if (type == typeof(UInt64)) return reader.ReadUInt64();
+                if (type == typeof(double)) return reader.ReadDouble();
+                if (type == typeof(short)) return reader.ReadInt16();
+                if (type == typeof(int)) return reader.ReadInt32();
+                if (type == typeof(long)) return reader.ReadInt64();
+                if (type == typeof(sbyte)) return reader.ReadSByte();
+                if (type == typeof(float)) return reader.ReadSingle();
+                if (type == typeof(ushort)) return reader.ReadUInt16();
+                if (type == typeof(uint)) return reader.ReadUInt32();
+                if (type == typeof(ulong)) return reader.ReadUInt64();
 
                 if (type == typeof(TimeSpan)) return new TimeSpan(reader.ReadInt64());
 
@@ -128,7 +125,6 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
             bits[3] = reader.ReadInt32();
             return new decimal(bits);
         }
-
 
 
         private static object ReadEnumeration(Type expectedType, BinaryReader reader)

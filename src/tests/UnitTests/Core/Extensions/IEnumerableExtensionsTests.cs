@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace SafeOrbit.Extensions
 {
-    /// <see cref="IEnumerableExtensions"/>
+    /// <see cref="IEnumerableExtensions" />
     [TestFixture]
     public class IEnumerableExtensionsTests
     {
@@ -13,7 +13,7 @@ namespace SafeOrbit.Extensions
         public void EmptyIfNull_CallerIsEnumerableNull_ReturnsEmptyArray()
         {
             //arrange
-            var nullArray = (IEnumerable<object>)null;
+            var nullArray = (IEnumerable<object>) null;
             var expected = Enumerable.Empty<object>();
             //act
             var result = nullArray.EmptyIfNull();
@@ -25,7 +25,7 @@ namespace SafeOrbit.Extensions
         public void EmptyIfNull_CallerIsNotNull_ReturnsCaller()
         {
             //arrange
-            var expected = new int[] { 5, 6, 7 };
+            var expected = new[] {5, 6, 7};
             //act
             var result = expected.EmptyIfNull();
             //assert
@@ -47,7 +47,7 @@ namespace SafeOrbit.Extensions
         public void ForEach_ActionIsNull_throwsArgumentNullException()
         {
             //arrange
-           var list = new [] {"a","b"};
+            var list = new[] {"a", "b"};
             //act
             TestDelegate calingWithNullAction = () => list.ForEach(null);
             //assert
@@ -59,7 +59,7 @@ namespace SafeOrbit.Extensions
         {
             var expected = "4";
 
-            CustomObject[] customObjects = new[] { new CustomObject("1"), new CustomObject("3"), new CustomObject("2") };
+            CustomObject[] customObjects = {new CustomObject("1"), new CustomObject("3"), new CustomObject("2")};
 
             customObjects.ForEach(x => x.Name = expected);
 
@@ -69,7 +69,7 @@ namespace SafeOrbit.Extensions
         [Test]
         public void ForEach_AfterExecuted_HoldsFirstItemCorrect()
         {
-            CustomObject[] customObjects = new[] { new CustomObject("1"), new CustomObject("3"), new CustomObject("2") };
+            CustomObject[] customObjects = {new CustomObject("1"), new CustomObject("3"), new CustomObject("2")};
 
             customObjects.ForEach(x => x.IsAlive = false);
 
@@ -79,7 +79,7 @@ namespace SafeOrbit.Extensions
         [Test]
         public void ForEach_AfterExecuted_HoldsLastItemCorrect()
         {
-            CustomObject[] customObjects = new[] { new CustomObject("1"), new CustomObject("3"), new CustomObject("2") };
+            CustomObject[] customObjects = {new CustomObject("1"), new CustomObject("3"), new CustomObject("2")};
 
             customObjects.ForEach(x => x.IsAlive = false);
 
@@ -87,7 +87,7 @@ namespace SafeOrbit.Extensions
         }
 
         /// <summary>
-        /// Test class
+        ///     Test class
         /// </summary>
         private class CustomObject
         {

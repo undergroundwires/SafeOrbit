@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using SafeOrbit.Core.Reflection;
 using SafeOrbit.Cryptography.Hashers;
+#if NETSTANDARD1_6
+using System.Reflection;
+#endif
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {
@@ -15,21 +17,25 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
     internal class IlCodeStamper : StamperBase<Type>
     {
         public static IlCodeStamper StaticInstance = new IlCodeStamper();
+
         public IlCodeStamper() : this(Murmur32.StaticInstance)
         {
         }
+
         internal IlCodeStamper(IFastHasher fastHasher) : base(fastHasher)
         {
         }
+
         public override InjectionType InjectionType { get; } = InjectionType.CodeInjection;
+
         protected override byte[] GetSerializedBytes(Type @object)
         {
             var methods = @object.GetMethods();
             var bytes = methods.Select(m => m.GetIlBytes()) //get all
-                .Where(b=> b != null) //remove nulls
-                .SelectMany(b=> b) //merge
+                .Where(b => b != null) //remove nulls
+                .SelectMany(b => b) //merge
                 .ToArray();
-            if ((bytes == null) || !bytes.Any()) return new byte[16]; //return bulk bytes
+            if (bytes == null || !bytes.Any()) return new byte[16]; //return bulk bytes
             return bytes;
         }
     }

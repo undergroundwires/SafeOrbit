@@ -15,7 +15,7 @@ namespace SafeOrbit.Fakes
         }
 
         public static IFactory<T> GetFactory<T>(T singletonInstance = null)
-            where T:class
+            where T : class
         {
             var mock = new Mock<IFactory<T>>();
             mock.Setup(f => f.Create())

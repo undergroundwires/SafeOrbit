@@ -24,6 +24,7 @@ namespace SafeOrbit.Core.Protectable
         {
             NewValue = newValue;
         }
+
         /// <inheritdoc />
         public TProtectionLevel OldValue { get; }
 

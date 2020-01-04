@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+
 #if NETSTANDARD1_6
 using System.IO;
 using System.Reflection.Metadata;
@@ -22,7 +23,7 @@ namespace SafeOrbit.Core.Reflection
             if (methodInfo == null) throw new ArgumentNullException(nameof(methodInfo));
 #if !NETSTANDARD1_6
             var methodBody = methodInfo.GetMethodBody();
-            var result =  methodBody?.GetILAsByteArray();
+            var result = methodBody?.GetILAsByteArray();
             return result;
 #else
             //.NET Core implementation is based on https://gist.github.com/nguerrera/72444715c7ea0b40addb

@@ -1,6 +1,6 @@
 ﻿using System;
-using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Core.Serialization;
+using SafeOrbit.Cryptography.Hashers;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {
@@ -15,15 +15,19 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
     {
         private static readonly Lazy<StateStamper> StaticInstanceLazy = new Lazy<StateStamper>();
         private readonly ISerializer _serializer;
+
         public StateStamper() : this(Serializer.StaticInstance, Murmur32.StaticInstance)
         {
         }
+
         internal StateStamper(ISerializer serializer, IFastHasher fastHasher) : base(fastHasher)
         {
             _serializer = serializer;
         }
+
         public static StateStamper StaticInstance => StaticInstanceLazy.Value;
         public override InjectionType InjectionType { get; } = InjectionType.VariableInjection;
+
         protected override byte[] GetSerializedBytes(object @object)
         {
             return _serializer.Serialize(@object);

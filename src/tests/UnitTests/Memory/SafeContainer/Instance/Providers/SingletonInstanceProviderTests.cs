@@ -1,17 +1,15 @@
 ﻿using System;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
-using SafeOrbit.Memory;
 using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
 {
-    /// <seealso cref="SingletonInstanceProvider{TImplementation}"/>
-    /// <seealso cref="IInstanceProvider"/>
+    /// <seealso cref="SingletonInstanceProvider{TImplementation}" />
+    /// <seealso cref="IInstanceProvider" />
     [TestFixture]
     public class SingletonInstanceProviderTests
     {
-
         [Test]
         public void GetInstance_Returns_Instance_Of_Argument()
         {
@@ -65,7 +63,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
                 protectionMode: InstanceProtectionMode.NoProtection,
                 injectionDetector: Stubs.Get<IInjectionDetector>(),
                 alertChannel: InjectionAlertChannel.ThrowException
-                );
+            );
         }
     }
 }

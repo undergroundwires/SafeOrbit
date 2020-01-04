@@ -21,34 +21,36 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         /// <inheritdoc />
         /// <inheritdoc cref="ValidatePaddingLength" />
         /// <exception cref="OverflowException">Padded data is too big</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="data"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
         public byte[] Pad(byte[] data, int paddingLengthInBytes)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             ValidatePaddingLength(paddingLengthInBytes);
             var output = new byte[data.Length + paddingLengthInBytes];
             Array.Copy(data, 0, output, 0, data.Length);
-            for (var i = data.Length; i < output.Length; i++)
-            {
-                output[i] = (byte)paddingLengthInBytes;
-            }
+            for (var i = data.Length; i < output.Length; i++) output[i] = (byte) paddingLengthInBytes;
             return output;
         }
 
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="paddingLengthInBytes"/> is negative, zero or higher than 256.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     <paramref name="paddingLengthInBytes" /> is negative, zero or higher than
+        ///     256.
+        /// </exception>
         private static void ValidatePaddingLength(int paddingLengthInBytes)
         {
             if (paddingLengthInBytes >= 256)
-                throw new ArgumentOutOfRangeException(nameof(paddingLengthInBytes), "Cannot be higher than maximum integer in a byte (255)");
+                throw new ArgumentOutOfRangeException(nameof(paddingLengthInBytes),
+                    "Cannot be higher than maximum integer in a byte (255)");
             if (paddingLengthInBytes == 0)
-                throw new ArgumentOutOfRangeException(nameof(paddingLengthInBytes), "Cannot be zero, pad a whole block instead?");
+                throw new ArgumentOutOfRangeException(nameof(paddingLengthInBytes),
+                    "Cannot be zero, pad a whole block instead?");
             if (paddingLengthInBytes < 0)
                 throw new ArgumentOutOfRangeException(nameof(paddingLengthInBytes), "Cannot be negative");
         }
 
         /// <exception cref="CryptographicException">Cannot unpad a single byte.</exception>
-        /// <exception cref="ArgumentException"><paramref name="paddedBytes"/> is empty.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="paddedBytes"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentException"><paramref name="paddedBytes" /> is empty.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="paddedBytes" /> is <see langword="null" />.</exception>
         private static void ValidatePaddedBytes(byte[] paddedBytes)
         {
             if (paddedBytes == null)
@@ -60,7 +62,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         }
 
         /// <summary>
-        ///  Get the number of pad bytes present in the block.
+        ///     Get the number of pad bytes present in the block.
         /// </summary>
         /// <exception cref="CryptographicException">Corrupted padded bytes.</exception>
         public static int CountPad(byte[] input)
@@ -70,10 +72,8 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
             if (count < 1 || count > input.Length)
                 throw new CryptographicException("Padded bytes are corrupted");
             for (var i = 2; i <= count; i++)
-            {
                 if (input[input.Length - i] != countAsByte)
                     throw new CryptographicException("Padded bytes are corrupted");
-            }
             return count;
         }
     }

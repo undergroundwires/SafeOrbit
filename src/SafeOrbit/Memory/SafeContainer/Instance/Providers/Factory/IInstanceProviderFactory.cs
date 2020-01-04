@@ -30,11 +30,14 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         /// <seealso cref="InstanceProtectionMode" />
         /// <seealso cref="InjectionAlertChannel" />
         /// <seealso cref="LifeTime" />
-        IInstanceProvider Get<TImplementation>(LifeTime lifeTime, InstanceProtectionMode protectionMode, InjectionAlertChannel alertChannel) where TImplementation : new();
+        IInstanceProvider Get<TImplementation>(LifeTime lifeTime, InstanceProtectionMode protectionMode,
+            InjectionAlertChannel alertChannel) where TImplementation : new();
 
         /// <summary>
         ///     Provides an <see cref="IInstanceProvider" /> with a specified instance getter function.
         /// </summary>
-        IInstanceProvider Get<TImplementation>(Func<TImplementation> instanceGetter, InstanceProtectionMode protectionMode, InjectionAlertChannel alertChannel, LifeTime lifeTime = LifeTime.Unknown);
+        IInstanceProvider Get<TImplementation>(Func<TImplementation> instanceGetter,
+            InstanceProtectionMode protectionMode, InjectionAlertChannel alertChannel,
+            LifeTime lifeTime = LifeTime.Unknown);
     }
 }

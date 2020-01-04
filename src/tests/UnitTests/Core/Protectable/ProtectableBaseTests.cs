@@ -11,7 +11,8 @@ namespace SafeOrbit.Memory.Common.ProtectionLevelSwitch
         where TProtectionMode : Enum
     {
         /// <summary>
-        /// Gets the protection mode test cases where first argument is the sut and the second is <see cref="TProtectionMode"/> to be set and expected.
+        ///     Gets the protection mode test cases where first argument is the sut and the second is
+        ///     <see cref="TProtectionMode" /> to be set and expected.
         /// </summary>
         protected abstract IEnumerable<TestCaseData> GetProtectionModeTestCases();
 
@@ -22,8 +23,8 @@ namespace SafeOrbit.Memory.Common.ProtectionLevelSwitch
             foreach (var testCase in testCases)
             {
                 //arrange
-                var sut = (IProtectable<TProtectionMode>)testCase.Arguments[0];
-                var expected = (TProtectionMode)testCase.Arguments[1];
+                var sut = (IProtectable<TProtectionMode>) testCase.Arguments[0];
+                var expected = (TProtectionMode) testCase.Arguments[1];
                 //act
                 sut.SetProtectionMode(expected);
                 var actual = sut.CurrentProtectionMode;
@@ -31,6 +32,5 @@ namespace SafeOrbit.Memory.Common.ProtectionLevelSwitch
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
-
     }
 }

@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SafeOrbit.Extensions;
+
 namespace SafeOrbit.Memory
 {
-    /// <seealso cref="SafeMemoryStream"/>
+    /// <seealso cref="SafeMemoryStream" />
     [TestFixture]
     public class SafeMemoryStreamTests
     {
@@ -12,7 +12,7 @@ namespace SafeOrbit.Memory
         {
             using var sut = GetSut();
             var buffer = new byte[] {5, 10, 15, 20, 25, 30};
-            sut.Write(buffer,0, buffer.Length);
+            sut.Write(buffer, 0, buffer.Length);
             Assert.That(buffer, Is.Empty.Or.All.EqualTo(0));
         }
 
@@ -20,7 +20,7 @@ namespace SafeOrbit.Memory
         public void Read_Clears_Inner_Buffer()
         {
             //arrange
-            var expected1 = new byte[] { 5, 10, 15 };
+            var expected1 = new byte[] {5, 10, 15};
             var expected2 = new byte[] {20, 25, 30};
             using var sut = GetSut();
             var buffer = expected1.Combine(expected2);
@@ -40,8 +40,8 @@ namespace SafeOrbit.Memory
         public void Write_AfterBeingRead_CanWrite()
         {
             //arrange
-            var expected1 = new byte[] { 5, 10, 15 };
-            var expected2 = new byte[] { 20, 25, 30 };
+            var expected1 = new byte[] {5, 10, 15};
+            var expected2 = new byte[] {20, 25, 30};
             using var sut = GetSut();
             var buffer = expected1.CopyToNewArray();
             sut.Write(buffer, 0, buffer.Length);

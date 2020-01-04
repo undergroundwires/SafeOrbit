@@ -53,6 +53,7 @@ namespace SafeOrbit.Core.Reflection
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         public void Generate_ForDifferentTypes_ReturnsDifferent()
         {
@@ -84,7 +85,7 @@ namespace SafeOrbit.Core.Reflection
         {
             var sut = GetSut();
             //string case
-            var expected1= sut.Generate<string>();
+            var expected1 = sut.Generate<string>();
             var expected2 = sut.Generate<int>();
             var expected3 = sut.Generate<TypeIdGeneratorTests>();
             var actual1 = sut.Generate(typeof(string));
@@ -95,6 +96,5 @@ namespace SafeOrbit.Core.Reflection
             Assert.That(expected2, Is.EqualTo(actual2));
             Assert.That(expected3, Is.EqualTo(actual3));
         }
-
     }
 }

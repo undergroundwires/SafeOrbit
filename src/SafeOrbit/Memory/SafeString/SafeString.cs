@@ -35,9 +35,10 @@ namespace SafeOrbit.Memory
             _charBytesList = new List<ISafeBytes>();
         }
 
-        public int Length => (_charBytesList == null) || IsDisposed ? 0 : _charBytesList.Count;
+        public int Length => _charBytesList == null || IsDisposed ? 0 : _charBytesList.Count;
         public bool IsEmpty => Length == 0;
         public bool IsDisposed { get; private set; }
+
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
         public void Append(char ch) => Insert(Length, ch);
 
@@ -88,7 +89,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> is not a valid index.</exception>
         public void Insert(int index, char character)
         {
-            if ((index < 0) || (index > Length)) throw new ArgumentOutOfRangeException(nameof(index));
+            if (index < 0 || index > Length) throw new ArgumentOutOfRangeException(nameof(index));
             EnsureNotDisposed();
             var bytes = TransformCharToSafeBytes(character, InnerEncoding);
             _charBytesList.Insert(index, bytes);
@@ -100,18 +101,19 @@ namespace SafeOrbit.Memory
         public void Insert(int position, ISafeBytes textBytes, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             EnsureNotDisposed();
-            if ((position < 0) || (position > Length)) throw new ArgumentOutOfRangeException(nameof(position));
+            if (position < 0 || position > Length) throw new ArgumentOutOfRangeException(nameof(position));
             if (SafeBytes.IsNullOrEmpty(textBytes)) throw new ArgumentNullException(nameof(textBytes));
             if (encoding == InnerEncoding)
             {
                 _charBytesList.Insert(position, textBytes);
                 return;
             }
+
             //Convert encoding
             var buffer = textBytes.ToByteArray();
             try
             {
-                if(encoding != InnerEncoding)
+                if (encoding != InnerEncoding)
                     buffer = _textService.Convert(encoding, InnerEncoding, buffer);
                 var safeBytes = _safeBytesFactory.Create();
                 for (var i = 0; i < buffer.Length; i++)
@@ -120,6 +122,7 @@ namespace SafeOrbit.Memory
                     safeBytes.Append(buffer[i]);
                     buffer[i] = 0x0;
                 }
+
                 _charBytesList.Insert(position, safeBytes);
             }
             finally
@@ -135,19 +138,22 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             EnsureNotEmpty();
-            if ((index < 0) || (index >= Length)) throw new ArgumentOutOfRangeException(nameof(index));
+            if (index < 0 || index >= Length) throw new ArgumentOutOfRangeException(nameof(index));
             var result = _charBytesList.ElementAt(index);
             return result;
         }
 
         /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
         /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> is less than zero, higher than/equals to the length.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     <paramref name="index" /> is less than zero, higher than/equals to the
+        ///     length.
+        /// </exception>
         public char GetAsChar(int index)
         {
             EnsureNotDisposed();
             EnsureNotEmpty();
-            if ((index < 0) || (index >= Length))
+            if (index < 0 || index >= Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
             var asSafeBytes = _charBytesList.ElementAt(index);
             var asChar = TransformSafeBytesToChar(asSafeBytes, InnerEncoding);
@@ -166,7 +172,7 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             EnsureNotEmpty();
-            if ((startIndex < 0) || (startIndex >= Length))
+            if (startIndex < 0 || startIndex >= Length)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
@@ -210,7 +216,7 @@ namespace SafeOrbit.Memory
                 const int multiplier = 27;
                 var hashCode = 1;
                 for (var i = 0; i < Length; i++)
-                    hashCode *= multiplier*_charBytesList[i].GetHashCode();
+                    hashCode *= multiplier * _charBytesList[i].GetHashCode();
                 return hashCode;
             }
         }
@@ -218,7 +224,7 @@ namespace SafeOrbit.Memory
         public bool Equals(string other)
         {
             if (string.IsNullOrEmpty(other))
-                return this.Length == 0;
+                return Length == 0;
             using var ss = _safeStringFactory.Create();
             ss.Append(other);
             return Equals(ss);
@@ -228,15 +234,18 @@ namespace SafeOrbit.Memory
         {
             // Caution: Don't check length first and then fall out, since that leaks length info
             if (IsNullOrEmpty(other))
-                return this.Length == 0;
-            var comparisonBit = (uint)this.Length ^ (uint)other.Length;
+                return Length == 0;
+            var comparisonBit = (uint) Length ^ (uint) other.Length;
             for (var i = 0; i < Length && i < other.Length; i++)
-                comparisonBit |= (uint)(GetAsSafeBytes(i).Equals(other.GetAsSafeBytes(i)) ? 0 : 1);
+                comparisonBit |= (uint) (GetAsSafeBytes(i).Equals(other.GetAsSafeBytes(i)) ? 0 : 1);
             return comparisonBit == 0;
         }
 
         /// <inheritdoc />
-        /// <exception cref="T:System.ObjectDisposedException">Throws if the <see cref="T:SafeOrbit.Memory.SafeString" /> instance is disposed</exception>
+        /// <exception cref="T:System.ObjectDisposedException">
+        ///     Throws if the <see cref="T:SafeOrbit.Memory.SafeString" /> instance
+        ///     is disposed
+        /// </exception>
         public ISafeString DeepClone()
         {
             EnsureNotDisposed();
@@ -267,7 +276,7 @@ namespace SafeOrbit.Memory
         }
 
         public static bool IsNullOrEmpty(ISafeString safeString)
-            => (safeString == null) || safeString.IsDisposed || safeString.IsEmpty;
+            => safeString == null || safeString.IsDisposed || safeString.IsEmpty;
 
         public override bool Equals(object obj)
         {
@@ -304,11 +313,12 @@ namespace SafeOrbit.Memory
                     charBytes.Append(byteBuffer[i]);
                     byteBuffer[i] = 0;
                 }
+
                 return charBytes;
             }
             finally
             {
-                if(byteBuffer != null)
+                if (byteBuffer != null)
                     Array.Clear(byteBuffer, 0, byteBuffer.Length);
             }
         }

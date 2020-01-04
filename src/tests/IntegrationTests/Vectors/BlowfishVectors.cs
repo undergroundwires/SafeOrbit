@@ -6,12 +6,11 @@ namespace SafeOrbit.Vectors
 {
     public class BlowfishVectors
     {
-
         /// <summary>
-        /// Gets or sets the blowfish vectors.
-        /// First argument => key bytes
-        /// Second argument => clear bytes
-        /// Returns => cipher bytes
+        ///     Gets or sets the blowfish vectors.
+        ///     First argument => key bytes
+        ///     Second argument => clear bytes
+        ///     Returns => cipher bytes
         /// </summary>
         /// <remarks>https://www.schneier.com/code/vectors.txt</remarks>
         public static IEnumerable Vectors
@@ -56,12 +55,12 @@ namespace SafeOrbit.Vectors
         }
 
         /// <summary>
-        /// Gets the blowfish vector.
+        ///     Gets the blowfish vector.
         /// </summary>
         /// <param name="keyBytesHexString">The key bytes as hexadecimal string.</param>
         /// <param name="clearBytesHexString">The clear bytes as hexadecimal string.</param>
         /// <param name="cipherBytesHexString">The cipher bytes as hexadecimal string.</param>
-        /// <returns>A <see cref="TestCaseData"/> for with the argument order as <see cref="GetBlowfishVector"/> method.</returns>
+        /// <returns>A <see cref="TestCaseData" /> for with the argument order as <see cref="GetBlowfishVector" /> method.</returns>
         private static TestCaseData GetBlowfishVector(string keyBytesHexString, string clearBytesHexString,
             string cipherBytesHexString)
         {

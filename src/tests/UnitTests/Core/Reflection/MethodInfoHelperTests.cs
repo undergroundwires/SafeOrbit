@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace SafeOrbit.Core.Reflection
 {
-    /// <seealso cref="MethodInfoHelper"/>
+    /// <seealso cref="MethodInfoHelper" />
     [TestFixture]
     public class MethodInfoHelperTests
     {
@@ -13,12 +13,14 @@ namespace SafeOrbit.Core.Reflection
         public void GetIlBytes_ArgumentIsNull_throwsArgumentNullException()
         {
             //arrange
-            var nullArgument = (MethodInfo)null;
+            var nullArgument = (MethodInfo) null;
+
             //act
             void CallWithNull() => nullArgument.GetIlBytes();
             //assert
             Assert.That(CallWithNull, Throws.ArgumentNullException);
         }
+
         [Test]
         public void GetIlBytes_TwiceForSameType_ReturnsSame()
         {
@@ -30,6 +32,7 @@ namespace SafeOrbit.Core.Reflection
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         public void GetIlBytes_ForDifferentTypes_ReturnsDifferent()
         {

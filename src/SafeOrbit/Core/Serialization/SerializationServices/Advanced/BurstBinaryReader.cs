@@ -10,7 +10,7 @@ using SafeOrbit.Core.Serialization.SerializationServices.Core.Binary;
 namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
 {
     /// <summary>
-    ///   Reads data which was stored with the BurstBinaryWriter
+    ///     Reads data which was stored with the BurstBinaryWriter
     /// </summary>
     internal sealed class BurstBinaryReader : IBinaryReader
     {
@@ -18,11 +18,11 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         private readonly ITypeNameConverter _typeNameConverter;
         private BinaryReader _reader;
 
-        ///<summary>
-        ///</summary>
-        ///<param name = "typeNameConverter"></param>
-        ///<param name = "encoding"></param>
-        ///<exception cref = "ArgumentNullException"></exception>
+        /// <summary>
+        /// </summary>
+        /// <param name="typeNameConverter"></param>
+        /// <param name="encoding"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public BurstBinaryReader(ITypeNameConverter typeNameConverter, Encoding encoding)
         {
             _typeNameConverter = typeNameConverter ?? throw new ArgumentNullException(nameof(typeNameConverter));
@@ -32,7 +32,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         #region IBinaryReader Members
 
         /// <summary>
-        ///   Reads property name
+        ///     Reads property name
         /// </summary>
         /// <returns></returns>
         public string ReadName()
@@ -41,7 +41,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         }
 
         /// <summary>
-        ///   Reads single byte
+        ///     Reads single byte
         /// </summary>
         /// <returns></returns>
         public byte ReadElementId()
@@ -50,7 +50,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         }
 
         /// <summary>
-        ///   Read type
+        ///     Read type
         /// </summary>
         /// <returns></returns>
         public Type ReadType()
@@ -61,7 +61,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         }
 
         /// <summary>
-        ///   Read integer which was saved as 1,2 or 4 bytes, according to its size
+        ///     Read integer which was saved as 1,2 or 4 bytes, according to its size
         /// </summary>
         /// <returns></returns>
         public int ReadNumber()
@@ -71,7 +71,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
 
 
         /// <summary>
-        ///   Read array of integers which were saved as 1,2 or 4 bytes, according to their size
+        ///     Read array of integers which were saved as 1,2 or 4 bytes, according to their size
         /// </summary>
         /// <returns>Empty array if there are no indexes</returns>
         public int[] ReadNumbers()
@@ -80,9 +80,9 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         }
 
         /// <summary>
-        ///   Reads simple value (value of a simple property)
+        ///     Reads simple value (value of a simple property)
         /// </summary>
-        /// <param name = "expectedType"></param>
+        /// <param name="expectedType"></param>
         /// <returns></returns>
         public object ReadValue(Type expectedType)
         {
@@ -90,22 +90,23 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         }
 
         /// <summary>
-        ///   Opens the stream for reading
+        ///     Opens the stream for reading
         /// </summary>
-        /// <param name = "stream"></param>
+        /// <param name="stream"></param>
         public void Open(Stream stream)
         {
             _reader = new BinaryReader(stream, _encoding);
         }
 
         /// <summary>
-        ///   Does nothing, the stream can be further used and has to be manually closed
+        ///     Does nothing, the stream can be further used and has to be manually closed
         /// </summary>
         public void Close()
         {
             // don't close the stream if you want further read it
             //_reader.Close();
         }
+
         #endregion
     }
 }

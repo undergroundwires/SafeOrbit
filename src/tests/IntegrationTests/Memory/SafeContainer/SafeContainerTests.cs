@@ -65,7 +65,7 @@ namespace SafeOrbit.Memory
         {
             //arrange
             var sut = GetSut();
-            sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Transient);
+            sut.Register<IInstanceTestClass, InstanceTestClass>();
             sut.Verify();
             //act
             var instance1 = sut.Get<IInstanceTestClass>();

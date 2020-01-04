@@ -37,11 +37,8 @@ namespace SafeOrbit.Core.Protectable
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void SpinUntilSecurityModeIsAvailable()
         {
-            if (_isSettingMode)
-            {
-                SpinWait.SpinUntil(() => _isSettingMode, 10000);
-            }
-        } 
+            if (_isSettingMode) SpinWait.SpinUntil(() => _isSettingMode, 10000);
+        }
 
         /// <summary>
         ///     Must be overridden with a logic while switching happens.
@@ -55,7 +52,8 @@ namespace SafeOrbit.Core.Protectable
         /// <param name="objectProtectionMode">The object protection mode.</param>
         private void InternalSetMode(TProtectionLevel objectProtectionMode)
         {
-            if (_isSettingMode) throw new InvalidOperationException("Another thread is currently setting the protection level.");
+            if (_isSettingMode)
+                throw new InvalidOperationException("Another thread is currently setting the protection level.");
             _isSettingMode = true;
             var context = GetContext(newValue: objectProtectionMode, oldValue: CurrentProtectionMode);
             ChangeProtectionMode(context);

@@ -14,8 +14,8 @@ namespace SafeOrbit.Extensions
         /// <returns>Returns the waited result of the task</returns>
         [DebuggerHidden]
         public static T RunSync<T>(this Func<Task<T>> task)
-            => task == null ? throw new ArgumentNullException(nameof(task)) :
-                task.RunOnDefaultScheduler().RunSync();
+            => task == null ? throw new ArgumentNullException(nameof(task)) : task.RunOnDefaultScheduler().RunSync();
+
         /// <summary>
         ///     Executes an async Task method which has a void return value synchronously
         /// </summary>
@@ -23,13 +23,16 @@ namespace SafeOrbit.Extensions
         [DebuggerHidden]
         public static void RunSync(this Func<Task> task)
             => task.RunOnDefaultScheduler().RunSync();
+
         [DebuggerHidden]
         private static void RunSync(this Task task) =>
             // task.GetAwaiter().GetResult() :
             // Run sync & fixes stack traces on exceptions https://referencesource.microsoft.com/#mscorlib/system/runtime/compilerservices/TaskAwaiter.cs,ca9850c71672bd54
             task.ConfigureAwait(false).GetAwaiter().GetResult();
+
         [DebuggerHidden]
-        private static T RunSync<T>(this Task<T> task) => task == null ? throw new ArgumentNullException(nameof(task)) : 
-            task.ConfigureAwait(false).GetAwaiter().GetResult();
+        private static T RunSync<T>(this Task<T> task) => task == null
+            ? throw new ArgumentNullException(nameof(task))
+            : task.ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }

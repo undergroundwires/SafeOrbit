@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,6 +28,7 @@ namespace SafeOrbit.Extensions
 
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable)
             => iEnumerable == null || !iEnumerable.Any();
+
         /// <summary>
         ///     Returns an empty <see cref="IEnumerable{T}" /> if the caller is <see langword="null" />
         /// </summary>

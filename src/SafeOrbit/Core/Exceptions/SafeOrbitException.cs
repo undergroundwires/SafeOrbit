@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using SafeOrbit.Exceptions.SerializableException;
-
 #if !NETSTANDARD1_6
 using System.Security.Permissions;
+
 #endif
 
 namespace SafeOrbit.Exceptions
@@ -11,7 +11,7 @@ namespace SafeOrbit.Exceptions
     /// <summary>
     ///     An abstract class for all of special exceptions that SafeOrbit throws.
     /// </summary>
-    /// <seealso cref="SerializableExceptionBase"/>
+    /// <seealso cref="SerializableExceptionBase" />
 #if !NETSTANDARD1_6
     [Serializable]
 #endif

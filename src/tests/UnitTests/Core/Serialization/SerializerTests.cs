@@ -4,8 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework;
-using SafeOrbit.Memory.Common;
-using SafeOrbit.Core.Serialization;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Core.Serialization
@@ -39,7 +37,6 @@ namespace SafeOrbit.Core.Serialization
             Assert.That(expected, Is.EqualTo(actual));
         }
 
-        
 
         [Test]
         public void ArrayOfInts_CanSerialize_And_CanDeserialize()
@@ -243,15 +240,15 @@ namespace SafeOrbit.Core.Serialization
 
             public bool Equals(TestClass other)
             {
-                return ((TestString == other.TestString) && (TestBytes == null) && (other.TestBytes == null)) ||
-                       ((TestBytes != null) && (other.TestBytes != null) &&
-                        TestBytes.SequenceEqual(other.TestBytes)
-                        && (TestInt == other.TestInt)
-                        && (TestDateTime == other.TestDateTime) && (TestClassInstance == null) &&
-                        (other.TestClassInstance == null)) ||
-                       ((TestClassInstance != null) && (other.TestClassInstance != null) &&
-                        TestClassInstance.Equals(other.TestClassInstance)
-                        && (TestBool == other.TestBool));
+                return TestString == other.TestString && TestBytes == null && other.TestBytes == null ||
+                       TestBytes != null && other.TestBytes != null &&
+                       TestBytes.SequenceEqual(other.TestBytes)
+                       && TestInt == other.TestInt
+                       && TestDateTime == other.TestDateTime && TestClassInstance == null &&
+                       other.TestClassInstance == null ||
+                       TestClassInstance != null && other.TestClassInstance != null &&
+                       TestClassInstance.Equals(other.TestClassInstance)
+                       && TestBool == other.TestBool;
             }
         }
     }

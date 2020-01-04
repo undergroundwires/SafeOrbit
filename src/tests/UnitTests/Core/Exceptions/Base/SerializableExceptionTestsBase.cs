@@ -2,15 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 using SafeOrbit.Exceptions.SerializableException;
-using SafeOrbit.Extensions;
 using SafeOrbit.Tests;
+using System.Linq;
+using SafeOrbit.Extensions;
 
 namespace SafeOrbit.Exceptions
 {
@@ -65,6 +65,7 @@ namespace SafeOrbit.Exceptions
                 mStream.Position = 0;
                 actual = (T) formatter.Deserialize(mStream);
             }
+
             //assert
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual, Is.TypeOf<T>());
@@ -257,9 +258,9 @@ namespace SafeOrbit.Exceptions
             // Arrange
             var sut = GetSutForSerialization();
             // Act
-            TestDelegate invokingWithNullParamater = () => sut.GetObjectData(null, new StreamingContext());
+            void InvokingWithNullParamater() => sut.GetObjectData(null, new StreamingContext());
             // Assert
-            Assert.Throws<ArgumentNullException>(invokingWithNullParamater);
+            Assert.Throws<ArgumentNullException>(InvokingWithNullParamater);
         }
 
         [Test]
@@ -291,6 +292,7 @@ namespace SafeOrbit.Exceptions
                     ctorParamTypes, null) != null;
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         private bool HasConstructor(params Type[] parameterTypes)
         {
             if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
@@ -300,26 +302,13 @@ namespace SafeOrbit.Exceptions
 
         protected PropertyInfo GetPropertyFromExpression<TObject>(Expression<Func<T, TObject>> getPropertyLambda)
         {
-            MemberExpression exp = null;
-            //this line is necessary, because sometimes the expression comes in as Convert(original expression)
-            if (getPropertyLambda.Body is UnaryExpression)
+            var exp = getPropertyLambda.Body switch
             {
-                var UnExp = (UnaryExpression)getPropertyLambda.Body;
-                if (UnExp.Operand is MemberExpression)
-                    exp = (MemberExpression)UnExp.Operand;
-                else
-                    throw new ArgumentException();
-            }
-            else if (getPropertyLambda.Body is MemberExpression)
-            {
-                exp = (MemberExpression)getPropertyLambda.Body;
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            return (PropertyInfo)exp.Member;
+                UnaryExpression unExp when unExp.Operand is MemberExpression operand => operand,
+                MemberExpression body => body,
+                _ => throw new ArgumentException()
+            };
+            return (PropertyInfo) exp.Member;
         }
     }
 }

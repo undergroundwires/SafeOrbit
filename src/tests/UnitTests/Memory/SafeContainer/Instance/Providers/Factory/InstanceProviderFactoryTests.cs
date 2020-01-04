@@ -25,7 +25,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.InstanceOf(expectedType));
         }
 
-        [Test, TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(LifeTimeCases))]
+        [Test]
+        [TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(LifeTimeCases))]
         public void Get_WithCustomFuncParameter_setsRightLifeTime(LifeTime expected)
         {
             //arrange
@@ -83,20 +84,23 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(forUnknownLifeTime, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
-        [Test, TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InjectionAlertChanelCases))]
+        [Test]
+        [TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InjectionAlertChanelCases))]
         public void Get_SetsInitialInjectionAlertChannel(InjectionAlertChannel expected)
         {
             //arrange
             var sut = GetSut();
             //act
-            var instance = sut.Get<InstanceProviderFactoryTests>(LifeTime.Transient, InstanceProtectionMode.NoProtection,
+            var instance = sut.Get<InstanceProviderFactoryTests>(LifeTime.Transient,
+                InstanceProtectionMode.NoProtection,
                 expected);
             var actual = instance.AlertChannel;
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InjectionAlertChanelCases))]
+        [Test]
+        [TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InjectionAlertChanelCases))]
         public void GetGeneric_SetsInitialInjectionAlertChannel(InjectionAlertChannel expected)
         {
             //arrange
@@ -109,7 +113,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InstanceProtectionModeCases))]
+        [Test]
+        [TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InstanceProtectionModeCases))]
         public void GetGeneric_SetsInitialProtectionMode(InstanceProtectionMode expected)
         {
             //arrange
@@ -122,7 +127,8 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [Test, TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InstanceProtectionModeCases))]
+        [Test]
+        [TestCaseSource(typeof(InstanceProviderFactoryTests), nameof(InstanceProtectionModeCases))]
         public void Get_SetsInitialProtectionMode(InstanceProtectionMode expected)
         {
             //arrange
@@ -147,6 +153,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
                 yield return new TestCaseData(InstanceProtectionMode.StateAndCode);
             }
         }
+
         private static IEnumerable<TestCaseData> InjectionAlertChanelCases
         {
             get
@@ -157,6 +164,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
                 yield return new TestCaseData(InjectionAlertChannel.ThrowException);
             }
         }
+
         private static IEnumerable<TestCaseData> LifeTimeCases
         {
             get

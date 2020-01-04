@@ -3,64 +3,36 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using SafeOrbit.Core.Serialization.SerializationServices.Advanced.Binary;
 using SafeOrbit.Core.Serialization.SerializationServices.Advanced.Deserializing;
 using SafeOrbit.Core.Serialization.SerializationServices.Core;
 using SafeOrbit.Core.Serialization.SerializationServices.Core.Binary;
+#if NETSTANDARD1_6
+using System.Reflection;
+#endif
 
 namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
 {
     /// <summary>
-    ///   Contains logic to deserialize data from a binary format. Format can vary according to the used IBinaryWriter. 
-    ///   For data serialized with BurstBinaryWriter you use BurstBinaryReader and for SizeOptimizedBinaryWriter you use SizeOptimizedBinaryReader
+    ///     Contains logic to deserialize data from a binary format. Format can vary according to the used IBinaryWriter.
+    ///     For data serialized with BurstBinaryWriter you use BurstBinaryReader and for SizeOptimizedBinaryWriter you use
+    ///     SizeOptimizedBinaryReader
     /// </summary>
     internal sealed class BinaryPropertyDeserializer : IPropertyDeserializer
     {
-        private readonly IBinaryReader _reader;
-
         /// <summary>
-        /// Properties already processed. Used for reference resolution.
+        ///     Properties already processed. Used for reference resolution.
         /// </summary>
         private readonly Dictionary<int, ReferenceTargetProperty> _propertyCache =
             new Dictionary<int, ReferenceTargetProperty>();
+
+        private readonly IBinaryReader _reader;
 
 
         public BinaryPropertyDeserializer(IBinaryReader reader)
         {
             _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
-
-        #region IPropertyDeserializer Members
-
-        /// <summary>
-        ///   Open the stream to read
-        /// </summary>
-        /// <param name = "stream"></param>
-        public void Open(Stream stream)
-        {
-            _reader.Open(stream);
-        }
-
-        /// <summary>
-        ///   Reading the property
-        /// </summary>
-        /// <returns></returns>
-        public Property Deserialize()
-        {
-            var elementId = _reader.ReadElementId();
-            return Deserialize(elementId, null);
-        }
-
-        /// <summary>
-        ///   Cleans all
-        /// </summary>
-        public void Close()
-        {
-            _reader.Close();
-        }
-
-        #endregion
 
         private Property Deserialize(byte elementId, Type expectedType)
         {
@@ -75,10 +47,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
             var propertyType = _reader.ReadType();
 
             // id propertyType is not defined, we'll take the expectedType
-            if (propertyType == null)
-            {
-                propertyType = expectedType;
-            }
+            if (propertyType == null) propertyType = expectedType;
 
             var referenceId = 0;
             if (elementId == Elements.Reference || Elements.IsElementWithId(elementId))
@@ -86,11 +55,9 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
                 referenceId = _reader.ReadNumber();
 
                 if (elementId == Elements.Reference)
-                {
                     // This is reference
                     // Get property from the cache
                     return CreateProperty(referenceId, propertyName, propertyType);
-                }
             }
 
             // create the property
@@ -98,23 +65,16 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
             if (property == null) return null;
 
             // Null property?
-            var nullProperty = property as NullProperty;
-            if (nullProperty != null)
-            {
-                return nullProperty;
-            }
+            if (property is NullProperty nullProperty) return nullProperty;
 
             // is it simple property?
-            var simpleProperty = property as SimpleProperty;
-            if (simpleProperty != null)
+            if (property is SimpleProperty simpleProperty)
             {
                 ParseSimpleProperty(simpleProperty);
                 return simpleProperty;
             }
 
-            var referenceProperty = property as ReferenceTargetProperty;
-            if (referenceProperty != null)
-            {
+            if (property is ReferenceTargetProperty referenceProperty)
                 if (referenceId > 0)
                 {
                     // object is used multiple times
@@ -125,38 +85,32 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
                     };
                     _propertyCache.Add(referenceId, referenceProperty);
                 }
-            }
 
-            var multiDimensionalArrayProperty = property as MultiDimensionalArrayProperty;
-            if (multiDimensionalArrayProperty != null)
+            if (property is MultiDimensionalArrayProperty multiDimensionalArrayProperty)
             {
                 ParseMultiDimensionalArrayProperty(multiDimensionalArrayProperty);
                 return multiDimensionalArrayProperty;
             }
 
-            var singleDimensionalArrayProperty = property as SingleDimensionalArrayProperty;
-            if (singleDimensionalArrayProperty != null)
+            if (property is SingleDimensionalArrayProperty singleDimensionalArrayProperty)
             {
                 ParseSingleDimensionalArrayProperty(singleDimensionalArrayProperty);
                 return singleDimensionalArrayProperty;
             }
 
-            var dictionaryProperty = property as DictionaryProperty;
-            if (dictionaryProperty != null)
+            if (property is DictionaryProperty dictionaryProperty)
             {
                 ParseDictionaryProperty(dictionaryProperty);
                 return dictionaryProperty;
             }
 
-            var collectionProperty = property as CollectionProperty;
-            if (collectionProperty != null)
+            if (property is CollectionProperty collectionProperty)
             {
                 ParseCollectionProperty(collectionProperty);
                 return collectionProperty;
             }
 
-            var complexProperty = property as ComplexProperty;
-            if (complexProperty != null)
+            if (property is ComplexProperty complexProperty)
             {
                 ParseComplexProperty(complexProperty);
                 return complexProperty;
@@ -182,7 +136,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
 
                 // estimating the propertyInfo
                 var subPropertyInfo = ownerType.GetProperty(propertyName);
-                var propertyType = subPropertyInfo != null ? subPropertyInfo.PropertyType : null;
+                var propertyType = subPropertyInfo?.PropertyType;
                 var subProperty = Deserialize(elementId, propertyName, propertyType);
                 properties.Add(subProperty);
             }
@@ -221,10 +175,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
             var count = _reader.ReadNumber();
 
             // items
-            for (var i = 0; i < count; i++)
-            {
-                ReadDictionaryItem(items, expectedKeyType, expectedValueType);
-            }
+            for (var i = 0; i < count; i++) ReadDictionaryItem(items, expectedKeyType, expectedValueType);
         }
 
         private void ReadDictionaryItem(ICollection<KeyValueItem> items, Type expectedKeyType, Type expectedValueType)
@@ -276,19 +227,18 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
             ReadMultiDimensionalArrayItems(property.Items, property.ElementType);
         }
 
-        private void ReadMultiDimensionalArrayItems(ICollection<MultiDimensionalArrayItem> items, Type expectedElementType)
+        private void ReadMultiDimensionalArrayItems(ICollection<MultiDimensionalArrayItem> items,
+            Type expectedElementType)
         {
             // count
             var count = _reader.ReadNumber();
 
             // items
-            for (var i = 0; i < count; i++)
-            {
-                ReadMultiDimensionalArrayItem(items, expectedElementType);
-            }
+            for (var i = 0; i < count; i++) ReadMultiDimensionalArrayItem(items, expectedElementType);
         }
 
-        private void ReadMultiDimensionalArrayItem(ICollection<MultiDimensionalArrayItem> items, Type expectedElementType)
+        private void ReadMultiDimensionalArrayItem(ICollection<MultiDimensionalArrayItem> items,
+            Type expectedElementType)
         {
             // Coordinates
             var indexes = _reader.ReadNumbers();
@@ -306,10 +256,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
             var count = _reader.ReadNumber();
 
             // Dimensions
-            for (var i = 0; i < count; i++)
-            {
-                ReadDimensionInfo(dimensionInfos);
-            }
+            for (var i = 0; i < count; i++) ReadDimensionInfo(dimensionInfos);
         }
 
         private void ReadDimensionInfo(ICollection<DimensionInfo> dimensionInfos)
@@ -359,12 +306,44 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         private Property CreateProperty(int referenceId, string propertyName, Type propertyType)
         {
             var cachedProperty = _propertyCache[referenceId];
-            var property = (ReferenceTargetProperty)Property.CreateInstance(cachedProperty.Art, propertyName, propertyType);
+            var property =
+                (ReferenceTargetProperty) Property.CreateInstance(cachedProperty.Art, propertyName, propertyType);
             cachedProperty.Reference.Count++;
             property.MakeFlatCopyFrom(cachedProperty);
             // Reference must be recreated, cause IsProcessed differs for reference and the full property
-            property.Reference = new ReferenceInfo() { Id = referenceId };
+            property.Reference = new ReferenceInfo {Id = referenceId};
             return property;
         }
+
+        #region IPropertyDeserializer Members
+
+        /// <summary>
+        ///     Open the stream to read
+        /// </summary>
+        /// <param name="stream"></param>
+        public void Open(Stream stream)
+        {
+            _reader.Open(stream);
+        }
+
+        /// <summary>
+        ///     Reading the property
+        /// </summary>
+        /// <returns></returns>
+        public Property Deserialize()
+        {
+            var elementId = _reader.ReadElementId();
+            return Deserialize(elementId, null);
+        }
+
+        /// <summary>
+        ///     Cleans all
+        /// </summary>
+        public void Close()
+        {
+            _reader.Close();
+        }
+
+        #endregion
     }
 }

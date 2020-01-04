@@ -40,8 +40,9 @@ namespace SafeOrbit.Cryptography.Encryption.Kdf
         {
             //arrange
             var sut = GetSut();
-            var size = key.Length*2;
+            var size = key.Length * 2;
             byte[] result = null;
+
             //act
             void Derivation() => result = sut.Derive(key, salt, size);
             //assert

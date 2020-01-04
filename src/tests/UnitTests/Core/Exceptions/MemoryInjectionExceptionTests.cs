@@ -1,9 +1,9 @@
-﻿#if !NETCOREAPP1_1
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System;
 using NUnit.Framework;
 using SafeOrbit.Memory;
+#if !NETCOREAPP1_1
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace SafeOrbit.Exceptions
 {

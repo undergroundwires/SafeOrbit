@@ -1,9 +1,7 @@
-﻿using SafeOrbit.Cryptography.Encryption.Padding.Factory;
-
-namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
+﻿namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
 {
     /// <summary>
-    /// Marker interface for dependency injection
+    ///     Marker interface for dependency injection
     /// </summary>
     public interface IPkcs7Padder : IPadder
     {

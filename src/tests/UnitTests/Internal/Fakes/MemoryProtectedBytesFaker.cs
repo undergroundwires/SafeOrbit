@@ -4,7 +4,7 @@ using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Tests;
 
 namespace UnitTests.Internal.Fakes
-{   
+{
     /// <seealso cref="IMemoryProtectedBytes" />
     /// <seealso cref="MemoryProtectedBytes" />
     public class MemoryProtectedBytesFaker : StubProviderBase<IMemoryProtectedBytes>

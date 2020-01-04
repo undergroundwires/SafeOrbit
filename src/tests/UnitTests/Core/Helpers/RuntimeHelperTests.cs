@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace SafeOrbit.Helpers
 {
-    /// <seealso cref="RuntimeHelper"/>
+    /// <seealso cref="RuntimeHelper" />
     [TestFixture]
     public class RuntimeHelperTests
     {
@@ -13,18 +13,21 @@ namespace SafeOrbit.Helpers
             // Arrange
             var isActionCalled = false;
             var isCleanupCalled = false;
+
             void CleanUp()
             {
                 if (!isActionCalled)
                     throw new ArgumentException("cleanup called first");
                 isCleanupCalled = true;
             }
+
             void Action()
             {
                 if (isCleanupCalled)
                     throw new ArgumentException("cleanup called first");
                 isActionCalled = true;
             }
+
             // Act
             RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
                 Action,
@@ -33,7 +36,7 @@ namespace SafeOrbit.Helpers
             Assert.True(isActionCalled);
             Assert.True(isCleanupCalled);
         }
-        
+
         [Test]
         public void ExecuteCodeWithGuaranteedCleanup_ActionThrows_ExceptionIsThrown()
         {
@@ -72,6 +75,7 @@ namespace SafeOrbit.Helpers
             // Arrange
             var isCleanupCalled = false;
             void CleanUp() => isCleanupCalled = true;
+
             void Action() => throw new ArgumentException("expected exception");
             // Act
             var swallowed = Assert.Throws<ArgumentException>(() =>
@@ -91,7 +95,7 @@ namespace SafeOrbit.Helpers
             {
                 RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
                     null,
-                    () => {  });
+                    () => { });
             });
         }
 
@@ -101,7 +105,7 @@ namespace SafeOrbit.Helpers
             Assert.Throws<ArgumentNullException>(() =>
             {
                 RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
-                    () => {}, 
+                    () => { },
                     null);
             });
         }

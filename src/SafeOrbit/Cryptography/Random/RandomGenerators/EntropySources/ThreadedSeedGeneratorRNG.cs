@@ -18,11 +18,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     /// </summary>
     public sealed class ThreadedSeedGeneratorRng : RandomNumberGenerator
     {
-        /// <summary>
-        ///     ThreadedSeedGeneratorRNG will always try to fill up to MaxPoolSize bytes available for read
-        /// </summary>
-        public static int MaxPoolSize { get; }
-
         private static readonly object FifoStreamLock = new object();
         private static readonly SafeMemoryStream SafeStream = new SafeMemoryStream();
         private static readonly AutoResetEvent PoolFullAre = new AutoResetEvent(false);
@@ -39,6 +34,11 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             };
             mainThread.Start();
         }
+
+        /// <summary>
+        ///     ThreadedSeedGeneratorRNG will always try to fill up to MaxPoolSize bytes available for read
+        /// </summary>
+        public static int MaxPoolSize { get; }
 
         private static int Read(byte[] buffer, int offset, int count)
         {
@@ -57,10 +57,12 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                             var bytesRead = SafeStream.Read(buffer, pos, (int) readCount);
                             pos += bytesRead;
                         }
+
                         if (pos < count)
                             if (pos < count)
                                 Thread.Sleep(1);
                     }
+
                     return count;
                 }
             }
@@ -95,22 +97,18 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 #if !NETSTANDARD1_6
         public override void GetNonZeroBytes(byte[] data)
         {
-            int offset = 0;
+            var offset = 0;
             while (offset < data.Length)
             {
                 var newBytes = new byte[data.Length - offset];
                 if (Read(newBytes, 0, newBytes.Length) != newBytes.Length)
-                {
                     throw new CryptographicException("Failed to return requested number of bytes");
-                }
-                for (int i = 0; i < newBytes.Length; i++)
-                {
+                for (var i = 0; i < newBytes.Length; i++)
                     if (newBytes[i] != 0)
                     {
                         data[offset] = newBytes[i];
                         offset++;
                     }
-                }
             }
         }
 #endif
@@ -146,7 +144,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 // starts refilling, and likewise, there will be zero bytes available until at least one unit of byteCount becomes
                 // available.  So there's a balancing act happening here... Faster throughput versus faster response time...
                 // Divide by 8 seems to be a reasonable compromise between the two.
-                var byteCount = MaxPoolSize/8;
+                var byteCount = MaxPoolSize / 8;
                 while (true)
                     // The only time we ever quit is on the terminate signal ... interrupt signal ... whatever.  OS kills my thread.
                     if (SafeStream.Length < MaxPoolSize)
@@ -162,6 +160,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                                 newBytes[j] ^= maskBytes[j];
                             Array.Clear(maskBytes, 0, maskBytes.Length);
                         }
+
                         SafeStream.Write(newBytes, 0, newBytes.Length);
                     }
                     else

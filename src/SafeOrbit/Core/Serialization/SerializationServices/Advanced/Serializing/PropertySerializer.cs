@@ -8,37 +8,13 @@ using SafeOrbit.Core.Serialization.SerializationServices.Serializing;
 namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializing
 {
     /// <summary>
-    ///   Base class for all Serializers (Xml, Binary, ...). XmlPropertySerializer inherits from this class
+    ///     Base class for all Serializers (Xml, Binary, ...). XmlPropertySerializer inherits from this class
     /// </summary>
     internal abstract class PropertySerializer : IPropertySerializer
     {
-        #region IPropertySerializer Members
-
-        /// <summary>
-        ///   Serializes property
-        /// </summary>
-        /// <param name = "property"></param>
-        public void Serialize(Property property)
-        {
-            SerializeCore(new PropertyTypeInfo<Property>(property, null));
-        }
-
-        /// <summary>
-        ///   Open the stream for writing
-        /// </summary>
-        /// <param name = "stream"></param>
-        public abstract void Open(Stream stream);
-
-        /// <summary>
-        ///   Cleaning, but the stream can be used further
-        /// </summary>
-        public abstract void Close();
-
-        #endregion
-
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected void SerializeCore(PropertyTypeInfo<Property> property)
         {
             if (property == null) throw new ArgumentNullException(nameof(property));
@@ -47,24 +23,22 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
             if (nullProperty != null)
             {
                 SerializeNullProperty(new PropertyTypeInfo<NullProperty>(nullProperty, property.ExpectedPropertyType,
-                                                                         property.ValueType));
+                    property.ValueType));
                 return;
             }
 
             // check if the value type is equal to the property type.
             // if so, there is no need to explicit define the value type
             if (property.ExpectedPropertyType != null && property.ExpectedPropertyType == property.ValueType)
-            {
                 // Type is not required, because the property has the same value type as the expected property type
                 property.ValueType = null;
-            }
 
             var simpleProperty = property.Property as SimpleProperty;
             if (simpleProperty != null)
             {
                 SerializeSimpleProperty(new PropertyTypeInfo<SimpleProperty>(simpleProperty,
-                                                                             property.ExpectedPropertyType,
-                                                                             property.ValueType));
+                    property.ExpectedPropertyType,
+                    property.ValueType));
                 return;
             }
 
@@ -77,11 +51,9 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
 
                 // Full Serializing of the object
                 if (SerializeReferenceTarget(new PropertyTypeInfo<ReferenceTargetProperty>(referenceTarget,
-                                                                                       property.ExpectedPropertyType,
-                                                                                       property.ValueType)))
-                {
+                    property.ExpectedPropertyType,
+                    property.ValueType)))
                     return;
-                }
             }
 
             throw new InvalidOperationException($"Unknown Property: {property.Property.GetType()}");
@@ -95,8 +67,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
                 multiDimensionalArrayProperty.Reference.IsProcessed = true;
                 SerializeMultiDimensionalArrayProperty(
                     new PropertyTypeInfo<MultiDimensionalArrayProperty>(multiDimensionalArrayProperty,
-                                                                        property.ExpectedPropertyType,
-                                                                        property.ValueType));
+                        property.ExpectedPropertyType,
+                        property.ValueType));
                 return true;
             }
 
@@ -106,8 +78,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
                 singleDimensionalArrayProperty.Reference.IsProcessed = true;
                 SerializeSingleDimensionalArrayProperty(
                     new PropertyTypeInfo<SingleDimensionalArrayProperty>(singleDimensionalArrayProperty,
-                                                                         property.ExpectedPropertyType,
-                                                                         property.ValueType));
+                        property.ExpectedPropertyType,
+                        property.ValueType));
                 return true;
             }
 
@@ -116,8 +88,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
             {
                 dictionaryProperty.Reference.IsProcessed = true;
                 SerializeDictionaryProperty(new PropertyTypeInfo<DictionaryProperty>(dictionaryProperty,
-                                                                                     property.ExpectedPropertyType,
-                                                                                     property.ValueType));
+                    property.ExpectedPropertyType,
+                    property.ValueType));
                 return true;
             }
 
@@ -126,8 +98,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
             {
                 collectionProperty.Reference.IsProcessed = true;
                 SerializeCollectionProperty(new PropertyTypeInfo<CollectionProperty>(collectionProperty,
-                                                                                     property.ExpectedPropertyType,
-                                                                                     property.ValueType));
+                    property.ExpectedPropertyType,
+                    property.ValueType));
                 return true;
             }
 
@@ -136,8 +108,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
             {
                 complexProperty.Reference.IsProcessed = true;
                 SerializeComplexProperty(new PropertyTypeInfo<ComplexProperty>(complexProperty,
-                                                                               property.ExpectedPropertyType,
-                                                                               property.ValueType));
+                    property.ExpectedPropertyType,
+                    property.ValueType));
                 return true;
             }
 
@@ -147,7 +119,6 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
         private bool serializeReference(ReferenceTargetProperty property)
         {
             if (property.Reference.Count > 1)
-            {
                 // There are more references to this object
                 if (property.Reference.IsProcessed)
                 {
@@ -156,51 +127,74 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializin
                     SerializeReference(property);
                     return true;
                 }
-            }
+
             return false;
         }
 
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected abstract void SerializeNullProperty(PropertyTypeInfo<NullProperty> property);
 
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected abstract void SerializeSimpleProperty(PropertyTypeInfo<SimpleProperty> property);
 
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected abstract void SerializeMultiDimensionalArrayProperty(
             PropertyTypeInfo<MultiDimensionalArrayProperty> property);
 
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected abstract void SerializeSingleDimensionalArrayProperty(
             PropertyTypeInfo<SingleDimensionalArrayProperty> property);
 
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected abstract void SerializeDictionaryProperty(PropertyTypeInfo<DictionaryProperty> property);
 
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected abstract void SerializeCollectionProperty(PropertyTypeInfo<CollectionProperty> property);
 
         /// <summary>
         /// </summary>
-        /// <param name = "property"></param>
+        /// <param name="property"></param>
         protected abstract void SerializeComplexProperty(PropertyTypeInfo<ComplexProperty> property);
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="referenceTarget"></param>
         protected abstract void SerializeReference(ReferenceTargetProperty referenceTarget);
+
+        #region IPropertySerializer Members
+
+        /// <summary>
+        ///     Serializes property
+        /// </summary>
+        /// <param name="property"></param>
+        public void Serialize(Property property)
+        {
+            SerializeCore(new PropertyTypeInfo<Property>(property, null));
+        }
+
+        /// <summary>
+        ///     Open the stream for writing
+        /// </summary>
+        /// <param name="stream"></param>
+        public abstract void Open(Stream stream);
+
+        /// <summary>
+        ///     Cleaning, but the stream can be used further
+        /// </summary>
+        public abstract void Close();
+
+        #endregion
     }
 }

@@ -101,31 +101,37 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
                 WriteArrayOfByte((byte[]) value, writer);
                 return;
             }
+
             if (type == typeof(string))
             {
                 writer.Write((string) value);
                 return;
             }
+
             if (type == typeof(bool))
             {
                 writer.Write((bool) value);
                 return;
             }
+
             if (type == typeof(byte))
             {
                 writer.Write((byte) value);
                 return;
             }
+
             if (type == typeof(char))
             {
                 writer.Write((char) value);
                 return;
             }
+
             if (type == typeof(DateTime))
             {
                 writer.Write(((DateTime) value).Ticks);
                 return;
             }
+
             if (type == typeof(Guid))
             {
                 writer.Write(((Guid) value).ToByteArray());
@@ -149,41 +155,49 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
                 writer.Write((double) value);
                 return;
             }
+
             if (type == typeof(short))
             {
                 writer.Write((short) value);
                 return;
             }
+
             if (type == typeof(int))
             {
                 writer.Write((int) value);
                 return;
             }
+
             if (type == typeof(long))
             {
                 writer.Write((long) value);
                 return;
             }
+
             if (type == typeof(sbyte))
             {
                 writer.Write((sbyte) value);
                 return;
             }
+
             if (type == typeof(float))
             {
                 writer.Write((float) value);
                 return;
             }
+
             if (type == typeof(ushort))
             {
                 writer.Write((ushort) value);
                 return;
             }
+
             if (type == typeof(uint))
             {
                 writer.Write((uint) value);
                 return;
             }
+
             if (type == typeof(ulong))
             {
                 writer.Write((ulong) value);
@@ -221,6 +235,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core.Binary
             writer.Write(bits[2]);
             writer.Write(bits[3]);
         }
+
         private static void WriteArrayOfByte(byte[] data, BinaryWriter writer)
         {
             WriteNumber(data.Length, writer);

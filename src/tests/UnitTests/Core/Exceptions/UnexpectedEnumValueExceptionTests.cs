@@ -1,12 +1,13 @@
-﻿#if !NETCOREAPP1_1
+﻿using NUnit.Framework;
+#if !NETCOREAPP1_1
 using System.Collections.Generic;
 using System.Reflection;
-using NUnit.Framework;
 
 namespace SafeOrbit.Exceptions
 {
     [TestFixture]
-    public class UnexpectedEnumValueExceptionTests : SerializableExceptionTestsBase<UnexpectedEnumValueException<UnexpectedEnumValueExceptionTests.TestEnum>>
+    public class UnexpectedEnumValueExceptionTests : SerializableExceptionTestsBase<
+        UnexpectedEnumValueException<UnexpectedEnumValueExceptionTests.TestEnum>>
     {
         protected override UnexpectedEnumValueException<TestEnum> GetSutForSerialization()
         {
@@ -15,12 +16,13 @@ namespace SafeOrbit.Exceptions
 
         protected override IEnumerable<PropertyInfo> GetExpectedPropertiesForSerialization()
         {
-            yield return base.GetPropertyFromExpression(e => e.Value);
+            yield return GetPropertyFromExpression(e => e.Value);
         }
 
         public enum TestEnum
         {
-            Val1, Val2
+            Val1,
+            Val2
         }
     }
 }

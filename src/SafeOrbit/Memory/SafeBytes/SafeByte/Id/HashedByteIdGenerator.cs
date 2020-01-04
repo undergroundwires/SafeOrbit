@@ -12,15 +12,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
 {
     /// <summary>
     ///     Creates a unique <see cref="int" /> values for each <see cref="byte" />.
-    ///     It's a singleton so byte ID's are consistent throughout the execution of the process, on restart a new salt &amp; new ID's are generated.
+    ///     It's a singleton so byte ID's are consistent throughout the execution of the process, on restart a new salt &amp;
+    ///     new ID's are generated.
     /// </summary>
     /// <seealso cref="IByteIdGenerator" />
     internal class HashedByteIdGenerator : IByteIdGenerator
     {
         private const int SaltLength = 16;
-        private readonly IMemoryProtectedBytes _sessionSalt;
         private readonly IFastHasher _fastHasher;
         private readonly ISafeRandom _safeRandom;
+        private readonly IMemoryProtectedBytes _sessionSalt;
 
         /// <exception cref="MemoryInjectionException">The object has been injected.</exception>
         public HashedByteIdGenerator() : this(
@@ -38,6 +39,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             _sessionSalt = sessionSalt ?? throw new ArgumentNullException(nameof(sessionSalt));
             InitializeSalt();
         }
+
         public int Generate(byte b)
         {
             using (var salt = _sessionSalt.RevealDecryptedBytes())

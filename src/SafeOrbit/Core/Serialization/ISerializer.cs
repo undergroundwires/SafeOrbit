@@ -1,7 +1,7 @@
 ﻿namespace SafeOrbit.Core.Serialization
 {
     /// <summary>
-    ///     An abstraction for a generic <see cref="object"/> serializer.
+    ///     An abstraction for a generic <see cref="object" /> serializer.
     /// </summary>
     public interface ISerializer
     {

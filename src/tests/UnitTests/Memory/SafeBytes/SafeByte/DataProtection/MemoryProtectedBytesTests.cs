@@ -56,7 +56,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Assert
             Assert.Throws<ArgumentNullException>(Initialize);
         }
-        
+
         [Test]
         public void Initialize_EmptyBytes_ThrowsException()
         {
@@ -77,7 +77,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Arrange
             var protectorMock = new Mock<IByteArrayProtector>();
             protectorMock.SetupGet(p => p.BlockSizeInBytes).Returns(3);
-            var plainBytes = new byte[] { 5, 5 };
+            var plainBytes = new byte[] {5, 5};
             using var sut = GetSut(protector: protectorMock.Object);
 
             // Act
@@ -95,15 +95,15 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             var protectorMock = new Mock<IByteArrayProtector>(MockBehavior.Strict);
             protectorMock.SetupGet(m => m.BlockSizeInBytes).Returns(plainBytes.Length);
             protectorMock.Setup(m => m.Protect(plainBytes)).Verifiable();
-            using var sut = GetSut(protector:protectorMock.Object);
+            using var sut = GetSut(protector: protectorMock.Object);
 
             // Act
             sut.Initialize(plainBytes);
 
             // Assert
-            protectorMock.Verify(s=>s.Protect(plainBytes), Times.Once);
+            protectorMock.Verify(s => s.Protect(plainBytes), Times.Once);
         }
-        
+
         [Test]
         public void BlockSizeInBytes_ForNewInstance_ReturnsFromInnerProtector()
         {
@@ -141,6 +141,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void Dispose() => sut.Dispose();
             // Assert
@@ -204,7 +205,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Assert
             Assert.True(actual);
         }
-        
+
         [Test]
         public void IsInitialized_InitializedAndDisposedInstance_ReturnsTrue()
         {
@@ -223,12 +224,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void RevealDecryptedBytes() => sut.RevealDecryptedBytes();
             // Assert
             Assert.Throws<InvalidOperationException>(RevealDecryptedBytes);
         }
-        
+
         [Test]
         public void RevealDecryptedBytes_DisposedInstance_ThrowsException()
         {
@@ -236,6 +238,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             var sut = GetSut();
             sut.Initialize(GetValidBytes());
             sut.Dispose();
+
             // Act
             void RevealDecryptedBytes() => sut.RevealDecryptedBytes();
             // Assert
@@ -287,9 +290,15 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Act
             byte[] firstBytes, secondBytes;
             using (var firstSession = sut.RevealDecryptedBytes())
+            {
                 firstBytes = firstSession.PlainBytes.CopyToNewArray();
+            }
+
             using (var secondSession = sut.RevealDecryptedBytes())
+            {
                 secondBytes = secondSession.PlainBytes.CopyToNewArray();
+            }
+
             // Assert
             Assert.True(expected.SequenceEqual(firstBytes));
             Assert.True(expected.SequenceEqual(secondBytes));
@@ -301,6 +310,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Arrange
             var sut = GetSut();
             sut.Dispose();
+
             // Act
             void DeepClone() => sut.DeepClone();
             // Assert
@@ -330,7 +340,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             var clone = sut.DeepClone();
             var actual = clone.RevealDecryptedBytes().PlainBytes;
             // Assert
-            Console.WriteLine("Expected:" + Environment.NewLine + 
+            Console.WriteLine("Expected:" + Environment.NewLine +
                               string.Join(", ", expected) + Environment.NewLine +
                               "Actual:" + Environment.NewLine +
                               string.Join(", ", actual));
@@ -357,8 +367,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         }
 
         protected override IMemoryProtectedBytes GetSut() => GetSut(null);
+
         private static IMemoryProtectedBytes GetSut(IByteArrayProtector protector)
             => new MemoryProtectedBytes(protector ?? Stubs.Get<IByteArrayProtector>());
+
         private static byte[] GetValidBytes() => new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     }
 }

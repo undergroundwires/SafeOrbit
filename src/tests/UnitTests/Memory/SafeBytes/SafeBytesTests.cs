@@ -139,6 +139,7 @@ namespace SafeOrbit.Memory
             //Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         public void Append_PlainByte_AppendsFromFactory()
         {
@@ -204,6 +205,7 @@ namespace SafeOrbit.Memory
             //Arrange
             var sut = GetSut();
             sut.Dispose();
+
             //Act
             void AppendingByte() => sut.Append(b);
             //Act
@@ -227,10 +229,10 @@ namespace SafeOrbit.Memory
         public void AppendByte_ForCleanObject_canAppendMultiple()
         {
             // Arrange
-            byte[] expected = {5,10,15,31,31};
+            byte[] expected = {5, 10, 15, 31, 31};
             using var sut = GetSut();
             // Act
-            foreach(var @byte in expected)
+            foreach (var @byte in expected)
                 sut.Append(@byte);
             // Assert
             var actual = sut.ToByteArray();
@@ -241,7 +243,7 @@ namespace SafeOrbit.Memory
         public void AppendSafeBytes_MultipleBytesOnCleanInstance_appendsAsExpected()
         {
             //Arrange
-            byte[] expected = { 3, 5, 10, 20 };
+            byte[] expected = {3, 5, 10, 20};
             using var sut = GetSut();
             var toAppend = GetSut();
             foreach (var @byte in expected)
@@ -259,7 +261,7 @@ namespace SafeOrbit.Memory
         public void AppendSafeBytes_MultipleBytesOnInstanceWithExistingBytes_appendsAsExpected()
         {
             //Arrange
-            byte[] expected = { 3, 5, 10, 20 };
+            byte[] expected = {3, 5, 10, 20};
             using var sut = GetSut();
             sut.Append(3);
             sut.Append(5);
@@ -279,6 +281,7 @@ namespace SafeOrbit.Memory
             //Arrange
             using var sut = GetSut();
             const int position = 0;
+
             //Act
             void CallingOnEmptyInstance() => sut.GetByte(position);
             //Assert
@@ -356,9 +359,9 @@ namespace SafeOrbit.Memory
         public void ToByteArray_ForInstanceWithMultipleBytes_returnsExpected()
         {
             //Arrange
-            byte[] expected = { 5, 10, 15 };
+            byte[] expected = {5, 10, 15};
             using var sut = GetSut();
-            foreach(var @byte in expected)
+            foreach (var @byte in expected)
                 sut.Append(@byte);
             //Act
             var actual = sut.ToByteArray();
@@ -385,6 +388,7 @@ namespace SafeOrbit.Memory
             // Arrange
             var sut = GetSut();
             sut.Dispose();
+
             // Act
             void DeepClone() => sut.DeepClone();
             // Assert
@@ -429,7 +433,7 @@ namespace SafeOrbit.Memory
             // Arrange
             using var sut = GetSut();
             sut.Append(1);
-            var other = new byte[] { 1, 1 };
+            var other = new byte[] {1, 1};
             // Act
             var actual = sut.Equals(other);
             // Assert
@@ -461,7 +465,7 @@ namespace SafeOrbit.Memory
             using var sut = GetSut();
             sut.Append(5);
             sut.Append(10);
-            var other = new byte[] { 3, 10 };
+            var other = new byte[] {3, 10};
             // Act
             var actual = sut.Equals(other);
             // Assert
@@ -493,7 +497,7 @@ namespace SafeOrbit.Memory
             using var sut = GetSut();
             sut.Append(5);
             sut.Append(10);
-            var other = new byte[] { 5, 10 };
+            var other = new byte[] {5, 10};
             // Act
             var actual = sut.Equals(other);
             // Assert
@@ -512,7 +516,7 @@ namespace SafeOrbit.Memory
             // Assert
             Assert.That(hashSut, Is.EqualTo(hashOther));
         }
-       
+
         [Test]
         public void GetHashCode_SameNonEmptyBytes_returnsSame()
         {
@@ -529,7 +533,7 @@ namespace SafeOrbit.Memory
             // Assert
             Assert.That(hashSut, Is.EqualTo(hashOther));
         }
-        
+
         [Test]
         public void GetHashCode_DifferentBytesSameLength_returnsFalse()
         {
@@ -544,7 +548,7 @@ namespace SafeOrbit.Memory
             // Assert
             Assert.That(hashSut, Is.Not.EqualTo(hashOther));
         }
-        
+
         [Test]
         public void GetHashCode_DifferentBytesDifferentLength_returnsFalse()
         {
@@ -577,12 +581,12 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             var mock = new Mock<ISafeByteCollection>(MockBehavior.Strict);
-            mock.Setup(m=>m.Dispose()).Verifiable();
+            mock.Setup(m => m.Dispose()).Verifiable();
             var sut = GetSut(collection: mock.Object);
             // Act
             sut.Dispose();
             // Assert
-            mock.Verify(m=>m.Dispose(), Times.Once);
+            mock.Verify(m => m.Dispose(), Times.Once);
         }
 
         [Test]
@@ -606,6 +610,7 @@ namespace SafeOrbit.Memory
         }
 
         protected override ISafeBytes GetSut() => GetSut();
+
         private static ISafeBytes GetSut(ISafeByteCollection collection = null, ISafeByteFactory factory = null)
         {
             return new SafeBytes(

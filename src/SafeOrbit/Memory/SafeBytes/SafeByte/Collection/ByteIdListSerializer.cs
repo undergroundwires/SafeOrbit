@@ -3,23 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using SafeOrbit.Exceptions;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
     public class ByteIdListSerializer : IByteIdListSerializer<int>
     {
         /// <summary>
-        /// Serializes list of id's in list of 32 bit unsigned integers. The first value is the length of the array.
+        ///     Serializes list of id's in list of 32 bit unsigned integers. The first value is the length of the array.
         /// </summary>
         public async Task<byte[]> SerializeAsync(IReadOnlyCollection<int> list)
         {
             if (list == null) throw new ArgumentNullException(nameof(list));
             if (!list.Any()) return new byte[0];
-            var resultSize = sizeof(int) * list.Count; /* size + list bytes */;
+            var resultSize = sizeof(int) * list.Count; /* size + list bytes */
+            ;
             using var memoryStream = new MemoryStream(capacity: resultSize);
             var buffer = new byte[sizeof(int)];
             await WriteInt32Async(list.Count, buffer, memoryStream).ConfigureAwait(false); /* Write the size */
@@ -28,6 +26,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             Array.Clear(buffer, 0, sizeof(int));
             return memoryStream.ToArray();
         }
+
         public async Task<IEnumerable<int>> DeserializeAsync(byte[] list)
         {
             if (list == null) throw new ArgumentNullException(nameof(list));
@@ -37,13 +36,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             const int lengthBytesSize = sizeof(int);
             var lengthBytes = await ReadNextBytesAsync(stream, lengthBytesSize).ConfigureAwait(false);
             var length = BitConverter.ToInt32(lengthBytes, 0);
-            if (length < 0)  ThrowCorrupted();
+            if (length < 0) ThrowCorrupted();
             /* Retrieve the list bytes */
             var listBytesSize = length * sizeof(int);
             var listBytes = await ReadNextBytesAsync(stream, listBytesSize).ConfigureAwait(false);
             var bytesAsList = BytesToIntList(listBytes);
             return bytesAsList;
         }
+
         private static async Task<byte[]> ReadNextBytesAsync(Stream stream, int count)
         {
             var buffer = new byte[count];
@@ -53,16 +53,15 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             return buffer;
         }
 
-        private static void ThrowCorrupted() => throw new SerializationException("Serialized bytes are corrupted in memory");
+        private static void ThrowCorrupted() =>
+            throw new SerializationException("Serialized bytes are corrupted in memory");
 
         private static IEnumerable<int> BytesToIntList(byte[] buffer)
         {
             var size = buffer.Length / sizeof(int);
             var integerList = new int[size];
             for (var index = 0; index < size; index++)
-            {
                 integerList[index] = BitConverter.ToInt32(buffer, index * sizeof(int));
-            }
             return integerList;
         }
 
@@ -71,8 +70,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             unsafe
             {
                 fixed (byte* numPtr = buffer)
-                    *(int*)numPtr = value;
+                {
+                    *(int*) numPtr = value;
+                }
             }
+
             return outStream.WriteAsync(buffer, 0, sizeof(int));
         }
     }

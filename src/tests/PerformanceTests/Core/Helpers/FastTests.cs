@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Helpers
 {
-    /// <seealso cref="Fast"/>
+    /// <seealso cref="Fast" />
     [TestFixture]
     public class FastTests : TestsBase
     {
@@ -14,20 +13,13 @@ namespace SafeOrbit.Helpers
         {
             //arrange
             const int iterations = 1000;
-            static int Factorial(int n) => n == 0 ? 1 :
-                Enumerable.Range(1, n).Aggregate((acc, x) => acc * x);
-            var expectedMax = base.Measure(() =>
+            static int Factorial(int n) => n == 0 ? 1 : Enumerable.Range(1, n).Aggregate((acc, x) => acc * x);
+            var expectedMax = Measure(() =>
             {
-                for (var i = 0; i < iterations; i++)
-                {
-                    Factorial(i);
-                }
+                for (var i = 0; i < iterations; i++) Factorial(i);
             });
             //act
-            var actual = base.Measure(() =>
-            {
-                Fast.For(0, iterations, (i) => Factorial(i));
-            });
+            var actual = Measure(() => { Fast.For(0, iterations, i => Factorial(i)); });
             //assert
             Assert.That(actual, Is.LessThanOrEqualTo(expectedMax));
         }

@@ -9,7 +9,7 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="AesEncryptor" />
     public class AesEncryptorTests : TestsFor<ISafeEncryptor>
     {
-        protected override ISafeEncryptor GetSut() =>  new AesEncryptor();
+        protected override ISafeEncryptor GetSut() => new AesEncryptor();
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ThreeDifferentByteArrays16Length))]

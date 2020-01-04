@@ -5,14 +5,16 @@ using SafeOrbit.Cryptography.Random.RandomGenerators;
 namespace SafeOrbit.Cryptography.Random
 {
     /// <summary>
-    /// Helper methods for the implementations.
+    ///     Helper methods for the implementations.
     /// </summary>
     public abstract class RandomBase : ICryptoRandom
     {
         private readonly RandomNumberGenerator _generator;
+
         protected RandomBase() : this(SafeRandomGenerator.StaticInstance)
         {
         }
+
         internal RandomBase(RandomNumberGenerator generator)
         {
             _generator = generator;
@@ -43,18 +45,9 @@ namespace SafeOrbit.Cryptography.Random
                 // Convert that into an uint.
                 scale = BitConverter.ToUInt32(fourBytes, 0);
             }
-            return (int)scale;
-        }
 
-#if !NETSTANDARD1_6
-        /// <inheritdoc />
-        public byte[] GetNonZeroBytes(int length)
-        {
-            var data = new byte[length];
-            _generator.GetNonZeroBytes(data);
-            return data;
+            return (int) scale;
         }
-#endif
 
         /// <inheritdoc />
         public int GetInt(int min, int max)
@@ -77,8 +70,8 @@ namespace SafeOrbit.Cryptography.Random
             }
 
             // Add min to the scaled difference between max and min.
-            return (int)(min + (max - min) *
-                          (scale / (double)uint.MaxValue));
+            return (int) (min + (max - min) *
+                          (scale / (double) uint.MaxValue));
         }
 
         /// <inheritdoc />
@@ -89,5 +82,15 @@ namespace SafeOrbit.Cryptography.Random
             var @byte = data[0];
             return (@byte & 0x80) != 0;
         }
+
+#if !NETSTANDARD1_6
+        /// <inheritdoc />
+        public byte[] GetNonZeroBytes(int length)
+        {
+            var data = new byte[length];
+            _generator.GetNonZeroBytes(data);
+            return data;
+        }
+#endif
     }
 }

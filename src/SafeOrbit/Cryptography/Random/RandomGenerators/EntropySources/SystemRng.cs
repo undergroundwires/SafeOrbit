@@ -11,7 +11,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     public sealed class SystemRng : RandomNumberGenerator
     {
         private readonly RandomNumberGenerator _systemRngProvider;
-        public bool IsDisposed { get; private set; }
 
         public SystemRng() : this(Create())
         {
@@ -22,6 +21,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             _systemRngProvider = systemRngProvider ?? throw new ArgumentNullException(nameof(systemRngProvider));
         }
+
+        public bool IsDisposed { get; private set; }
 
         public override void GetBytes(byte[] data)
         {

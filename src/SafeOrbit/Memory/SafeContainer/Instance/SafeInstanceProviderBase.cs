@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
-using SafeOrbit.Exceptions;
 using SafeOrbit.Core.Protectable;
+using SafeOrbit.Exceptions;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices;
 
@@ -19,7 +18,6 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
     internal abstract class SafeInstanceProviderBase<TImplementation> :
         ProtectableBase<InstanceProtectionMode>, IInstanceProvider
     {
-
         private readonly IInjectionDetector _injectionDetector;
         private bool _isFirstTime = true;
 
@@ -28,20 +26,31 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
         {
         }
 
-        internal SafeInstanceProviderBase(LifeTime lifeTime, IInjectionDetector injectionDetector, InstanceProtectionMode protectionMode, InjectionAlertChannel alertChannel)
+        internal SafeInstanceProviderBase(LifeTime lifeTime, IInjectionDetector injectionDetector,
+            InstanceProtectionMode protectionMode, InjectionAlertChannel alertChannel)
             : base(protectionMode)
         {
             _injectionDetector = injectionDetector ?? throw new ArgumentNullException(nameof(injectionDetector));
             LifeTime = lifeTime;
             AssemblyQualifiedName = typeof(TImplementation).AssemblyQualifiedName;
-            this.AlertChannel = alertChannel;
-            this.ChangeProtectionMode(new ProtectionChangeContext<InstanceProtectionMode>(protectionMode));
+            AlertChannel = alertChannel;
+            ChangeProtectionMode(new ProtectionChangeContext<InstanceProtectionMode>(protectionMode));
         }
 
 
         public string AssemblyQualifiedName { get; }
+
+        /// <summary>
+        ///     Determines whether this instance provider's instance is allowed be protected against state injections. Default:
+        ///     <c>TRUE</c>
+        /// </summary>
+        /// <seealso cref="IInjectionDetector.ScanState" />
+        /// <seealso cref="Provide" />
+        public virtual bool CanProtectState { get; } = true;
+
         public Type ImplementationType => typeof(TImplementation);
         public LifeTime LifeTime { get; set; }
+
         public object Provide()
         {
             var instance = GetInstance();
@@ -56,15 +65,19 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
                 if (CanAlert && _injectionDetector.CanAlert)
                     _injectionDetector.AlertUnnotifiedChanges(instance);
             }
+
             return instance;
         }
+
+        public InjectionAlertChannel AlertChannel
+        {
+            get => _injectionDetector.AlertChannel;
+            set => _injectionDetector.AlertChannel = value;
+        }
+
+        public bool CanAlert => CurrentProtectionMode != InstanceProtectionMode.NoProtection;
         public abstract TImplementation GetInstance();
-        /// <summary>
-        /// Determines whether this instance provider's instance is allowed be protected against state injections. Default: <c>TRUE</c>
-        /// </summary>
-        /// <seealso cref="IInjectionDetector.ScanState"/>
-        /// <seealso cref="Provide"/>
-        public virtual bool CanProtectState { get; } = true;
+
         protected sealed override void ChangeProtectionMode(IProtectionChangeContext<InstanceProtectionMode> context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -72,8 +85,9 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
             {
                 case InstanceProtectionMode.StateAndCode:
                     _injectionDetector.ScanCode = true;
-                    _injectionDetector.ScanState = this.CanProtectState;
-                    if (!_isFirstTime && context.OldValue != InstanceProtectionMode.JustState) VerifyInstanceInternal(GetInstance());
+                    _injectionDetector.ScanState = CanProtectState;
+                    if (!_isFirstTime && context.OldValue != InstanceProtectionMode.JustState)
+                        VerifyInstanceInternal(GetInstance());
                     break;
                 case InstanceProtectionMode.JustCode:
                     _injectionDetector.ScanCode = true;
@@ -81,8 +95,9 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
                     break;
                 case InstanceProtectionMode.JustState:
                     _injectionDetector.ScanCode = false;
-                    _injectionDetector.ScanState = this.CanProtectState;
-                    if (!_isFirstTime && context.OldValue != InstanceProtectionMode.StateAndCode) VerifyInstanceInternal(GetInstance());
+                    _injectionDetector.ScanState = CanProtectState;
+                    if (!_isFirstTime && context.OldValue != InstanceProtectionMode.StateAndCode)
+                        VerifyInstanceInternal(GetInstance());
                     break;
                 case InstanceProtectionMode.NoProtection:
                     _injectionDetector.ScanCode = false;
@@ -92,19 +107,11 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Providers
                     throw new UnexpectedEnumValueException<InstanceProtectionMode>(context.NewValue);
             }
         }
+
         private void VerifyInstanceInternal(TImplementation instance)
         {
-            var canProtectState = _injectionDetector.ScanState = _injectionDetector.ScanState && this.CanProtectState;
-            if (canProtectState || _isFirstTime)
-            {
-                _injectionDetector.NotifyChanges(instance);
-            }
+            var canProtectState = _injectionDetector.ScanState = _injectionDetector.ScanState && CanProtectState;
+            if (canProtectState || _isFirstTime) _injectionDetector.NotifyChanges(instance);
         }
-        public InjectionAlertChannel AlertChannel
-        {
-            get => _injectionDetector.AlertChannel;
-            set => _injectionDetector.AlertChannel = value;
-        }
-        public bool CanAlert => CurrentProtectionMode != InstanceProtectionMode.NoProtection;
     }
 }

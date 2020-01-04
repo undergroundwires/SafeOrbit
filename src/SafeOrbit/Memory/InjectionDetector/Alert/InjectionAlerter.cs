@@ -1,20 +1,19 @@
 using System;
-using SafeOrbit.Library;
 using SafeOrbit.Memory.Injection;
 using SafeOrbit.Memory.InjectionServices.Alerters;
 
 namespace SafeOrbit.Memory.InjectionServices
 {
     /// <summary>
-    /// Alerts an <see cref="IInjectionMessage"/> using the right <see cref="IAlerter"/> instance.
+    ///     Alerts an <see cref="IInjectionMessage" /> using the right <see cref="IAlerter" /> instance.
     /// </summary>
     /// <seealso cref="IInjectionAlerter" />
-    /// <seealso cref="IAlerter"/>
+    /// <seealso cref="IAlerter" />
     internal class InjectionAlerter : IInjectionAlerter
     {
+        public static readonly IInjectionAlerter StaticInstance = new InjectionAlerter(new AlerterFactory());
         private readonly IAlerterFactory _alerterFactory;
 
-        public static readonly IInjectionAlerter StaticInstance = new InjectionAlerter(new AlerterFactory());
         internal InjectionAlerter(IAlerterFactory alerterFactory)
         {
             _alerterFactory = alerterFactory ?? throw new ArgumentNullException(nameof(alerterFactory));

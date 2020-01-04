@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.InjectionServices.Alerters;
 
@@ -7,24 +6,27 @@ namespace SafeOrbit.Memory.InjectionServices
     public enum InjectionAlertChannel
     {
         /// <summary>
-        /// Raises the <see cref="SafeOrbitCore.LibraryInjected"/>
+        ///     Raises the <see cref="SafeOrbitCore.LibraryInjected" />
         /// </summary>
-        /// <seealso cref="RaiseEventAlerter"/>
+        /// <seealso cref="RaiseEventAlerter" />
         RaiseEvent,
+
         /// <summary>
-        /// Throws an exception.
+        ///     Throws an exception.
         /// </summary>
-        /// <seealso cref="ThrowExceptionAlerter"/>
+        /// <seealso cref="ThrowExceptionAlerter" />
         ThrowException,
+
         /// <summary>
-        /// Fails on debug mode.
+        ///     Fails on debug mode.
         /// </summary>
-        /// <seealso cref="DebugFailAlerter"/>
+        /// <seealso cref="DebugFailAlerter" />
         DebugFail,
+
         /// <summary>
-        /// Logs on debug mode.
+        ///     Logs on debug mode.
         /// </summary>
-        /// <seealso cref="DebugWriteAlerter"/>
+        /// <seealso cref="DebugWriteAlerter" />
         DebugWrite
     }
 }

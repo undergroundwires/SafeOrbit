@@ -6,7 +6,6 @@ Here's how you use the class:
 */
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SafeOrbit.Helpers;
 
@@ -90,6 +89,7 @@ namespace SafeOrbit.Memory
                 String = "";
                 return;
             }
+
             Deallocate();
             unsafe
             {
@@ -97,7 +97,9 @@ namespace SafeOrbit.Memory
                 _gch = new GCHandle();
 
                 RuntimeHelper.PrepareConstrainedRegions();
-                try { }
+                try
+                {
+                }
                 finally
                 {
                     // Pin our string, disallowing the garbage collector from moving it around.
@@ -106,18 +108,17 @@ namespace SafeOrbit.Memory
 
 
                 RuntimeHelper.PrepareConstrainedRegions();
-                try { }
+                try
+                {
+                }
                 finally
                 {
-                    var pInsecureString = (char*)_gch.AddrOfPinnedObject();
+                    var pInsecureString = (char*) _gch.AddrOfPinnedObject();
                     // Copy the SafeString content to our pinned string
                     //Fast.For(0, SafeString.Length, charIndex =>
                     //    pInsecureString[charIndex] = SafeString.GetAsChar(charIndex)
                     //);
-                    for(var i = 0; i < SafeString.Length; i++)
-                    {
-                        pInsecureString[i] = SafeString.GetAsChar(i);
-                    }
+                    for (var i = 0; i < SafeString.Length; i++) pInsecureString[i] = SafeString.GetAsChar(i);
                 }
             }
         }

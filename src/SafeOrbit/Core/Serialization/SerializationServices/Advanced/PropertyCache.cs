@@ -17,10 +17,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Advanced
         /// <returns>null if the key was not found</returns>
         public IList<PropertyInfo> TryGetPropertyInfos(Type type)
         {
-            if (!_cache.ContainsKey(type))
-            {
-                return null;
-            }
+            if (!_cache.ContainsKey(type)) return null;
             return _cache[type];
         }
 

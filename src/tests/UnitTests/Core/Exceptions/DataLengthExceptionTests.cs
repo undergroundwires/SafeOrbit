@@ -7,7 +7,8 @@ namespace SafeOrbit.Exceptions
     [TestFixture]
     public class DataLengthExceptionTests : SerializableExceptionTestsBase<DataLengthException>
     {
-        protected override DataLengthException GetSutForSerialization() => new DataLengthException("argumentName", "message");
+        protected override DataLengthException GetSutForSerialization() =>
+            new DataLengthException("argumentName", "message");
     }
 }
 #endif

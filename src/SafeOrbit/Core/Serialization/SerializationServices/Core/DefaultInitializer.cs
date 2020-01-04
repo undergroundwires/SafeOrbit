@@ -1,6 +1,5 @@
 ﻿//This is a modified version of the beautiful SharpSerializer by Pawel Idzikowski (see: http://www.sharpserializer.com)
 
-using System.Globalization;
 using System.Text;
 using System.Xml;
 using SafeOrbit.Core.Serialization.SerializationServices.Advanced;
@@ -9,7 +8,7 @@ using SafeOrbit.Core.Serialization.SerializationServices.Advanced.Serializing;
 namespace SafeOrbit.Core.Serialization.SerializationServices.Core
 {
     /// <summary>
-    ///   Gives standard settings for the framework. Is used only internally.
+    ///     Gives standard settings for the framework. Is used only internally.
     /// </summary>
     internal static class DefaultInitializer
     {
@@ -41,7 +40,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core
         }
 
         public static ITypeNameConverter GetTypeNameConverter(bool includeAssemblyVersion, bool includeCulture,
-                                                              bool includePublicKeyToken)
+            bool includePublicKeyToken)
         {
             return new TypeNameConverter(includeAssemblyVersion, includeCulture, includePublicKeyToken);
         }

@@ -8,6 +8,7 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
     {
         public IEnumerable<string> Errors { get; private set; }
         public RuleType Type { get; } = RuleType.Warning;
+
         public bool IsSatisfiedBy(IInstanceProvider instance)
         {
             if (instance.LifeTime == LifeTime.Transient) return true;
@@ -15,7 +16,10 @@ namespace SafeOrbit.Memory.SafeContainerServices.Instance.Validation
             if (type == null) throw new ArgumentException($"Type ({type.FullName}) could not be loaded");
             var isDisposable = typeof(IDisposable).GetTypeInfo().IsAssignableFrom(type);
             if (!isDisposable) return true;
-            Errors = new[] { $"{type.AssemblyQualifiedName} implements {nameof(IDisposable)} but registered as {nameof(LifeTime.Singleton)}" };
+            Errors = new[]
+            {
+                $"{type.AssemblyQualifiedName} implements {nameof(IDisposable)} but registered as {nameof(LifeTime.Singleton)}"
+            };
             return false;
         }
     }

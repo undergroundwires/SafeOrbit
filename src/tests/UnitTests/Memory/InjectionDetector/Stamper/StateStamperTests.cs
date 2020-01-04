@@ -1,8 +1,8 @@
 ﻿using Moq;
 using NUnit.Framework;
+using SafeOrbit.Core.Serialization;
 using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Fakes;
-using SafeOrbit.Core.Serialization;
 
 namespace SafeOrbit.Memory.InjectionServices.Stampers
 {
@@ -20,6 +20,7 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
             //assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         [Test]
         public void GetStamp_ForObjectWithDifferentSerialization_returnsDifferent()
         {
@@ -33,6 +34,7 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
             var actual = sut.GetStamp(testobj);
             Assert.That(actual, Is.Not.EqualTo(expected));
         }
+
         [Test]
         public void GetStamp_ForObjectWithSameSerialization_returnsSame()
         {
@@ -44,6 +46,7 @@ namespace SafeOrbit.Memory.InjectionServices.Stampers
             var actual = sut.GetStamp(testobj);
             Assert.That(actual, Is.EqualTo(expected));
         }
+
         protected IStamper<object> GetSut(ISerializer serializer = null)
         {
             if (serializer == null) serializer = new Mock<ISerializer>().Object;

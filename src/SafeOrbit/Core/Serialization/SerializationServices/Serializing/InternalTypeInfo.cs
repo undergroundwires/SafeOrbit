@@ -1,7 +1,6 @@
 ﻿//This is a modified version of the beautiful SharpSerializer by Pawel Idzikowski (see: http://www.sharpserializer.com)
 
 using System;
-using System.Linq;
 using System.Reflection;
 using SafeOrbit.Core.Serialization.SerializationServices.Core;
 
@@ -143,16 +142,14 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Serializing
                                     elementTypeDefinitionFound = FillKeyAndElementType(typeInfo, examinedType);
                                     examinedType = examinedType.GetTypeInfo().BaseType;
                                     // until key and element definition was found, or the base typ is an object
-                                } while (!elementTypeDefinitionFound && (examinedType != null) &&
-                                         (examinedType != typeof(object)));
+                                } while (!elementTypeDefinitionFound && examinedType != null &&
+                                         examinedType != typeof(object));
                             }
                         }
                     }
                 }
-                if (!Cache.Contains(typeInfo))
-                {
-                    Cache.Add(typeInfo);
-                }
+
+                if (!Cache.Contains(typeInfo)) Cache.Add(typeInfo);
             }
 
             return typeInfo;
@@ -179,6 +176,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Serializing
                 // In Collection there are only items
                 source.ElementType = arguments[0];
             }
+
             return arguments.Length > 0;
         }
     }

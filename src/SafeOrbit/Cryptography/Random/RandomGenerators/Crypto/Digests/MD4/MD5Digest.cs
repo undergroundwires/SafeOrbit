@@ -10,9 +10,9 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
     {
         private const int DigestLength = 16;
 
-        private int H1, H2, H3, H4;         // IV's
+        private int _h1, _h2, _h3, _h4;         // IV's
 
-        private int[] X = new int[16];
+        private readonly int[] X = new int[16];
         private int xOff;
 
         public MD5Digest()
@@ -27,10 +27,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
         public MD5Digest(MD5Digest t)
             : base(t)
         {
-            H1 = t.H1;
-            H2 = t.H2;
-            H3 = t.H3;
-            H4 = t.H4;
+            _h1 = t._h1;
+            _h2 = t._h2;
+            _h3 = t._h3;
+            _h4 = t._h4;
 
             Array.Copy(t.X, 0, X, 0, t.X.Length);
             xOff = t.xOff;
@@ -85,10 +85,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
         {
             Finish();
 
-            UnpackWord(H1, output, outOff);
-            UnpackWord(H2, output, outOff + 4);
-            UnpackWord(H3, output, outOff + 8);
-            UnpackWord(H4, output, outOff + 12);
+            UnpackWord(_h1, output, outOff);
+            UnpackWord(_h2, output, outOff + 4);
+            UnpackWord(_h3, output, outOff + 8);
+            UnpackWord(_h4, output, outOff + 12);
 
             Reset();
 
@@ -102,10 +102,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
         {
             base.Reset();
 
-            H1 = unchecked((int)0x67452301);
-            H2 = unchecked((int)0xefcdab89);
-            H3 = unchecked((int)0x98badcfe);
-            H4 = unchecked((int)0x10325476);
+            _h1 = unchecked((int)0x67452301);
+            _h2 = unchecked((int)0xefcdab89);
+            _h3 = unchecked((int)0x98badcfe);
+            _h4 = unchecked((int)0x10325476);
 
             xOff = 0;
 
@@ -194,10 +194,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
 
         internal override void ProcessBlock()
         {
-            int a = H1;
-            int b = H2;
-            int c = H3;
-            int d = H4;
+            int a = _h1;
+            int b = _h2;
+            int c = _h3;
+            int d = _h4;
 
             //
             // Round 1 - F cycle, 16 times.
@@ -279,10 +279,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests
             c = RotateLeft((c + K(d, a, b) + X[2] + unchecked((int)0x2ad7d2bb)), S43) + d;
             b = RotateLeft((b + K(c, d, a) + X[9] + unchecked((int)0xeb86d391)), S44) + c;
 
-            H1 += a;
-            H2 += b;
-            H3 += c;
-            H4 += d;
+            _h1 += a;
+            _h2 += b;
+            _h3 += c;
+            _h4 += d;
 
             //
             // reset the offset and clean out the word buffer.

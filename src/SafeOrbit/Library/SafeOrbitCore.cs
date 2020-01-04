@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SafeOrbit.Library.Build;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.Injection;

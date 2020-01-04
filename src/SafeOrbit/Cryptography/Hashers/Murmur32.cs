@@ -9,9 +9,9 @@ namespace SafeOrbit.Cryptography.Hashers
     /// </summary>
     public class Murmur32 : IFastHasher
     {
-        public static Murmur32 StaticInstance => StaticInstanceLazy.Value;
-        private static readonly Lazy<Murmur32> StaticInstanceLazy = new Lazy<Murmur32>();
         private const uint DefaultSeed = 0xC58F1A7B;
+        private static readonly Lazy<Murmur32> StaticInstanceLazy = new Lazy<Murmur32>();
+        public static Murmur32 StaticInstance => StaticInstanceLazy.Value;
 
         /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" />.</exception>
         [DebuggerHidden]

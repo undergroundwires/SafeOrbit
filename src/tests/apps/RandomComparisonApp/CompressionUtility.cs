@@ -7,7 +7,7 @@ namespace RandomComparisonApp
 {
     public class CompressionUtility
     {
-        /// <exception cref="ArgumentNullException">If <paramref name="data"/> is NULL.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="data" /> is NULL.</exception>
         public static async Task<double> GetCompressionRatio(byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
@@ -22,6 +22,7 @@ namespace RandomComparisonApp
             if (compressionRatio < 0) compressionRatio = 0;
             return compressionRatio;
         }
+
         private static double GetCompressionRatioLowerBound(int length)
         {
             /* 
@@ -52,44 +53,45 @@ namespace RandomComparisonApp
              *     >=402     : 16.94700013 + 1.012569651 * Length
             */
             if (length < 275)
-                return 6.985 + 0.007326*length;
+                return 6.985 + 0.007326 * length;
             if (length < 565)
-                return 7.103 + 0.00689655*length;
+                return 7.103 + 0.00689655 * length;
             if (length < 1385)
-                return 7.555 + 0.00609756*length;
+                return 7.555 + 0.00609756 * length;
             if (length < 2203)
-                return 9.227 + 0.00488998*length;
+                return 9.227 + 0.00488998 * length;
             if (length < 3023)
-                return 9.254 + 0.00487805*length;
+                return 9.254 + 0.00487805 * length;
             if (length < 4097)
-                return 12.741 + 0.00372439*length;
+                return 12.741 + 0.00372439 * length;
             if (length < 5189)
-                return 12.993 + 0.003663*length;
+                return 12.993 + 0.003663 * length;
             if (length < 6026)
-                return 13.401 + 0.00358423*length;
-            return 17.341 + 0.0029304*length;
+                return 13.401 + 0.00358423 * length;
+            return 17.341 + 0.0029304 * length;
         }
+
         private static double GetCompressionRatioUpperBound(int length)
         {
             if (length < 9)
-                return 4.875 + 1.125*length;
+                return 4.875 + 1.125 * length;
             if (length < 38)
-                return 5.068965512 + 1.103448276*length;
+                return 5.068965512 + 1.103448276 * length;
             if (length < 50)
-                return 5.8333333 + 1.08333333*length;
+                return 5.8333333 + 1.08333333 * length;
             if (length < 64)
-                return 6.428571429 + 1.071428571*length;
+                return 6.428571429 + 1.071428571 * length;
             if (length < 96)
-                return 7 + 1.0625*length;
+                return 7 + 1.0625 * length;
             if (length < 143)
-                return 8.914893617 + 1.042553191*length;
+                return 8.914893617 + 1.042553191 * length;
             if (length < 169)
-                return 9.5 + 1.038461538*length;
+                return 9.5 + 1.038461538 * length;
             if (length < 204)
-                return 11.17142857 + 1.028571429*length;
+                return 11.17142857 + 1.028571429 * length;
             if (length < 402)
-                return 11.84848485 + 1.025252525*length;
-            return 16.94700013 + 1.012569651*length;
+                return 11.84848485 + 1.025252525 * length;
+            return 16.94700013 + 1.012569651 * length;
         }
 
         private static async Task<long> CountOutputBytes(byte[] data)
@@ -103,6 +105,7 @@ namespace RandomComparisonApp
                         await inStream.CopyToAsync(lzmaStream);
                     }
                 }
+
                 return outStream.Length;
             }
         }

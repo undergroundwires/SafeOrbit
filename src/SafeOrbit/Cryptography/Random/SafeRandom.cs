@@ -7,7 +7,8 @@ namespace SafeOrbit.Cryptography.Random
     ///     <p>
     ///         <see cref="SafeRandom" /> returns cryptographically strong random data, never to exceed the number of
     ///         bytes available from the specified entropy sources.  This can cause slow generation, and is recommended only
-    ///         for generating extremely strong keys and other things that don't require a large number of bytes quickly.  This is
+    ///         for generating extremely strong keys and other things that don't require a large number of bytes quickly.  This
+    ///         is
     ///         CPU intensive. For general purposes, see <see cref="FastRandom" /> instead.
     ///     </p>
     /// </summary>
@@ -20,9 +21,10 @@ namespace SafeOrbit.Cryptography.Random
     public class SafeRandom : RandomBase, ISafeRandom
     {
         /// <summary>
-        ///     Gets the static instance of <see cref="SafeRandom"/>.
+        ///     Gets the static instance of <see cref="SafeRandom" />.
         /// </summary>
         public static ISafeRandom StaticInstance = new SafeRandom();
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="FastRandom" /> class.
         /// </summary>

@@ -39,14 +39,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         public void PlainBytes_AfterDisposed_Throws()
         {
             // Arrange
-            var expected = new byte[] { 5, 10, 15, 25 };
+            var expected = new byte[] {5, 10, 15, 25};
             var sut = GetSut(expected);
             // Act
             sut.Dispose();
+
             void BytesAccessor()
             {
                 var temp = sut.PlainBytes;
             }
+
             // Assert
             Assert.Throws<ObjectDisposedException>(BytesAccessor);
         }
@@ -55,9 +57,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         public void Dispose_AlreadyDisposed_Throws()
         {
             // Arrange
-            var expected = new byte[] { 5, 10, 15, 25 };
+            var expected = new byte[] {5, 10, 15, 25};
             var sut = GetSut(expected);
             sut.Dispose();
+
             // Act
             void DisposeAgain() => sut.Dispose();
             // Assert
@@ -68,12 +71,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         public void Dispose_GivenByteArray_Clears()
         {
             // Arrange
-            var bytes = new byte[] { 5, 10, 15, 25 };
+            var bytes = new byte[] {5, 10, 15, 25};
             var sut = GetSut(bytes);
             // Act
             sut.Dispose();
             // Assert
-            Assert.True(bytes.All(b=> b == 0));
+            Assert.True(bytes.All(b => b == 0));
         }
 
         private static IDecryptedBytesMarshaler GetSut(byte[] decryptedBytes)

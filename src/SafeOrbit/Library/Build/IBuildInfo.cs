@@ -1,7 +1,7 @@
 ﻿namespace SafeOrbit.Library.Build
 {
     /// <summary>
-    /// Information about how SafeOrbit was built.
+    ///     Information about how SafeOrbit was built.
     /// </summary>
     public interface IBuildInfo
     {

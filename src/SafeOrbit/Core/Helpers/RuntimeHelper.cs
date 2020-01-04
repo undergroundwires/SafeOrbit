@@ -1,14 +1,17 @@
 ﻿using System;
-
 #if !NETSTANDARD1_6
 using System.Runtime.CompilerServices;
+
 #endif
 
 namespace SafeOrbit.Helpers
 {
     public class RuntimeHelper
     {
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="action"/> or <paramref name="cleanup"/> is <see langword="null"/></exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///     <paramref name="action" /> or <paramref name="cleanup" /> is
+        ///     <see langword="null" />
+        /// </exception>
         public static void ExecuteCodeWithGuaranteedCleanup(Action action, Action cleanup)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
@@ -47,7 +50,7 @@ namespace SafeOrbit.Helpers
         }
 
         /// <summary>
-        /// Create a CER (Constrained Execution Region)
+        ///     Create a CER (Constrained Execution Region)
         /// </summary>
         public static void PrepareConstrainedRegions()
         {

@@ -18,6 +18,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void Action() => sut.Pad(null, 16);
             // Assert
@@ -25,11 +26,15 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         }
 
         [Test]
-        [TestCase(256), TestCase(0), TestCase(-1), TestCase(-100)]
+        [TestCase(256)]
+        [TestCase(0)]
+        [TestCase(-1)]
+        [TestCase(-100)]
         public void Pad_InvalidPaddingSize_ThrowsException(int invalidPaddingSize)
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void Action() => sut.Pad(new byte[32], invalidPaddingSize);
             // Assert
@@ -41,6 +46,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void Action() => sut.Unpad(null);
             // Assert
@@ -52,6 +58,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void Action() => sut.Unpad(new byte[0]);
             // Assert
@@ -63,6 +70,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void Action() => sut.Unpad(new byte[1]);
             // Assert
@@ -74,9 +82,12 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         {
             // Arrange
             var sut = GetSut();
-            var data = new byte[]{
+            var data = new byte[]
+            {
                 /* data: */ 1, 2, 3, 4, 5,
-                /* padded: */ 0};
+                /* padded: */ 0
+            };
+
             // Act
             void Action() => sut.Unpad(data);
             // Assert
@@ -88,9 +99,12 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         {
             // Arrange
             var sut = GetSut();
-            var data = new byte[]{
+            var data = new byte[]
+            {
                 /* data: */ 1, 2, 3, 4, 5,
-                /* padded: */ 6, 6, 6, 6, 6 };
+                /* padded: */ 6, 6, 6, 6, 6
+            };
+
             // Act
             void Action() => sut.Unpad(data);
             // Assert
@@ -102,9 +116,12 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         {
             // Arrange
             var sut = GetSut();
-            var data = new byte[]{
+            var data = new byte[]
+            {
                 /* data: */ 1, 2, 3, 4, 5,
-                /* padded: */ 4, 4, 3, 4 };
+                /* padded: */ 4, 4, 3, 4
+            };
+
             // Act
             void Action() => sut.Unpad(data);
             // Assert
@@ -117,7 +134,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
             // Arrange
             var sut = GetSut();
             var data = new byte[] {1, 2, 3, 4, 5};
-            var padded = data.Concat(new byte[]{4, 4, 4, 4 }).ToArray();
+            var padded = data.Concat(new byte[] {4, 4, 4, 4}).ToArray();
             // Act
             var actual = sut.Unpad(padded);
             // Assert
@@ -126,7 +143,8 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
 
         [Test]
         [TestCaseSource(typeof(Pkcs7PadderTests), nameof(Pkcs7TestVector))]
-        public void Padder_ValidLengthAndData_CanPadAndUnpad(int paddingLengthInBytes, byte[] rawBytes, byte[] expectedPadded)
+        public void Padder_ValidLengthAndData_CanPadAndUnpad(int paddingLengthInBytes, byte[] rawBytes,
+            byte[] expectedPadded)
         {
             var sut = GetSut();
             var paddedBytes = sut.Pad(rawBytes, paddingLengthInBytes);
@@ -136,7 +154,12 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
         }
 
         [Test]
-        [TestCase(16, 8), TestCase(5000, 255), TestCase(5000, 8), TestCase(32, 3), TestCase(255, 31), TestCase(0, 5)]
+        [TestCase(16, 8)]
+        [TestCase(5000, 255)]
+        [TestCase(5000, 8)]
+        [TestCase(32, 3)]
+        [TestCase(255, 31)]
+        [TestCase(0, 5)]
         public void Padder_DifferentValidLengths_CanPadAndUnpad(int bytesLength, int paddingLength)
         {
             var sut = GetSut();
@@ -180,7 +203,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
                 yield return GetTestCase(1, new byte[]
                 {
                     66, 17, 81, 164,
-                    89, 250, 234,
+                    89, 250, 234
                 }, new byte[]
                 {
                     66, 17, 81, 164,
@@ -189,7 +212,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Padders
 
                 object[] GetTestCase(int paddingLengthInBytes, byte[] original, byte[] expected)
                 {
-                    return new object[]  { paddingLengthInBytes, original, expected};
+                    return new object[] {paddingLengthInBytes, original, expected};
                 }
             }
         }

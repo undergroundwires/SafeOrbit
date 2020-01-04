@@ -22,7 +22,7 @@ namespace SafeOrbit.Fakes
                 (int id) =>
                 {
                     var safeByte = Stubs.Get<ISafeByte>();
-                    safeByte.Set((byte)id);
+                    safeByte.Set((byte) id);
                     return safeByte;
                 });
             return fake.Object;

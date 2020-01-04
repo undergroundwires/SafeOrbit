@@ -5,7 +5,7 @@ using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Extensions
 {
-    /// <see cref="ByteArrayExtensions"/>
+    /// <see cref="ByteArrayExtensions" />
     [TestFixture]
     public class ByteArrayExtensionsTests
     {
@@ -114,6 +114,7 @@ namespace SafeOrbit.Extensions
         {
             // Arrange
             var nullParameter = (byte[]) null;
+
             // Act
             void usingNullObject() => array.Combine(array, nullParameter);
             // Assert
@@ -126,6 +127,7 @@ namespace SafeOrbit.Extensions
         {
             // Arrange
             var nullObject = (byte[]) null;
+
             // Act
             void usingNullObject() => nullObject.Combine();
             // Assert
@@ -138,6 +140,7 @@ namespace SafeOrbit.Extensions
         {
             // Arrange
             var nullParameter = (byte[]) null;
+
             // Act
             void usingNullObject() => bytes.Combine(nullParameter);
             // Assert
@@ -166,7 +169,8 @@ namespace SafeOrbit.Extensions
         public void CopyToNewArray_NullBytes_Throws()
         {
             // Arrange
-            var nullBytes = (byte[])null;
+            var nullBytes = (byte[]) null;
+
             // Act
             void usingNullObject() => nullBytes.CopyToNewArray();
             // Assert

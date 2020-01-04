@@ -2,8 +2,8 @@
 
 namespace SafeOrbit.Memory
 {
-    /// <seealso cref="ISafeString"/>
-    /// <seealso cref="SafeString"/>
+    /// <seealso cref="ISafeString" />
+    /// <seealso cref="SafeString" />
     [TestFixture]
     public partial class SafeStringTests
     {
@@ -26,7 +26,7 @@ namespace SafeOrbit.Memory
             //Arrange
             var sut = GetSut();
             var holdingSame = GetSut();
-            char ch1 = (char)i1, ch2 = (char)i2;
+            char ch1 = (char) i1, ch2 = (char) i2;
             sut.Append(ch1);
             sut.Append(ch2);
             holdingSame.Append(ch1);
@@ -60,7 +60,7 @@ namespace SafeOrbit.Memory
             //Arrange
             var sut = GetSut();
             var holdingDifferent = GetSut();
-            char ch1 = (char)i1, ch2 = (char)i2;
+            char ch1 = (char) i1, ch2 = (char) i2;
             sut.Append(ch1);
             holdingDifferent.Append(ch2);
             //Act
@@ -78,7 +78,7 @@ namespace SafeOrbit.Memory
             //Arrange
             var sut = GetSut();
             var holdingDifferent = GetSut();
-            char ch1 = (char)i1, ch2 = (char)i2;
+            char ch1 = (char) i1, ch2 = (char) i2;
             sut.Append(ch1);
             sut.Append(ch2);
             holdingDifferent.Append(ch2);
@@ -96,7 +96,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             var sut = GetSut();
-            var ch = (char)i;
+            var ch = (char) i;
             sut.Append(ch);
             var sameObject = sut;
             //Act
@@ -122,7 +122,10 @@ namespace SafeOrbit.Memory
             Assert.That(equals, Is.True);
             Assert.That(equalsOpposite, Is.True);
         }
-        [TestCase("Hello", "H3ll0"), TestCase("Hello", "Hello2"), TestCase("Hello2", "Hello")]
+
+        [TestCase("Hello", "H3ll0")]
+        [TestCase("Hello", "Hello2")]
+        [TestCase("Hello2", "Hello")]
         public void EqualsISafeString_DifferentStrings_returnsFalse(string string1, string string2)
         {
             //Arrange
@@ -209,7 +212,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             using var sut = GetSut();
-            char ch1 = (char)i1, ch2 = (char)i2;
+            char ch1 = (char) i1, ch2 = (char) i2;
             sut.Append(ch1);
             sut.Append(ch2);
             var text = $"{ch2}{ch1}";
@@ -238,7 +241,7 @@ namespace SafeOrbit.Memory
             //Arrange
             using var sut = GetSut();
             using var holdingSame = GetSut();
-            char ch1 = (char)i1, ch2 = (char)i2, ch3 = (char)i3;
+            char ch1 = (char) i1, ch2 = (char) i2, ch3 = (char) i3;
             sut.Append(ch1);
             sut.Append(ch2);
             sut.Append(ch3);
@@ -259,7 +262,7 @@ namespace SafeOrbit.Memory
             //Arrange
             using var sut = GetSut();
             using var holdingSame = GetSut();
-            var ch = (char)i;
+            var ch = (char) i;
             sut.Append(ch);
             holdingSame.Append(ch);
             //Act
@@ -275,7 +278,7 @@ namespace SafeOrbit.Memory
         {
             //Arrange
             using var sut = GetSut();
-            char ch1 = (char)i1, ch2 = (char)i2, ch3 = (char)i3;
+            char ch1 = (char) i1, ch2 = (char) i2, ch3 = (char) i3;
             sut.Append(ch1);
             sut.Append(ch2);
             var holdingDifferent = GetSut();

@@ -30,7 +30,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core
             if (type == typeof(Guid))
                 return true;
             var typeInfo = type.GetTypeInfo();
-            if ((type == typeof(Type)) || typeInfo.IsSubclassOf(typeof(Type)))
+            if (type == typeof(Type) || typeInfo.IsSubclassOf(typeof(Type)))
                 return true;
             if (typeInfo.IsEnum)
                 return true;
@@ -99,7 +99,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Core
             catch (Exception ex)
             {
                 throw new CreatingInstanceException(
-                    $"Error during creating an object. Please check if the type \"{type.AssemblyQualifiedName}\" has public parameterless constructor, or if the settings IncludeAssemblyVersionInTypeName, IncludeCultureInTypeName, IncludePublicKeyTokenInTypeName are set to true. Details are in the inner exception.", ex);
+                    $"Error during creating an object. Please check if the type \"{type.AssemblyQualifiedName}\" has public parameterless constructor, or if the settings IncludeAssemblyVersionInTypeName, IncludeCultureInTypeName, IncludePublicKeyTokenInTypeName are set to true. Details are in the inner exception.",
+                    ex);
             }
         }
     }

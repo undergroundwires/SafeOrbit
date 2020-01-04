@@ -81,7 +81,8 @@ namespace SafeOrbit.Cryptography.Encryption
 
         [Test]
         [TestCaseSource(typeof(BlowfishEncryptorTests), nameof(DataSizeTestCases))]
-        public void Encrypt_DifferentDataSizes_CanDecrypt(int dataSize, BlowfishCipherMode cipherMode) // a.k.a. padding works
+        public void Encrypt_DifferentDataSizes_CanDecrypt(int dataSize,
+            BlowfishCipherMode cipherMode) // a.k.a. padding works
         {
             // Arrange
             var expected = FastRandom.StaticInstance.GetBytes(dataSize);
@@ -97,8 +98,9 @@ namespace SafeOrbit.Cryptography.Encryption
         public static object[] DataSizeTestCases()
         {
             return GenerateTestCasesForBothCbcAndEcb(1, 7, 8, 9, 10, 300, 500001);
+
             static object[] GenerateTestCasesForBothCbcAndEcb(params int[] sizes) =>
-                sizes.Select((size) => new object[]
+                sizes.Select(size => new object[]
                         {new object[] {size, BlowfishCipherMode.Cbc}, new object[] {size, BlowfishCipherMode.Ecb}})
                     .SelectMany(s => s)
                     .ToArray();

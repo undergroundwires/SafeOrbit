@@ -11,7 +11,7 @@ namespace RandomComparisonApp
 {
     public class Program
     {
-        private static readonly List<RandomResult> Results =  new List<RandomResult>();
+        private static readonly List<RandomResult> Results = new List<RandomResult>();
         private const int RandBytesLength = 8 * 1024;
 
         public static void Main(string[] args)
@@ -20,18 +20,19 @@ namespace RandomComparisonApp
              * It's always good to call StartEarly.StartFillingEntropyPools() as early as possible when the application is launched.
              * But during benchmarking performance below, then it's not really fair to let them start early.
              */
-            Benchmark("SystemRng", (bytesBuffer) =>
+            Benchmark("SystemRng", bytesBuffer =>
             {
                 var mySystemRngCryptoServiceProvider = new SystemRng();
                 mySystemRngCryptoServiceProvider.GetBytes(bytesBuffer);
                 return bytesBuffer;
             });
-            Benchmark("RNGCryptoServiceProvider", (bytesBuffer) =>
+            Benchmark("RNGCryptoServiceProvider", bytesBuffer =>
             {
                 using (var rng = RandomNumberGenerator.Create())
                 {
                     rng.GetBytes(bytesBuffer);
                 }
+
                 return bytesBuffer;
             });
             /*
@@ -39,26 +40,26 @@ namespace RandomComparisonApp
              * or FastRandom, because otherwise, SafeRandom will create static instances of them, which race, etc
              * thus throwing off my results.
              */
-            Benchmark("ThreadedSeedGeneratorRng", (bytesBuffer) =>
+            Benchmark("ThreadedSeedGeneratorRng", bytesBuffer =>
             {
                 var myThreadedSeedGeneratorRng = new ThreadedSeedGeneratorRng();
                 myThreadedSeedGeneratorRng.GetBytes(bytesBuffer);
                 return bytesBuffer;
             });
             SleepForPools(3000);
-            Benchmark("ThreadedSeedGenerator(fast)", (bytesBuffer) =>
+            Benchmark("ThreadedSeedGenerator(fast)", bytesBuffer =>
             {
                 var myThreadedSeedGenerator = new ThreadedSeedGenerator();
                 var seed = myThreadedSeedGenerator.GenerateSeed(RandBytesLength, true);
                 return seed;
             });
-            Benchmark("ThreadedSeedGenerator(slow)", (bytesBuffer) =>
+            Benchmark("ThreadedSeedGenerator(slow)", bytesBuffer =>
             {
                 var myThreadedSeedGenerator = new ThreadedSeedGenerator();
                 var seed = myThreadedSeedGenerator.GenerateSeed(RandBytesLength, false);
                 return seed;
             });
-            Benchmark("ThreadSchedulerRNG(slow)", (bytesBuffer) =>
+            Benchmark("ThreadSchedulerRNG(slow)", bytesBuffer =>
             {
                 var threadSchedulerRng = new ThreadSchedulerRng();
                 threadSchedulerRng.GetBytes(bytesBuffer);
@@ -68,14 +69,14 @@ namespace RandomComparisonApp
             SleepForPools(15000);
 
             Benchmark(
-                "SafeRandom", 
-                (bytesBuffer) => SafeRandom.StaticInstance.GetBytes(bytesBuffer.Length));
+                "SafeRandom",
+                bytesBuffer => SafeRandom.StaticInstance.GetBytes(bytesBuffer.Length));
 
             SleepForPools(15000);
-  
+
             Benchmark(
                 "FastRandom",
-                (bytesBuffer) => FastRandom.StaticInstance.GetBytes(bytesBuffer.Length));
+                bytesBuffer => FastRandom.StaticInstance.GetBytes(bytesBuffer.Length));
 
             SleepForPools(15000);
 
@@ -88,13 +89,15 @@ namespace RandomComparisonApp
             Console.Out.Flush();
             Console.ReadKey();
         }
+
         private static void SleepForPools(int millisecondsTimeout)
         {
             Console.Write("Sleeping to allow pool to fill...");
-            Thread.Sleep(millisecondsTimeout); // Should be enough time for its pool to fill up, so it won't slow down next
+            Thread.Sleep(
+                millisecondsTimeout); // Should be enough time for its pool to fill up, so it won't slow down next
             Console.WriteLine("  Done.");
-
         }
+
         private static void Benchmark(string algorithmName, Func<byte[], byte[]> algorithm)
         {
             var bytesBuffer = new byte[RandBytesLength];
@@ -113,7 +116,6 @@ namespace RandomComparisonApp
 
         private static void PresentResults()
         {
-
             var maxCompressionRatio = double.MinValue;
             var minCompressionRatio = double.MaxValue;
             var longestName = 0;
@@ -123,6 +125,7 @@ namespace RandomComparisonApp
                 if (theResult.CompressionRatio < minCompressionRatio) minCompressionRatio = theResult.CompressionRatio;
                 if (theResult.CompressionRatio > maxCompressionRatio) maxCompressionRatio = theResult.CompressionRatio;
             }
+
             Console.WriteLine("AlgorithmName".PadLeft(longestName) + " : bits per bit : elapsed sec : effective rate");
             foreach (var theResult in Results)
             {
@@ -146,6 +149,7 @@ namespace RandomComparisonApp
                     else
                         byteRateString = byteRate.ToString("F2") + " B/sec";
                 }
+
                 Console.WriteLine(theResult.AlgorithmName.PadLeft(longestName) + " : " +
                                   bitsPerBit.ToString("0.000").PadLeft(12) + " : " +
                                   theResult.TimeSpan.TotalSeconds.ToString("0.000").PadLeft(11) + " : " +

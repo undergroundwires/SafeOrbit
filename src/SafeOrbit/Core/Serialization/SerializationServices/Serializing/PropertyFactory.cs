@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using SafeOrbit.Core.Serialization.SerializationServices.Advanced;
 using SafeOrbit.Core.Serialization.SerializationServices.Core;
 
@@ -29,18 +28,12 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Serializing
         /// </summary>
         private int _currentReferenceId = 1;
 
-        /// <summary>
-        /// </summary>
         /// <param name="propertyProvider">provides all important properties of the decomposed object</param>
         public PropertyFactory(PropertyProvider propertyProvider)
         {
             _propertyProvider = propertyProvider;
         }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
         /// <returns>NullProperty if the value is null</returns>
         public Property CreateProperty(string name, object value)
         {
@@ -58,8 +51,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Serializing
             var referenceTarget = CreateReferenceTargetInstance(name, typeInfo);
 
             // Search in Cache
-            ReferenceTargetProperty cachedTarget;
-            if (_propertyCache.TryGetValue(value, out cachedTarget))
+            if (_propertyCache.TryGetValue(value, out var cachedTarget))
             {
                 // Value was already referenced
                 // Its reference will be used
@@ -79,7 +71,8 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Serializing
             _propertyCache.Add(value, referenceTarget);
 
             // Parsing the property
-            var handled = FillSingleDimensionalArrayProperty(referenceTarget as SingleDimensionalArrayProperty, typeInfo,
+            var handled = FillSingleDimensionalArrayProperty(referenceTarget as SingleDimensionalArrayProperty,
+                typeInfo,
                 value);
             handled = handled ||
                       FillMultiDimensionalArrayProperty(referenceTarget as MultiDimensionalArrayProperty, typeInfo,
@@ -218,6 +211,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Serializing
 
                 property.Items.Add(new MultiDimensionalArrayItem(indexSet, itemProperty));
             }
+
             return true;
         }
 
@@ -236,7 +230,7 @@ namespace SafeOrbit.Core.Serialization.SerializationServices.Serializing
             property.LowerBound = dimensionInfo.LowerBound;
 
             // Items
-            foreach (object item in analyzer.GetValues())
+            foreach (var item in analyzer.GetValues())
             {
                 var itemProperty = CreateProperty(null, item);
 

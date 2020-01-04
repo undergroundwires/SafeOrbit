@@ -17,6 +17,7 @@ namespace SafeOrbit.Cryptography.Encryption.Padding.Factory
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             void Action() => sut.GetPadder(PaddingMode.None);
             // Assert
