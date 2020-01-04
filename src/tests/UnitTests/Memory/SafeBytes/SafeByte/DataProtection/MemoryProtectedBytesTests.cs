@@ -3,10 +3,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using Moq;
 using NUnit.Framework;
+using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 using SafeOrbit.Tests;
-using Shared.Extensions;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {

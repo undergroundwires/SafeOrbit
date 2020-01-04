@@ -1,6 +1,7 @@
 ﻿#if NETSTANDARD1_6 || NETSTANDARD2_0
 using System;
 using SafeOrbit.Cryptography.Encryption;
+using SafeOrbit.Cryptography.Encryption.Padding;
 using SafeOrbit.Cryptography.Random;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
@@ -19,14 +20,20 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
         {
         }
 
+        /// <exception cref="ArgumentNullException"><paramref name="encryptor" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="random" /> is <see langword="null" />.</exception>
         internal MemoryProtector(IFastEncryptor encryptor, ICryptoRandom random)
         {
-            _encryptor = encryptor;
-            _key = random.GetBytes(Encryptor.MinKeySize);
+            _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
+            _key = random.GetBytes(Encryptor.MinKeySizeInBits);
+            _encryptor.Padding = PaddingMode.None;
         }
 
-        public int BlockSizeInBytes => _encryptor.BlockSize/4;
+        /// <inheritdoc />
+        public int BlockSizeInBytes => _encryptor.BlockSizeInBits / 8;
 
+        /// <inheritdoc />
+        /// <inheritdoc cref="EnsureParameter" />
         public void Protect(byte[] userData)
         {
             this.EnsureParameter(userData);
@@ -36,6 +43,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
                 target: ref userData);
         }
 
+        /// <inheritdoc />
+        /// <inheritdoc cref="EnsureParameter" />
         public void Unprotect(byte[] encryptedData)
         {
             this.EnsureParameter(encryptedData);

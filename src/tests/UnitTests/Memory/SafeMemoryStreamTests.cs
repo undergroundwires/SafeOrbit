@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SafeOrbit.Extensions;
-using Shared.Extensions;
-
 namespace SafeOrbit.Memory
 {
     /// <seealso cref="SafeMemoryStream"/>

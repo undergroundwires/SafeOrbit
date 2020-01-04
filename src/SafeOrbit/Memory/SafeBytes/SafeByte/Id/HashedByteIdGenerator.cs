@@ -4,6 +4,7 @@ using System.Linq;
 using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
+using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 
@@ -50,9 +51,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             byte[] byteBuffer = null;
             try
             {
-                byteBuffer = new byte[salt.Length];
-                //Append salt + byte
-                Array.Copy(salt, byteBuffer, salt.Length);
+                byteBuffer = salt.CopyToNewArray();
                 byteBuffer[salt.Length - 1] = b;
                 var result = _fastHasher.ComputeFast(byteBuffer);
                 return result;

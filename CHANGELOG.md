@@ -6,8 +6,13 @@
 
 ## [Unreleased]
 
+- **Added**
+  - Support for padding in Blowfish algorithm.
+  - Both fast & safe (AES + Blowfish) supports setting padding mode.
+
 - **Changed**
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
+
 
 ## [0.3.1] - 2019-12-24
 

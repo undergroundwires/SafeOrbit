@@ -27,7 +27,7 @@ namespace SafeOrbit.Helpers
 //                for (var i = range.Item1; i < range.Item2; i++)
 //                    @delegate.Invoke(i);
 //            });
-//#else
+//#elsesafeenc
 //            for (var i = startIndex; i < endIndex; i++)
 //            {
 //                @delegate.Invoke(i);

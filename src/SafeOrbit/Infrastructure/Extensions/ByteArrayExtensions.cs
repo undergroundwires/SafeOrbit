@@ -66,5 +66,13 @@ namespace SafeOrbit.Extensions
                 diff |= a[i] ^ b[i];
             return diff == 0;
         }
+        /// <exception cref="ArgumentNullException"><paramref name="byteArray"/> is <see langword="null"/></exception>
+        public static byte[] CopyToNewArray(this byte[] byteArray)
+        {
+            if (byteArray == null) throw new ArgumentNullException(nameof(byteArray));
+            var newArray = new byte[byteArray.Length];
+            Array.Copy(byteArray, newArray, byteArray.Length);
+            return newArray;
+        }
     }
 }

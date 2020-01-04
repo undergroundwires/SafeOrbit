@@ -8,6 +8,5 @@ namespace SafeOrbit.Cryptography.Random
     public class FastRandomTests : CommonRandomTests<IFastRandom>
     {
         protected override IFastRandom GetStaticInstance() => FastRandom.StaticInstance;
-
     }
 }

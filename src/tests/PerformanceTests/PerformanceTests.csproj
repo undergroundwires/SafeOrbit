@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>SafeOrbit.PerformanceTests</AssemblyName>
+    <RootNamespace>SafeOrbit</RootNamespace>
     <TargetFrameworks>net45;netcoreapp1.1;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -10,8 +10,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp1.1' ">
+    <PackageReference Include="Moq" Version="4.13.1" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
     <PackageReference Include="Moq" Version="4.10.1" />

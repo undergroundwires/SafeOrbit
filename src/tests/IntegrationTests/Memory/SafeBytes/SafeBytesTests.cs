@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Tests.Cases;
 
@@ -11,30 +12,30 @@ namespace SafeOrbit.Memory
     public class SafeBytesTests
     {
         [Test]
-        public void Can_Append_And_Get_Appended([Random(0, 256, 1)] byte b)
+        public void GetByte_SingleByteAppended_ReturnsExpected([Random(0, 256, 1)] byte b)
         {
-            //arrange
+            // Arrange
             var expected = b;
             using var sut = GetSut();
-            //act
+            // Act
             sut.Append(expected);
             var actual = sut.GetByte(0);
-            //assert
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
-        public void ToByteArray_Can_Append_MultipleBytes_And_Get_All(byte[] array)
+
+        [Test]
+        [TestCase(1), TestCase(7), TestCase(8), TestCase(9), TestCase(15), TestCase(16), TestCase(17), TestCase(300)]
+        public void ToByteArray_BytesAppended_ReturnsExpected(int size)
         {
-            //arrange
-            var expected = array;
+            // Arrange
+            var expected = FastRandom.StaticInstance.GetBytes(size);
             var sut = GetSut();
-            //act
-            for (var i = 0; i < array.Length; i++)
-            {
-                sut.Append(array[i]);
-            }
+            // Act
+            foreach (var @byte in expected)
+                sut.Append(@byte);
             var actual = sut.ToByteArray();
-            //assert
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 

@@ -12,21 +12,9 @@ namespace SafeOrbit.Fakes
         public override IFastEncryptor Provide()
         {
             static byte[] Encrypt(byte[] input, byte[] key) =>
-                input.Concat(key).Concat(BitConverter.GetBytes(Convert.ToBase64String(input).GetHashCode())).ToArray();
-            static byte[] Decrypt(byte[] input, byte[] key)
-            {
-                var plainLength = input.Length - key.Length - sizeof(int);
-                var rawBytes = input.Take(plainLength).ToArray();
-                var keyBytes = input.Skip(plainLength).Take(key.Length).ToArray();
-                if (!key.SequenceEqual(keyBytes))
-                    throw new ArgumentException(
-                        $"Wrong encryption key.{Environment.NewLine}" +
-                        $"Expected was:{Environment.NewLine}" +
-                        string.Join(",", key) + Environment.NewLine +
-                        $"But got: {Environment.NewLine}" +
-                        string.Join(",", keyBytes));
-                return rawBytes;
-            }
+                input.Select(b => (byte)(b ^ (key.Sum(k => k) + 1))).ToArray();
+            static byte[] Decrypt(byte[] input, byte[] key) =>
+                input.Select(b => (byte)(b ^ (key.Sum(k => k) + 1))).ToArray();
 
             var fake = new Mock<IFastEncryptor>();
             fake.Setup(f => f.Encrypt(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
@@ -37,6 +25,8 @@ namespace SafeOrbit.Fakes
                 .ReturnsAsync((byte[] i, byte[] k) => Encrypt(i, k));
             fake.Setup(f => f.DecryptAsync(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
                 .ReturnsAsync((byte[] i, byte[] k) => Decrypt(i, k));
+            fake.SetupGet(f => f.BlockSizeInBits)
+                .Returns(32);
             return fake.Object;
         }
     }

@@ -2,6 +2,9 @@
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Encryption.Kdf;
+using SafeOrbit.Cryptography.Encryption.Padding;
+using SafeOrbit.Cryptography.Encryption.Padding.Factory;
+using SafeOrbit.Cryptography.Encryption.Padding.Padders;
 using SafeOrbit.Infrastructure.Serialization;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.SafeBytesServices;
@@ -18,21 +21,24 @@ namespace SafeOrbit.Library
     {
         public static void Bootstrap(ISafeContainer safeContainer)
         {
-            //Converters
+            // Converters
             safeContainer.Register(() => safeContainer, LifeTime.Singleton);
             ;
-            //Hash
+            // Hash
             safeContainer.Register<IFastHasher, Murmur32>(() => Murmur32.StaticInstance, LifeTime.Singleton);
             safeContainer.Register<ISafeHasher, Sha512Hasher>(LifeTime.Singleton);
-            //Encryption
+            // Encryption
             safeContainer.Register<IKeyDerivationFunction, Pbkdf2KeyDeriver>();
-            safeContainer.Register<IFastEncryptor, BlowfishEncryptor>();
+            safeContainer.Register<IPadderFactory, PadderFactory>(LifeTime.Singleton);
+            safeContainer.Register<IPkcs7Padder, Pkcs7Padder>(LifeTime.Singleton);
+            safeContainer.Register<IFactory<IPkcs7Padder>, SafeContainerWrapper<IPkcs7Padder>>(LifeTime.Singleton);
+            safeContainer.Register<IFastEncryptor, BlowfishEncryptor>(LifeTime.Transient);
             safeContainer.Register<ISafeEncryptor, AesEncryptor>();
-            //Memory
+            // Memory
             safeContainer.Register<ISerializer, Serializer>(LifeTime.Singleton);
-            //SafeObject
+            // SafeObject
             safeContainer.Register(() => SafeObjectFactory.StaticInstance, LifeTime.Singleton);
-            //SafeBytes
+            // SafeBytes
             safeContainer.Register<ISafeBytes, SafeBytes>();
             safeContainer.Register<ISafeByte, SafeByte>();
             safeContainer.Register<ISafeByteFactory, MemoryCachedSafeByteFactory>(LifeTime.Singleton);
@@ -44,14 +50,14 @@ namespace SafeOrbit.Library
             safeContainer.Register<IFactory<ISafeBytes>, SafeContainerWrapper<ISafeBytes>>();
             safeContainer.Register<IFactory<ISafeByte>, SafeContainerWrapper<ISafeByte>>(LifeTime.Singleton);
             safeContainer.Register<IFactory<ISafeByteCollection>, SafeContainerWrapper<ISafeByteCollection>>();
-            //SafeString
+            // SafeString
             safeContainer.Register<ISafeString, SafeString>();
             safeContainer.Register<IFactory<ISafeString>, SafeContainerWrapper<ISafeString>>();
             safeContainer.Register<ISafeStringToStringMarshaler, SafeStringToStringMarshaler>();
-            //Random
+            // Random
             safeContainer.Register<IFastRandom, FastRandom>(LifeTime.Singleton);
             safeContainer.Register<ISafeRandom, SafeRandom>(LifeTime.Singleton);
-            //Text
+            // Text
             safeContainer.Register<ITextService, TextService>();
         }
     }

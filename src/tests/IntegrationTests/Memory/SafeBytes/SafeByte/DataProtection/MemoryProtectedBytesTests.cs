@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
+using SafeOrbit.Extensions;
 using SafeOrbit.Tests;
-using Shared.Extensions;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {

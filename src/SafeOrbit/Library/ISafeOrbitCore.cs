@@ -23,7 +23,6 @@ namespace SafeOrbit.Library
 
         event EventHandler<IInjectionMessage> LibraryInjected;
 
-
         /// <summary>
         /// Gets the information regarding to current build of SafeOrbit.
         /// </summary>

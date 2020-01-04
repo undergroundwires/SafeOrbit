@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Security.Cryptography;
+using System.Collections.Generic;
 using SafeOrbit.Exceptions;
 
 namespace SafeOrbit.Cryptography.Encryption
@@ -14,19 +14,32 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="T:SafeOrbit.Cryptography.Encryption.BlowfishEncryptor" />
     public class BlowfishCbc : BlowfishEcb
     {
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlowfishCbc"/> class.
+        ///     Initializes a new instance of the <see cref="T:SafeOrbit.Cryptography.Encryption.BlowfishCbc" /> class.
         /// </summary>
         /// <param name="cipherKey">The cipher key.</param>
         /// <param name="iv">The iv.</param>
         /// <param name="forEncryption">if set to <c>true</c> [for encryption].</param>
-        /// <exception cref="ArgumentNullException"><paramref name="cipherKey" /> is <see langword="null" />.</exception>>
-        /// <exception cref="KeySizeException"><paramref name="cipherKey" /> is must be between 32 bits (4 bytes) and 488 bits (56) size.</exception>>
-        /// <exception cref="ArgumentNullException"><paramref name="iv" /> is <see langword="null" />.</exception>>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="cipherKey" /> is <see langword="null" />.</exception>
+        /// &gt;
+        /// <exception cref="T:SafeOrbit.Exceptions.KeySizeException">
+        ///     <paramref name="cipherKey" /> is must be between 32 bits (4
+        ///     bytes) and 488 bits (56) size.
+        /// </exception>
+        /// &gt;
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="iv" /> is <see langword="null" />.</exception>
+        /// &gt;
+        /// <exception cref="T:SafeOrbit.Exceptions.DataLengthException">
+        ///     <paramref name="iv" />  size must be
+        ///     <see cref="BlowfishEcb.InputBlockSize" />.
+        /// </exception>
         public BlowfishCbc(byte[] cipherKey, byte[] iv, bool forEncryption) : base(cipherKey, forEncryption)
         {
             if (iv == null) throw new ArgumentNullException(nameof(iv));
-            if (iv.Length != InputBlockSize) throw new DataLengthException(nameof(iv), $"{iv} size must be {InputBlockSize} bytes ({InputBlockSize * 8} bytes)");
+            if (iv.Length != InputBlockSize)
+                throw new DataLengthException(nameof(iv),
+                    $"{iv} size must be {InputBlockSize} bytes ({InputBlockSize * 8} bits)");
             Iv = iv;
         }
 
@@ -51,9 +64,11 @@ namespace SafeOrbit.Cryptography.Encryption
                     BlockDecrypt(ref block);
                     XorBlock(ref block, Iv);
                 }
+
                 Buffer.BlockCopy(block, 0, outputBuffer, outputOffset + i, blockSize);
                 processedBytes += blockSize;
             }
+
             return processedBytes;
         }
 
@@ -61,9 +76,9 @@ namespace SafeOrbit.Cryptography.Encryption
         {
             var outputLength = OutputBlockSize;
             var inputLength = InputBlockSize;
-            var resultLen = inputCount% outputLength == 0
+            var resultLen = inputCount % outputLength == 0
                 ? inputCount
-                : inputCount + outputLength - inputCount% outputLength;
+                : inputCount + outputLength - inputCount % outputLength;
             var result = new byte[resultLen];
             for (var i = 0; i < resultLen; i += inputLength) //each block
             {
@@ -79,8 +94,10 @@ namespace SafeOrbit.Cryptography.Encryption
                     BlockDecrypt(ref block);
                     XorBlock(ref block, Iv);
                 }
+
                 Buffer.BlockCopy(block, 0, result, i, block.Length);
             }
+
             return result;
         }
 
@@ -89,7 +106,7 @@ namespace SafeOrbit.Cryptography.Encryption
         /// </summary>
         /// <param name="block">8 bit block 1</param>
         /// <param name="iv">8 bit block 2</param>
-        private static void XorBlock(ref byte[] block, byte[] iv)
+        private static void XorBlock(ref byte[] block, IReadOnlyList<byte> iv)
         {
             for (var i = 0; i < block.Length; i++)
                 block[i] ^= iv[i];

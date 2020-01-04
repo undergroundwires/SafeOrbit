@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 
@@ -56,7 +57,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             if (!IsInitialized)  throw new InvalidOperationException("Not yet initialized");
             EnsureNotDisposed();
-            var decryptedBytes = GetCopyOfBytes(_encryptedBytes);
+            var decryptedBytes = _encryptedBytes.CopyToNewArray();
             _protector.Unprotect(decryptedBytes);
             return new DecryptedBytesMarshaler(decryptedBytes);
         }
@@ -65,15 +66,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         public IMemoryProtectedBytes DeepClone()
         {
             EnsureNotDisposed();
-            var bytes = this.IsInitialized ? GetCopyOfBytes(this._encryptedBytes) : null; 
+            var bytes = this.IsInitialized ? this._encryptedBytes.CopyToNewArray() : null; 
             return new MemoryProtectedBytes(_protector, bytes);
-        }
-
-        private static byte[] GetCopyOfBytes(byte[] source)
-        {
-            var newEncryptedBytes = new byte[source.Length];
-            Array.Copy(source, newEncryptedBytes, source.Length);
-            return newEncryptedBytes;
         }
 
         private void EnsureNotDisposed()
