@@ -11,8 +11,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp1.1' ">
+    <PackageReference Include="Moq" Version="4.13.1" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
     <PackageReference Include="Moq" Version="4.10.1" />
