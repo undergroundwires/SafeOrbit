@@ -1,4 +1,6 @@
-﻿namespace SafeOrbit.Infrastructure.Protectable
+﻿using System;
+
+namespace SafeOrbit.Infrastructure.Protectable
 {
     /// <summary>
     ///     Defines a class that can work in different protection modes, and can dynamically switch between them.
