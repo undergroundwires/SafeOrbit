@@ -5,12 +5,8 @@
 
 # **SafeOrbit** - Protect your data and detect injections
 
-## SafeOrbit is easy-to-use and strong security toolkit for `.NET` and `.NET CORE`.
-
-### The nuget package  [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/)
-
-> It must not be required to be secret, and it must be able to fall into the hands of the enemy without inconvenience.
-> -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
+## SafeOrbit is cryptographic security toolkit for .NET
+[![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/) ![Build status](https://github.com/undergroundwires/AsyncWindowsClipboard/workflows/Build%20&%20test/badge.svg) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/undergroundwires/SafeOrbit/issues)
 
  **SafeOrbit** is a security toolset including different high performance algorithms and easy to use classes for advanced memory protection.
 
@@ -20,20 +16,12 @@
 * [SafeString](#safestring#) to protect strings,
 * [and even more to detect memory injections](#protect-your-classes#).
 
-**SafeOrbit** provides also bunch of tools to implement strong and high performance algorithms for [encryption, hashing and random](#cryptography).
+**SafeOrbit** is **easy to use** as it does not require you to have any knowledge of cryptology to take advantage of high security with simple abstractions that's implemented with security best-practices.
 
-**SafeOrbit** is **well tested** as it should be for a security library. It has more than 3.000 green tests for around 3.000 lines of code (v0.1).
-
-**SafeOrbit** is **easy to use** as it does not require you to have any knowledge of cryptology to take advantage of high security.
-
-**SafeOrbit** is **performance friendly**. It's up to you to decide for trade-off between speed and more security. Services have `Safe` or `Fast` prefixes. `Fast` classes strive for both performance and security, but `Safe` classes focuses the security over performance. **For example** while [SafeEncryptor](#aes-the-ISafeEncrpytor) uses lots of iterations, salts, and IV, [FastEncryptor](#blowfish-the-IFastEncryptor) uses a faster encryption alghoritm without any key deriving function. **Furthermore** most of the classes has a way to disable its protection. They let you change/disable the security level of the protection dynamically to gain more performance.
+**SafeOrbit** provides also bunch of crypto tools to use strong and high performance algorithms for [encryption, hashing and random](#cryptography).
 
 
-|                 Platform |  .NET 4.5+   | .NET Std 2.0 | .NET Std 1.6 |
-|-------------------------:|:------------:|:------------:|:-----------:|
-|            Full security |     ✔        |       ✔     |       ✔     |
-|  Exception serialization |     ✔        |       ✔     |       ✖     |
-|   Non zero bytes randoms |     ✔        |       ✔     |       ✖     |
+**SafeOrbit** is **performance friendly**. It's up to you to decide for trade-off between speed and more security. Services have `Safe` or `Fast` prefixes. `Fast` classes strive for both performance and security, but `Safe` classes focuses the security over performance. **For example** while [SafeEncryptor](#aes-the-ISafeEncrpytor) uses lots of iterations, salts, and IV, [FastEncryptor](#blowfish-the-IFastEncryptor) uses a faster encryption algorithm without any key deriving function. **Furthermore** most of the classes has a way to disable its protection. They let you change/disable the security level of the protection dynamically to gain more performance.
 
 ## Want to say thanks? :beer:
 
@@ -45,14 +33,14 @@ Feel free to contribute by joining the coding process or opening [issues](https:
 
 ## License
 
-[This project is MIT Licensed](LICENSE).
+[This project is MIT Licensed](LICENSE). It means that you're free to use **SafeOrbit** freely in any application, copy, and modify its code.
 
-It means that you're free to use **SafeOrbit** freely in any application, copy, and modify its code.
+> It must not be required to be secret, and it must be able to fall into the hands of the enemy without inconvenience.
+> -[Auguste Kerckhoffs](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
 
 # Quick Documentation
 
-* [Visit wiki for full documentation](https://github.com/undergroundwires/SafeOrbit/wiki)
-* [Check html help file from repository](./docs/Help.chm)
+[Visit wiki for full documentation](https://github.com/undergroundwires/SafeOrbit/wiki)
 
 ## Memory security
 
@@ -117,15 +105,19 @@ An object that can detect memory injections to itself.
 Supported:
 
 * Asynchronous encryption
-* **Aes-256** implementation with Pbkdf2, random IV and salt. Aes-256 is considered as one of the strongest encryption algorithms. It's implemented with more security layers with a very easy to use interface in **SafeOrbit**.
-* **Blowfish** is implemented with a more secure CBC mode with IV. The implementation passes the vector tests. The algorithm is considered as one of the fastest encryption algorithms.
+* `ISafeEncryptor` a.k.a. **AES-256**
+  * Considered as one of the strongest encryption algorithms.
+  * Easy-to-use interface using best-practices such as PBKDF2 key derivation, random IV, salt and PKCS7 padding.
+* `IFastEncryptor` a.k.a. **Blowfish**
+  * Considered as one of the fastest encryption algorithms.
+  * ECB & CBC (with IV) implementation that passes the vector tests.
 
 ### Hashers <sub><sup>[(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/Hashers)</sub></sup>
 
 Supported :
 
-* **MurmurHash (Murmur32)** for better performance, it should be seeded and salted.
-* **SHA512** for higher security.
+* `ISafeHasher` a.k.a. **SHA512** for higher security.
+* `IFastHasher` a.k.a. **MurmurHash (Murmur32)** for better performance, it should be seeded and salted.
 
 ### Random <sub><sup>[(wiki)](https://github.com/undergroundwires/SafeOrbit/wiki/Random)</sub></sup>
 
