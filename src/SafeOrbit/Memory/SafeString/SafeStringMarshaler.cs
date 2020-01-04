@@ -61,12 +61,6 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the safe string. Setting a new SafeString will automatically update the String property.
-        /// </summary>
-        /// <value>
-        ///     The safe string that should be converted to a string.
-        /// </value>
         /// <exception cref="T:System.ArgumentNullException" accessor="set"><paramref name="value" /> is <see langword="null" />.</exception>
         /// <exception cref="T:System.ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
         public ISafeString SafeString
@@ -82,13 +76,6 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the string representation of the SafeString object.
-        ///     This string will be cleared from the memory when the class is disposed.
-        /// </summary>
-        /// <value>
-        ///     The string.
-        /// </value>
         public string String { get; protected set; }
 
         public void Dispose() => Deallocate();

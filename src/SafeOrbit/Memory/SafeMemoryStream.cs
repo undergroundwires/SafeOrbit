@@ -40,9 +40,6 @@ namespace SafeOrbit.Memory
             set => throw new NotSupportedException();
         }
 
-        /// <exception cref="NotSupportedException">
-        ///     <see cref="SetLength" /> is not supported for <see cref="SafeMemoryStream" />
-        /// </exception>
         /// <summary>
         ///     If you set <see cref="IoException" /> to true, subsequent calls to <see cref="Read" /> will throw
         ///     <see cref="System.IO.IOException" />.
@@ -50,6 +47,9 @@ namespace SafeOrbit.Memory
         ///     Throws <see cref="ArgumentException" /> if you attempt to set false.  (Don't do it.)
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set">When <see cref="IoException" /> is set to true.</exception>
+        /// <exception cref="NotSupportedException">
+        ///     <see cref="SetLength" /> is not supported for <see cref="SafeMemoryStream" />
+        /// </exception>
         public bool IoException
         {
             get => _ioException;
@@ -122,7 +122,7 @@ namespace SafeOrbit.Memory
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
-        /// <exception cref="IoException">If <see cref="IoException" /> is true.</exception>
+        /// <exception cref="IOException">If <see cref="IoException" /> is <c>TRUE</c>.</exception>
         public override int Read(byte[] buffer, int offset, int count)
         {
             EnsureReadOrWriteParameters(buffer, offset, count);
@@ -149,8 +149,7 @@ namespace SafeOrbit.Memory
                         if (!_closed)
                         {
                             _readerAutoResetEvent.WaitOne();
-                            if (_ioException)
-                                throw new IOException();
+                            EnsureThatIoExceptionIsNotTrue();
                         }
 
                         continue;

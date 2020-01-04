@@ -148,39 +148,26 @@ namespace SafeOrbit.Memory
             => (CurrentProtectionMode != SafeObjectProtectionMode.NoProtection) && _injectionDetector.CanAlert;
 
         /// <inheritdoc />
-        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
+        /// <exception cref="MemoryInjectionException" accessor="get">If the object has been changed after last stamp.</exception>
         public TObject Object => GetObjectInternal(true);
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets a value indicating whether this instance is modifiable.
-        /// </summary>
-        /// <value><c>true</c> if this instance is modifiable; otherwise, <c>false</c>.</value>
-        /// <seealso cref="M:SafeOrbit.Memory.SafeObject`1.MakeReadOnly" />
         public bool IsReadOnly { get; private set; }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Closes this instance to any kind of changes.
-        /// </summary>
-        /// <seealso cref="P:SafeOrbit.Memory.SafeObject`1.IsReadOnly" />
         public void MakeReadOnly()
         {
             lock (_syncRoot)
             {
                 if (IsReadOnly)
-                return;
+                    return;
                 IsReadOnly = true;
             }
         }
 
-        /// <summary>
-        ///     Verifies the changes to the state and code of the instance.
-        ///     The object should only be modified with this method to authorize the modification.
-        /// </summary>
+        /// <inheritdoc />
         /// <exception cref="ReadOnlyAccessForbiddenException">This instance of <typeparamref name="TObject" /> is marked as ReadOnly.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="modification" /> is <see langword="null" /> </exception>
-        /// <seealso cref="IsReadOnly" />
         public void ApplyChanges(Action<TObject> modification)
         {
             if (modification == null) throw new ArgumentNullException(nameof(modification));
@@ -217,10 +204,10 @@ namespace SafeOrbit.Memory
                         $"{nameof(initialValue)} is not a type of {typeof(TObject).FullName}");
                 lock (_syncRoot)
                 {
-                    obj = initialValue as TObject;
+                    obj = (TObject) initialValue;
                     if (_object == null)
                         throw new ArgumentNullException(nameof(initialValue),
-                            $"{nameof(initialValue)} is null or cannot be casted to ${nameof(TObject)}");
+                            $"{nameof(initialValue)} is null or cannot cast it to ${typeof(TObject).FullName}");
                 }
             }
         }
@@ -299,17 +286,15 @@ namespace SafeOrbit.Memory
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_isDisposed)
+            if (_isDisposed) return;
+            if (disposing)
+                _injectionDetector.Dispose();
+            //unmanaged resources
+            lock (_syncRoot)
             {
-                if (disposing)
-                    _injectionDetector.Dispose();
-                //unmanaged resources
-                lock (_syncRoot)
-                {
-                    _object = null;
-                }
-                _isDisposed = true;
+                _object = null;
             }
+            _isDisposed = true;
         }
 
         ~SafeObject()

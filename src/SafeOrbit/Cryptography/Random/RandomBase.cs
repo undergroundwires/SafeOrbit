@@ -18,6 +18,7 @@ namespace SafeOrbit.Cryptography.Random
             _generator = generator;
         }
 
+        /// <inheritdoc />
         public byte[] GetBytes(int length)
         {
             var data = new byte[length];
@@ -25,6 +26,7 @@ namespace SafeOrbit.Cryptography.Random
             return data;
         }
 
+        /// <inheritdoc />
         public int GetInt()
         {
             var scale = uint.MaxValue;
@@ -45,6 +47,7 @@ namespace SafeOrbit.Cryptography.Random
         }
 
 #if !NETSTANDARD1_6
+        /// <inheritdoc />
         public byte[] GetNonZeroBytes(int length)
         {
             var data = new byte[length];
@@ -53,6 +56,7 @@ namespace SafeOrbit.Cryptography.Random
         }
 #endif
 
+        /// <inheritdoc />
         public int GetInt(int min, int max)
         {
             if (min == max)
@@ -77,20 +81,13 @@ namespace SafeOrbit.Cryptography.Random
                           (scale / (double)uint.MaxValue));
         }
 
+        /// <inheritdoc />
         public bool GetBool()
         {
             var data = new byte[1];
             _generator.GetBytes(data);
             var @byte = data[0];
             return (@byte & 0x80) != 0;
-        }
-        /// <exception cref="ArgumentOutOfRangeException"><param name="upperBound"/> must be greater than <param name="lowerBound"/></exception>
-        protected void EnsureParameters(int lowerBound, int upperBound)
-        {
-            if (lowerBound > upperBound)
-            {
-                throw new ArgumentOutOfRangeException(nameof(upperBound), upperBound, $"{nameof(upperBound)} must be greater than {nameof(lowerBound)}");
-            }
         }
     }
 }

@@ -42,9 +42,6 @@ namespace SafeOrbit.Memory
         public void Append(char ch) => Insert(Length, ch);
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Appends a <see cref="T:System.String" /> that's already revealed in the memory.
-        /// </summary>
         /// <param name="text">Non-safe <see cref="T:System.String" /> that's already revealed in the memory</param>
         /// <exception cref="T:System.ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
@@ -59,9 +56,9 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="character" /> is <see langword="null" />. </exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">If position is less than zero or higher than the length.  </exception>
-        /// <exception cref="T:System.ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="character" /> is <see langword="null" />. </exception>
+        /// <exception cref="ArgumentOutOfRangeException">If position is less than zero or higher than the length.  </exception>
+        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
         public void Append(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             Insert(Length, character, encoding);
@@ -78,7 +75,7 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="T:System.ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
+        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
         public void AppendLine()
         {
             EnsureNotDisposed();
@@ -97,15 +94,9 @@ namespace SafeOrbit.Memory
             _charBytesList.Insert(index, bytes);
         }
 
-        /// <exception cref="ArgumentNullException">
-        ///     <paramref name="textBytes" /> is <see langword="null" />.
-        /// </exception>
-        /// <exception cref="ObjectDisposedException">
-        ///     Throws if the SafeString instance is disposed.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     Throws if <paramref name="textBytes" /> is less than zero or higher than the length.
-        /// </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="textBytes" /> is <see langword="null" />. </exception>
+        /// <exception cref="ObjectDisposedException"> SafeString instance is disposed.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="textBytes" /> is null or empty. </exception>
         public void Insert(int position, ISafeBytes textBytes, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             EnsureNotDisposed();
@@ -137,11 +128,9 @@ namespace SafeOrbit.Memory
             }
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
-        /// <exception cref="InvalidOperationException">Throws if the <see cref="SafeString" /> instance is empty.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     <paramref name="index" /> is not a valid index.
-        /// </exception>
+        /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index" /> is not a valid index. </exception>
         public ISafeBytes GetAsSafeBytes(int index)
         {
             EnsureNotDisposed();
@@ -151,12 +140,9 @@ namespace SafeOrbit.Memory
             return result;
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
-        /// <exception cref="InvalidOperationException">Throws if the <see cref="SafeString" /> instance is empty.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     Throws if <paramref name="index" /> is less than zero, higher than/equals
-        ///     to the length.
-        /// </exception>
+        /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> is less than zero, higher than/equals to the length.</exception>
         public char GetAsChar(int index)
         {
             EnsureNotDisposed();
@@ -168,17 +154,14 @@ namespace SafeOrbit.Memory
             return asChar;
         }
 
+        /// <inheritdoc />
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     Throws when <paramref name="startIndex" /> is out of range.
-        ///     Throws when <paramref name="count" /> is less than one.
-        ///     Throws when the total of <paramref name="startIndex" /> and <paramref name="count" /> is higher than length.
+        ///     <p><paramref name="startIndex" /> is out of range.</p>
+        ///     <p><paramref name="count" /> is less than one.</p>
+        ///     <p>The total of <paramref name="startIndex" /> and <paramref name="count" /> is higher than length.</p>
         /// </exception>
-        /// <exception cref="ObjectDisposedException">
-        ///     Throws if the <see cref="SafeString" /> instance is disposed.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///     Throws if the <see cref="SafeString" /> instance is empty.
-        /// </exception>
+        /// <exception cref="ObjectDisposedException">The <see cref="SafeString" /> instance is disposed.</exception>
+        /// <exception cref="InvalidOperationException"> The <see cref="SafeString" /> instance is empty. </exception>
         public void Remove(int startIndex, int count = 1)
         {
             EnsureNotDisposed();
@@ -198,6 +181,7 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <inheritdoc />
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed</exception>
         public void Clear()
         {
@@ -275,6 +259,7 @@ namespace SafeOrbit.Memory
             return MemberwiseClone() as ISafeString;
         }
 
+        /// <inheritdoc cref="Clear" />
         public void Dispose()
         {
             Clear();
@@ -286,15 +271,12 @@ namespace SafeOrbit.Memory
 
         public override bool Equals(object obj)
         {
-            switch (obj)
+            return obj switch
             {
-                case ISafeString safeString:
-                    return Equals(safeString);
-                case string @string:
-                    return Equals(@string);
-                default:
-                    return false;
-            }
+                ISafeString safeString => Equals(safeString),
+                string @string => Equals(@string),
+                _ => false
+            };
         }
 
         private char TransformSafeBytesToChar(ISafeBytes safeBytes, Encoding encoding)

@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Threading;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng;
+using SafeOrbit.Helpers;
 using SafeOrbit.Memory;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
@@ -27,10 +28,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         private static readonly AutoResetEvent PoolFullAre = new AutoResetEvent(false);
         private static readonly ThreadedSeedGenerator MyThreadedSeedGenerator = new ThreadedSeedGenerator();
 
-        // Interlocked cannot handle bools.  So using int as if it were bool.
-        private const int TrueInt = 1;
-        private const int FalseInt = 0;
-        private int _disposed = FalseInt;
+        private int _disposed = IntCondition.False;
 
         static ThreadedSeedGeneratorRng()
         {
@@ -127,7 +125,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         /// </param>
         protected override void Dispose(bool disposing)
         {
-            if (Interlocked.Exchange(ref _disposed, TrueInt) == TrueInt)
+            if (Interlocked.Exchange(ref _disposed, IntCondition.True) == IntCondition.True)
                 return;
             PoolFullAre.Set();
             /*

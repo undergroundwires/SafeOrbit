@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SafeOrbit.Infrastructure.Protectable;
 using SafeOrbit.Tests;
@@ -7,7 +8,7 @@ namespace SafeOrbit.Memory.Common.ProtectionLevelSwitch
 {
     [TestFixture]
     public abstract class ProtectableBaseTests<TProtectionMode> : TestsBase
-        where TProtectionMode : struct
+        where TProtectionMode : Enum
     {
         /// <summary>
         /// Gets the protection mode test cases where first argument is the sut and the second is <see cref="TProtectionMode"/> to be set and expected.

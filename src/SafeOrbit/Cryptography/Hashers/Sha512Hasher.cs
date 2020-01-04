@@ -21,6 +21,8 @@ namespace SafeOrbit.Cryptography.Hashers
         {
             
         }
+
+        /// <exception cref="ArgumentNullException"><paramref name="algorithm" /> is <see langword="null" />.</exception>
         internal Sha512Hasher(HashAlgorithm algorithm)
         {
             _algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));

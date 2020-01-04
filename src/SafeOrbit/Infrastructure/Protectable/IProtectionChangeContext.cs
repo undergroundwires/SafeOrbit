@@ -1,7 +1,7 @@
 namespace SafeOrbit.Infrastructure.Protectable
 {
     /// <summary>
-    ///     An interface representing the event arguments when the protection level switch is requested.
+    ///     The event arguments when the protection level switch is requested.
     /// </summary>
     /// <typeparam name="TProtectionLevel">The type of the protection level.</typeparam>
     public interface IProtectionChangeContext<out TProtectionLevel>

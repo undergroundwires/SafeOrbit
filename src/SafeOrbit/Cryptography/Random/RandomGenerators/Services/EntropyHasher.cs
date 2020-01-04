@@ -8,12 +8,16 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     {
         public RandomNumberGenerator Rng { get; private set; }
         public IReadOnlyCollection<IHashAlgorithmWrapper> HashWrappers { get; private set; }
+
+        /// <exception cref="ArgumentNullException"><paramref name="hashWrapper" /> is <see langword="null" />.</exception>
         public EntropyHasher(RandomNumberGenerator rng, IHashAlgorithmWrapper hashWrapper)
+            :this(rng, new[] { hashWrapper })
         {
             if (hashWrapper == null) throw new ArgumentNullException(nameof(hashWrapper));
-            this.Rng = rng ?? throw new ArgumentNullException(nameof(rng));
-            this.HashWrappers = new []{ hashWrapper};
         }
+
+        /// <exception cref="ArgumentNullException"><paramref name="rng" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="hashWrappers" /> is <see langword="null" />.</exception>
         public EntropyHasher(RandomNumberGenerator rng, IReadOnlyCollection<IHashAlgorithmWrapper> hashWrappers)
         {
             this.Rng = rng ?? throw new ArgumentNullException(nameof(rng));
@@ -21,7 +25,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         }
         public void Dispose()
         {
-            lock (this)      // Just in case two threads try to dispose me at the same time?  Whatev.  ;-)
+            lock (this)
             {
                 if (Rng != null)
                 {
@@ -29,7 +33,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                     {
                         Rng.Dispose();
                     }
-                    catch { }
+                    catch { /* Continue cleanup */ }
                     Rng = null;
                 }
                 if (HashWrappers == null)
@@ -42,10 +46,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                         {
                             hashWrapper.Dispose();
                         }
-                        catch { }
+                        catch { /* Continue cleanup */ }
                     }
                 }
-                catch { }
+                catch { /* Continue cleanup */ }
                 HashWrappers = null;
             }
         }

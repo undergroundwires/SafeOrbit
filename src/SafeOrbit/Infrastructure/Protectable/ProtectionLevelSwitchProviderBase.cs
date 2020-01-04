@@ -11,7 +11,7 @@ namespace SafeOrbit.Infrastructure.Protectable
     /// <typeparam name="TProtectionLevel">The type of the t protection level.</typeparam>
     /// <seealso cref="IProtectable{TProtectionLevel}" />
     public abstract class ProtectableBase<TProtectionLevel> :
-        IProtectable<TProtectionLevel> where TProtectionLevel : struct
+        IProtectable<TProtectionLevel> where TProtectionLevel : Enum
     {
         /// <summary>
         ///     A flag that indicates mode is being set in any thread.
@@ -24,22 +24,16 @@ namespace SafeOrbit.Infrastructure.Protectable
             CurrentProtectionMode = protectionMode;
         }
 
-        /// <summary>
-        ///     Gets the current protection mode.
-        /// </summary>
-        /// <value>The current protection mode.</value>
+        /// <inheritdoc />
         public TProtectionLevel CurrentProtectionMode { get; private set; }
 
-        /// <summary>
-        ///     Sets the <see cref="CurrentProtectionMode" /> if the value of <paramref name="protectionMode" /> is different than
-        ///     the <see cref="CurrentProtectionMode" />.
-        /// </summary>
-        /// <param name="protectionMode">The object protection mode.</param>
+        /// <inheritdoc />
         public void SetProtectionMode(TProtectionLevel protectionMode)
         {
             if (protectionMode.Equals(CurrentProtectionMode)) return;
             InternalSetMode(protectionMode);
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void SpinUntilSecurityModeIsAvailable()
         {
@@ -61,7 +55,7 @@ namespace SafeOrbit.Infrastructure.Protectable
         /// <param name="objectProtectionMode">The object protection mode.</param>
         private void InternalSetMode(TProtectionLevel objectProtectionMode)
         {
-            if (_isSettingMode) throw new Exception("Another thread is currently setting the protection level.");
+            if (_isSettingMode) throw new InvalidOperationException("Another thread is currently setting the protection level.");
             _isSettingMode = true;
             var context = GetContext(newValue: objectProtectionMode, oldValue: CurrentProtectionMode);
             ChangeProtectionMode(context);
@@ -70,7 +64,7 @@ namespace SafeOrbit.Infrastructure.Protectable
             _isSettingMode = false;
         }
 
-        private IProtectionChangeContext<TProtectionLevel> GetContext(TProtectionLevel oldValue,
+        private static IProtectionChangeContext<TProtectionLevel> GetContext(TProtectionLevel oldValue,
             TProtectionLevel newValue)
         {
             var result = new ProtectionChangeContext<TProtectionLevel>

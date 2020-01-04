@@ -30,6 +30,9 @@ namespace SafeOrbit.Memory
         /// <value>The protection mode.</value>
         SafeObjectProtectionMode ProtectionMode { get; }
 
+        /// <summary>
+        ///     Preferred way to notify injections.
+        /// </summary>
         InjectionAlertChannel AlertChannel { get; }
     }
 }
