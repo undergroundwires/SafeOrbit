@@ -4,7 +4,7 @@
     {
 #if DEBUG
         public const string ToUnitTests = "UnitTests";
-        public const string ToPerformanceTests = "SafeOrbit.PerformanceTests";
+        public const string ToPerformanceTests = "PerformanceTests";
         public const string ToIntegrationTests = "IntegrationTests";
         public const string ToDynamicProxyGenAssembly2 = "DynamicProxyGenAssembly2";
         public const string ToNetFrameworkIntegrationTests = "IntegrationTests.NetFramework";
