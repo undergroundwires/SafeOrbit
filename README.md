@@ -6,7 +6,7 @@
 # **SafeOrbit** - Protect your data and detect injections
 
 ## SafeOrbit is cryptographic security toolkit for .NET
-[![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/) ![Build status](https://github.com/undergroundwires/AsyncWindowsClipboard/workflows/Build%20&%20test/badge.svg) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/undergroundwires/SafeOrbit/issues)
+[![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/) ![Build status](https://github.com/undergroundwires/SafeOrbit/workflows/Build%20&%20test/badge.svg) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/undergroundwires/SafeOrbit/issues)
 
  **SafeOrbit** is a security toolset including different high performance algorithms and easy to use classes for advanced memory protection.
 
