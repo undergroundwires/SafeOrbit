@@ -1,5 +1,6 @@
-name: Build & test
+# https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners
 
+name: Build & test
 on: [push]
 
 jobs:
@@ -11,11 +12,6 @@ jobs:
     -
       name: Checkout
       uses: actions/checkout@v1
-    -
-      name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.100' # SDK Version to use.
     -
       name: Build
       working-directory: src
