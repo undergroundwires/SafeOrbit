@@ -97,7 +97,7 @@ namespace SafeOrbit.Memory
         public override int Read(byte[] buffer, int offset, int count)
         {
             EnsureReadOrWriteParameters(buffer, offset, count);
-            if (_closed && _length == 0)
+            if (_closed || _length == 0)
                 return 0;
             var finalPosition = offset + count;
             var position = offset;
