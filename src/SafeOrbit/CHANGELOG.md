@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+- **Performance**
+  - Huge performance improvements.
+  - Adding byte to SafeBytes is now 2100% faster.
+  - Adding multiple bytes with AppendMany is 2100% * byte amount faster
+  - SafeString uses SafeBytes internally, and now it's also 2100% faster
 - **Added**
   - Encryption
     - Support for padding in Blowfish algorithm.
@@ -16,7 +21,7 @@
   - Renamed "Infrastructure" to "Core"
   - Refactorings & better documentation
 - **Fixed**
-    - `SafeMemoryStream` ends up in infinite loop while reading when its empty.
+  - `SafeMemoryStream` ends up in infinite loop while reading when its empty.
 
 ## [0.3.1] - 2019-12-24
 
@@ -26,9 +31,9 @@
   - SafeString & SafeBytes can be revealed truly thread-safe.
 - **Fixed**
   - Issue with `SafeBytes` causing some logic to fail is solved (wrong arbitrary byte logic after 0.3.0).
-  - ToByteArray in `SafeBytes` leads to corrupted memory.
+  - `ToByteArray()` in `SafeBytes` leads to corrupted memory.
   - `SafeMemoryStream`: Fixed stack overflow in .NET Framework and .NET Standard 2.0
-  - SafeString / Bytes cannot be revealed twice: bug with encryption of inner bytes
+  - `SafeString` / `SafeBytes` cannot be revealed twice: bug with encryption of inner bytes
 
 ## [0.3.0] - 2019-03-30
 

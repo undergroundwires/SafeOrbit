@@ -12,34 +12,19 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     /// <inheritdoc />
     /// <summary>
     ///     <p>
-    ///         <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> returns cryptographically
-    ///         strong random data.  It uses a crypto prng to
+    ///         <see cref="FastRandomGenerator" /> returns cryptographically
+    ///         strong random data.  It uses a crypto PRNG to
     ///         generate more bytes than actually available in hardware entropy, so it's about 1,000 times faster than
-    ///         <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" />.
+    ///         <see cref="SafeRandomGenerator" />.
     ///     </p>
     ///     <p>
-    ///         For general purposes, <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.FastRandomGenerator" /> is
+    ///         For general purposes, <see cref="FastRandomGenerator" /> is
     ///         recommended because of its performance
     ///         characteristics, but for extremely strong keys and other things that don't require a large number of bytes
-    ///         quickly,  <see cref="T:SafeOrbit.Cryptography.Random.RandomGenerators.SafeRandomGenerator" /> is recommended
+    ///         quickly,  <see cref="SafeRandomGenerator" /> is recommended
     ///         instead.
     ///     </p>
     /// </summary>
-    /// <example>
-    ///     <code>
-    ///  using SafeOrbit.Cryptography.Random;
-    ///  static void Main(string[] args)
-    ///  {
-    ///      StartEarly.StartFillingEntropyPools();  // Start gathering entropy as early as possible
-    ///      var randomBytes = new byte[32];
-    ///      // Performance is highly variable.  On my system, it generated 2.00MB(minimum)/3.04MB(avg)/3.91MB(max) per second
-    ///      // default FastRandom() constructor uses the SafeRandom() default constructor, which uses:
-    ///      //     SystemRNGCryptoServiceProvider/SHA256, 
-    ///      //     ThreadedSeedGeneratorRNG/SHA256/RipeMD256Digest,
-    ///      FastRandomGenerator.StaticInstance.GetBytes(randomBytes);
-    ///  }
-    ///  </code>
-    /// </example>
     internal sealed class FastRandomGenerator : RandomNumberGenerator
     {
         private const int ReseedLocked = 1;

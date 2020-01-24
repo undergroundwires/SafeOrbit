@@ -22,7 +22,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     The encryption key to encrypt/decrypt the inner list.
         /// </summary>
         private readonly IMemoryProtectedBytes _encryptionKey;
-        //TODO: A possible security improvement: Add salt
+        private readonly byte[] _salt;
 
         private readonly IFastEncryptor _encryptor;
         private readonly ISafeByteFactory _safeByteFactory;
@@ -59,6 +59,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
             _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
             _serializer = serializer;
+            _salt = fastRandom.GetBytes(encryptor.BlockSizeInBits / 8);
         }
 
         /// <inheritdoc />
@@ -96,11 +97,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the byte as <see cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" /> for the specified index
-        ///     asynchronously.
-        /// </summary>
-        /// <param name="index">The position of the byte.</param>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index" /> is lower than zero or higher/equals to the <see cref="Length" />. </exception>
         /// <exception cref="InvalidOperationException"> <see cref="EncryptedSafeByteCollection" /> instance is empty. </exception>
         /// <exception cref="ObjectDisposedException"> <see cref="EncryptedSafeByteCollection" /> instance is disposed </exception>
@@ -180,9 +176,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             if (encryptedCollection == null)
                 return new List<int>();
-            var decryptedBytes = await _encryptor.DecryptAsync(encryptedCollection, encryptionKey)
+            var decryptedBytes = await DecryptAsync(encryptedCollection, _salt.Length, encryptionKey)
                 .ConfigureAwait(false);
-            ;
             try
             {
                 var deserializedBytes = await _serializer.DeserializeAsync(decryptedBytes)
@@ -199,17 +194,47 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         private async Task<byte[]> SerializeAndEncryptAsync(IReadOnlyCollection<int> safeByteIdList,
             byte[] encryptionKey)
         {
-            var serializedBytes = await _serializer.SerializeAsync(safeByteIdList)
-                .ConfigureAwait(false);
+            var serialized = await _serializer.SerializeAsync(safeByteIdList).ConfigureAwait(false);
             try
             {
-                var encrypted = await _encryptor.EncryptAsync(serializedBytes, encryptionKey)
+                var encrypted = await EncryptAsync(serialized, _salt, encryptionKey)
                     .ConfigureAwait(false);
                 return encrypted;
             }
             finally
             {
-                Array.Clear(serializedBytes, 0, serializedBytes.Length);
+                if(serialized != null)
+                    Array.Clear(serialized, 0, serialized.Length);
+            }
+        }
+        private async Task<byte[]> DecryptAsync(byte[] encryptedBytes, int saltLength, byte[] encryptionKey)
+        {
+            var saltedBytes = await _encryptor.DecryptAsync(encryptedBytes, encryptionKey)
+                .ConfigureAwait(false);
+            try
+            {
+                return saltedBytes
+                    .Take(encryptedBytes.Length - saltLength)
+                    .ToArray();
+            }
+            finally
+            {
+                if (saltedBytes != null)
+                    Array.Clear(saltedBytes, 0, saltedBytes.Length);
+            }
+        }
+        private async Task<byte[]> EncryptAsync(byte[] plainBytes, byte[] saltBytes, byte[] encryptionKey)
+        {
+            var salted = plainBytes.Combine(saltBytes);
+            try
+            {
+                return await _encryptor.EncryptAsync(salted, encryptionKey)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                if(salted != null)
+                    Array.Clear(salted, 0, salted.Length);
             }
         }
 

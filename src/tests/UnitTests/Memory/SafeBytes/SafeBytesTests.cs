@@ -614,7 +614,6 @@ namespace SafeOrbit.Memory
         private static ISafeBytes GetSut(ISafeByteCollection collection = null, ISafeByteFactory factory = null)
         {
             return new SafeBytes(
-                Stubs.Get<IFastRandom>(),
                 factory ?? Stubs.Get<ISafeByteFactory>(),
                 Stubs.GetFactory<ISafeBytes>(),
                 Stubs.GetFactory(collection));

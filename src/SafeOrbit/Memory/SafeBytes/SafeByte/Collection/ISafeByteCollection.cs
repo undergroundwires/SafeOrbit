@@ -6,9 +6,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Abstraction of a collection for <see cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" /> instances.
+    ///     Abstraction of a collection for <see cref="ISafeByte" /> instances.
     /// </summary>
-    /// <seealso cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" />
+    /// <seealso cref="ISafeByte" />
     internal interface ISafeByteCollection : IDisposable
     {
         /// <summary>

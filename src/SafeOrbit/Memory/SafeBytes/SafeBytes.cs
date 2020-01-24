@@ -18,15 +18,12 @@ namespace SafeOrbit.Memory
     /// </remarks>
     public class SafeBytes : ISafeBytes
     {
-        private const int TotalArbitraryBytesPerByte = 1;
-        private readonly IFastRandom _fastRandom;
         private readonly ISafeByteCollection _safeByteCollection;
         private readonly ISafeByteFactory _safeByteFactory;
         private readonly IFactory<ISafeBytes> _safeBytesFactory;
 
         [DebuggerHidden]
         public SafeBytes() : this(
-            SafeOrbitCore.Current.Factory.Get<IFastRandom>(),
             SafeOrbitCore.Current.Factory.Get<ISafeByteFactory>(),
             SafeOrbitCore.Current.Factory.Get<IFactory<ISafeBytes>>(),
             SafeOrbitCore.Current.Factory.Get<IFactory<ISafeByteCollection>>())
@@ -34,21 +31,17 @@ namespace SafeOrbit.Memory
         }
 
         internal SafeBytes(
-            IFastRandom fastRandom,
             ISafeByteFactory safeByteFactory,
             IFactory<ISafeBytes> safeBytesFactory,
             IFactory<ISafeByteCollection> safeByteCollectionFactory)
         {
-            _fastRandom = fastRandom ?? throw new ArgumentNullException(nameof(fastRandom));
             _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
             _safeBytesFactory = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
             _safeByteCollection = safeByteCollectionFactory.Create();
         }
 
         /// <inheritdoc />
-        public int Length => (_safeByteCollection?.Length ?? 0) == 0
-            ? 0
-            : _safeByteCollection.Length / (TotalArbitraryBytesPerByte + 1);
+        public int Length => _safeByteCollection?.Length ?? 0;
 
         public bool IsDisposed { get; private set; }
 
@@ -116,9 +109,7 @@ namespace SafeOrbit.Memory
             if (Length == 0)
                 return new byte[0];
             var decryptedBytes = _safeByteCollection.ToDecryptedBytes();
-            var withoutArbitraryBytes = decryptedBytes.Where((x, i) => i % (TotalArbitraryBytesPerByte + 1) == 0)
-                .ToArray();
-            return withoutArbitraryBytes;
+            return decryptedBytes;
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
@@ -150,10 +141,10 @@ namespace SafeOrbit.Memory
         /// </summary>
         internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
-            var realPosition = position * (TotalArbitraryBytesPerByte + 1);
-            if (realPosition < 0 || realPosition >= _safeByteCollection.Length)
+            if (position < 0 || position >= _safeByteCollection.Length)
                 throw new ArgumentOutOfRangeException(nameof(position));
-            return await _safeByteCollection.GetAsync(realPosition).ConfigureAwait(false);
+            return await _safeByteCollection.GetAsync(position)
+                .ConfigureAwait(false);
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
@@ -163,7 +154,6 @@ namespace SafeOrbit.Memory
             EnsureNotDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
             _safeByteCollection.Append(safeByte);
-            AddArbitraryByte();
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
@@ -172,35 +162,7 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
-            safeBytes = AddArbitraryBytes(safeBytes);
             _safeByteCollection.AppendMany(safeBytes);
-        }
-
-        private IEnumerable<ISafeByte> AddArbitraryBytes(
-            IEnumerable<ISafeByte> safeBytes)
-        {
-            foreach (var safeByte in safeBytes)
-            {
-                yield return safeByte;
-                for (var i = 0; i < TotalArbitraryBytesPerByte; i++)
-                    yield return GetArbitraryByte();
-            }
-        }
-
-        /// <summary>
-        ///     The reason to add arbitrary byte is to avoid simple memory dumps to see all bytes.
-        /// </summary>
-        private void AddArbitraryByte()
-        {
-            for (var i = 0; i < TotalArbitraryBytesPerByte; i++)
-            {
-                var safeByte = GetArbitraryByte();
-                _safeByteCollection.Append(safeByte);
-            }
-        }
-        private ISafeByte GetArbitraryByte()
-        {
-            return _safeByteFactory.GetByByte((byte)_fastRandom.GetInt(0, 256));
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
