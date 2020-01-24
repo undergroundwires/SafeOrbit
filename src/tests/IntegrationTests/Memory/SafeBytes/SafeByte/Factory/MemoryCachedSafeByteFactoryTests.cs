@@ -2,6 +2,8 @@
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Tests.Cases;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Factory
 {
@@ -46,6 +48,23 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var actual = safeByte.Get();
             //assert
             Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void GetByBytes_ReturnsRightBytes()
+        {
+            // Arrange
+            var expected = new Collection<byte>();
+            for (var i = 0; i < 256; i++)
+                expected.Add((byte) i);
+            var stream = new SafeMemoryStream();
+            stream.Write(expected.ToArray(), 0, expected.Count);
+
+            // Act
+            var actual = _sut.GetByBytes(stream);
+
+            // Assert
+            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }

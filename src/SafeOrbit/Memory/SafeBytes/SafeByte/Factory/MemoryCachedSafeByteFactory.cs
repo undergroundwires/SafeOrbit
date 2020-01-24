@@ -21,6 +21,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         private readonly IByteIdGenerator _byteIdGenerator;
         private readonly IFactory<ISafeByte> _safeByteFactory;
         private readonly ISafeObjectFactory _safeObjectFactory;
+        private readonly SafeObjectProtectionMode _innerDictionaryProtectionMode;
 
         /// <summary>
         ///     Returns if the factory instances are cached in the memory.
@@ -52,20 +53,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             _byteIdGenerator = byteIdGenerator ?? throw new ArgumentNullException(nameof(byteIdGenerator));
             _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
             _safeObjectFactory = safeObjectFactory;
-            InnerDictionaryProtectionMode = protectionMode;
+            _innerDictionaryProtectionMode = protectionMode;
         }
 
-        /// <summary>
-        ///     Gets the <see cref="SafeObjectProtectionMode" /> for dictionary protection mode.
-        /// </summary>
-        /// <value>The dictionary protection mode.</value>
-        public SafeObjectProtectionMode InnerDictionaryProtectionMode { get; }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Initializes the service by caching all instances in the memory.
-        /// </summary>
         /// <remarks>
+        ///     Initializes the service by caching all instances in the memory.
         ///     Virtual for testing testing purposes.
         /// </remarks>
         public virtual void Initialize()
@@ -79,7 +73,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
                 var settings = new InitialSafeObjectSettings
                 (
                     protectionMode: SafeObjectProtectionMode
-                        .JustState, /* code protection is broken for dictionary as of v0.1 */
+                        .JustState, /* TODO: Ignore _innerDictionaryProtectionMode because code protection is broken for dictionary as of v0.1 */
                     initialValue: dictionary, /* set our dictionary */
                     isReadOnly: true, /* the dictionary will not be modifiable after initialization */
                     alertChannel: InjectionAlertChannel
@@ -90,10 +84,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             }
         }
 
-        /// <summary>
-        ///     Returns the cached <see cref="ISafeByte" /> for the specified <see cref="byte" />.
-        /// </summary>
-        /// <param name="byte">The byte.</param>
+        /// <inheritdoc />
         public ISafeByte GetByByte(byte @byte)
         {
             EnsureInitialized();
@@ -102,15 +93,23 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             return _safeBytesDictionary.Object[id];
         }
 
-        /// <summary>
-        ///     Returns cached the <see cref="ISafeByte" /> for the specified <see cref="ISafeByte.Id" />.
-        /// </summary>
-        /// <param name="safeByteId">The safe byte identifier.</param>
-        /// <seealso cref="IByteIdGenerator" />
+        /// <inheritdoc />
         public ISafeByte GetById(int safeByteId)
         {
             EnsureInitialized();
             return _safeBytesDictionary.Object[safeByteId];
+        }
+
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
+        public IEnumerable<ISafeByte> GetByBytes(SafeMemoryStream stream)
+        {
+            EnsureInitialized();
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            var ids = _byteIdGenerator.GenerateMany(stream);
+            var dictObj = _safeBytesDictionary.Object; // We call getter once so integrity is only checked once for better performance
+            foreach (var id in ids)
+                yield return dictObj[id];
         }
 
         private IEnumerable<ISafeByte> GetAllSafeBytes()
@@ -124,7 +123,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
                 safeByte.Set(@byte);
                 safeBytes[i] = safeByte;
             }
-
             //Fast.For(0, 256, i =>
             //{
             //    var @byte = (byte)i;

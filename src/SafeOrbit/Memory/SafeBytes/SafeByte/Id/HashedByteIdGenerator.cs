@@ -40,11 +40,25 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             InitializeSalt();
         }
 
+        /// <inheritdoc />
         public int Generate(byte b)
         {
             using (var salt = _sessionSalt.RevealDecryptedBytes())
             {
                 return Generate(b, salt.PlainBytes);
+            }
+        }
+
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
+        public IEnumerable<int> GenerateMany(SafeMemoryStream stream)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            using (var salt = _sessionSalt.RevealDecryptedBytes())
+            {
+                int byteRead;
+                while ((byteRead = stream.ReadByte()) != -1)
+                    yield return Generate((byte)byteRead, salt.PlainBytes);
             }
         }
 

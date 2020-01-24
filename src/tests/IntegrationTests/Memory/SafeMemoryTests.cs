@@ -1,8 +1,7 @@
 ﻿using NUnit.Framework;
 using SafeOrbit.Extensions;
-using SafeOrbit.Memory;
 
-namespace IntegrationTests.Memory
+namespace SafeOrbit.Memory
 {
     /// <seealso cref="SafeMemoryStream" />
     [TestFixture]

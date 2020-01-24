@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using System;
+using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Cryptography.Random;
@@ -51,7 +53,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         [Test]
         public void Generate_GenerateInvokesHashMethodOfHasher_returnsTrue()
         {
-            //Arrange
+            // Arrange
             var mockHasher = new Mock<IFastHasher>();
             var sequence = mockHasher.SetupSequence(m => m.ComputeFast(It.IsAny<byte[]>()));
             for (var i = 0; i < 256; i++)
@@ -59,11 +61,55 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             var salt = Stubs.Get<IMemoryProtectedBytes>();
             var sut = GetSut(mockHasher.Object, sessionSalt: salt);
             mockHasher.Reset();
-            //Act
+            // Act
             sut.Generate(It.IsAny<byte>());
-            //Assert
+            // Assert
             mockHasher.Verify(x =>
                 x.ComputeFast(It.IsNotNull<byte[]>()), Times.Exactly(1));
+        }
+
+        [Test]
+        public void GenerateMany_EmptyStream_ReturnsEmpty()
+        {
+            // Arrange
+            var sut = GetSut();
+
+            // Act
+            var actual = sut.GenerateMany(new SafeMemoryStream());
+
+            // Assert
+            Assert.IsEmpty(actual);
+        }
+
+        [Test]
+        public void GenerateMany_NullStream_ThrowsException()
+        {
+            // Arrange
+            var sut = GetSut();
+            SafeMemoryStream stream = null;
+
+            // Act
+            void Act() => _ = sut.GenerateMany(stream).ToArray();
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(Act);
+        }
+
+        [Test]
+        public void GenerateMany_GivenStream_ReturnsExpectedLength()
+        {
+            //Arrange
+            var sut = GetSut();
+            const int expected = 55;
+            var input = new byte[expected];
+            var stream = new SafeMemoryStream();
+            stream.Write(input, 0, input.Length);
+
+            //Act
+            var actual = sut.GenerateMany(stream).Count();
+
+            //Assert
+            Assert.AreEqual(expected, actual);
         }
 
         private HashedByteIdGenerator GetSut(IFastHasher hasher = null, ISafeRandom random = null,

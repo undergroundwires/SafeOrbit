@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,30 +45,32 @@ namespace SafeOrbit.Memory
             _safeByteCollection = safeByteCollectionFactory.Create();
         }
 
-        /// <summary>
-        ///     Returns to real length of the bytes inside
-        /// </summary>
+        /// <inheritdoc />
         public int Length => (_safeByteCollection?.Length ?? 0) == 0
             ? 0
             : _safeByteCollection.Length / (TotalArbitraryBytesPerByte + 1);
 
         public bool IsDisposed { get; private set; }
 
-        /// <summary>
-        ///     Adds the byte, and one random byte after it to avoid memory leaking
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <inheritdoc />
+        /// <inheritdoc cref="Append(ISafeByte)"/>
         public void Append(byte b)
         {
             var safeByte = _safeByteFactory.GetByByte(b);
             Append(safeByte);
         }
 
-        /// <summary>
-        ///     Clones and appends the each byte from given SafeBytes object to the end.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Throws if the argument is null</exception>
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <inheritdoc />
+        /// <inheritdoc cref="Append(IEnumerable{ISafeByte})"/>
+        public void AppendMany(SafeMemoryStream stream)
+        {
+            var safeBytes = _safeByteFactory.GetByBytes(stream);
+            Append(safeBytes);
+        }
+
+        /// <inheritdoc />
+        /// <inheritdoc cref="Append(ISafeByte)"/>
+        /// <inheritdoc cref="EnsureNotDisposed"/>
         /// <exception cref="ArgumentException">Throws if the argument is empty</exception>
         public void Append(ISafeBytes safeBytes)
         {
@@ -89,11 +92,7 @@ namespace SafeOrbit.Memory
                 }
         }
 
-        /// <summary>
-        ///     Gets the byte in the safe list
-        /// </summary>
-        /// <param name="position">Index of the byte</param>
-        /// <returns>Byte from the array</returns>
+        /// <inheritdoc />
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Throws if the position is lower than 0 or greater than/equals to the
         ///     length
@@ -140,17 +139,6 @@ namespace SafeOrbit.Memory
                 clone.Append(GetByte(i));
             return clone;
         }
-
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
-        private void Append(ISafeByte safeByte)
-        {
-            EnsureNotDisposed();
-            if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
-            _safeByteCollection.Append(safeByte);
-            AddArbitraryByte();
-        }
-
         /// <summary>
         ///     Indicates whether the specified SafeBytes object is null or holds zero bytes.
         /// </summary>
@@ -168,6 +156,37 @@ namespace SafeOrbit.Memory
             return await _safeByteCollection.GetAsync(realPosition).ConfigureAwait(false);
         }
 
+        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
+        private void Append(ISafeByte safeByte)
+        {
+            EnsureNotDisposed();
+            if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
+            _safeByteCollection.Append(safeByte);
+            AddArbitraryByte();
+        }
+
+        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="safeBytes" /> is <see langword="null" />.</exception>
+        private void Append(IEnumerable<ISafeByte> safeBytes)
+        {
+            EnsureNotDisposed();
+            if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
+            safeBytes = AddArbitraryBytes(safeBytes);
+            _safeByteCollection.AppendMany(safeBytes);
+        }
+
+        private IEnumerable<ISafeByte> AddArbitraryBytes(
+            IEnumerable<ISafeByte> safeBytes)
+        {
+            foreach (var safeByte in safeBytes)
+            {
+                yield return safeByte;
+                for (var i = 0; i < TotalArbitraryBytesPerByte; i++)
+                    yield return GetArbitraryByte();
+            }
+        }
+
         /// <summary>
         ///     The reason to add arbitrary byte is to avoid simple memory dumps to see all bytes.
         /// </summary>
@@ -175,9 +194,13 @@ namespace SafeOrbit.Memory
         {
             for (var i = 0; i < TotalArbitraryBytesPerByte; i++)
             {
-                var safeByte = _safeByteFactory.GetByByte((byte) _fastRandom.GetInt(0, 256));
+                var safeByte = GetArbitraryByte();
                 _safeByteCollection.Append(safeByte);
             }
+        }
+        private ISafeByte GetArbitraryByte()
+        {
+            return _safeByteFactory.GetByByte((byte)_fastRandom.GetInt(0, 256));
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>

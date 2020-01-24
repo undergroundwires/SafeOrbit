@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SafeOrbit.Cryptography.Random;
+using SafeOrbit.Extensions;
 using SafeOrbit.Memory.SafeBytesServices;
 
 namespace SafeOrbit.Memory
@@ -21,6 +22,23 @@ namespace SafeOrbit.Memory
             var actual = sut.GetByte(0);
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void AppendMany_SomeBytesAdded_CanRetrieve()
+        {
+            // Arrange
+            using var sut = GetSut();
+            var expected = new byte[] {5, 10, 15};
+            using var stream = new SafeMemoryStream();
+            stream.Write(expected.CopyToNewArray(), 0, expected.Length);
+            
+            // Act
+            sut.AppendMany(stream);
+            var actual = sut.ToByteArray();
+
+            // Assert
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [Test]

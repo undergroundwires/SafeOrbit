@@ -61,28 +61,38 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             _serializer = serializer;
         }
 
-        /// <summary>
-        ///     Appends the specified <see cref="ISafeByte" /> instance to the inner encrypted collection.
-        /// </summary>
-        /// <param name="safeByte">The safe byte.</param>
+        /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
-        /// <seealso cref="ISafeByte" />
         public void Append(ISafeByte safeByte)
         {
-            EnsureNotDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
+            AppendMany(new[] {safeByte});
+        }
+
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException"><paramref name="safeBytes" /> is <see langword="null" />.</exception>
+        /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
+        public void AppendMany(IEnumerable<ISafeByte> safeBytes)
+        {
+            EnsureNotDisposed();
+            if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
+            var bytes = safeBytes as ISafeByte[] ?? safeBytes.ToArray();
+            if (!bytes.Any())  return;
+            if(bytes.Any(b=> b == null))  throw new ArgumentNullException("List has null object", nameof(safeBytes));
 
             using (var key = _encryptionKey.RevealDecryptedBytes())
             {
                 var list = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes));
-                list.Add(safeByte.Id);
+                foreach (var @byte in bytes)
+                {
+                    list.Add(@byte.Id);
+                    Length++;
+                }
                 _encryptedCollection =
                     TaskContext.RunSync(() => SerializeAndEncryptAsync(list.ToArray(), key.PlainBytes));
                 list.Clear();
             }
-
-            Length++;
         }
 
         /// <inheritdoc />
@@ -91,18 +101,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     asynchronously.
         /// </summary>
         /// <param name="index">The position of the byte.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        ///     <paramref name="index" /> is lower than zero or higher/equals to the
-        ///     <see cref="P:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection.Length" />.
-        /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
-        ///     <see cref="T:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection" /> instance is empty.
-        /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
-        ///     <see cref="T:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection" /> instance is disposed
-        /// </exception>
-        /// <seealso cref="M:SafeOrbit.Memory.SafeBytesServices.Collection.EncryptedSafeByteCollection.Get(System.Int32)" />
-        /// <seealso cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" />
+        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index" /> is lower than zero or higher/equals to the <see cref="Length" />. </exception>
+        /// <exception cref="InvalidOperationException"> <see cref="EncryptedSafeByteCollection" /> instance is empty. </exception>
+        /// <exception cref="ObjectDisposedException"> <see cref="EncryptedSafeByteCollection" /> instance is disposed </exception>
+        /// <seealso cref="ISafeByte" />
         public async Task<ISafeByte> GetAsync(int index)
         {
             if (index < 0 && index >= Length)
@@ -127,11 +129,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             return safeByte;
         }
 
-        /// <summary>
-        ///     Returns all of the real byte values that <see cref="ISafeByteCollection" /> holds.
-        ///     Reveals all protected data in memory.
-        /// </summary>
-        /// <returns>System.Byte[].</returns>
+        /// <inheritdoc />
         /// <exception cref="InvalidOperationException"><see cref="EncryptedSafeByteCollection" /> instance is empty.</exception>
         /// <exception cref="ObjectDisposedException"><see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
         public byte[] ToDecryptedBytes()
@@ -151,10 +149,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             return decryptedBytes;
         }
 
-        /// <summary>
-        ///     Gets the length.
-        /// </summary>
-        /// <value>The length.</value>
+        /// <inheritdoc />
         public int Length { get; private set; }
 
         /// <inheritdoc />

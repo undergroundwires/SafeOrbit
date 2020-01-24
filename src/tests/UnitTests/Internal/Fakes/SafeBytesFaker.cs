@@ -15,6 +15,13 @@ namespace SafeOrbit.Fakes
             public int Length => _bytes.Count();
             public bool IsDisposed { get; private set; }
 
+            public void AppendMany(SafeMemoryStream bytes)
+            {
+                int byteRead;
+                while ((byteRead = bytes.ReadByte()) != -1)
+                    Append((byte)byteRead);
+            }
+
             public void Append(ISafeBytes safeBytes)
             {
                 _bytes.AddRange(safeBytes.ToByteArray());

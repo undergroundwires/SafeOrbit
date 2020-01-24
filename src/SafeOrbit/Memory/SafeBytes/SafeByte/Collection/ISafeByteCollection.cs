@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
@@ -10,9 +11,23 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
     /// <seealso cref="T:SafeOrbit.Memory.SafeBytesServices.ISafeByte" />
     internal interface ISafeByteCollection : IDisposable
     {
+        /// <summary>
+        ///     Gets the length.
+        /// </summary>
+        /// <value>The length.</value>
         int Length { get; }
+        /// <summary>
+        ///     Appends the specified <see cref="ISafeByte" /> instance to the inner encrypted collection.
+        /// </summary>
+        /// <param name="safeByte">The safe byte.</param>
+        /// <seealso cref="ISafeByte" />
         void Append(ISafeByte safeByte);
-
+        /// <summary>
+        ///     Appends the list of <see cref="ISafeByte" /> to the end of the collection
+        /// </summary>
+        /// <param name="safeBytes">Bytes to append.</param>
+        /// <seealso cref="ISafeByte" />
+        void AppendMany(IEnumerable<ISafeByte> safeBytes);
         /// <summary>
         ///     Gets the byte as <see cref="ISafeByte" /> for the specified index asynchronously.
         /// </summary>

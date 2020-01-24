@@ -7,8 +7,10 @@
 ## [Unreleased]
 
 - **Added**
-  - Support for padding in Blowfish algorithm.
-  - Both fast & safe (AES + Blowfish) supports setting padding mode.
+  - Encryption
+    - Support for padding in Blowfish algorithm.
+    - Both fast & safe (AES + Blowfish) supports setting padding mode.
+  - Append multiple bytes (in a `SafeMemoryStream`) to `SafeBytes`
 - **Changed**
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
   - Renamed "Infrastructure" to "Core"

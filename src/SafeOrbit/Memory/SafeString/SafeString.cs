@@ -293,7 +293,7 @@ namespace SafeOrbit.Memory
             var byteBuffer = safeBytes.ToByteArray();
             try
             {
-                return _textService.GetChars(byteBuffer, InnerEncoding).First();
+                return _textService.GetChars(byteBuffer, encoding).First();
             }
             finally
             {
@@ -303,24 +303,14 @@ namespace SafeOrbit.Memory
 
         private ISafeBytes TransformCharToSafeBytes(char c, Encoding encoding)
         {
-            byte[] byteBuffer = null;
-            try
-            {
-                byteBuffer = _textService.GetBytes(c, encoding);
-                var charBytes = _safeBytesFactory.Create();
-                for (var i = 0; i < byteBuffer.Length; i++)
-                {
-                    charBytes.Append(byteBuffer[i]);
-                    byteBuffer[i] = 0;
-                }
+            var bytes = _textService.GetBytes(c, encoding);
+            var stream = new SafeMemoryStream();
+            stream.Write(bytes, 0, bytes.Length);
 
-                return charBytes;
-            }
-            finally
-            {
-                if (byteBuffer != null)
-                    Array.Clear(byteBuffer, 0, byteBuffer.Length);
-            }
+            var safeBytes = _safeBytesFactory.Create();
+            safeBytes.AppendMany(stream);
+
+            return safeBytes;
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>

@@ -1,4 +1,5 @@
-﻿using SafeOrbit.Memory.SafeBytesServices.Id;
+﻿using System.Collections.Generic;
+using SafeOrbit.Memory.SafeBytesServices.Id;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Factory
 {
@@ -25,5 +26,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         /// <param name="safeByteId">The safe byte identifier.</param>
         /// <seealso cref="IByteIdGenerator" />
         ISafeByte GetById(int safeByteId);
+
+        /// <summary>
+        ///    Creates <see cref="ISafeByte"/> variant of each byte in given <paramref name="stream"/>
+        /// </summary>
+        IEnumerable<ISafeByte> GetByBytes(SafeMemoryStream stream);
     }
 }

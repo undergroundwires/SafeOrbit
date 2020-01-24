@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -14,7 +15,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
     /// <seealso cref="ISafeByteCollection" />
     /// <seealso cref="EncryptedSafeByteCollection" />
     [TestFixture]
-    internal class EncryptedSafeByteCollectionTests : TestsFor<ISafeByteCollection>
+    internal partial class EncryptedSafeByteCollectionTests : TestsFor<ISafeByteCollection>
     {
         private static ISafeByte GetSafeByteFor(byte b)
         {
@@ -32,30 +33,31 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 serializer: Stubs.Get<IByteIdListSerializer<int>>());
         }
 
-        //** Append **//
+
         [Test]
         public void Append_ForDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             sut.Dispose();
 
-            //Act
+            // Act
             void AppendByte() => sut.Append(GetSafeByteFor(b));
-            //Act
+
+            // Assert
             Assert.That(AppendByte, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
         public async Task Append_GetAsync_SafeBytes_AppendsSingle_CanGet()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             const byte expected = 55;
             sut.Append(GetSafeByteFor(expected));
-            //Act
+            // Act
             var actual = await sut.GetAsync(0);
-            //Assert
+            // Assert
             Assert.That(expected, Is.EqualTo(actual));
         }
 
@@ -63,30 +65,97 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         public async Task Append_GetAsync_SafeBytes_AppendsAtTheEnd_CanGet([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             sut.Append(GetSafeByteFor(b1));
             sut.Append(GetSafeByteFor(b2));
             sut.Append(GetSafeByteFor(b3));
-            //Act
+
+            // Act
             var b2Back = await sut.GetAsync(1);
             var b3Back = await sut.GetAsync(2);
-            //Assert
+
+            // Assert
             Assert.That(b2, Is.EqualTo(b2Back));
             Assert.That(b3, Is.EqualTo(b3Back));
         }
 
         [Test]
-        public void Append_WhenArgumentIsNull_throwsArgumentNullException()
+        public void Append_ArgumentIsNull_throwsArgumentNullException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             ISafeByte nullInstance = null;
 
-            //Act
+            // Act
             void AppendNull() => sut.Append(nullInstance);
-            //Act
+
+            // Act
             Assert.That(AppendNull, Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
+        public void AppendMany_ForEmptyList_DoesNotThrow()
+        {
+            // Arrange
+            var sut = GetSut();
+            var list = Enumerable.Empty<ISafeByte>();
+
+            // Act
+            void AppendNull() => sut.AppendMany(list);
+
+            // Assert
+            Assert.DoesNotThrow(AppendNull);
+        }
+
+        [Test]
+        public void AppendMany_NonEmptyList_IncreasesLength()
+        {
+            // Arrange
+            var sut = GetSut();
+            var list = new[] { GetSafeByteFor(0), GetSafeByteFor(1), GetSafeByteFor(2) };
+            var expected = list.Length;
+
+            // Act
+            sut.AppendMany(list);
+            var actual = sut.Length;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task AppendMany_AppendedList_CanBeRetrieved()
+        {
+            // Arrange
+            var sut = GetSut();
+            var list = new[] { GetSafeByteFor(0), GetSafeByteFor(1), GetSafeByteFor(2) };
+            var expectedIds = list.Select(l => l.Id).ToArray();
+
+            // Act
+            sut.AppendMany(list);
+
+            var actualIds = new int[3];
+            actualIds[0] = (await sut.GetAsync(0)).Id;
+            actualIds[1] = (await sut.GetAsync(1)).Id;
+            actualIds[2] = (await sut.GetAsync(2)).Id;
+
+            // Assert
+            CollectionAssert.AreEqual(expectedIds, actualIds);
+        }
+
+        [Test]
+        public void AppendMany_DisposedObject_throwsObjectDisposedException()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+
+            // Assert
+            void AppendByte() => sut.AppendMany(new[] { GetSafeByteFor(5) });
+
+            // Act
+            Assert.That(AppendByte, Throws.TypeOf<ObjectDisposedException>());
         }
 
         //** Dispose **//
