@@ -105,7 +105,7 @@ namespace SafeOrbit.Memory
             lock (_readLock)
             {
                 var internalLength = _length;
-                while (position < finalPosition && (false == _closed || internalLength > 0))
+                while (position < finalPosition && (!_closed || internalLength > 0))
                 {
                     if (_currentBlock == null)
                         lock (_queue)
@@ -166,7 +166,7 @@ namespace SafeOrbit.Memory
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
             var finalPosition = offset + count;
             if (buffer.Length < finalPosition || offset < 0 || count < 0)
-                throw new ArgumentOutOfRangeException(nameof(buffer.Length));
+                throw new ArgumentOutOfRangeException(nameof(buffer));
         }
     }
 }

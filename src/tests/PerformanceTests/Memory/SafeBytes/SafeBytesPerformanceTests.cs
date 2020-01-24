@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using SafeOrbit.Library;
 using SafeOrbit.Tests;
 
@@ -10,7 +11,7 @@ namespace SafeOrbit.Memory
     public class SafeBytesPerformanceTests : TestsFor<ISafeBytes>
     {
         [Test]
-        public void Append_SingleMegaByteStream_Takes_Less_Than_3000ms()
+        public void AppendManyAsync_SingleMegaByteStream_Takes_Less_Than_3000ms()
         {
             // Arrange
             SafeOrbitCore.Current.StartEarly();
@@ -21,13 +22,13 @@ namespace SafeOrbit.Memory
             stream.Write(bytes, 0, bytes.Length);
             // Act
             var actualPerformance = Measure(() =>
-                sut.AppendMany(stream));
+                sut.AppendManyAsync(stream));
             //assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
         }
 
         [Test]
-        public void ToByteArray_For_100_Bytes_Takes_Less_Than_3000ms()
+        public async Task ToByteArrayAsync_For_100_Bytes_Takes_Less_Than_3000ms()
         {
             //arrange
             SafeOrbitCore.Current.StartEarly();
@@ -36,26 +37,26 @@ namespace SafeOrbit.Memory
             var bytes = new byte[100];
             var stream = new SafeMemoryStream();
             stream.Write(bytes, 0, bytes.Length);
-            sut.AppendMany(stream);
+            await sut.AppendManyAsync(stream);
             //act
             var actualPerformance = Measure(
-                () => sut.ToByteArray());
+                () => sut.ToByteArrayAsync());
             //assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
         }
 
         [Test]
-        public void Adding_100_single_bytes_takes_less_than_500ms()
+        public async Task Adding_100_single_bytes_takes_less_than_500ms()
         {
             //arrange
             SafeOrbitCore.Current.StartEarly();
             var sut = GetSut();
             const int expectedHigherLimit = 500;
             //act
-            var actualPerformance = Measure(() =>
+            var actualPerformance = await MeasureAsync(async () =>
             {
                 for (var i = 0; i < 100; i++)
-                    sut.Append((byte) i);
+                    await sut.AppendAsync((byte) i);
             });
             //assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));

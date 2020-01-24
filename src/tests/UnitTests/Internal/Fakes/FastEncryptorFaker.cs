@@ -17,10 +17,6 @@ namespace SafeOrbit.Fakes
                 input.Select(b => (byte) (b ^ (key.Sum(k => k) + 1))).ToArray();
 
             var fake = new Mock<IFastEncryptor>();
-            fake.Setup(f => f.Encrypt(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
-                .Returns<byte[], byte[]>(Encrypt);
-            fake.Setup(f => f.Decrypt(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
-                .Returns<byte[], byte[]>(Decrypt);
             fake.Setup(f => f.EncryptAsync(It.IsAny<byte[]>(), It.IsAny<byte[]>()))
                 .ReturnsAsync((byte[] i, byte[] k) => Encrypt(i, k));
             fake.Setup(f => f.DecryptAsync(It.IsAny<byte[]>(), It.IsAny<byte[]>()))

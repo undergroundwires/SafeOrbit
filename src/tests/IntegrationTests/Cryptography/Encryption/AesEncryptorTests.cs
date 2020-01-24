@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
@@ -13,14 +14,14 @@ namespace SafeOrbit.Cryptography.Encryption
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ThreeDifferentByteArrays16Length))]
-        public void Decrypt_WhenDecryptedWithEncryptionKey_returnsInput(byte[] input, byte[] key, byte[] salt)
+        public async Task Decrypt_WhenDecryptedWithEncryptionKey_returnsInput(byte[] input, byte[] key, byte[] salt)
         {
             //Arrange
             var sut = GetSut();
             var expected = input;
-            var encrypted = sut.Encrypt(input, key, salt);
+            var encrypted = await sut.EncryptAsync(input, key, salt);
             //Act
-            var actual = sut.Decrypt(encrypted, key, salt);
+            var actual = await sut.DecryptAsync(encrypted, key, salt);
             //Assert
             Assert.IsTrue(expected.SequenceEqual(actual));
         }

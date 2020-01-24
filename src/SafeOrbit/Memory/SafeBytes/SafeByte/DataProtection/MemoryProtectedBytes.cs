@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
@@ -43,7 +44,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         ///     Throws if the <paramref name="plainBytes" /> size does not conform to block
         ///     size defined in <see cref="BlockSizeInBytes" />.
         /// </exception>
-        public void Initialize(byte[] plainBytes)
+        public async Task InitializeAsync(byte[] plainBytes)
         {
             if (plainBytes == null) throw new ArgumentNullException(nameof(plainBytes));
             if (plainBytes.Length == 0)
@@ -54,7 +55,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             if (IsInitialized) throw new InvalidOperationException("Already initialized");
             EnsureNotDisposed();
             _encryptedBytes = plainBytes;
-            _protector.Protect(_encryptedBytes);
+            await _protector.ProtectAsync(_encryptedBytes).ConfigureAwait(false);
         }
 
         public int BlockSizeInBytes => _protector.BlockSizeInBytes;
@@ -63,12 +64,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
         /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
         /// <exception cref="InvalidOperationException">Throws if the instance is not yet initialized.</exception>
-        public IDecryptedBytesMarshaler RevealDecryptedBytes()
+        public async Task<IDecryptedBytesMarshaler> RevealDecryptedBytesAsync()
         {
             if (!IsInitialized) throw new InvalidOperationException("Not yet initialized");
             EnsureNotDisposed();
             var decryptedBytes = _encryptedBytes.CopyToNewArray();
-            _protector.Unprotect(decryptedBytes);
+            await _protector.UnprotectAsync(decryptedBytes).ConfigureAwait(false);
             return new DecryptedBytesMarshaler(decryptedBytes);
         }
 

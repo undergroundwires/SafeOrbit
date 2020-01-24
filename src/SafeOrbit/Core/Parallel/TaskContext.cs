@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace SafeOrbit.Extensions
+namespace SafeOrbit.Parallel
 {
     public static class TaskContext
     {

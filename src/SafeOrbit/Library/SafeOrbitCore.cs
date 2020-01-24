@@ -57,7 +57,7 @@ namespace SafeOrbit.Library
             We could instantiate each of these individually but FastRandomGenerator will initializes all of them as default.
         */
             var factory = Factory.Get<ISafeByteFactory>();
-            factory.Initialize();
+            factory.InitializeAsync();
         }
 
         /// <summary>

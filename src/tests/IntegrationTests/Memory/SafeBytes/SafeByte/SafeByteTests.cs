@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using SafeOrbit.Tests;
 using SafeOrbit.Tests.Cases;
 
@@ -11,14 +12,16 @@ namespace SafeOrbit.Memory.SafeBytesServices
     {
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void Get_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
+        public async Task GetAsync_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            //Act
-            sut.Set(expected);
-            var actual = sut.Get();
-            //Assert
+
+            // Act
+            await sut.SetAsync(expected);
+            var actual = await sut.GetAsync();
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 

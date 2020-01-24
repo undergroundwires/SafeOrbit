@@ -79,14 +79,6 @@ namespace SafeOrbit.Cryptography.Encryption
         public override int MaxKeySizeInBits { get; } = int.MaxValue;
         public override int IvSizeInBits { get; } = 16;
 
-        /// <inheritdoc cref="EncryptAsync" />
-        public byte[] Encrypt(byte[] input, byte[] key, byte[] salt)
-            => TaskContext.RunSync(() => EncryptAsync(input, key, salt));
-
-        /// <inheritdoc cref="DecryptAsync" />
-        public byte[] Decrypt(byte[] input, byte[] key, byte[] salt)
-            => TaskContext.RunSync(() => DecryptAsync(input, key, salt));
-
         /// <inheritdoc />
         /// <inheritdoc cref="ValidateParameters" />
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key, byte[] salt)

@@ -6,20 +6,23 @@
 
 ## [Unreleased]
 
-- **Performance**
+- **Performance** 😲
   - Huge performance improvements.
+  - Most of the public methods are now only async.
+    - If it can be async, it's async.
   - Adding byte to SafeBytes is now 2100% faster.
-  - Adding multiple bytes with AppendMany is 2100% * byte amount faster
-  - SafeString uses SafeBytes internally, and now it's also 2100% faster
+    - Adding multiple bytes with AppendMany is 2100% * byte amount faster.
+    - SafeString uses SafeBytes internally, and now it's also 2100% faster.
 - **Added**
   - Encryption
     - Support for padding in Blowfish algorithm.
     - Both fast & safe (AES + Blowfish) supports setting padding mode.
-  - Append multiple bytes (in a `SafeMemoryStream`) to `SafeBytes`
+  - `AppendMany()` to append multiple bytes to `SafeBytes`
 - **Changed**
+  - ❗ Replaced sync methods with async variants.
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
   - Renamed "Infrastructure" to "Core"
-  - Refactorings & better documentation
+  - Refactorings & better documentation.
 - **Fixed**
   - `SafeMemoryStream` ends up in infinite loop while reading when its empty.
 

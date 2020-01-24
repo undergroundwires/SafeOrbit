@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.SafeBytesServices.Id;
@@ -17,7 +19,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
     internal class MemoryCachedSafeByteFactory : ISafeByteFactory
     {
         public const SafeObjectProtectionMode DefaultInnerDictionaryProtection = SafeObjectProtectionMode.JustState;
-        private static readonly object SyncRoot = new object();
+
+        private readonly SemaphoreSlim _slim = new SemaphoreSlim(1, 1); // Max 1 thread can access the lock
         private readonly IByteIdGenerator _byteIdGenerator;
         private readonly IFactory<ISafeByte> _safeByteFactory;
         private readonly ISafeObjectFactory _safeObjectFactory;
@@ -27,7 +30,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         ///     Returns if the factory instances are cached in the memory.
         /// </summary>
         /// <seealso cref="_safeBytesDictionary" />
-        private bool _isCached;
+        private volatile bool _isCached;
 
         private ISafeObject<Dictionary<int, ISafeByte>> _safeBytesDictionary;
 
@@ -62,13 +65,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         ///     Initializes the service by caching all instances in the memory.
         ///     Virtual for testing testing purposes.
         /// </remarks>
-        public virtual void Initialize()
+        public virtual async Task InitializeAsync()
         {
-            lock (SyncRoot)
+            if (_isCached) return;
+            await _slim.WaitAsync().ConfigureAwait(false);
+            try
             {
-                if (_isCached) return;
                 //Allocate place
-                var safeBytes = GetAllSafeBytes();
+                var safeBytes = await GetAllSafeBytesAsync().ConfigureAwait(false);
                 var dictionary = safeBytes.ToDictionary(safeByte => safeByte.Id);
                 var settings = new InitialSafeObjectSettings
                 (
@@ -82,37 +86,42 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
                 _safeBytesDictionary = _safeObjectFactory.Get<Dictionary<int, ISafeByte>>(settings);
                 _isCached = true;
             }
+            finally
+            {
+                _slim.Release();
+            }
         }
 
         /// <inheritdoc />
-        public ISafeByte GetByByte(byte @byte)
+        public async Task<ISafeByte> GetByByteAsync(byte @byte)
         {
-            EnsureInitialized();
-            var id = _byteIdGenerator
-                .Generate(@byte); //Do not skip or cache this step to minimize the amount of time for ids to be seen.
+            await EnsureInitializedAsync().ConfigureAwait(false);
+            var id = await _byteIdGenerator
+                .GenerateAsync(@byte) //Do not skip or cache this step to minimize the amount of time for ids to be seen.
+                .ConfigureAwait(false); 
             return _safeBytesDictionary.Object[id];
         }
 
         /// <inheritdoc />
-        public ISafeByte GetById(int safeByteId)
+        public async Task<ISafeByte> GetByIdAsync(int safeByteId)
         {
-            EnsureInitialized();
+            await EnsureInitializedAsync().ConfigureAwait(false);
             return _safeBytesDictionary.Object[safeByteId];
         }
 
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
-        public IEnumerable<ISafeByte> GetByBytes(SafeMemoryStream stream)
+        public async Task<IEnumerable<ISafeByte>> GetByBytesAsync(SafeMemoryStream stream) //TODO: To IAsyncEnumerable with C# 8.0
         {
-            EnsureInitialized();
+            await EnsureInitializedAsync().ConfigureAwait(false);
             if (stream == null) throw new ArgumentNullException(nameof(stream));
-            var ids = _byteIdGenerator.GenerateMany(stream);
+            var ids = await _byteIdGenerator.GenerateManyAsync(stream)
+                .ConfigureAwait(false);
             var dictObj = _safeBytesDictionary.Object; // We call getter once so integrity is only checked once for better performance
-            foreach (var id in ids)
-                yield return dictObj[id];
+            return ids.Select(id => dictObj[id]);
         }
 
-        private IEnumerable<ISafeByte> GetAllSafeBytes()
+        private async Task<ISafeByte[]> GetAllSafeBytesAsync()
         {
             const int totalBytes = 256;
             var safeBytes = new ISafeByte[totalBytes];
@@ -120,21 +129,19 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             {
                 var @byte = (byte) i;
                 var safeByte = _safeByteFactory.Create();
-                safeByte.Set(@byte);
+                await safeByte.SetAsync(@byte).ConfigureAwait(false);
                 safeBytes[i] = safeByte;
             }
-            //Fast.For(0, 256, i =>
-            //{
-            //    var @byte = (byte)i;
-            //    safeBytes[i] = _safeByteFactory.Create();
-            //    safeBytes[i].Set(@byte);
-            //});
             return safeBytes;
         }
 
-        private void EnsureInitialized()
+        private async Task EnsureInitializedAsync()
         {
-            if (!_isCached) Initialize();
+            if (!_isCached)
+            {
+                await InitializeAsync()
+                    .ConfigureAwait(false);
+            }
         }
     }
 }

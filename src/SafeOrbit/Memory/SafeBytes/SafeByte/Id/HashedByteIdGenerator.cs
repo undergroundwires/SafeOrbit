@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
+using SafeOrbit.Parallel;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Id
 {
@@ -21,7 +24,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         private const int SaltLength = 16;
         private readonly IFastHasher _fastHasher;
         private readonly ISafeRandom _safeRandom;
-        private readonly IMemoryProtectedBytes _sessionSalt;
+        private readonly AsyncLazy<IMemoryProtectedBytes> _sessionSalt;
 
         /// <exception cref="MemoryInjectionException">The object has been injected.</exception>
         public HashedByteIdGenerator() : this(
@@ -34,35 +37,40 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         internal HashedByteIdGenerator(IFastHasher fastHasher, ISafeRandom safeRandom,
             IMemoryProtectedBytes sessionSalt)
         {
+            if (sessionSalt == null) throw new ArgumentNullException(nameof(sessionSalt));
             _fastHasher = fastHasher ?? throw new ArgumentNullException(nameof(fastHasher));
             _safeRandom = safeRandom ?? throw new ArgumentNullException(nameof(safeRandom));
-            _sessionSalt = sessionSalt ?? throw new ArgumentNullException(nameof(sessionSalt));
-            InitializeSalt();
+            _sessionSalt = new AsyncLazy<IMemoryProtectedBytes>(() => InitializeSaltAsync(sessionSalt));
         }
 
         /// <inheritdoc />
-        public int Generate(byte b)
+        public async Task<int> GenerateAsync(byte @byte)
         {
-            using (var salt = _sessionSalt.RevealDecryptedBytes())
+            using (var salt = await _sessionSalt.RevealDecryptedBytesAsync().ConfigureAwait(false))
             {
-                return Generate(b, salt.PlainBytes);
+                return Generate(@byte, salt.PlainBytes);
             }
         }
 
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
-        public IEnumerable<int> GenerateMany(SafeMemoryStream stream)
+        public async Task<IEnumerable<int>> GenerateManyAsync(SafeMemoryStream stream) //TODO: IAsyncEnumerable in C# 8.0
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
-            using (var salt = _sessionSalt.RevealDecryptedBytes())
+            var list = new Collection<int>();
+            using (var salt = await _sessionSalt.RevealDecryptedBytesAsync().ConfigureAwait(false))
             {
                 int byteRead;
                 while ((byteRead = stream.ReadByte()) != -1)
-                    yield return Generate((byte)byteRead, salt.PlainBytes);
+                {
+                    var id = Generate((byte) byteRead, salt.PlainBytes);
+                    list.Add(id);
+                }
             }
+            return list;
         }
 
-        public int Generate(byte b, byte[] salt)
+        private int Generate(byte b, byte[] salt)
         {
             byte[] byteBuffer = null;
             try
@@ -79,16 +87,23 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             }
         }
 
-        private void InitializeSalt()
+        private async Task<IMemoryProtectedBytes> InitializeSaltAsync(IMemoryProtectedBytes sessionSalt)
         {
-            while (true)
+            const int maxRetries = 1000;
+            var retryCount = 0;
+            while (retryCount < maxRetries)
             {
                 var salt = _safeRandom.GetBytes(SaltLength);
                 if (!IsSaltValid(salt))
+                {
+                    retryCount++;
                     continue;
-                _sessionSalt.Initialize(salt);
-                break;
+                }
+                await sessionSalt.InitializeAsync(salt)
+                    .ConfigureAwait(false);
+                return sessionSalt;
             }
+            throw new ArgumentException("Could not initialize the session salt. Max retries exceeded.");
         }
 
         /// <summary>
@@ -106,7 +121,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         {
             const int totalBytes = 256;
             var byteHashes = new int[totalBytes];
-            //Fast.For(0, totalBytes, (i) => byteHashes[i] = this.GenerateInternal((byte)i);
             for (var i = 0; i < 256; i++)
                 byteHashes[i] = Generate((byte) i, salt);
             return byteHashes;

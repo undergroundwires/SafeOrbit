@@ -12,7 +12,8 @@ namespace SafeOrbit.Fakes
         public override IByteIdGenerator Provide()
         {
             var fake = new Mock<IByteIdGenerator>();
-            fake.Setup(x => x.Generate(It.IsAny<byte>())).Returns((byte b) => b);
+            fake.Setup(x => x.GenerateAsync(It.IsAny<byte>()))
+                .ReturnsAsync((byte b) => b);
             return fake.Object;
         }
     }

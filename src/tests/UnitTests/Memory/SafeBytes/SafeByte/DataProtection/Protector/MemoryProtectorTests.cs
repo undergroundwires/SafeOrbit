@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption;
@@ -54,33 +55,35 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 #endif
 
         [Test]
-        public void Protect_InvalidBlockSize_Throws()
+        public void ProtectAsync_InvalidBlockSize_Throws()
         {
             // Arrange
             var sut = GetSut();
             var invalidBytes = new byte[sut.BlockSizeInBytes - 1];
 
             // Act
-            void Action() => sut.Protect(invalidBytes);
+            Task Action() => sut.ProtectAsync(invalidBytes);
+
             // Assert
-            Assert.Throws<DataLengthException>(Action);
+            Assert.ThrowsAsync<DataLengthException>(Action);
         }
 
         [Test]
-        public void Unprotect_InvalidBlockSize_Throws()
+        public void UnprotectAsync_InvalidBlockSize_Throws()
         {
             // Arrange
             var sut = GetSut();
             var invalidBytes = new byte[sut.BlockSizeInBytes - 1];
 
             // Act
-            void Action() => sut.Unprotect(invalidBytes);
+            Task Action() => sut.UnprotectAsync(invalidBytes);
+
             // Assert
-            Assert.Throws<DataLengthException>(Action);
+            Assert.ThrowsAsync<DataLengthException>(Action);
         }
 
         [Test]
-        public void Protect_WhenByteArrayIsProtected_ByteArrayIsNotMemoryReadable()
+        public async Task ProtectAsync_WhenByteArrayIsProtected_ByteArrayIsNotMemoryReadable()
         {
             // Arrange
             var sut = GetSut();
@@ -90,14 +93,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
                 110, 120, 130, 140, 150, 160, 170
             };
             var actual = notExpected.ToArray();
+
             // Act
-            sut.Protect(actual);
+            await sut.ProtectAsync(actual).ConfigureAwait(false);
+
             // Assert
             Assert.That(actual, Is.Not.EqualTo(notExpected));
         }
 
         [Test]
-        public void Unprotect_AfterByteArrayIsProtected_BringsBackTheByteArray()
+        public async Task UnprotectAsync_AfterByteArrayIsProtected_BringsBackTheByteArray()
         {
             // Arrange
             var sut = GetSut();
@@ -107,9 +112,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
                 110, 120, 130, 140, 150, 160, 170
             };
             var actual = expected.ToArray();
+
             // Act
-            sut.Protect(actual);
-            sut.Unprotect(actual);
+            await sut.ProtectAsync(actual);
+            await sut.UnprotectAsync(actual);
+
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }

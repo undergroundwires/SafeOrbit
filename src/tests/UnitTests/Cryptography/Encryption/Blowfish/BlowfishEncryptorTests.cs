@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption.Padding;
@@ -41,42 +42,45 @@ namespace SafeOrbit.Cryptography.Encryption
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Decrypt_InputParameterIsEmpty_ThrowsException(byte[] key)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var input = new byte[0];
 
-            //Act
-            void CallWithEmptyParameter() => sut.Decrypt(input, key);
-            //Assert
-            Assert.That(CallWithEmptyParameter, Throws.TypeOf<DataLengthException>());
+            // Act
+            Task CallWithEmptyParameter() => sut.DecryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<DataLengthException>(CallWithEmptyParameter);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Decrypt_InputParameterIsNull_ThrowsArgumentNullException(byte[] key)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var input = (byte[]) null;
 
-            //Act
-            void CallWithNullParameter() => sut.Decrypt(input, key);
-            //Assert
-            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            // Act
+            Task CallWithNullParameter() => sut.DecryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(CallWithNullParameter);
         }
 
         [Test]
         public void Decrypt_KeyParameterIsEmpty_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var input = new byte[] {5, 10, 15};
             var key = new byte[0];
 
-            //Act
-            void CallWithEmptyParameter() => sut.Decrypt(input, key);
-            //Assert
-            Assert.That(CallWithEmptyParameter, Throws.TypeOf<KeySizeException>());
+            // Act
+            Task CallWithEmptyParameter() => sut.DecryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<KeySizeException>(CallWithEmptyParameter);
         }
 
         [Test]
@@ -87,54 +91,57 @@ namespace SafeOrbit.Cryptography.Encryption
             var sut = GetSut();
             var key = (byte[]) null;
 
-            //Act
-            void CallWithNullParameter() => sut.Decrypt(input, key);
-            //Assert
-            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            // Act
+            Task CallWithNullParameter() => sut.DecryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(CallWithNullParameter);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Decrypt_KeySizeIsHigherThanMaxKey_ThrowsKeySizeException(byte[] input)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var key = new byte[sut.MaxKeySizeInBits / 8 + 1];
 
-            //Act
-            void CallWithWrongKeySize() => sut.Decrypt(input, key);
-            //Assert
-            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            // Act
+            Task CallWithWrongKeySize() => sut.DecryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<KeySizeException>(CallWithWrongKeySize);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Decrypt_KeySizeIsLowerThanMinKey_ThrowsKeySizeException(byte[] input)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var key = new byte[sut.MinKeySizeInBits / 8 - 1];
 
-            //Act
-            void CallingWithWrongKeySize() => sut.Decrypt(input, key);
-            //Assert
-            Assert.That(CallingWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            // Act
+            Task CallingWithWrongKeySize() => sut.DecryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<KeySizeException>(CallingWithWrongKeySize);
         }
 
         [Test]
         [TestCase(BlowfishCipherMode.Ecb)]
         [TestCase(BlowfishCipherMode.Cbc)]
-        public void Decrypt_KeySizeIsBetweenMinKeyAndLastKey_CanDecrypt(BlowfishCipherMode cipherMode)
+        public async Task Decrypt_KeySizeIsBetweenMinKeyAndLastKey_CanDecrypt(BlowfishCipherMode cipherMode)
         {
-            //arrange
+            // Arrange
             var input = (byte[]) ByteCases.ByteArray32Length[0];
             var sut = GetSut(cipherMode);
             for (var i = sut.MinKeySizeInBits / 8; i < sut.MaxKeySizeInBits / 8; i++)
             {
                 //act
                 var key = new byte[i];
-                var encrypted = sut.Encrypt(input, key);
-                var plain = sut.Decrypt(encrypted, key);
+                var encrypted = await sut.EncryptAsync(input, key);
+                var plain = await sut.DecryptAsync(encrypted, key);
                 //assert
                 Assert.That(input, Is.EqualTo(plain));
             }
@@ -144,88 +151,94 @@ namespace SafeOrbit.Cryptography.Encryption
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Encrypt_InputParameterIsEmpty_ThrowsException(byte[] key)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var input = new byte[0];
 
-            //Act
-            void CallWithEmptyParameter() => sut.Decrypt(input, key);
-            //Assert
-            Assert.That(CallWithEmptyParameter, Throws.TypeOf<DataLengthException>());
+            // Act
+            Task CallWithEmptyParameter() => sut.DecryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<DataLengthException>(CallWithEmptyParameter);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Encrypt_InputParameterIsNull_ThrowsArgumentNullException(byte[] key)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var input = (byte[]) null;
 
-            //Act
-            void CallWithNullParameter() => sut.Encrypt(input, key);
-            //Assert
-            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            // Act
+            Task CallWithNullParameter() => sut.EncryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(CallWithNullParameter);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Encrypt_KeyParameterIsEmpty_ThrowsArgumentNullException(byte[] input)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var key = new byte[0];
 
-            //Act
-            void CallWithEmptyParameter() => sut.Encrypt(input, key);
-            //Assert
-            Assert.That(CallWithEmptyParameter, Throws.TypeOf<KeySizeException>());
+            // Act
+            Task CallWithEmptyParameter() => sut.EncryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<KeySizeException>(CallWithEmptyParameter);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Encrypt_KeyParameterIsNull_ThrowsArgumentNullException(byte[] input)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var key = (byte[]) null;
 
-            //Act
-            void CallWithNullParameter() => sut.Encrypt(input, key);
-            //Assert
-            Assert.That(CallWithNullParameter, Throws.TypeOf<ArgumentNullException>());
+            // Act
+            Task CallWithNullParameter() => sut.EncryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(CallWithNullParameter);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Encrypt_KeySizeIsHigherThanMaxKey_ThrowsKeySizeException(byte[] input)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var key = new byte[sut.MaxKeySizeInBits / 8 + 1];
 
-            //Act
-            void CallWithWrongKeySize() => sut.Encrypt(input, key);
-            //Assert
-            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            // Act
+            Task CallWithWrongKeySize() => sut.EncryptAsync(input, key);
+
+            // Assert
+            Assert.ThrowsAsync<KeySizeException>(CallWithWrongKeySize);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.ByteArray32Length))]
         public void Encrypt_KeySizeIsLowerThanMinKey_ThrowsKeySizeException(byte[] input)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var key = new byte[sut.MinKeySizeInBits / 8 - 1];
 
-            //Act
-            void CallWithWrongKeySize() => sut.Encrypt(input, key);
+            // Act
+            Task CallWithWrongKeySize() => sut.EncryptAsync(input, key);
+
             //Assert
-            Assert.That(CallWithWrongKeySize, Throws.TypeOf<KeySizeException>());
+            Assert.ThrowsAsync<KeySizeException>(CallWithWrongKeySize);
         }
 
         [Test]
-        public void Encrypt_DataSizeIsBlockBytes_PadsAsExpected()
+        public async Task Encrypt_DataSizeIsBlockBytes_PadsAsExpected()
         {
             // Arrange
             var padder = new Mock<IPadder>();
@@ -236,7 +249,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var data = new byte[blockSizeInBytes];
 
             // Act
-            sut.Encrypt(data, new byte[sut.MinKeySizeInBits / 8]);
+            await sut.EncryptAsync(data, new byte[sut.MinKeySizeInBits / 8]);
 
             // Assert
             padder.Verify(
@@ -247,7 +260,7 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         [Test]
-        public void Encrypt_DataSizeIsLessThanBlockBytes_PadsAsExpected()
+        public async Task Encrypt_DataSizeIsLessThanBlockBytes_PadsAsExpected()
         {
             // Arrange
             var padder = new Mock<IPadder>();
@@ -259,7 +272,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var data = new byte[blockSizeInBytes - expectedPadLength];
 
             // Act
-            sut.Encrypt(data, new byte[sut.MinKeySizeInBits / 8]);
+            await sut.EncryptAsync(data, new byte[sut.MinKeySizeInBits / 8]);
 
             // Assert
             padder.Verify(
@@ -270,7 +283,7 @@ namespace SafeOrbit.Cryptography.Encryption
         }
 
         [Test]
-        public void Encrypt_DataSizeIsHigherThanBlockBytes_PadsAsExpected()
+        public async Task Encrypt_DataSizeIsHigherThanBlockBytes_PadsAsExpected()
         {
             // Arrange
             var padder = new Mock<IPadder>();
@@ -282,7 +295,7 @@ namespace SafeOrbit.Cryptography.Encryption
             var data = new byte[blockSizeInBytes + 5];
 
             // Act
-            sut.Encrypt(data, new byte[sut.MinKeySizeInBits / 8]);
+            await sut.EncryptAsync(data, new byte[sut.MinKeySizeInBits / 8]);
 
             // Assert
             padder.Verify(

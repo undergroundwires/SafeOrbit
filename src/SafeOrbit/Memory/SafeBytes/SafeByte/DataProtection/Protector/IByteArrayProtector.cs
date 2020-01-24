@@ -1,4 +1,6 @@
-﻿namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
+﻿using System.Threading.Tasks;
+
+namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 {
     /// <summary>
     ///     Encrypts and decrypts a <see cref="byte" /> array.
@@ -17,12 +19,12 @@
         ///     Encrypts the specified user data.
         /// </summary>
         /// <param name="userData">The data to encrypt.</param>
-        void Protect(byte[] userData);
+        Task ProtectAsync(byte[] userData);
 
         /// <summary>
         ///     Decrypts the specified encrypted data.
         /// </summary>
         /// <param name="encryptedData">The encrypted data to decrypt.</param>
-        void Unprotect(byte[] encryptedData);
+        Task UnprotectAsync(byte[] encryptedData);
     }
 }

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Extensions;
-using SafeOrbit.Helpers;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
+using SafeOrbit.Parallel;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {
@@ -21,7 +22,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// <summary>
         ///     The encryption key to encrypt/decrypt the inner list.
         /// </summary>
-        private readonly IMemoryProtectedBytes _encryptionKey;
+        private readonly AsyncLazy<IMemoryProtectedBytes> _encryptionKey;
         private readonly byte[] _salt;
 
         private readonly IFastEncryptor _encryptor;
@@ -54,8 +55,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             ISafeByteFactory safeByteFactory,
             IByteIdListSerializer<int> serializer)
         {
-            _encryptionKey = encryptionKey ?? throw new ArgumentNullException(nameof(encryptionKey));
-            _encryptionKey.Initialize(fastRandom.GetBytes(encryptionKey.BlockSizeInBytes));
+            if (fastRandom == null) throw new ArgumentNullException(nameof(fastRandom));
+            _encryptionKey = new AsyncLazy<IMemoryProtectedBytes>(async () =>
+                {
+                    await encryptionKey.InitializeAsync(fastRandom.GetBytes(encryptionKey.BlockSizeInBytes))
+                        .ConfigureAwait(false);
+                    return encryptionKey;
+                });
             _encryptor = encryptor ?? throw new ArgumentNullException(nameof(encryptor));
             _safeByteFactory = safeByteFactory ?? throw new ArgumentNullException(nameof(safeByteFactory));
             _serializer = serializer;
@@ -65,33 +71,34 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
-        public void Append(ISafeByte safeByte)
+        public Task AppendAsync(ISafeByte safeByte)
         {
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
-            AppendMany(new[] {safeByte});
+            return AppendManyAsync(new[] {safeByte});
         }
 
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="safeBytes" /> is <see langword="null" />.</exception>
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
-        public void AppendMany(IEnumerable<ISafeByte> safeBytes)
+        public async Task AppendManyAsync(IEnumerable<ISafeByte> safeBytes)
         {
             EnsureNotDisposed();
             if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
             var bytes = safeBytes as ISafeByte[] ?? safeBytes.ToArray();
             if (!bytes.Any())  return;
-            if(bytes.Any(b=> b == null))  throw new ArgumentNullException("List has null object", nameof(safeBytes));
+            if(bytes.Any(b=> b == null))  throw new ArgumentNullException(nameof(safeBytes), "List has null object");
 
-            using (var key = _encryptionKey.RevealDecryptedBytes())
+            using (var key = await _encryptionKey.RevealDecryptedBytesAsync().ConfigureAwait(false))
             {
-                var list = TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes));
+                var list = await DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes)
+                    .ConfigureAwait(false);
                 foreach (var @byte in bytes)
                 {
                     list.Add(@byte.Id);
                     Length++;
                 }
-                _encryptedCollection =
-                    TaskContext.RunSync(() => SerializeAndEncryptAsync(list.ToArray(), key.PlainBytes));
+                _encryptedCollection = await SerializeAndEncryptAsync(list.ToArray(), key.PlainBytes)
+                    .ConfigureAwait(false);
                 list.Clear();
             }
         }
@@ -108,40 +115,52 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                     $"Must be non-negative than zero and lower than length {Length}");
             EnsureNotDisposed();
             EnsureNotEmpty();
-            ICollection<int> list;
-            using (var key = _encryptionKey.RevealDecryptedBytes())
+            ICollection<int> list = default;
+            try
             {
-                list = await DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes)
+                using (var key = await _encryptionKey.RevealDecryptedBytesAsync().ConfigureAwait(false))
+                {
+                    list = await DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes)
+                        .ConfigureAwait(false);
+                }
+                if (index >= list.Count)
+                    throw new ArgumentOutOfRangeException(nameof(index), index,
+                        "Inner encrypted collection is corrupt." +
+                        $"Must be lower than length {Length} but was {index}.");
+                var id = list.ElementAt(index);
+                var safeByte = await _safeByteFactory.GetByIdAsync(id)
                     .ConfigureAwait(false);
+                return safeByte;
             }
-
-            if (index >= list.Count)
-                throw new ArgumentOutOfRangeException(nameof(index), index,
-                    "Inner encrypted collection is corrupt." +
-                    $"Must be lower than length {Length} but was {index}.");
-            var id = list.ElementAt(index);
-            var safeByte = _safeByteFactory.GetById(id);
-            list.Clear();
-            return safeByte;
+            finally
+            {
+                list?.Clear();
+            }
         }
 
         /// <inheritdoc />
-        /// <exception cref="InvalidOperationException"><see cref="EncryptedSafeByteCollection" /> instance is empty.</exception>
-        /// <exception cref="ObjectDisposedException"><see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
-        public byte[] ToDecryptedBytes()
+        /// <inheritdoc cref="EnsureNotDisposed"/>
+        /// <inheritdoc cref="EnsureNotEmpty" />
+        public async Task<byte[]> ToDecryptedBytesAsync()
         {
-            EnsureNotEmpty();
             EnsureNotDisposed();
+            EnsureNotEmpty();
             ICollection<int> safeBytesIds;
-            using (var key = _encryptionKey.RevealDecryptedBytes())
+            using (var key = await _encryptionKey.RevealDecryptedBytesAsync().ConfigureAwait(false))
             {
-                safeBytesIds =
-                    TaskContext.RunSync(() => DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes));
+                safeBytesIds = await DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes)
+                    .ConfigureAwait(false);
             }
 
             if (safeBytesIds.IsNullOrEmpty()) return new byte[0];
-            var safeBytes = safeBytesIds.Select(id => _safeByteFactory.GetById(id));
-            var decryptedBytes = GetAllAndMerge(safeBytes);
+
+            var safeBytes = new Collection<ISafeByte>();
+            foreach (var id in safeBytesIds)
+            {
+                var safeByte = await _safeByteFactory.GetByIdAsync(id).ConfigureAwait(false); 
+                safeBytes.Add(safeByte);
+            }
+            var decryptedBytes = await GetAllAndMergeAsync(safeBytes).ConfigureAwait(false);
             return decryptedBytes;
         }
 
@@ -154,20 +173,22 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// </summary>
         public void Dispose()
         {
-            if (_encryptedCollection != null) Array.Clear(_encryptedCollection, 0, _encryptedCollection.Length);
-            _encryptionKey.Dispose();
+            if (_encryptedCollection != null)
+                Array.Clear(_encryptedCollection, 0, _encryptedCollection.Length);
+            TaskContext.RunSync(() => _encryptionKey.ValueAsync()).Dispose(); //TODO: Use DisposablePattern instead
             _isDisposed = true;
             Length = 0;
         }
 
-        private byte[] GetAllAndMerge(IEnumerable<ISafeByte> safeBytes)
+        private async Task<byte[]> GetAllAndMergeAsync(IEnumerable<ISafeByte> safeBytes)
         {
             var buffer = new byte[Length];
-            Fast.For(0, Length, i =>
+            for(var i = 0; i < Length; i++)
             {
-                var @byte = safeBytes.ElementAt(i).Get();
+                var @byte = await safeBytes.ElementAt(i).GetAsync()
+                    .ConfigureAwait(false);
                 buffer[i] = @byte;
-            });
+            }
             return buffer;
         }
 
@@ -182,7 +203,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             {
                 var deserializedBytes = await _serializer.DeserializeAsync(decryptedBytes)
                     .ConfigureAwait(false);
-                ;
                 return deserializedBytes.ToList();
             }
             finally

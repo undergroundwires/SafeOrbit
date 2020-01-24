@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace SafeOrbit.Memory
 {
@@ -6,33 +7,38 @@ namespace SafeOrbit.Memory
     public class SafeStringToStringMarshalerTests
     {
         [Test]
-        public void String_AfterSettingSafeString_returnsStringOfSafeString()
+        public async Task String_AfterSettingSafeString_ReturnsStringOfSafeString()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             const string expected = "갿äÅ++¨¨'e";
             var safeString = new SafeString();
-            foreach (var ch in expected.ToCharArray()) safeString.Append(ch);
-            //Act
+            foreach (var ch in expected.ToCharArray())
+                await safeString.AppendAsync(ch);
+
+            // Act
             sut.SafeString = safeString;
             var actual = sut.String;
-            //Assert
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void String_AfterDisposingTheInstance_doesNotReturnPlainText()
+        public void String_AfterDisposingTheInstance_DoesNotReturnPlainText()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             const string plainText = "testString";
             var safeString = new SafeString();
-            foreach (var ch in plainText.ToCharArray()) safeString.Append(ch);
-            //Act
+            foreach (var ch in plainText.ToCharArray()) safeString.AppendAsync(ch);
+
+            // Act
             sut.SafeString = safeString;
             sut.Dispose();
             var actual = sut.String;
-            //assert
+
+            // Assert
             Assert.That(actual, Is.Not.EqualTo(plainText));
         }
 

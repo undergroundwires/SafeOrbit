@@ -35,7 +35,7 @@ namespace SafeOrbit.Cryptography.Encryption
     {
         public const BlowfishCipherMode DefaultCipherMode = BlowfishCipherMode.Cbc;
         public const PaddingMode DefaultPaddingMode = PaddingMode.PKCS7;
-        public static IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
+        public static readonly IFastEncryptor StaticInstance = new BlowfishEncryptor(BlowfishCipherMode.Cbc);
 
         /// <summary>
         ///     Initialized BlowfishEncryptor with <see cref="DefaultCipherMode" /> and <see cref="DefaultPaddingMode" />
@@ -72,13 +72,7 @@ namespace SafeOrbit.Cryptography.Encryption
         public override int MaxKeySizeInBits { get; } = 448;
         public override int BlockSizeInBits { get; } = 64;
         public override int IvSizeInBits => CipherMode == BlowfishCipherMode.Ecb ? 0 : 8;
-
-        /// <inheritdoc cref="EncryptAsync" />
-        public byte[] Encrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => EncryptAsync(input, key));
-
-        /// <inheritdoc cref="DecryptAsync" />
-        public byte[] Decrypt(byte[] input, byte[] key) => TaskContext.RunSync(() => DecryptAsync(input, key));
-
+        
         /// <inheritdoc />
         /// <inheritdoc cref="EnsureParameters" />
         public Task<byte[]> EncryptAsync(byte[] input, byte[] key)

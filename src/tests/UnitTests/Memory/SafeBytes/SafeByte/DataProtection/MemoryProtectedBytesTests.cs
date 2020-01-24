@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Extensions;
@@ -16,63 +17,63 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
     public class MemoryProtectedBytesTests : TestsFor<IMemoryProtectedBytes>
     {
         [Test]
-        public void Initialize_AlreadyInitialized_ThrowsException()
+        public async Task InitializeAsync_AlreadyInitialized_ThrowsException()
         {
             // Arrange
             var sut = GetSut();
-            sut.Initialize(GetValidBytes());
+            await sut.InitializeAsync(GetValidBytes());
 
             // Act
-            void InitializeAgain() => sut.Initialize(GetValidBytes());
+            Task InitializeAgain() => sut.InitializeAsync(GetValidBytes());
 
             // Assert
-            Assert.Throws<InvalidOperationException>(InitializeAgain);
+            Assert.ThrowsAsync<InvalidOperationException>(InitializeAgain);
         }
 
         [Test]
-        public void Initialize_DisposedInstance_ThrowsException()
+        public void InitializeAsync_DisposedInstance_ThrowsException()
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
 
             // Act
-            void Initialize() => sut.Initialize(GetValidBytes());
+            Task Initialize() => sut.InitializeAsync(GetValidBytes());
 
             // Assert
-            Assert.Throws<ObjectDisposedException>(Initialize);
+            Assert.ThrowsAsync<ObjectDisposedException>(Initialize);
         }
 
         [Test]
-        public void Initialize_NullBytes_ThrowsException()
+        public void InitializeAsync_NullBytes_ThrowsException()
         {
             // Arrange
             var sut = GetSut();
             var nullBytes = (byte[]) null;
 
             // Act
-            void Initialize() => sut.Initialize(nullBytes);
+            Task Initialize() => sut.InitializeAsync(nullBytes);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Initialize);
+            Assert.ThrowsAsync<ArgumentNullException>(Initialize);
         }
 
         [Test]
-        public void Initialize_EmptyBytes_ThrowsException()
+        public void InitializeAsync_EmptyBytes_ThrowsException()
         {
             // Arrange
             var sut = GetSut();
             var emptyBytes = new byte[0];
 
             // Act
-            void Initialize() => sut.Initialize(emptyBytes);
+            Task Initialize() => sut.InitializeAsync(emptyBytes);
 
             // Assert
-            Assert.Throws<ArgumentException>(Initialize);
+            Assert.ThrowsAsync<ArgumentException>(Initialize);
         }
 
         [Test]
-        public void Initialize_BytesNotConformingToBlockSize_ThrowsException()
+        public void InitializeAsync_BytesNotConformingToBlockSize_ThrowsException()
         {
             // Arrange
             var protectorMock = new Mock<IByteArrayProtector>();
@@ -81,27 +82,29 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             using var sut = GetSut(protector: protectorMock.Object);
 
             // Act
-            void Initialize() => sut.Initialize(plainBytes);
+            Task Initialize() => sut.InitializeAsync(plainBytes);
 
             // Assert
-            Assert.Throws<CryptographicException>(Initialize);
+            Assert.ThrowsAsync<CryptographicException>(Initialize);
         }
 
         [Test]
-        public void Initialize_ValidBytes_ProtectsPlainBytes()
+        public async Task InitializeAsync_ValidBytes_ProtectsPlainBytes()
         {
             // Arrange
             var plainBytes = GetValidBytes();
             var protectorMock = new Mock<IByteArrayProtector>(MockBehavior.Strict);
             protectorMock.SetupGet(m => m.BlockSizeInBytes).Returns(plainBytes.Length);
-            protectorMock.Setup(m => m.Protect(plainBytes)).Verifiable();
+            protectorMock.Setup(m => m.ProtectAsync(plainBytes))
+                .Returns(Task.FromResult(true))
+                .Verifiable();
             using var sut = GetSut(protector: protectorMock.Object);
 
             // Act
-            sut.Initialize(plainBytes);
+            await sut.InitializeAsync(plainBytes);
 
             // Assert
-            protectorMock.Verify(s => s.Protect(plainBytes), Times.Once);
+            protectorMock.Verify(s => s.ProtectAsync(plainBytes), Times.Once);
         }
 
         [Test]
@@ -144,6 +147,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
             // Act
             void Dispose() => sut.Dispose();
+
             // Assert
             Assert.DoesNotThrow(Dispose);
         }
@@ -153,20 +157,24 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             var actual = sut.IsDisposed;
+
             // Assert
             Assert.False(actual);
         }
 
         [Test]
-        public void IsDisposed_Initialized_ReturnsFalse()
+        public async Task IsDisposed_Initialized_ReturnsFalse()
         {
             // Arrange
             var sut = GetSut();
-            sut.Initialize(GetValidBytes());
+            await sut.InitializeAsync(GetValidBytes());
+
             // Act
             var actual = sut.IsDisposed;
+
             // Assert
             Assert.False(actual);
         }
@@ -177,8 +185,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Arrange
             var sut = GetSut();
             sut.Dispose();
+
             // Act
             var actual = sut.IsDisposed;
+
             // Assert
             Assert.True(actual);
         }
@@ -188,73 +198,83 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             var actual = sut.IsInitialized;
+
             // Assert
             Assert.False(actual);
         }
 
         [Test]
-        public void IsInitialized_InitializedInstance_ReturnsTrue()
+        public async Task IsInitialized_InitializedInstance_ReturnsTrue()
         {
             // Arrange
             var sut = GetSut();
-            sut.Initialize(GetValidBytes());
+            await sut.InitializeAsync(GetValidBytes());
+
             // Act
             var actual = sut.IsInitialized;
+
             // Assert
             Assert.True(actual);
         }
 
         [Test]
-        public void IsInitialized_InitializedAndDisposedInstance_ReturnsTrue()
+        public async Task IsInitialized_InitializedAndDisposedInstance_ReturnsTrue()
         {
             // Arrange
             var sut = GetSut();
-            sut.Initialize(GetValidBytes());
+            await sut.InitializeAsync(GetValidBytes());
             sut.Dispose();
+
             // Act
             var actual = sut.IsInitialized;
+
             // Assert
             Assert.True(actual);
         }
 
         [Test]
-        public void RevealDecryptedBytes_NotInitialized_ThrowsException()
+        public void RevealDecryptedBytesAsync_NotInitialized_ThrowsException()
         {
             // Arrange
             var sut = GetSut();
 
             // Act
-            void RevealDecryptedBytes() => sut.RevealDecryptedBytes();
+            Task RevealDecryptedBytes() => sut.RevealDecryptedBytesAsync();
+
             // Assert
-            Assert.Throws<InvalidOperationException>(RevealDecryptedBytes);
+            Assert.ThrowsAsync<InvalidOperationException>(RevealDecryptedBytes);
         }
 
         [Test]
-        public void RevealDecryptedBytes_DisposedInstance_ThrowsException()
+        public async Task RevealDecryptedBytesAsync_DisposedInstance_ThrowsException()
         {
             // Arrange
             var sut = GetSut();
-            sut.Initialize(GetValidBytes());
+            await sut.InitializeAsync(GetValidBytes());
             sut.Dispose();
 
             // Act
-            void RevealDecryptedBytes() => sut.RevealDecryptedBytes();
+            Task RevealDecryptedBytesAsync() => sut.RevealDecryptedBytesAsync();
+
             // Assert
-            Assert.Throws<ObjectDisposedException>(RevealDecryptedBytes);
+            Assert.ThrowsAsync<ObjectDisposedException>(RevealDecryptedBytesAsync);
         }
 
         [Test]
-        public void RevealDecryptedBytes_NewInstance_ReturnsUnprotectedBytes()
+        public async Task RevealDecryptedBytesAsync_NewInstance_ReturnsUnprotectedBytes()
         {
             // Arrange
             var expected = GetValidBytes();
             var sut = GetSut();
-            sut.Initialize(expected.CopyToNewArray());
+            await sut.InitializeAsync(expected.CopyToNewArray());
+
             // Act
-            var session = sut.RevealDecryptedBytes();
+            var session = await sut.RevealDecryptedBytesAsync();
             var actual = session.PlainBytes;
+
             // Assert
             Console.WriteLine("Expected:" + Environment.NewLine +
                               string.Join(", ", expected) + Environment.NewLine +
@@ -264,37 +284,39 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         }
 
         [Test]
-        public void RevealDecryptedBytes_RevealedTwiceWithoutDisposing_ReturnsUnprotectedBytes()
+        public async Task RevealDecryptedBytesAsync_RevealedTwiceWithoutDisposing_ReturnsUnprotectedBytes()
         {
             // Arrange
             var expected = GetValidBytes();
             var sut = GetSut();
-            sut.Initialize(expected.CopyToNewArray());
+            await sut.InitializeAsync(expected.CopyToNewArray());
+
             // Act
-            using var firstSession = sut.RevealDecryptedBytes();
-            using var secondSession = sut.RevealDecryptedBytes();
+            using var firstSession = await sut.RevealDecryptedBytesAsync();
+            using var secondSession = await sut.RevealDecryptedBytesAsync();
             var firstBytes = firstSession.PlainBytes;
             var secondBytes = secondSession.PlainBytes;
+
             // Assert
             Assert.True(expected.SequenceEqual(firstBytes));
             Assert.True(expected.SequenceEqual(secondBytes));
         }
 
         [Test]
-        public void RevealDecryptedBytes_RevealedAndDisposedTwice_ReturnsUnprotectedBytes()
+        public async Task RevealDecryptedBytesAsync_RevealedAndDisposedTwice_ReturnsUnprotectedBytes()
         {
             // Arrange
             var expected = GetValidBytes();
             var sut = GetSut();
-            sut.Initialize(expected.CopyToNewArray());
+            await sut.InitializeAsync(expected.CopyToNewArray());
+
             // Act
             byte[] firstBytes, secondBytes;
-            using (var firstSession = sut.RevealDecryptedBytes())
+            using (var firstSession = await sut.RevealDecryptedBytesAsync())
             {
                 firstBytes = firstSession.PlainBytes.CopyToNewArray();
             }
-
-            using (var secondSession = sut.RevealDecryptedBytes())
+            using (var secondSession = await sut.RevealDecryptedBytesAsync())
             {
                 secondBytes = secondSession.PlainBytes.CopyToNewArray();
             }
@@ -313,6 +335,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
             // Act
             void DeepClone() => sut.DeepClone();
+
             // Assert
             Assert.Throws<ObjectDisposedException>(DeepClone);
         }
@@ -322,23 +345,27 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             // Arrange
             var sut = GetSut();
+
             // Act
             var clone = sut.DeepClone();
+
             // Assert
             Assert.False(clone.IsInitialized);
             Assert.False(clone.IsDisposed);
         }
 
         [Test]
-        public void DeepClone_Initialized_CloneHasEqualBytes()
+        public async Task DeepClone_Initialized_CloneHasEqualBytes()
         {
             // Arrange
             var expected = GetValidBytes();
             var sut = GetSut();
-            sut.Initialize(expected.CopyToNewArray());
+            await sut.InitializeAsync(expected.CopyToNewArray());
+
             // Act
             var clone = sut.DeepClone();
-            var actual = clone.RevealDecryptedBytes().PlainBytes;
+            var actual = (await clone.RevealDecryptedBytesAsync()).PlainBytes;
+
             // Assert
             Console.WriteLine("Expected:" + Environment.NewLine +
                               string.Join(", ", expected) + Environment.NewLine +
@@ -348,16 +375,18 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         }
 
         [Test]
-        public void DeepClone_OriginalIsDisposed_DoesNotAffectClone()
+        public async Task DeepClone_OriginalIsDisposed_DoesNotAffectClone()
         {
             // Arrange
             var expected = GetValidBytes();
             var sut = GetSut();
-            sut.Initialize(expected.CopyToNewArray());
+            await sut.InitializeAsync(expected.CopyToNewArray());
+
             // Act
             var clone = sut.DeepClone();
             sut.Dispose();
-            var actual = clone.RevealDecryptedBytes().PlainBytes;
+            var actual = (await clone.RevealDecryptedBytesAsync()).PlainBytes;
+
             // Assert
             Console.WriteLine("Expected:" + Environment.NewLine +
                               string.Join(",", expected) + Environment.NewLine +

@@ -36,33 +36,12 @@ namespace SafeOrbit.Cryptography.Encryption
     public interface ISafeEncryptor<TResult, in TInput, in TKey, in TSalt> : IEncryptor
     {
         /// <summary>
-        ///     Encrypts the specified input with the given key and the salt.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="salt">The salt.</param>
-        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="EncryptAsync" />
-        TResult Encrypt(TInput input, TKey key, TSalt salt);
-
-        /// <summary>
-        ///     Decrypts the specified input with the given key and the salt.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="salt">The salt.</param>
-        /// <returns>Encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="DecryptAsync" />
-        TResult Decrypt(TInput input, TKey key, TSalt salt);
-
-        /// <summary>
         ///     Encrypts the specified input with the given key and the salt asynchronously.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
         /// <returns>A <see cref="Task" /> for encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="Encrypt" />
         Task<TResult> EncryptAsync(TInput input, TKey key, TSalt salt);
 
         /// <summary>
@@ -72,7 +51,6 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <param name="key">The key.</param>
         /// <param name="salt">The salt.</param>
         /// <returns>A <see cref="Task" /> for encrypted <typeparamref name="TResult" /></returns>
-        /// <seealso cref="Decrypt" />
         Task<TResult> DecryptAsync(TInput input, TKey key, TSalt salt);
     }
 }

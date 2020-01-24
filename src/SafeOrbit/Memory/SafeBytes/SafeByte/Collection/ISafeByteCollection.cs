@@ -16,18 +16,21 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// </summary>
         /// <value>The length.</value>
         int Length { get; }
+
         /// <summary>
         ///     Appends the specified <see cref="ISafeByte" /> instance to the inner encrypted collection.
         /// </summary>
         /// <param name="safeByte">The safe byte.</param>
         /// <seealso cref="ISafeByte" />
-        void Append(ISafeByte safeByte);
+        Task AppendAsync(ISafeByte safeByte);
+
         /// <summary>
         ///     Appends the list of <see cref="ISafeByte" /> to the end of the collection
         /// </summary>
         /// <param name="safeBytes">Bytes to append.</param>
         /// <seealso cref="ISafeByte" />
-        void AppendMany(IEnumerable<ISafeByte> safeBytes);
+        Task AppendManyAsync(IEnumerable<ISafeByte> safeBytes);
+
         /// <summary>
         ///     Gets the byte as <see cref="ISafeByte" /> for the specified index asynchronously.
         /// </summary>
@@ -38,6 +41,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     Returns all of the real byte values that <see cref="ISafeByteCollection" /> holds.
         ///     CAUTION: Reveals all protected data in memory. Use with <see cref="SafeMemoryStream" />.
         /// </summary>
-        byte[] ToDecryptedBytes();
+        Task<byte[]> ToDecryptedBytesAsync();
     }
 }

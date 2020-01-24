@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
-using SafeOrbit.Helpers;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
+using SafeOrbit.Parallel;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {
@@ -105,24 +106,22 @@ namespace SafeOrbit.Memory.SafeBytesServices
 
         /// <exception cref="ObjectDisposedException">If object is disposed</exception>
         /// <exception cref="InvalidOperationException">Thrown when byte is already set</exception>
-        public void Set(byte b)
+        public async Task SetAsync(byte b)
         {
             EnsureNotDisposed();
             EnsureByteIsNotSet();
-            //Generate ID
-            _id = _byteIdGenerator.Generate(b);
-            //Encrypt
-            Initialize(b);
+            // Generate ID
+            _id = await _byteIdGenerator.GenerateAsync(b)
+                .ConfigureAwait(false);
+            // Encrypt
+            await InitializeAsync(b).ConfigureAwait(false);
             IsByteSet = true;
         }
 
-        /// <summary>
-        ///     Decrypts and returns the byte that this <see cref="SafeByte" /> instance represents.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         /// <exception cref="InvalidOperationException">Thrown when byte is not set</exception>
         /// <exception cref="ObjectDisposedException">If object is disposed</exception>
-        public byte Get()
+        public async Task<byte> GetAsync()
         {
             EnsureNotDisposed();
             EnsureByteIsSet();
@@ -132,14 +131,15 @@ namespace SafeOrbit.Memory.SafeBytesServices
                 var encryptedBuffer = new byte[_encryptedByteLength];
                 try
                 {
-                    using (var @byte = _encryptedByte.RevealDecryptedBytes())
+                    using (var @byte = await _encryptedByte.RevealDecryptedBytesAsync().ConfigureAwait(false))
                     {
                         Buffer.BlockCopy(@byte.PlainBytes, 0, encryptedBuffer, 0, _encryptedByteLength);
                     }
 
-                    using (var encryptionKey = _encryptionKey.RevealDecryptedBytes())
+                    using (var encryptionKey = await _encryptionKey.RevealDecryptedBytesAsync().ConfigureAwait(false))
                     {
-                        byteBuffer = _encryptor.Decrypt(encryptedBuffer, encryptionKey.PlainBytes);
+                        byteBuffer = await _encryptor.DecryptAsync(encryptedBuffer, encryptionKey.PlainBytes)
+                            .ConfigureAwait(false);
                     }
 
                     //Extract the byte from arbitrary bytes
@@ -181,23 +181,27 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return clone;
         }
 
+        /// <exception cref="InvalidOperationException">Byte is not set in one of the instances</exception>
         public bool Equals(ISafeByte other)
         {
             EnsureNotDisposed();
             if (other == null)
                 return false;
-            if (!IsByteSet && !other.IsByteSet)
-                return true;
+            if (!other.IsByteSet || !IsByteSet)
+                throw new InvalidOperationException("Byte is not set in one of the instances");
             if (IsByteSet && other.IsByteSet)
                 return AreIdsSame(Id, other.GetHashCode());
             return false;
         }
 
-        public bool Equals(byte other)
+        /// <inheritdoc cref="EnsureByteIsSet"/>
+        /// <inheritdoc cref="EnsureNotDisposed"/>
+        public async Task<bool> EqualsAsync(byte other)
         {
             EnsureNotDisposed();
             EnsureByteIsSet();
-            var otherId = _byteIdGenerator.Generate(other);
+            var otherId = await _byteIdGenerator.GenerateAsync(other)
+                .ConfigureAwait(false);
             return AreIdsSame(Id, otherId);
         }
 
@@ -217,11 +221,12 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return obj switch
             {
                 ISafeByte sb => Equals(sb),
-                byte @byte => Equals(@byte),
                 null => false,
+                byte _ => throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead"),
                 _ => throw new ArgumentException("Unknown object type")
             };
         }
+        
 
         /// <summary>
         ///     Returns a hash code for this instance.
@@ -240,47 +245,48 @@ namespace SafeOrbit.Memory.SafeBytesServices
         public override string ToString()
         {
 #if DEBUG
-            return $"InnerByte = {Get()}";
+            return $"(DEBUG) InnerByte = {TaskContext.RunSync(GetAsync)}";
 #else
             return "";
 #endif
         }
 
-        private void Initialize(byte b)
+        private async Task InitializeAsync(byte b)
         {
             //Mix the with arbitrary bytes
             var saltSize = _encryptedByte.BlockSizeInBytes;
             _realBytePosition = _fastRandom.GetInt(0, saltSize);
             var arbitraryBytes = _fastRandom.GetBytes(saltSize);
-            RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
-                //Action
-                () =>
+            try
+            {
+                arbitraryBytes[_realBytePosition] = b;
+                // Get key
+                var keySize = _encryptionKey.BlockSizeInBytes;
+                var encryptionKey = _fastRandom.GetBytes(keySize);
+                // Encrypt
+                var encryptedBuffer = default(byte[]);
+                try
                 {
-                    arbitraryBytes[_realBytePosition] = b;
-                    //Get key
-                    var keySize = _encryptionKey.BlockSizeInBytes;
-                    var encryptionKey = _fastRandom.GetBytes(keySize);
-                    //Encrypt
-                    var encryptedBuffer = default(byte[]);
-                    RuntimeHelper.ExecuteCodeWithGuaranteedCleanup(
-                        //Action
-                        () =>
-                        {
-                            encryptedBuffer = _encryptor.Encrypt(arbitraryBytes, encryptionKey);
-                            //Add arbitrary bytes
-                            _encryptedByteLength = encryptedBuffer.Length;
-                            _encryptedByte.Initialize(GetMemoryProtectableSizedBytes(encryptedBuffer));
-                        },
-                        //Cleanup
-                        () =>
-                        {
-                            if (encryptedBuffer != null)
-                                Array.Clear(encryptedBuffer, 0, encryptedBuffer.Length);
-                        });
-                    _encryptionKey.Initialize(encryptionKey);
-                },
-                //Cleanup
-                () => { Array.Clear(arbitraryBytes, 0, arbitraryBytes.Length); });
+                    encryptedBuffer = await _encryptor.EncryptAsync(arbitraryBytes, encryptionKey)
+                        .ConfigureAwait(false);
+                    //Add arbitrary bytes
+                    _encryptedByteLength = encryptedBuffer.Length;
+                    await _encryptedByte.InitializeAsync(GetMemoryProtectableSizedBytes(encryptedBuffer))
+                        .ConfigureAwait(false);
+                }
+                finally
+                {
+                    if (encryptedBuffer != null)
+                        Array.Clear(encryptedBuffer, 0, encryptedBuffer.Length);
+                }
+                await _encryptionKey.InitializeAsync(encryptionKey)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                if(arbitraryBytes != null)
+                    Array.Clear(arbitraryBytes, 0, arbitraryBytes.Length);
+            }
         }
 
         /// <summary>
@@ -301,7 +307,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         /// <exception cref="System.InvalidOperationException">Thrown when byte is not set</exception>
         private void EnsureByteIsSet()
         {
-            if (!IsByteSet) throw new InvalidOperationException($"Byte must be set using {nameof(Set)} method.");
+            if (!IsByteSet) throw new InvalidOperationException($"Byte must be set using {nameof(SetAsync)} method.");
         }
 
         /// <exception cref="InvalidOperationException">Thrown when byte is already set</exception>
@@ -318,6 +324,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return result == 0;
         }
 
+        /// <exception cref="ObjectDisposedException">Object id isposed</exception>
         private void EnsureNotDisposed()
         {
             if (_isDisposed)

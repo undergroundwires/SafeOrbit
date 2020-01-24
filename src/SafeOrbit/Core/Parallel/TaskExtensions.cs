@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SafeOrbit.Extensions
+namespace SafeOrbit.Parallel
 {
     /// <summary>
     ///     Stephen Cleary approved

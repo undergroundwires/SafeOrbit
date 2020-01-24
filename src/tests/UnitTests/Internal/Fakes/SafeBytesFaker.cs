@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SafeOrbit.Memory;
+using SafeOrbit.Parallel;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes
@@ -12,29 +14,30 @@ namespace SafeOrbit.Fakes
 
         private class FakeSafeBytes : ISafeBytes
         {
-            public int Length => _bytes.Count();
+            public int Length => _bytes.Count;
             public bool IsDisposed { get; private set; }
 
-            public void AppendMany(SafeMemoryStream bytes)
+            public async Task AppendManyAsync(SafeMemoryStream bytes)
             {
                 int byteRead;
                 while ((byteRead = bytes.ReadByte()) != -1)
-                    Append((byte)byteRead);
+                    await AppendAsync((byte)byteRead);
             }
 
-            public void Append(ISafeBytes safeBytes)
+            public async Task AppendAsync(ISafeBytes safeBytes)
             {
-                _bytes.AddRange(safeBytes.ToByteArray());
+                _bytes.AddRange(await safeBytes.ToByteArrayAsync());
             }
 
-            public void Append(byte b)
+            public Task AppendAsync(byte b)
             {
                 _bytes.Add(b);
+                return Task.FromResult(true);
             }
 
-            public byte GetByte(int position)
+            public Task<byte> GetByteAsync(int position)
             {
-                return _bytes.ElementAt(position);
+                return Task.FromResult(_bytes.ElementAt(position));
             }
 
             public void Dispose()
@@ -42,22 +45,23 @@ namespace SafeOrbit.Fakes
                 IsDisposed = true;
             }
 
-            public byte[] ToByteArray()
+            public Task<byte[]> ToByteArrayAsync()
             {
-                return _bytes.ToArray();
+                return Task.FromResult(_bytes.ToArray());
             }
 
-            public ISafeBytes DeepClone()
+            public async Task<ISafeBytes> DeepCloneAsync()
             {
                 var clone = new FakeSafeBytes();
-                foreach (var b in _bytes.ToArray()) clone.Append(b);
+                foreach (var b in _bytes.ToArray())
+                    await clone.AppendAsync(b);
                 return clone;
             }
 
-            public bool Equals(byte[] other)
+            public Task<bool> EqualsAsync(byte[] other)
             {
-                return other != null &&
-                       _bytes.ToArray().SequenceEqual(other);
+                return Task.FromResult(other != null &&
+                       _bytes.ToArray().SequenceEqual(other));
             }
 
             public override int GetHashCode()
@@ -65,10 +69,10 @@ namespace SafeOrbit.Fakes
                 return _bytes.Aggregate(2, (current, b) => current + b);
             }
 
-            public bool Equals(ISafeBytes other)
+            public Task<bool> EqualsAsync(ISafeBytes other)
             {
-                return other != null &&
-                       _bytes.ToArray().SequenceEqual(other.ToByteArray());
+                return Task.FromResult(other != null &&
+                       _bytes.ToArray().SequenceEqual(TaskContext.RunSync(other.ToByteArrayAsync)));
             }
 
             public FakeSafeBytes()

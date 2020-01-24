@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using SafeOrbit.Library;
+using SafeOrbit.Parallel;
 using SafeOrbit.Text;
+using Encoding = SafeOrbit.Text.Encoding;
 
 namespace SafeOrbit.Memory
 {
@@ -37,80 +41,88 @@ namespace SafeOrbit.Memory
 
         public int Length => _charBytesList == null || IsDisposed ? 0 : _charBytesList.Count;
         public bool IsEmpty => Length == 0;
+        /// <inheritdoc />
         public bool IsDisposed { get; private set; }
 
+        /// <inheritdoc />
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
-        public void Append(char ch) => Insert(Length, ch);
+        public Task AppendAsync(char ch) => InsertAsync(Length, ch);
 
         /// <inheritdoc />
         /// <param name="text">Non-safe <see cref="T:System.String" /> that's already revealed in the memory</param>
         /// <exception cref="T:System.ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
-        public void Append(string text)
+        public async Task AppendAsync(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
             EnsureNotDisposed();
             if (text.Length == 0)
                 return;
             foreach (var ch in text)
-                Append(ch);
+            {
+                await AppendAsync(ch).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="character" /> is <see langword="null" />. </exception>
         /// <exception cref="ArgumentOutOfRangeException">If position is less than zero or higher than the length.  </exception>
         /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
-        public void Append(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
+        public Task AppendAsync(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
         {
-            Insert(Length, character, encoding);
+            return InsertAsync(Length, character, encoding);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="safeString" /> is <see langword="null" />. </exception>
         /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
-        public void Append(ISafeString safeString)
+        public async Task AppendAsync(ISafeString safeString)
         {
             if (safeString == null) throw new ArgumentNullException(nameof(safeString));
             EnsureNotDisposed();
             for (var i = 0; i < safeString.Length; i++)
-                Append(safeString.GetAsSafeBytes(i).DeepClone());
+            {
+                var @byte = await safeString.GetAsSafeBytes(i).DeepCloneAsync().ConfigureAwait(false);
+                await AppendAsync(@byte).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc />
         /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
-        public void AppendLine()
+        public async Task AppendLineAsync()
         {
             EnsureNotDisposed();
             var safeBytes = _safeBytesFactory.Create();
-            safeBytes.Append(LineFeed);
-            Append(safeBytes, InnerEncoding);
+            await safeBytes.AppendAsync(LineFeed).ConfigureAwait(false);
+            await AppendAsync(safeBytes, InnerEncoding).ConfigureAwait(false);
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="ISafeBytes" /> instance is disposed</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> is not a valid index.</exception>
-        public void Insert(int index, char character)
+        public async Task InsertAsync(int index, char character)
         {
             if (index < 0 || index > Length) throw new ArgumentOutOfRangeException(nameof(index));
             EnsureNotDisposed();
-            var bytes = TransformCharToSafeBytes(character, InnerEncoding);
+            var bytes = await TransformCharToSafeBytesAsync(character, InnerEncoding)
+                .ConfigureAwait(false);
             _charBytesList.Insert(index, bytes);
         }
 
-        /// <exception cref="ArgumentNullException"> <paramref name="textBytes" /> is <see langword="null" />. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="character" /> is <see langword="null" />. </exception>
         /// <exception cref="ObjectDisposedException"> SafeString instance is disposed.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="textBytes" /> is null or empty. </exception>
-        public void Insert(int position, ISafeBytes textBytes, Encoding encoding = Encoding.Utf16LittleEndian)
+        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="character" /> is null or empty. </exception>
+        public async Task InsertAsync(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             EnsureNotDisposed();
             if (position < 0 || position > Length) throw new ArgumentOutOfRangeException(nameof(position));
-            if (SafeBytes.IsNullOrEmpty(textBytes)) throw new ArgumentNullException(nameof(textBytes));
+            if (SafeBytes.IsNullOrEmpty(character)) throw new ArgumentNullException(nameof(character));
             if (encoding == InnerEncoding)
             {
-                _charBytesList.Insert(position, textBytes);
+                _charBytesList.Insert(position, character);
                 return;
             }
 
             //Convert encoding
-            var buffer = textBytes.ToByteArray();
+            var buffer = await character.ToByteArrayAsync().ConfigureAwait(false);
             try
             {
                 if (encoding != InnerEncoding)
@@ -119,7 +131,7 @@ namespace SafeOrbit.Memory
                 for (var i = 0; i < buffer.Length; i++)
                 {
                     //Append
-                    safeBytes.Append(buffer[i]);
+                    await safeBytes.AppendAsync(buffer[i]).ConfigureAwait(false);
                     buffer[i] = 0x0;
                 }
 
@@ -149,14 +161,15 @@ namespace SafeOrbit.Memory
         ///     <paramref name="index" /> is less than zero, higher than/equals to the
         ///     length.
         /// </exception>
-        public char GetAsChar(int index)
+        public async Task<char> GetAsCharAsync(int index)
         {
             EnsureNotDisposed();
             EnsureNotEmpty();
             if (index < 0 || index >= Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
             var asSafeBytes = _charBytesList.ElementAt(index);
-            var asChar = TransformSafeBytesToChar(asSafeBytes, InnerEncoding);
+            var asChar = await TransformSafeBytesToCharAsync(asSafeBytes, InnerEncoding)
+                .ConfigureAwait(false);
             return asChar;
         }
 
@@ -199,13 +212,17 @@ namespace SafeOrbit.Memory
 
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed</exception>
         /// <exception cref="InvalidOperationException">Throws if the <see cref="SafeString" /> instance is empty.</exception>
-        public ISafeBytes ToSafeBytes()
+        public async Task<ISafeBytes> ToSafeBytesAsync()
         {
             EnsureNotDisposed();
             EnsureNotEmpty();
             var safeBytes = _safeBytesFactory.Create();
             foreach (var charBytes in _charBytesList)
-                safeBytes.Append(charBytes.DeepClone());
+            {
+                var @byte = await charBytes.DeepCloneAsync().ConfigureAwait(false);
+                await safeBytes.AppendAsync(@byte)
+                    .ConfigureAwait(false);
+            }
             return safeBytes;
         }
 
@@ -221,37 +238,48 @@ namespace SafeOrbit.Memory
             }
         }
 
-        public bool Equals(string other)
+        public async Task<bool> EqualsAsync(string other) //TODO: Better performant implementation
         {
-            if (string.IsNullOrEmpty(other))
+            if (other == null) throw new ArgumentNullException(nameof(other));
+            if (other.Length == 0)
                 return Length == 0;
             using var ss = _safeStringFactory.Create();
-            ss.Append(other);
-            return Equals(ss);
+            await ss.AppendAsync(other)
+                .ConfigureAwait(false);
+            var result = await EqualsAsync(ss).ConfigureAwait(false);
+            return result;
         }
 
-        public bool Equals(ISafeString other)
+        public async Task<bool> EqualsAsync(ISafeString other)
         {
-            // Caution: Don't check length first and then fall out, since that leaks length info
-            if (IsNullOrEmpty(other))
+            if (other == null) throw new ArgumentNullException(nameof(other));
+            if (other.Length == 0)
                 return Length == 0;
+            // Caution: Don't check length first and then fall out, since that leaks length info
             var comparisonBit = (uint) Length ^ (uint) other.Length;
             for (var i = 0; i < Length && i < other.Length; i++)
-                comparisonBit |= (uint) (GetAsSafeBytes(i).Equals(other.GetAsSafeBytes(i)) ? 0 : 1);
+            {
+                var ownBytes = GetAsSafeBytes(i);
+                var otherBytes = other.GetAsSafeBytes(i);
+                var areSameBytes = await ownBytes.EqualsAsync(otherBytes).ConfigureAwait(false);
+                var flag = (uint)(areSameBytes ? 0 : 1);
+                comparisonBit |= flag;
+            }
             return comparisonBit == 0;
         }
 
         /// <inheritdoc />
-        /// <exception cref="T:System.ObjectDisposedException">
-        ///     Throws if the <see cref="T:SafeOrbit.Memory.SafeString" /> instance
-        ///     is disposed
-        /// </exception>
-        public ISafeString DeepClone()
+        /// <exception cref="ObjectDisposedException"> Throws if the <see cref="SafeString" /> instance is disposed </exception>
+        public async Task<ISafeString> DeepCloneAsync()
         {
             EnsureNotDisposed();
             var result = _safeStringFactory.Create();
             for (var i = 0; i < Length; i++)
-                result.Append(GetAsSafeBytes(i).DeepClone(), InnerEncoding);
+            {
+                var bytes = await GetAsSafeBytes(i).DeepCloneAsync().ConfigureAwait(false);
+                await result.AppendAsync(bytes, InnerEncoding)
+                    .ConfigureAwait(false);
+            }
             return result;
         }
 
@@ -280,17 +308,12 @@ namespace SafeOrbit.Memory
 
         public override bool Equals(object obj)
         {
-            return obj switch
-            {
-                ISafeString safeString => Equals(safeString),
-                string @string => Equals(@string),
-                _ => false
-            };
+            throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
         }
 
-        private char TransformSafeBytesToChar(ISafeBytes safeBytes, Encoding encoding)
+        private async Task<char> TransformSafeBytesToCharAsync(ISafeBytes safeBytes, Encoding encoding)
         {
-            var byteBuffer = safeBytes.ToByteArray();
+            var byteBuffer = await safeBytes.ToByteArrayAsync().ConfigureAwait(false);
             try
             {
                 return _textService.GetChars(byteBuffer, encoding).First();
@@ -301,14 +324,15 @@ namespace SafeOrbit.Memory
             }
         }
 
-        private ISafeBytes TransformCharToSafeBytes(char c, Encoding encoding)
+        private async Task<ISafeBytes> TransformCharToSafeBytesAsync(char c, Encoding encoding)
         {
             var bytes = _textService.GetBytes(c, encoding);
             var stream = new SafeMemoryStream();
-            stream.Write(bytes, 0, bytes.Length);
+            await stream.WriteAsync(bytes, 0, bytes.Length)
+                .ConfigureAwait(false);
 
             var safeBytes = _safeBytesFactory.Create();
-            safeBytes.AppendMany(stream);
+            await safeBytes.AppendManyAsync(stream).ConfigureAwait(false);
 
             return safeBytes;
         }
@@ -330,10 +354,10 @@ namespace SafeOrbit.Memory
 #if DEBUG
         public override string ToString()
         {
-            var asString = "";
+            var sb = new StringBuilder();
             for (var i = 0; i < Length; i++)
-                asString += GetAsChar(i);
-            return asString;
+                sb.Append(TaskContext.RunSync(() => GetAsCharAsync(i)));
+            return sb.ToString();
         }
 #endif
     }

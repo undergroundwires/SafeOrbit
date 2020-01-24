@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -17,10 +16,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
     [TestFixture]
     internal partial class EncryptedSafeByteCollectionTests : TestsFor<ISafeByteCollection>
     {
-        private static ISafeByte GetSafeByteFor(byte b)
+        private static Task<ISafeByte> GetSafeByteAsync(byte b)
         {
             var safeByteFactory = Stubs.Get<ISafeByteFactory>();
-            return safeByteFactory.GetByByte(b);
+            return safeByteFactory.GetByByteAsync(b);
         }
 
         protected override ISafeByteCollection GetSut()
@@ -35,89 +34,91 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
 
 
         [Test]
-        public void Append_ForDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
+        public void AppendAsync_ForDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
 
             // Act
-            void AppendByte() => sut.Append(GetSafeByteFor(b));
+            async Task AppendByte() => await sut.AppendAsync(await GetSafeByteAsync(b));
 
             // Assert
             Assert.That(AppendByte, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public async Task Append_GetAsync_SafeBytes_AppendsSingle_CanGet()
+        public async Task AppendAsync_GetAsync_SafeBytes_AppendsSingle_CanGet()
         {
             // Arrange
             var sut = GetSut();
             const byte expected = 55;
-            sut.Append(GetSafeByteFor(expected));
+            await sut.AppendAsync(await GetSafeByteAsync(expected));
+
             // Act
-            var actual = await sut.GetAsync(0);
+            var actual = await (await sut.GetAsync(0)).GetAsync();
+
             // Assert
-            Assert.That(expected, Is.EqualTo(actual));
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task Append_GetAsync_SafeBytes_AppendsAtTheEnd_CanGet([Random(0, 256, 1)] byte b1,
-            [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
+        public async Task AppendAsync_GetAsync_SafeBytes_AppendsAtTheEnd_CanGet()
         {
             // Arrange
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b1));
-            sut.Append(GetSafeByteFor(b2));
-            sut.Append(GetSafeByteFor(b3));
+            const byte expectedAt1 = 69, expectedAt2 = 13;
+            await sut.AppendAsync(await GetSafeByteAsync(31));
+            await sut.AppendAsync(await GetSafeByteAsync(expectedAt1));
+            await sut.AppendAsync(await GetSafeByteAsync(expectedAt2));
 
             // Act
-            var b2Back = await sut.GetAsync(1);
-            var b3Back = await sut.GetAsync(2);
+            var actualAt1 = await (await sut.GetAsync(1)).GetAsync();
+            var actualAt2 = await (await sut.GetAsync(2)).GetAsync();
 
             // Assert
-            Assert.That(b2, Is.EqualTo(b2Back));
-            Assert.That(b3, Is.EqualTo(b3Back));
+            Assert.AreEqual(expectedAt1, actualAt1);
+            Assert.AreEqual(expectedAt2, actualAt2);
         }
 
         [Test]
-        public void Append_ArgumentIsNull_throwsArgumentNullException()
+        public void AppendAsync_ArgumentIsNull_throwsArgumentNullException()
         {
             // Arrange
             var sut = GetSut();
             ISafeByte nullInstance = null;
 
             // Act
-            void AppendNull() => sut.Append(nullInstance);
+            Task AppendNull() => sut.AppendAsync(nullInstance);
 
-            // Act
-            Assert.That(AppendNull, Throws.TypeOf<ArgumentNullException>());
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(AppendNull);
         }
 
         [Test]
-        public void AppendMany_ForEmptyList_DoesNotThrow()
+        public void AppendManyAsync_ForEmptyList_DoesNotThrow()
         {
             // Arrange
             var sut = GetSut();
             var list = Enumerable.Empty<ISafeByte>();
 
             // Act
-            void AppendNull() => sut.AppendMany(list);
+            Task AppendNull() => sut.AppendManyAsync(list);
 
             // Assert
-            Assert.DoesNotThrow(AppendNull);
+            Assert.DoesNotThrowAsync(AppendNull);
         }
 
         [Test]
-        public void AppendMany_NonEmptyList_IncreasesLength()
+        public async Task AppendManyAsync_NonEmptyList_IncreasesLength()
         {
             // Arrange
             var sut = GetSut();
-            var list = new[] { GetSafeByteFor(0), GetSafeByteFor(1), GetSafeByteFor(2) };
+            var list = new[] { await GetSafeByteAsync(0), await GetSafeByteAsync(1), await GetSafeByteAsync(2) };
             var expected = list.Length;
 
             // Act
-            sut.AppendMany(list);
+            await sut.AppendManyAsync(list);
             var actual = sut.Length;
 
             // Assert
@@ -125,15 +126,15 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public async Task AppendMany_AppendedList_CanBeRetrieved()
+        public async Task AppendManyAsync_AppendedList_CanBeRetrieved()
         {
             // Arrange
             var sut = GetSut();
-            var list = new[] { GetSafeByteFor(0), GetSafeByteFor(1), GetSafeByteFor(2) };
+            var list = new[] { await GetSafeByteAsync(0), await GetSafeByteAsync(1), await GetSafeByteAsync(2) };
             var expectedIds = list.Select(l => l.Id).ToArray();
 
             // Act
-            sut.AppendMany(list);
+            await sut.AppendManyAsync(list);
 
             var actualIds = new int[3];
             actualIds[0] = (await sut.GetAsync(0)).Id;
@@ -145,143 +146,155 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public void AppendMany_DisposedObject_throwsObjectDisposedException()
+        public void AppendManyAsync_DisposedObject_throwsObjectDisposedException()
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
 
             // Assert
-            void AppendByte() => sut.AppendMany(new[] { GetSafeByteFor(5) });
+            async Task AppendByte() => await sut.AppendManyAsync(new[] { await GetSafeByteAsync(5) });
 
             // Act
-            Assert.That(AppendByte, Throws.TypeOf<ObjectDisposedException>());
+            Assert.ThrowsAsync<ObjectDisposedException>(AppendByte);
         }
 
         //** Dispose **//
         [Test]
-        public void Dispose_OnAnInstanceWithBytes_SetsLengthToZero([Random(0, 256, 1)] byte b1,
+        public async Task Dispose_OnAnInstanceWithBytes_SetsLengthToZero([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b1));
-            sut.Append(GetSafeByteFor(b2));
-            sut.Append(GetSafeByteFor(b3));
-            //act
+            await sut.AppendAsync(await GetSafeByteAsync(b1));
+            await sut.AppendAsync(await GetSafeByteAsync(b2));
+            await sut.AppendAsync(await GetSafeByteAsync(b3));
+
+            // Act
             sut.Dispose();
             var actual = sut.Length;
-            //assert
+
+            // Assert
             Assert.That(actual, Is.Zero);
         }
 
         //** Get **//
         [Test]
-        public void GetAsync_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
+        public async Task GetAsync_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b));
+            await sut.AppendAsync(await GetSafeByteAsync(b));
             var position = 0;
-            //Act
+            
+            // Act
             sut.Dispose();
-
             async Task CallOnDisposedObject() => await sut.GetAsync(position);
-            //Assert
+
+            // Assert
             Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
         }
 
         [Test]
         public void GetAsync_OnEmptyInstance_throwsInvalidOperationException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            var position = 0;
+            const int position = 0;
 
-            //Act
+            // Act
             async Task CallOnEmptyInstance() => await sut.GetAsync(position);
-            //Assert
+            
+            // Assert
             Assert.ThrowsAsync<InvalidOperationException>(CallOnEmptyInstance);
         }
 
         [Test]
-        public void GetAsync_WhenRequestedPositionIsLowerThanRange_throwsArgumentOutOfRangeException(
+        public async Task GetAsync_WhenRequestedPositionIsLowerThanRange_throwsArgumentOutOfRangeException(
             [Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b));
-            var position = -1;
+            await sut.AppendAsync(await GetSafeByteAsync(b));
+            const int position = -1;
 
-            //Act
+            // Act
             async Task CallWithBadParameter() => await sut.GetAsync(position);
-            //Assert
+
+            // Assert
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallWithBadParameter);
         }
 
         [Test]
-        public void GetAsync_WhenRequestedPositionIsHigherThanRange_throwsArgumentOutOfRangeException(
+        public async Task GetAsync_WhenRequestedPositionIsHigherThanRange_throwsArgumentOutOfRangeException(
             [Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b));
+            await sut.AppendAsync(await GetSafeByteAsync(b));
             const int position = 1;
 
-            //Act
+            // Act
             async Task CallWithBadParameter() => await sut.GetAsync(position);
-            //Assert
+            
+            // Assert
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallWithBadParameter);
         }
 
         [Test]
-        public async Task GetAsync_ForMultipleAppendedBytes_returnsTheBytes([Random(0, 256, 1)] byte b1,
-            [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
+        public async Task GetAsync_ForMultipleAppendedBytes_returnsTheBytes()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b1));
-            sut.Append(GetSafeByteFor(b2));
-            sut.Append(GetSafeByteFor(b3));
-            //Act
-            var b1Back = await sut.GetAsync(0);
-            var b2Back = await sut.GetAsync(1);
-            var b3Back = await sut.GetAsync(2);
-            //Assert
-            Assert.That(b1Back, Is.EqualTo(b1));
-            Assert.That(b2Back, Is.EqualTo(b2));
-            Assert.That(b3Back, Is.EqualTo(b3));
+            const byte byteAt0 = 0, byteAt1 = 1, byteAt2 = 2;
+            await sut.AppendAsync(await GetSafeByteAsync(byteAt0));
+            await sut.AppendAsync(await GetSafeByteAsync(byteAt1));
+            await sut.AppendAsync(await GetSafeByteAsync(byteAt2));
+
+            // Act
+            var actualAt0 = await (await sut.GetAsync(0)).GetAsync();
+            var actualAt1 = await (await sut.GetAsync(1)).GetAsync();
+            var actualAt2 = await (await sut.GetAsync(2)).GetAsync();
+
+            // Assert
+            Assert.AreEqual(byteAt0, actualAt0);
+            Assert.AreEqual(byteAt1, actualAt1);
+            Assert.AreEqual(byteAt2, actualAt2);
         }
 
         [Test]
         public async Task GetAsync_ForSingleAppendedByte_ReturnsByte()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            var safeByte = GetSafeByteFor(5);
-            //Act
-            sut.Append(safeByte);
+            var safeByte = await GetSafeByteAsync(5);
+
+            // Act
+            await sut.AppendAsync(safeByte);
             var safebyteBack = await sut.GetAsync(0);
-            //Assert
+            
+            // Assert
             Assert.That(safeByte, Is.EqualTo(safebyteBack));
         }
 
         [Test]
         public async Task GetAsync_AfterModifications_ReturnsAsExpected()
         {
-            //Arrange
-            var expected = new[] {GetSafeByteFor(5), GetSafeByteFor(10)};
+            // Arrange
+            var expected = new[] { await GetSafeByteAsync(5), await GetSafeByteAsync(10)};
             var sut = GetSut();
-            sut.Append(expected[0]);
-            //Act
+            await sut.AppendAsync(expected[0]);
+            
+            // Act
             await sut.GetAsync(0); // Calling once first to test the encryption/decryption harmony with Append
-            sut.Append(expected[1]);
+            await sut.AppendAsync(expected[1]);
             var actual = new[]
             {
                 await sut.GetAsync(0),
                 await sut.GetAsync(1)
             };
-            //Assert
+            
+            // Assert
             Assert.True(expected[0].Equals(actual[0]));
             Assert.True(actual[0].Equals(expected[0]));
         }
@@ -289,27 +302,32 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         [Test]
         public async Task GetAsync_AfterCallingToDecryptedBytes_ReturnsAsExpected()
         {
-            //Arrange
-            var expected = GetSafeByteFor(5);
+            // Arrange
+            var expected = await GetSafeByteAsync(5);
             var sut = GetSut();
-            sut.Append(expected);
-            //Act
-            sut.ToDecryptedBytes(); // Calling once first to test the encryption/decryption harmony with ToDecryptedBytes
+            await sut.AppendAsync(expected);
+            
+            // Act
+            await sut.ToDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with ToDecryptedBytes
             var actual = await sut.GetAsync(0);
-            //Assert
+            
+            // Assert
+            Console.Write($"Expected id {expected.Id}, actual id {actual.Id}");
             Assert.True(expected.Equals(actual));
         }
 
         [Test]
-        public void Length_AfterSingleAppend_Increases([Random(0, 256, 1)] byte b)
+        public async Task Length_AfterSingleAppend_Increases([Random(0, 256, 1)] byte b)
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
             const int expected = 1;
-            sut.Append(GetSafeByteFor(b));
-            //act
+            await sut.AppendAsync(await GetSafeByteAsync(b));
+            
+            // Act
             var actual = sut.Length;
-            //assert
+            
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -317,33 +335,37 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         [Test]
         public void Length_ForAFreshInstance_IsZero()
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
             const int expected = 0;
-            //act
+            
+            // Act
             var actual = sut.Length;
-            //assert
+            
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void Length_IncreasesAfterEachAppend_Increases()
+        public async Task Length_IncreasesAfterEachAppend_Increases()
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
             const int expected1 = 0;
             const int expected2 = 1;
             const int expected3 = 2;
             const int expected4 = 3;
-            //act
+            
+            // Act
             var actual1 = sut.Length;
-            sut.Append(GetSafeByteFor(1));
+            await sut.AppendAsync(await GetSafeByteAsync(1));
             var actual2 = sut.Length;
-            sut.Append(GetSafeByteFor(2));
+            await sut.AppendAsync(await GetSafeByteAsync(2));
             var actual3 = sut.Length;
-            sut.Append(GetSafeByteFor(3));
+            await sut.AppendAsync(await GetSafeByteAsync(3));
             var actual4 = sut.Length;
-            //assert
+            
+            // Assert
             Assert.That(actual1, Is.EqualTo(expected1));
             Assert.That(actual2, Is.EqualTo(expected2));
             Assert.That(actual3, Is.EqualTo(expected3));
@@ -351,119 +373,133 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public void ToByteArray_ForInstanceHoldingMultipleBytes_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b1,
+        public async Task ToDecryptedBytesAsync_ForInstanceHoldingMultipleBytes_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
-            //Arrange
+            // Arrange
             var bytes = new[] {b1, b2, b3};
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b1));
-            sut.Append(GetSafeByteFor(b2));
-            sut.Append(GetSafeByteFor(b3));
-            //Act
-            var byteArray = sut.ToDecryptedBytes();
-            //Assert
+            await sut.AppendAsync(await GetSafeByteAsync(b1));
+            await sut.AppendAsync(await GetSafeByteAsync(b2));
+            await sut.AppendAsync(await GetSafeByteAsync(b3));
+            
+            // Act
+            var byteArray = await sut.ToDecryptedBytesAsync();
+            
+            // Assert
             CollectionAssert.AreEqual(byteArray, bytes);
         }
 
         [Test]
-        public void ToByteArray_ForInstanceHoldingSingleByte_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b)
+        public async Task ToDecryptedBytesAsync_ForInstanceHoldingSingleByte_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var bytes = new[] {b};
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b));
-            //Act
-            var byteArray = sut.ToDecryptedBytes();
-            //Assert
+            await sut.AppendAsync(await GetSafeByteAsync(b));
+            
+            // Act
+            var byteArray = await sut.ToDecryptedBytesAsync();
+            
+            // Assert
             CollectionAssert.AreEqual(byteArray, bytes);
         }
 
         [Test]
-        public void ToDecryptedBytes_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
+        public async Task ToDecryptedBytesAsync_OnDisposedObject_throwsObjectDisposedException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(b));
-            const int position = 0;
-            //Act
+            await sut.AppendAsync(await GetSafeByteAsync(5));
+            
+            // Act
             sut.Dispose();
+            async Task CallingOnDisposedObject() => await sut.ToDecryptedBytesAsync();
 
-            async Task CallingOnDisposedObject() => await sut.GetAsync(position);
-            //Assert
+            // Assert
             Assert.ThrowsAsync<ObjectDisposedException>(CallingOnDisposedObject);
         }
 
         [Test]
-        public void ToDecryptedBytes_OnEmptyInstance_throwsInvalidOperationException()
+        public void ToDecryptedBytesAsync_OnEmptyInstance_throwsInvalidOperationException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
 
-            //Act
-            void CallingOnEmptyInstance() => sut.ToDecryptedBytes();
-            //Assert
-            Assert.That(CallingOnEmptyInstance, Throws.TypeOf<InvalidOperationException>());
+            // Act
+            Task CallingOnEmptyInstance() => sut.ToDecryptedBytesAsync();
+            
+            // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(CallingOnEmptyInstance);
+
         }
 
         [Test]
-        public void ToDecryptedBytes_ForMultipleBytes_returnsAsExpected()
+        public async Task ToDecryptedBytesAsync_ForMultipleBytes_returnsAsExpected()
         {
-            //Arrange
+            // Arrange
             var expected = new byte[] {5, 10, 15};
             var sut = GetSut();
             foreach (var @byte in expected)
-                sut.Append(GetSafeByteFor(@byte));
-            //Act
-            var actual = sut.ToDecryptedBytes();
+                await sut.AppendAsync(await GetSafeByteAsync(@byte));
+            
+            // Act
+            var actual = await sut.ToDecryptedBytesAsync();
+            
             //Assert
             Assert.True(expected.SequenceEqual(actual));
         }
 
         [Test]
-        public void ToDecryptedBytes_ForSingleByte_returnsAsExpected()
+        public async Task ToDecryptedBytesAsync_ForSingleByte_returnsAsExpected()
         {
-            //Arrange
+            // Arrange
             var expected = new byte[] {5};
             var sut = GetSut();
-            sut.Append(GetSafeByteFor(5));
-            //Act
-            var actual = sut.ToDecryptedBytes();
-            //Assert
+            await sut.AppendAsync(await GetSafeByteAsync(5));
+
+            // Act
+            var actual = await sut.ToDecryptedBytesAsync();
+
+            // Assert
             Assert.True(expected.SequenceEqual(actual));
         }
 
         [Test]
-        public void ToDecryptedBytes_CalledMultipleTimes_returnsExpected()
+        public async Task ToDecryptedBytesAsync_CalledMultipleTimes_returnsExpected()
         {
-            //Arrange
+            // Arrange
             var expected = new byte[] {5, 10, 15};
             var sut = GetSut();
             foreach (var @byte in expected)
-                sut.Append(GetSafeByteFor(@byte));
-            //Act
-            var actual = sut.ToDecryptedBytes();
-            var second = sut.ToDecryptedBytes();
+                await sut.AppendAsync(await GetSafeByteAsync(@byte));
+
+            // Act
+            var actual = await sut.ToDecryptedBytesAsync();
+            var second = await sut.ToDecryptedBytesAsync();
+
             //Assert
             Assert.True(expected.SequenceEqual(actual));
             Assert.True(expected.SequenceEqual(second));
         }
 
         [Test]
-        public void ToDecryptedBytes_CalledAgainAfterModifications_returnsExpected()
+        public async Task ToDecryptedBytesAsync_CalledAgainAfterModifications_returnsExpected()
         {
-            //Arrange
+            // Arrange
             var raw = new byte[] {5, 10, 15};
             var sut = GetSut();
             foreach (var @byte in raw)
-                sut.Append(GetSafeByteFor(@byte));
+                await sut.AppendAsync(await GetSafeByteAsync(@byte));
             var modifications = new byte[] {10, 15, 30};
-            //Act
-            sut.ToDecryptedBytes(); // Calling once first to test the encryption/decryption harmony with Append
+            
+            // Act
+            await sut.ToDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with Append
             foreach (var @byte in modifications)
-                sut.Append(GetSafeByteFor(@byte));
-            var afterModifications = sut.ToDecryptedBytes();
-            //Assert
+                await sut.AppendAsync(await GetSafeByteAsync(@byte));
+            var afterModifications = await sut.ToDecryptedBytesAsync();
+            
+            // Assert
             var expected = raw.Concat(modifications).ToArray();
             Console.WriteLine($"Expected: {string.Join(",", expected)}{Environment.NewLine}" +
                               $"Actual: {string.Join(",", afterModifications)}{Environment.NewLine}");

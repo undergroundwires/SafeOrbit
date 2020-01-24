@@ -4,6 +4,7 @@ using SafeOrbit.Memory.SafeBytesServices.Id;
 using SafeOrbit.Tests.Cases;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Factory
 {
@@ -15,43 +16,47 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         private ISafeByteFactory _sut;
 
         [OneTimeSetUp]
-        public void Init()
+        public async Task Init()
         {
             _sut = new MemoryCachedSafeByteFactory();
-            _sut.Initialize();
+            await _sut.InitializeAsync();
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void GetByByte_ReturnsRightByte([Random(0, 256, 1)] byte b)
+        public async Task GetByByteAsync_ReturnsRightByte([Random(0, 256, 1)] byte b)
         {
-            //arrange
+            // Arrange
             var expected = b;
             var sut = _sut;
-            //act
-            var safeByte = sut.GetByByte(expected);
-            var actual = safeByte.Get();
-            //assert
+
+            // Act
+            var safeByte = await sut.GetByByteAsync(expected);
+
+            // Assert
+            var actual = await safeByte.GetAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void GetById_ReturnsRightByte(byte b)
+        public async Task GetByIdAsync_ReturnsRightByte(byte b)
         {
-            //arrange
+            // Arrange
             var sut = _sut;
             var expected = b;
-            //act
-            var id = SafeOrbitCore.Current.Factory.Get<IByteIdGenerator>().Generate(expected);
-            var safeByte = sut.GetById(id);
-            var actual = safeByte.Get();
-            //assert
+
+            // Act
+            var id = await SafeOrbitCore.Current.Factory.Get<IByteIdGenerator>().GenerateAsync(expected);
+            var safeByte = await sut.GetByIdAsync(id);
+
+            // Assert
+            var actual = await safeByte.GetAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void GetByBytes_ReturnsRightBytes()
+        public async Task GetByBytes_ReturnsRightBytes()
         {
             // Arrange
             var expected = new Collection<byte>();
@@ -61,9 +66,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             stream.Write(expected.ToArray(), 0, expected.Count);
 
             // Act
-            var actual = _sut.GetByBytes(stream);
+            var safeBytes = await _sut.GetByBytesAsync(stream);
 
             // Assert
+            var actual = await Task.WhenAll(safeBytes.Select(b => b.GetAsync()));
             CollectionAssert.AreEqual(expected, actual);
         }
     }

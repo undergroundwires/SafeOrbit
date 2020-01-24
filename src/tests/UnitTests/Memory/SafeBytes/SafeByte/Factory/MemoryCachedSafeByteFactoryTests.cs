@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
@@ -24,69 +25,71 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void GetByte_returnsRightSafeByte(byte b)
+        public async Task GetByByteAsync_Returns_Right_SafeByte(byte b)
         {
-            //arrange
+            // Arrange
             var expected = b;
             var sut = _sut;
-            //act
-            var safeByte = sut.GetByByte(expected);
-            var actual = safeByte.Get();
-            //assert
+            
+            // Act
+            var safeByte = await sut.GetByByteAsync(expected);
+
+            // Assert
+            var actual = await safeByte.GetAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void GetInt_returnsRightSafeByte(byte b)
+        public async Task GetByIdAsync_Returns_Right_SafeByte(byte b)
         {
+            // Arrange
             var sut = _sut;
             var expected = b;
-            var byteId = Stubs.Get<IByteIdGenerator>().Generate(expected);
-            var safeByte = sut.GetById(byteId);
-            var actual = safeByte.Get();
+            var byteId = await Stubs.Get<IByteIdGenerator>().GenerateAsync(expected);
+
+            // Act
+            var safeByte = await sut.GetByIdAsync(byteId);
+
+            // Assert
+            var actual = await safeByte.GetAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void GetByte_WithoutInitialization_invokesInitializeMethod()
+        public async Task GetByByteAsync_WithoutInitialization_invokesInitializeMethod()
         {
             var mock = GetMock();
             var sut = mock.Object;
             try
             {
-                sut.GetByByte(5);
+                await sut.GetByByteAsync(5);
             }
-            catch
-            {
-                /*swallow exceptions*/
-            }
+            catch  {  /*swallow exceptions*/ }
 
-            mock.Verify(f => f.Initialize(), Times.Once);
+            mock.Verify(f => f.InitializeAsync(), Times.Once);
         }
 
         [Test]
-        public void GetInt_WithoutInitialization_invokesInitializeMethod()
+        public async Task GetByIdAsync_WithoutInitialization_invokesInitializeMethod()
         {
             var mock = GetMock();
             var sut = mock.Object;
             try
             {
-                sut.GetById(5);
+                await sut.GetByIdAsync(5)
+                    .ConfigureAwait(false);
             }
-            catch
-            {
-                /*swallow exceptions*/
-            }
+            catch  { /*swallow exceptions*/ }
 
-            mock.Verify(f => f.Initialize(), Times.Once);
+            mock.Verify(f => f.InitializeAsync(), Times.Once);
         }
 
         /// <summary>
         ///     Tests assert that we are efficient for many bytes.
         /// </summary>
         [Test]
-        public void GetByBytes_MultipleBytes_ObjectGetterIsCalledOnce()
+        public async Task GetByBytesAsync_MultipleBytes_ObjectGetterIsCalledOnce()
         {
             // Arrange
             var bytes = new byte[] { 1, 2, 3, 4, 5 };
@@ -95,8 +98,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
 
             const int byteId = 1;
             var hasherMock = new Mock<IByteIdGenerator>();
-            hasherMock.Setup(b => b.GenerateMany(stream))
-                .Returns(new []{ byteId, byteId, byteId, byteId, byteId });
+            hasherMock.Setup(b => b.GenerateManyAsync(stream))
+                .ReturnsAsync(new []{ byteId, byteId, byteId, byteId, byteId });
 
             var objectMock = new Mock<ISafeObject<Dictionary<int, ISafeByte>>>();
             objectMock.Setup(o => o.Object)
@@ -112,7 +115,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var sut = GetSut(factory: factoryMock.Object, byteIdGenerator: hasherMock.Object);
 
             // Act
-            _ = sut.GetByBytes(stream).ToArray();
+            _ = (await sut.GetByBytesAsync(stream)).ToArray();
 
             // Assert
             objectMock.VerifyGet(o=>o.Object, Times.Once);
@@ -120,15 +123,20 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
 
 
         [Test]
-        public void GetByBytes_NullStream_ThrowsException()
+        public void GetByBytesAsync_NullStream_ThrowsException()
         {
+            // Arrange
             var sut = GetSut();
-            void Act() => sut.GetByBytes(null).ToArray();
-            Assert.Throws<ArgumentNullException>(Act);
+
+            // Act
+            async Task Act() => (await sut.GetByBytesAsync(null)).ToArray();
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(Act);
         }
 
         [Test]
-        public void GetByBytes_ForEachIdFromGenerator_ReturnsId()
+        public async Task GetByBytesAsync_ForEachIdFromGenerator_ReturnsId()
         {
             // Arrange
             var expected = new [] {10, 20, 30, 40, 50};
@@ -137,13 +145,13 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             stream.Write(bytes, 0, bytes.Length);
 
             var hasherMock = new Mock<IByteIdGenerator>();
-            hasherMock.Setup(b => b.GenerateMany(stream))
-                .Returns(expected);
+            hasherMock.Setup(b => b.GenerateManyAsync(stream))
+                .ReturnsAsync(expected);
 
             var sut = GetSut(byteIdGenerator: hasherMock.Object);
 
             // Act
-            var actual = sut.GetByBytes(stream)
+            var actual = (await sut.GetByBytesAsync(stream))
                 .Select(b=>b.Id)
                 .ToArray();
 

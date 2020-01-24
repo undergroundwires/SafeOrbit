@@ -12,14 +12,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         [Test]
         public void Ctor_NullArgument_Throws()
         {
-            void Construct() => GetSut(null);
+            static void Construct() => GetSut(null);
             Assert.Throws<ArgumentNullException>(Construct);
         }
 
         [Test]
         public void Ctor_EmptyArgument_Throws()
         {
-            void Construct() => GetSut(new byte[0]);
+            static void Construct() => GetSut(new byte[0]);
             Assert.Throws<ArgumentException>(Construct);
         }
 
@@ -29,8 +29,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Arrange
             var expected = new byte[] {5, 10, 15, 25};
             var sut = GetSut(expected);
+
             // Act
             var actual = sut.PlainBytes;
+
             // Assert
             Assert.True(expected.SequenceEqual(actual));
         }
@@ -41,13 +43,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Arrange
             var expected = new byte[] {5, 10, 15, 25};
             var sut = GetSut(expected);
+
             // Act
             sut.Dispose();
-
-            void BytesAccessor()
-            {
-                var temp = sut.PlainBytes;
-            }
+            void BytesAccessor() => _ = sut.PlainBytes;
 
             // Assert
             Assert.Throws<ObjectDisposedException>(BytesAccessor);
@@ -63,6 +62,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 
             // Act
             void DisposeAgain() => sut.Dispose();
+
             // Assert
             Assert.Throws<ObjectDisposedException>(DisposeAgain);
         }
@@ -73,8 +73,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             // Arrange
             var bytes = new byte[] {5, 10, 15, 25};
             var sut = GetSut(bytes);
+
             // Act
             sut.Dispose();
+
             // Assert
             Assert.True(bytes.All(b => b == 0));
         }

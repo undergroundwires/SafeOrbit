@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Cryptography.Encryption;
@@ -17,18 +18,15 @@ namespace SafeOrbit.Memory.SafeBytesServices
     internal class SafeByteTests : TestsFor<ISafeByte>
     {
         [Test]
-        public void Id_Disposed_Throws()
+        public async Task Id_Disposed_Throws()
         {
             // Arrange
             var sut = GetSut();
-            sut.Set(5);
+            await sut.SetAsync(5);
             sut.Dispose();
 
             // Act
-            void GetId()
-            {
-                var temp = sut.Id;
-            }
+            void GetId() => _ = sut.Id;
 
             // Assert
             Assert.Throws<ObjectDisposedException>(GetId);
@@ -41,275 +39,260 @@ namespace SafeOrbit.Memory.SafeBytesServices
             using var sut = GetSut();
 
             // Act
-            void GetId()
-            {
-                var temp = sut.Id;
-            }
+            void GetId() => _ = sut.Id;
 
             // Assert
             Assert.Throws<InvalidOperationException>(GetId);
         }
 
         [Test]
-        public void DeepClone_ClonedInstanceWithSameValue_AreNotReferToSameObject([Random(0, 256, 1)] byte b)
+        public async Task DeepClone_ClonedInstanceWithSameValue_AreNotReferToSameObject([Random(0, 256, 1)] byte b)
         {
             // Arrange
             var sut = GetSut();
-            sut.Set(b);
+            await sut.SetAsync(b);
+
             // Act
             var other = sut.DeepClone();
             // Assert
+
             Assert.False(ReferenceEquals(sut, other));
         }
 
         [Test]
-        public void DeepClone_ClonedObjectsGet_returnsEqualByte([Random(0, 256, 1)] byte b)
+        public async Task DeepClone_ClonedObjectsGet_returnsEqualByte([Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            sut.Set(b);
+            await sut.SetAsync(b);
             var cloned = sut.DeepClone();
-            //Act
-            var byteBack = sut.Get();
-            var byteBackFromClone = cloned.Get();
-            //Assert
+
+            // Act
+            var byteBack = await sut.GetAsync();
+            var byteBackFromClone = await cloned.GetAsync();
+
+            // Assert
             Assert.That(byteBack, Is.EqualTo(byteBackFromClone));
         }
 
         [Test]
-        public void DeepClone_ClonedObjectsValue_isEqual([Random(0, 256, 1)] byte b)
+        public async Task DeepClone_ClonedObjectsValue_isEqual([Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Set(b);
-            //Act
+            await sut.SetAsync(b);
+
+            // Act
             var isEqual = sut.DeepClone().Equals(sut);
-            //Assert
+
+            // Assert
             Assert.That(isEqual, Is.True);
         }
 
         [Test]
         public void DeepClone_ForNotSetByte_throwsInvalidOperationException()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
 
-            //Act
+            // Act
             void CallDeepClone() => sut.DeepClone();
-            //Assert
+
+            // Assert
             Assert.That(CallDeepClone, Throws.TypeOf<InvalidOperationException>());
         }
 
         [Test]
-        public void DeepClone_Disposed_Throws()
+        public async Task DeepClone_Disposed_Throws()
         {
             // Arrange
             var sut = GetSut();
-            sut.Set(5);
+            await sut.SetAsync(5);
             sut.Dispose();
 
             // Act
             void DeepClone() => sut.DeepClone();
+
             // Assert
             Assert.Throws<ObjectDisposedException>(DeepClone);
         }
 
 
         [Test]
-        public void DeepClone_EncryptedByte_IsCloned()
+        public async Task DeepClone_EncryptedByte_IsCloned()
         {
-            //Arrange
+            // Arrange
             var mock = new Mock<IMemoryProtectedBytes>();
             mock.Setup(m => m.BlockSizeInBytes).Returns(5);
             mock.Setup(m => m.DeepClone()).Returns(() => mock.Object).Verifiable();
             using var sut = GetSut(encryptedByte: mock.Object);
-            sut.Set(5);
-            //Act
+            await sut.SetAsync(5);
+
+            // Act
             sut.DeepClone();
-            //Assert
+
+            // Assert
             mock.Verify(m => m.DeepClone(), Times.Once);
         }
 
         [Test]
-        public void DeepClone_EncryptionKey_IsCloned()
+        public async Task DeepClone_EncryptionKey_IsCloned()
         {
-            //Arrange
+            // Arrange
             var mock = new Mock<IMemoryProtectedBytes>();
             mock.Setup(m => m.BlockSizeInBytes).Returns(5);
             mock.Setup(m => m.DeepClone()).Returns(() => mock.Object).Verifiable();
             using var sut = GetSut(encryptionKey: mock.Object);
-            sut.Set(5);
-            //Act
+            await sut.SetAsync(5);
+
+            // Act
             sut.DeepClone();
-            //Assert
+
+            // Assert
             mock.Verify(m => m.DeepClone(), Times.Once);
         }
 
         [Test]
-        public void Equals_ForObjectWithValueAndNoValue_returnsFalse([Random(0, 256, 1)] byte b)
+        public async Task EqualsSafeByte_SelfIsDisposed_Throws()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Set(b);
-            var sut2 = GetSut();
-            //Act
-            var equals = sut.Equals(sut2);
-            var equals2 = sut2.Equals(sut);
-            //Assert
-            Assert.That(equals, Is.False);
-            Assert.That(equals2, Is.False);
-        }
-
-        [Test]
-        public void Equals_SelfIsDisposed_Throws()
-        {
-            //Arrange
-            var sut = GetSut();
-            sut.Set(5);
+            await sut.SetAsync(5);
             sut.Dispose();
 
-            //Act
+            // Act
             void Equals() => sut.Equals(GetSut());
-            //Assert
+
+            // Assert
             Assert.Throws<ObjectDisposedException>(Equals);
         }
 
         [Test]
-        public void Equals_OtherIsDisposed_Throws()
+        public async Task EqualsSafeByte_OtherIsDisposed_Throws()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Set(5);
+            await sut.SetAsync(5);
             var other = GetSut();
-            other.Set(5);
+            await other.SetAsync(5);
             other.Dispose();
 
-            //Act
+            // Act
             void Equals() => sut.Equals(other);
-            //Assert
+            
+            // Assert
             Assert.Throws<ObjectDisposedException>(Equals);
         }
 
         [Test]
-        public void Equals_ForTwoEmptyInstances_ReturnsTrue()
+        public void EqualsSafeByte_ForTwoEmptyInstances_Throws()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var sut2 = GetSut();
-            //Act
-            var equals = sut.Equals(sut2);
-            var equals2 = sut2.Equals(sut);
-            //Assert
-            Assert.That(equals, Is.True);
-            Assert.That(equals2, Is.True);
+
+            // Act
+            void Equals() => sut.Equals(sut2);
+            void EqualsOtherWay() => sut2.Equals(sut);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(Equals);
+            Assert.Throws<InvalidOperationException>(EqualsOtherWay);
         }
 
         [Test]
-        public void Equals_ObjectWithoutByteWithByte_Throws()
+        public async Task EqualsSafeByte_SingleEmptyInstance_Throws()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
+            using var obj2 = GetSut();
+            await obj2.SetAsync(5);
 
-            //Act
-            void Equals() => sut.Equals(5);
-            //Assert
+            // Act
+            void Equals() => sut.Equals(obj2);
+
+            // Assert
             Assert.Throws<InvalidOperationException>(Equals);
         }
 
         [Test]
         public void EqualsObject_WhenParameterIsNullObject_returnsFalse()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             object nullInstance = null;
-            //Act
+
+            // Act
             var equals = sut.Equals(nullInstance);
-            //Assert
+
+            // Assert
             Assert.That(equals, Is.False);
         }
 
         [Test]
         public void EqualsObject_WhenParameterIsUnknownType_throws()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             var unknownType = new SafeByteTests();
 
-            //Act
+            // Act
             void Equals() => sut.Equals(unknownType);
-            //Assert
+
+            // Assert
             Assert.Throws<ArgumentException>(Equals);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.DifferentBytePairs))]
-        public void EqualsByte_ForDifferentBytes_returnsFalse(byte b1, byte b2)
+        public async Task EqualsSafeByte_ForDifferentInstancesHoldingDifferentBytes_returnsFalse(byte b1, byte b2)
         {
-            //Arrange
-            using var sut = GetSut();
-            sut.Set(b1);
-            //Act
-            var equals = sut.Equals(b2);
-            //Assert
-            Assert.That(equals, Is.False);
-        }
-
-        [Test]
-        public void EqualsByte_ForSameByte_returnsTrue([Random(0, 256, 1)] byte b)
-        {
-            //Arrange
-            using var sut = GetSut();
-            sut.Set(b);
-            //Act
-            var isEqual = sut.Equals(b);
-            //Assert
-            Assert.That(isEqual, Is.True);
-        }
-
-        [Test]
-        [TestCaseSource(typeof(ByteCases), nameof(ByteCases.DifferentBytePairs))]
-        public void EqualsSafeByte_ForDifferentInstancesHoldingDifferentBytes_returnsFalse(byte b1, byte b2)
-        {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             var holdingDifferent = GetSut();
-            sut.Set(b1);
-            holdingDifferent.Set(b2);
-            //Act
+            await sut.SetAsync(b1);
+            await holdingDifferent.SetAsync(b2);
+
+            // Act
             var equals = sut.Equals(holdingDifferent);
             var equalsOpposite = holdingDifferent.Equals(sut);
-            //Assert
+
+            // Assert
             Assert.That(equals, Is.False);
             Assert.That(equalsOpposite, Is.False);
         }
 
         [Test]
-        public void EqualsSafeByte_ForDifferentInstancesHoldingSameByte_returnsTrue([Random(0, 256, 1)] byte b)
+        public async Task EqualsSafeByte_ForDifferentInstancesHoldingSameByte_returnsTrue([Random(0, 256, 1)] byte b)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var holdingSame = GetSut();
-            sut.Set(b);
-            holdingSame.Set(b);
-            //Act
+            await sut.SetAsync(b);
+            await holdingSame.SetAsync(b);
+
+            // Act
             var equals = sut.Equals(holdingSame);
             var equalsOpposite = holdingSame.Equals(sut);
-            //Assert
+
+            // Assert
             Assert.That(equals, Is.True);
             Assert.That(equalsOpposite, Is.True);
         }
 
         [Test]
-        public void EqualsSafeByte_ForSameInstances_returnsTrue([Random(0, 256, 1)] byte b)
+        public async Task EqualsSafeByte_ForSameInstances_returnsTrue([Random(0, 256, 1)] byte b)
         {
             //Arrange
             var sut = GetSut();
-            sut.Set(b);
+            await sut.SetAsync(b);
             var sameObject = sut;
-            //Act
+
+            // Act
             var equals = sut.Equals(sameObject);
             var equalsOpposite = sameObject.Equals(sut);
-            //Assert
+
+            // Assert
             Assert.That(equals, Is.True);
             Assert.That(equalsOpposite, Is.True);
         }
@@ -317,124 +300,181 @@ namespace SafeOrbit.Memory.SafeBytesServices
         [Test]
         public void EqualsSafeByte_ParameterIsNullSafeByte_returnsFalse()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             ISafeByte nullInstance = null;
-            //Act
+
+            // Act
             var equals = sut.Equals(nullInstance);
-            //Assert
+
+            // Assert
             Assert.That(equals, Is.False);
         }
 
         [Test]
-        public void EqualsByte_NotInitialized_ThrowsException()
+        public void EqualsAsyncByte_NotInitialized_ThrowsException()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
 
-            //Act
-            void Equals() => sut.Equals(5);
-            //Assert
-            Assert.Throws<InvalidOperationException>(Equals);
+            // Act
+            Task EqualsAsync() => sut.EqualsAsync(5);
+
+            // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(EqualsAsync);
         }
 
         [Test]
-        public void EqualsByte_Disposed_ThrowsException()
+        public void EqualsAsyncByte_Disposed_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             sut.Dispose();
 
-            //Act
-            void Equals() => sut.Equals(5);
-            //Assert
-            Assert.Throws<ObjectDisposedException>(Equals);
+            // Act
+            Task EqualsAsync() => sut.EqualsAsync(5);
+
+            // Assert
+            Assert.ThrowsAsync<ObjectDisposedException>(EqualsAsync);
+        }
+
+
+        [Test]
+        public void EqualsAsyncByte_OnEmptyInstance_Throws()
+        {
+            // Arrange
+            using var sut = GetSut();
+
+            // Act
+            Task EqualsAsync() => sut.EqualsAsync(5);
+
+            // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(EqualsAsync);
+        }
+
+        [Test]
+        public async Task EqualsAsyncByte_SameByte_ReturnsTrue()
+        {
+            // Arrange
+            const byte @byte = 31;
+            var sut = GetSut();
+            await sut.SetAsync(@byte);
+
+            // Act
+            var actual = await sut.EqualsAsync(@byte);
+
+            // Assert
+            Assert.True(actual);
+        }
+
+        [Test]
+        public async Task EqualsAsyncByte_DifferentByte_ReturnsFalse()
+        {
+            // Arrange
+            const byte @byte = 31, differentByte = 52;
+            var sut = GetSut();
+            await sut.SetAsync(@byte);
+
+            // Act
+            var actual = await sut.EqualsAsync(differentByte);
+
+            // Assert
+            Assert.False(actual);
         }
 
         //** Get() **//
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void Get_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
+        public async Task GetAsync_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            //Act
-            sut.Set(expected);
-            var actual = sut.Get();
-            //Assert
+
+            // Act
+            await sut.SetAsync(expected);
+            var actual = await sut.GetAsync();
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void Get_WhenCalledForNotSetObject_throwsInvalidOperationException()
+        public void GetAsync_WhenCalledForNotSetObject_throwsInvalidOperationException()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
 
-            //Act
-            void CallGet() => sut.Get();
-            //Assert
-            Assert.That(CallGet, Throws.TypeOf<InvalidOperationException>());
+            // Act
+            Task CallGet() => sut.GetAsync();
+
+            // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(CallGet);
         }
 
 
         [Test]
-        public void Get_ObjectIsDisposed_ThrowsException()
+        public async Task GetAsync_ObjectIsDisposed_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Set(5);
+            await sut.SetAsync(5);
             sut.Dispose();
 
-            //Act
-            void CallGet() => sut.Get();
-            //Assert
-            Assert.That(CallGet, Throws.TypeOf<ObjectDisposedException>());
+            // Act
+            Task CallGet() => sut.GetAsync();
+
+            // Assert
+            Assert.ThrowsAsync<ObjectDisposedException>(CallGet);
         }
 
         //** GetHashCode() **//
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public void GetHashCode_ForDistinctObjectsHavingSameValue_returnsTrue(byte b)
+        public async Task GetHashCode_ForDistinctObjectsHavingSameValue_returnsTrue(byte b)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             using var holdingSame = GetSut();
-            sut.Set(b);
-            holdingSame.Set(b);
-            //Act
+            await sut.SetAsync(b);
+            await holdingSame.SetAsync(b);
+
+            // Act
             var hashCode = sut.GetHashCode();
             var sameHashCode = holdingSame.GetHashCode();
-            //Assert
+
+            // Assert
             Assert.AreEqual(hashCode, sameHashCode);
         }
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.DifferentBytePairs))]
-        public void GetHashCode_ForTwoNonEqualObjects_returnsFalse(byte b1, byte b2)
+        public async Task GetHashCode_ForTwoNonEqualObjects_returnsFalse(byte b1, byte b2)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             using var holdingDifferent = GetSut();
-            sut.Set(b1);
-            holdingDifferent.Set(b2);
-            //Act
+            await sut.SetAsync(b1);
+            await holdingDifferent.SetAsync(b2);
+
+            // Act
             var hashCode = sut.GetHashCode();
             var hashCodeForOtherByte = holdingDifferent.GetHashCode();
-            //Assert
+
+            // Assert
             Assert.That(hashCode, Is.Not.EqualTo(hashCodeForOtherByte));
         }
 
         [Test]
         public void Id_GettingWithoutSettingAnyByte_throws()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             int temp;
 
-            //Act
+            // Act
             void GetIdWithoutSettingByte() => temp = sut.Id;
-            //Act
+
+            // Act
             Assert.That(GetIdWithoutSettingByte, Throws.TypeOf<InvalidOperationException>());
         }
 
@@ -442,53 +482,59 @@ namespace SafeOrbit.Memory.SafeBytesServices
         [Test]
         public void IsByteSet_BeforeInvokingSetMethod_returnsFalse()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            //Act
+
+            // Act
             var isByteSet = sut.IsByteSet;
-            //Assert
+
+            // Assert
             Assert.That(isByteSet, Is.False);
         }
 
         //** Set() **//
         [Test]
-        public void Set_SetsIsByteSetToTrue_returnsTrue()
+        public async Task SetAsync_SetsIsByteSetToTrue_returnsTrue()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            //Act
-            sut.Set(30);
+
+            // Act
+            await sut.SetAsync(30);
             var isByteSet = sut.IsByteSet;
-            //Assert
+
+            // Assert
             Assert.That(isByteSet, Is.True);
         }
 
         [Test]
-        public void Set_WhenCalledTwice_throwsInvalidOperationException(
+        public async Task SetAsync_WhenCalledTwice_throwsInvalidOperationException(
             [Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            //Act
-            sut.Set(b1);
+            
+            // Act
+            await sut.SetAsync(b1);
+            Task CallOneMoreTime() => sut.SetAsync(b2);
 
-            void CallOneMoreTime() => sut.Set(b2);
-            //Assert
-            Assert.That(CallOneMoreTime, Throws.TypeOf<InvalidOperationException>());
+            // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(CallOneMoreTime);
         }
 
         [Test]
         public void Set_Disposed_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             sut.Dispose();
 
-            //Act
-            void Set() => sut.Set(30);
-            //Assert
-            Assert.Throws<ObjectDisposedException>(Set);
+            // Act
+            Task Set() => sut.SetAsync(30);
+
+            // Assert
+            Assert.ThrowsAsync<ObjectDisposedException>(Set);
         }
 
         [Test]
@@ -499,8 +545,10 @@ namespace SafeOrbit.Memory.SafeBytesServices
             mock.Setup(m => m.BlockSizeInBytes).Returns(5);
             mock.Setup(m => m.Dispose()).Verifiable();
             var sut = GetSut(encryptedByte: mock.Object);
+
             // Act
             sut.Dispose();
+
             // Assert
             mock.Verify(m => m.Dispose(), Times.Once);
         }
@@ -513,8 +561,10 @@ namespace SafeOrbit.Memory.SafeBytesServices
             mock.Setup(m => m.BlockSizeInBytes).Returns(5);
             mock.Setup(m => m.Dispose()).Verifiable();
             var sut = GetSut(encryptionKey: mock.Object);
+
             // Act
             sut.Dispose();
+
             // Assert
             mock.Verify(m => m.Dispose(), Times.Once);
         }
@@ -528,6 +578,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
 
             // Act
             void Dispose() => sut.Dispose();
+
             // Assert
             Assert.Throws<ObjectDisposedException>(Dispose);
         }

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using SafeOrbit.Cryptography.Random;
-using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
+using SafeOrbit.Parallel;
 
 namespace SafeOrbit.Memory
 {
@@ -46,26 +45,30 @@ namespace SafeOrbit.Memory
         public bool IsDisposed { get; private set; }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="Append(ISafeByte)"/>
-        public void Append(byte b)
+        /// <inheritdoc cref="AppendAsync(ISafeByte)"/>
+        public async Task AppendAsync(byte @byte)
         {
-            var safeByte = _safeByteFactory.GetByByte(b);
-            Append(safeByte);
+            var safeByte = await _safeByteFactory.GetByByteAsync(@byte)
+                .ConfigureAwait(false);
+            await AppendAsync(safeByte)
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="Append(IEnumerable{ISafeByte})"/>
-        public void AppendMany(SafeMemoryStream stream)
+        /// <inheritdoc cref="AppendManyAsync"/>
+        public async Task AppendManyAsync(SafeMemoryStream stream)
         {
-            var safeBytes = _safeByteFactory.GetByBytes(stream);
-            Append(safeBytes);
+            var safeBytes = await _safeByteFactory.GetByBytesAsync(stream)
+                .ConfigureAwait(false);
+            await AppendManyAsync(safeBytes)
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="Append(ISafeByte)"/>
+        /// <inheritdoc cref="AppendAsync(ISafeByte)"/>
         /// <inheritdoc cref="EnsureNotDisposed"/>
         /// <exception cref="ArgumentException">Throws if the argument is empty</exception>
-        public void Append(ISafeBytes safeBytes)
+        public async Task AppendAsync(ISafeBytes safeBytes)
         {
             EnsureNotDisposed();
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
@@ -73,15 +76,18 @@ namespace SafeOrbit.Memory
             if (safeBytes is SafeBytes asSafeBytes)
                 for (var i = 0; i < safeBytes.Length; i++)
                 {
-                    var safeByte = TaskContext.RunSync(() => asSafeBytes.GetAsSafeByteAsync(i));
-                    Append(safeByte);
+                    var safeByte = await asSafeBytes.GetAsSafeByteAsync(i)
+                        .ConfigureAwait(false);
+                    await AppendAsync(safeByte).ConfigureAwait(false);
                 }
             //If it's not, then reveals each byte in memory.
             else
                 for (var i = 0; i < safeBytes.Length; i++)
                 {
-                    var safeByte = _safeByteFactory.GetByByte(safeBytes.GetByte(i));
-                    Append(safeByte);
+                    var @byte = await safeBytes.GetByteAsync(i).ConfigureAwait(false);
+                    var safeByte = await _safeByteFactory.GetByByteAsync(@byte)
+                        .ConfigureAwait(false);
+                    await AppendAsync(safeByte).ConfigureAwait(false);
                 }
         }
 
@@ -92,28 +98,32 @@ namespace SafeOrbit.Memory
         /// </exception>
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         /// <exception cref="InvalidOperationException">Throws if the SafeBytes instance is empty.</exception>
-        public byte GetByte(int position)
+        public async Task<byte> GetByteAsync(int position)
         {
             EnsureNotDisposed();
             EnsureNotEmpty();
             if (position < 0 && position >= Length) throw new ArgumentOutOfRangeException(nameof(position));
-            var safeByte = TaskContext.RunSync(() => GetAsSafeByteAsync(position));
-            return safeByte.Get();
+            var safeByte = await GetAsSafeByteAsync(position)
+                .ConfigureAwait(false);
+            var @byte = await safeByte.GetAsync()
+                .ConfigureAwait(false);
+            return @byte;
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         /// <exception cref="InvalidOperationException">Throws if the SafeBytes instance is empty.</exception>
-        public byte[] ToByteArray()
+        public async Task<byte[]> ToByteArrayAsync()
         {
             EnsureNotDisposed();
             if (Length == 0)
                 return new byte[0];
-            var decryptedBytes = _safeByteCollection.ToDecryptedBytes();
+            var decryptedBytes = await _safeByteCollection.ToDecryptedBytesAsync()
+                .ConfigureAwait(false);
             return decryptedBytes;
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
-        public ISafeBytes DeepClone()
+        public async Task<ISafeBytes> DeepCloneAsync()
         {
             EnsureNotDisposed();
             var clone = _safeBytesFactory.Create();
@@ -121,13 +131,20 @@ namespace SafeOrbit.Memory
             {
                 //If it's the known SafeBytes then it reveals nothing in the memory
                 for (var i = 0; i < Length; i++)
-                    asSafeBytes.Append(TaskContext.RunSync(() => GetAsSafeByteAsync(i)));
+                {
+                    var safeByte = await GetAsSafeByteAsync(i).ConfigureAwait(false);
+                    await asSafeBytes.AppendAsync(safeByte)
+                        .ConfigureAwait(false);
+                }
                 return asSafeBytes;
             }
 
             //If it's not, then reveals each byte in memory.
             for (var i = 0; i < Length; i++)
-                clone.Append(GetByte(i));
+            {
+                var @byte = await GetByteAsync(i).ConfigureAwait(false);
+                await clone.AppendAsync(@byte).ConfigureAwait(false);
+            }
             return clone;
         }
         /// <summary>
@@ -147,22 +164,24 @@ namespace SafeOrbit.Memory
                 .ConfigureAwait(false);
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <inheritdoc cref="EnsureNotDisposed"/>
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
-        private void Append(ISafeByte safeByte)
+        private async Task AppendAsync(ISafeByte safeByte)
         {
             EnsureNotDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
-            _safeByteCollection.Append(safeByte);
+            await _safeByteCollection.AppendAsync(safeByte)
+                .ConfigureAwait(false);
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <inheritdoc cref="EnsureNotDisposed"/>
         /// <exception cref="ArgumentNullException"><paramref name="safeBytes" /> is <see langword="null" />.</exception>
-        private void Append(IEnumerable<ISafeByte> safeBytes)
+        private async Task AppendManyAsync(IEnumerable<ISafeByte> safeBytes)
         {
             EnsureNotDisposed();
             if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
-            _safeByteCollection.AppendMany(safeBytes);
+            await _safeByteCollection.AppendManyAsync(safeBytes)
+                .ConfigureAwait(false);
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
@@ -203,7 +222,7 @@ namespace SafeOrbit.Memory
 
         #region Equality
 
-        public bool Equals(byte[] other)
+        public async Task<bool> EqualsAsync(byte[] other)  //TODO: Utilize GetAllSafeBytes, getting one by one is so slow
         {
             if (other == null || !other.Any()) return Length == 0;
             // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
@@ -211,15 +230,14 @@ namespace SafeOrbit.Memory
             // TODO: Can run in parallel
             for (var i = 0; i < Length && i < other.Length; i++)
             {
-                var existingByte = TaskContext.RunSync(() => GetAsSafeByteAsync(i));
-                var result = existingByte.Equals(other[i]);
+                var existingByte = await GetAsSafeByteAsync(i).ConfigureAwait(false);
+                var result = await existingByte.EqualsAsync(other[i]).ConfigureAwait(false);
                 comparisonBit |= (uint) (result ? 0 : 1);
             }
-
             return comparisonBit == 0;
         }
 
-        public bool Equals(ISafeBytes other)
+        public async Task<bool> EqualsAsync(ISafeBytes other) //TODO: Utilize GetAllSafeBytes, getting one by one is so slow
         {
             if (other == null || other.Length == 0) return Length == 0;
             // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
@@ -227,7 +245,7 @@ namespace SafeOrbit.Memory
             // TODO: Can run in parallel
             for (var i = 0; i < Length && i < other.Length; i++)
             {
-                var existingByte = TaskContext.RunSync(() => GetAsSafeByteAsync(i));
+                var existingByte = await GetAsSafeByteAsync(i).ConfigureAwait(false);
                 bool bytesEqual;
                 if (other is SafeBytes safeBytes)
                 {
@@ -237,7 +255,8 @@ namespace SafeOrbit.Memory
                 }
                 else
                 {
-                    bytesEqual = existingByte.Equals(other.GetByte(i)); // reveal the byte;
+                    var @byte = await other.GetByteAsync(i).ConfigureAwait(false);
+                    bytesEqual = await existingByte.EqualsAsync(@byte).ConfigureAwait(false);
                 }
 
                 comparisonBit |= (uint) (bytesEqual ? 0 : 1);
@@ -248,19 +267,13 @@ namespace SafeOrbit.Memory
 
         public override bool Equals(object obj)
         {
-            return obj switch
-            {
-                SafeBytes sb => Equals(sb),
-                byte[] @byte => Equals(@byte),
-                _ => false
-            };
+            throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
         }
 
-        public override int GetHashCode()
+        public override int GetHashCode() // TODO: Utilize GetAllSafeBytes, getting one by one is so slow
         {
             unchecked
             {
-                //TODO: Better parallel implementation
                 const int multiplier = 26;
                 var hashCode = 1;
                 for (var i = 0; i < Length; i++)

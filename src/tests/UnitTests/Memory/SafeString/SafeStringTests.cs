@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
 using SafeOrbit.Text;
-using SafeOrbit.UnitTests;
 
 namespace SafeOrbit.Memory
 {
@@ -24,327 +24,358 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Clear_CallingTwice_doesNotThrow()
+        public void Clear_CallingTwice_DoesNotThrow()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            //Act
+            
+            // Act
             sut.Clear();
-
             void CallingTwice() => sut.Clear();
-            //Assert
+            
+            // Assert
             Assert.DoesNotThrow(CallingTwice);
         }
 
         [Test]
-        public void Clear_ForLengthProperty_setsZero()
+        public async Task Clear_ForLengthProperty_SetsZero()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            sut.Append('A');
-            sut.Append('b');
-            sut.Append('c');
+            await sut.AppendAsync('A');
+            await sut.AppendAsync('b');
+            await sut.AppendAsync('c');
             const int expected = 0;
-            //Act
+            
+            // Act
             sut.Clear();
             var actual = sut.Length;
-            //Assert
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        //** Clear() **//
-        [Test]
-        public void Clear_OnDisposedObject_throwsObjectDisposedException()
-        {
-            //Arrange
-            var sut = GetSut();
-            sut.Dispose();
-
-            //Act
-            void CallOnDisposedObject() => sut.Clear();
-            //Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
-        }
-
-        [Test]
-        public void DeepClone_AppendingToObject_doesNotChangeCloned([Random(0, 256, 1)] int i1,
-            [Random(0, 256, 1)] int i2)
-        {
-            //Arrange
-            using var sut = GetSut();
-            char ch1 = (char) i1, ch2 = (char) i2;
-            sut.Append(ch1);
-            var expected = sut.Length;
-            //Act
-            var clone = sut.DeepClone();
-            sut.Append(ch2);
-            var actual = clone.Length;
-            //Assert
+            
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void DeepClone_ClonedInstanceWithSameValue_doesNotReferToSameObject([Random(0, 256, 1)] int i)
-        {
-            //Arrange
-            var sut = GetSut();
-            var ch = (char) i;
-            sut.Append(ch);
-            //Act
-            var clone = sut.DeepClone();
-            //Act & Assert
-            Assert.That(clone, Is.Not.SameAs(sut));
-        }
-
-        [Test]
-        public void DeepClone_ClonedObjectsToSafeBytes_returnsEqualSafeBytes(
-            [Random(0, 256, 1)] int i1,
-            [Random(0, 256, 1)] int i2,
-            [Random(0, 256, 1)] int i3)
-        {
-            //Arrange
-            using var sut = GetSut();
-            char ch1 = (char) i1, ch2 = (char) i2, ch3 = (char) i3;
-            sut.Append(ch1);
-            sut.Append(ch2);
-            sut.Append(ch3);
-            var expected = sut.ToSafeBytes().ToByteArray();
-            //Act
-            var clone = sut.DeepClone();
-            var actual = clone.ToSafeBytes().ToByteArray();
-            var areEqual = expected.SequenceEqual(actual);
-            //Assert
-            Assert.That(areEqual, Is.True);
-        }
-
-        [Test]
-        public void DeepClone_ClonedObjectsValue_isEqual([Random(0, 256, 1)] int i1)
-        {
-            //Arrange
-            using var sut = GetSut();
-            var expected = (char) i1;
-            sut.Append(expected);
-            var clone = sut.DeepClone();
-            //Act
-            var actual = clone.GetAsChar(0);
-            //Assert
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void DeepClone_OnDisposedObject_returnsObjectDisposedException([Random(0, 256, 1)] int i1)
-        {
-            //Arrange
-            var sut = GetSut();
-            sut.Append((char) i1);
-            //Act
-            sut.Dispose();
-
-            void CallOnDisposedObject() => sut.DeepClone();
-            //Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
-        }
-
-        [Test]
-        public void DeepClone_Disposed_Throws()
+        public void Clear_OnDisposedObject_ThrowsObjectDisposedException()
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
 
             // Act
-            void DeepClone() => sut.DeepClone();
+            void CallOnDisposedObject() => sut.Clear();
+            
             // Assert
-            Assert.Throws<ObjectDisposedException>(DeepClone);
+            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void Dispose_AfterInvoked_setsIsDisposedToTrue()
+        public async Task DeepCloneAsync_AppendingToObject_DoesNotChangeCloned([Random(0, 256, 1)] int i1,
+            [Random(0, 256, 1)] int i2)
         {
-            //Arrange
+            // Arrange
+            using var sut = GetSut();
+            char ch1 = (char) i1, ch2 = (char) i2;
+            await sut.AppendAsync(ch1);
+            var expected = sut.Length;
+            
+            // Act
+            var clone = await sut.DeepCloneAsync();
+            await sut.AppendAsync(ch2);
+            var actual = clone.Length;
+            
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task DeepCloneAsync_ClonedInstanceWithSameValue_DoesNotReferToSameObject([Random(0, 256, 1)] int i)
+        {
+            // Arrange
             var sut = GetSut();
-            //Act
+            var ch = (char) i;
+            await sut.AppendAsync(ch);
+            
+            // Act
+            var clone = await sut.DeepCloneAsync();
+            
+            // Act & Assert
+            Assert.That(clone, Is.Not.SameAs(sut));
+        }
+
+        [Test]
+        public async Task DeepCloneAsync_ClonedObjectsToSafeBytes_ReturnsEqualSafeBytes()
+        {
+            // Arrange
+            using var sut = GetSut();
+            char ch1 = 'k', ch2 = 'u', ch3 = 'k';
+            await sut.AppendAsync(ch1);
+            await sut.AppendAsync(ch2);
+            await sut.AppendAsync(ch3);
+            var expected = await  (await sut.ToSafeBytesAsync()).ToByteArrayAsync();
+            
+            // Act
+            var clone = await sut.DeepCloneAsync();
+            var actual = await (await clone.ToSafeBytesAsync()).ToByteArrayAsync();
+            var areEqual = expected.SequenceEqual(actual);
+            
+            // Assert
+            Assert.That(areEqual, Is.True);
+        }
+
+        [Test]
+        public async Task DeepCloneAsync_ClonedObjectsValue_IsEqual([Random(0, 256, 1)] int i1)
+        {
+            // Arrange
+            using var sut = GetSut();
+            var expected = (char) i1;
+            await sut.AppendAsync(expected);
+            var clone = await sut.DeepCloneAsync();
+            
+            // Act
+            var actual = await clone.GetAsCharAsync(0);
+            
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task DeepCloneAsync_OnDisposedObject_ReturnsObjectDisposedException([Random(0, 256, 1)] int i1)
+        {
+            // Arrange
+            var sut = GetSut();
+            await sut.AppendAsync((char) i1);
+            
+            // Act
+            sut.Dispose();
+            Task CallOnDisposedObject() => sut.DeepCloneAsync();
+            
+            // Assert
+            Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
+        }
+
+        [Test]
+        public void DeepCloneAsync_Disposed_Throws()
+        {
+            // Arrange
+            var sut = GetSut();
+            sut.Dispose();
+
+            // Act
+            Task<ISafeString> DeepCloneAsync() => sut.DeepCloneAsync();
+            
+            // Assert
+            Assert.ThrowsAsync<ObjectDisposedException>(DeepCloneAsync);
+        }
+
+        [Test]
+        public void Dispose_AfterInvoked_SetsIsDisposedToTrue()
+        {
+            // Arrange
+            var sut = GetSut();
+            
+            // Act
             var isNotDisposed = sut.IsDisposed;
             sut.Dispose();
             var isDisposed = sut.IsDisposed;
-            //Assert
+            
+            // Assert
             Assert.That(isNotDisposed, Is.False);
             Assert.That(isDisposed, Is.True);
         }
 
         //** Dispose() **//
         [Test]
-        public void Dispose_DisposingTwice_throwsObjectDisposedException()
+        public void Dispose_DisposingTwice_ThrowsObjectDisposedException()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             sut.Dispose();
 
-            //Act
+            // Act
             void DisposeAgain() => sut.Dispose();
-            //Assert
+            
+            // Assert
             Assert.That(DisposeAgain, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void InsertChar_IndexHigherThanLength_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
+        public async Task InsertAsyncChar_IndexHigherThanLength_ThrowsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             var ch = (char) i;
-            sut.Append(ch);
+            await sut.AppendAsync(ch);
             var index = sut.Length + 1;
 
-            //Act
-            void CallOnDisposedObject() => sut.Insert(index, ch);
-            //Assert
+            // Act
+            Task CallOnDisposedObject() => sut.InsertAsync(index, ch);
+            
+            // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
-        public void InsertChar_IndexLowerThanZero_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
+        public async Task InsertAsyncChar_IndexLowerThanZero_ThrowsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const int index = -1;
             var c = (char) i;
-            sut.Append(c);
+            await sut.AppendAsync(c);
 
-            //Act
-            void CallOnDisposedObject() => sut.Insert(index, c);
-            //Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            // Act
+            Task CallOnDisposedObject() => sut.InsertAsync(index, c);
+            
+            // Assert
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void InsertChar_InsertingCharsTwice_increasesLength([Random(0, 256, 1)] int i1,
+        public async Task InsertAsyncChar_InsertingCharsTwice_IncreasesLength([Random(0, 256, 1)] int i1,
             [Random(0, 256, 1)] int i2)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const int insertPos = 0;
             char c1 = (char) i1, c2 = (char) i2;
             const int expected1 = 1;
             const int expected2 = 2;
-            //Act
-            sut.Insert(insertPos, c1);
+
+            // Act
+            await sut.InsertAsync(insertPos, c1);
             var actual1 = sut.Length;
-            sut.Insert(insertPos, c2);
+            await sut.InsertAsync(insertPos, c2);
             var actual2 = sut.Length;
-            //Assert
+
+            // Assert
             Assert.That(actual1, Is.EqualTo(expected1));
             Assert.That(actual2, Is.EqualTo(expected2));
         }
 
         [Test]
-        public void InsertChar_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] int i)
+        public void InsertAsyncChar_OnDisposedObject_ThrowsObjectDisposedException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var c = (char) i;
             sut.Dispose();
 
-            //Act
-            void CallOnDisposedObject() => sut.Insert(0, c);
-            //Assert
+            // Act
+            Task CallOnDisposedObject() => sut.InsertAsync(0, c);
+            
+            // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void InsertISafeBytes_IndexHigherThanLength_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
+        public async Task InsertAsyncISafeBytes_IndexHigherThanLength_ThrowsArgumentOutOfRangeException(
+            [Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
-            sut.Append(safeBytes);
+            var safeBytes = Stubs.Get<ISafeBytes>();
+            await safeBytes.AppendAsync((byte) i);
+            await sut.AppendAsync(safeBytes);
             var index = sut.Length + 1;
 
-            //Act
-            void CallOnDisposedObject() => sut.Insert(index, safeBytes);
-            //Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            // Act
+            Task CallOnDisposedObject() => sut.InsertAsync(index, safeBytes);
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void InsertISafeBytes_IndexLowerThanZero_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
+        public async Task InsertAsyncISafeBytes_IndexLowerThanZero_ThrowsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const int index = -1;
-            var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
-            sut.Append(safeBytes);
+            var safeBytes = Stubs.Get<ISafeBytes>();
+            await safeBytes.AppendAsync((byte) i);
+            await sut.AppendAsync(safeBytes);
 
-            //Act
-            void CallOnDisposedObject() => sut.Insert(index, safeBytes);
-            //Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
+            // Act
+            Task CallOnDisposedObject() => sut.InsertAsync(index, safeBytes);
+            
+            // Assert
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void InsertISafeBytes_InsertingCharsTwice_increasesLength([Random(0, 256, 1)] int i1,
-            [Random(0, 256, 1)] int i2)
+        public async Task InsertAsyncISafeBytes_InsertingCharsTwice_IncreasesLength()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const int insertPos = 0;
-            var safeBytes1 = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i1);
-            var safeBytes2 = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i2);
+            var safeBytes1 = Stubs.Get<ISafeBytes>();
+            await safeBytes1.AppendAsync( 11);
+            var safeBytes2 = Stubs.Get<ISafeBytes>();
+            await safeBytes2.AppendAsync(12);
             const int expected1 = 1, expected2 = 2;
-            //Act
-            sut.Insert(insertPos, safeBytes1);
+            
+            // Act
+            await sut.InsertAsync(insertPos, safeBytes1);
             var actual1 = sut.Length;
-            sut.Insert(insertPos, safeBytes2);
+            await sut.InsertAsync(insertPos, safeBytes2);
             var actual2 = sut.Length;
-            //Assert
+            
+            // Assert
             Assert.That(actual1, Is.EqualTo(expected1));
             Assert.That(actual2, Is.EqualTo(expected2));
         }
 
         [Test]
-        public void InsertISafeBytes_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] int i)
+        public async Task InsertAsyncISafeBytes_OnDisposedObject_ThrowsObjectDisposedException([Random(0, 256, 1)] int i)
         {
             // Arrange
             var sut = GetSut();
-            var safeBytes = Stubs.Get<ISafeBytes>().AppendAndReturnDeepClone((byte) i);
+            var safeBytes = Stubs.Get<ISafeBytes>();
+            await safeBytes.AppendAsync((byte)i);
             sut.Dispose();
 
             // Act
-            void CallOnDisposedObject() => sut.Insert(0, safeBytes);
+            Task CallOnDisposedObject() => sut.InsertAsync(0, safeBytes);
+            
             // Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void AppendChar_DisposedObject_ThrowsObjectDisposedException()
+        public void AppendAsyncChar_DisposedObject_ThrowsObjectDisposedException()
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
 
             // Act
-            void CallOnDisposedObject() => sut.Append('e');
+            Task CallOnDisposedObject() => sut.AppendAsync('e');
+
             // Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void AppendChar_MultipleCharsAppended_CanGetCharsInOrder()
+        public async Task AppendChar_MultipleCharsAppended_CanGetCharsInOrder()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const char one = 'h', two = 'e', three = 'l', four = 'l', five = 'o';
-            sut.Append(one);
-            sut.Append(two);
-            sut.Append(three);
-            sut.Append(four);
-            sut.Append(five);
-            //Act
-            var actualOne = sut.GetAsChar(0);
-            var actualTwo = sut.GetAsChar(1);
-            var actualThree = sut.GetAsChar(2);
-            var actualFour = sut.GetAsChar(3);
-            var actualFive = sut.GetAsChar(4);
-            //Assert
+            await sut.AppendAsync(one);
+            await sut.AppendAsync(two);
+            await sut.AppendAsync(three);
+            await sut.AppendAsync(four);
+            await sut.AppendAsync(five);
+            
+            // Act
+            var actualOne = await sut.GetAsCharAsync(0);
+            var actualTwo = await sut.GetAsCharAsync(1);
+            var actualThree = await sut.GetAsCharAsync(2);
+            var actualFour = await sut.GetAsCharAsync(3);
+            var actualFive = await sut.GetAsCharAsync(4);
+            
+            // Assert
             Assert.AreEqual(one, actualOne);
             Assert.AreEqual(two, actualTwo);
             Assert.AreEqual(three, actualThree);
@@ -353,32 +384,35 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void AppendString_DisposedObject_ThrowsObjectDisposedException()
+        public void AppendAsyncString_DisposedObject_ThrowsObjectDisposedException()
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
 
             // Act
-            void CallOnDisposedObject() => sut.Append("hello");
+            Task CallOnDisposedObject() => sut.AppendAsync("hello");
+            
             // Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void AppendString_StringIsAppended_CanGetCharsInOrder()
+        public async Task AppendAsyncString_StringIsAppended_CanGetCharsInOrder()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const char one = 'h', two = 'e', three = 'l', four = 'l', five = 'o';
-            sut.Append("hello");
-            //Act
-            var actualOne = sut.GetAsChar(0);
-            var actualTwo = sut.GetAsChar(1);
-            var actualThree = sut.GetAsChar(2);
-            var actualFour = sut.GetAsChar(3);
-            var actualFive = sut.GetAsChar(4);
-            //Assert
+            await sut.AppendAsync("hello");
+            
+            // Act
+            var actualOne = await sut.GetAsCharAsync(0);
+            var actualTwo = await sut.GetAsCharAsync(1);
+            var actualThree = await sut.GetAsCharAsync(2);
+            var actualFour = await sut.GetAsCharAsync(3);
+            var actualFive = await sut.GetAsCharAsync(4);
+            
+            // Assert
             Assert.AreEqual(one, actualOne);
             Assert.AreEqual(two, actualTwo);
             Assert.AreEqual(three, actualThree);
@@ -387,9 +421,9 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void AppendBytes_AsciiText_BytesAreConverted()
+        public async Task AppendAsyncBytes_AsciiText_BytesAreConverted()
         {
-            // arrange
+            // Arrange
             var textServiceMock = new Mock<ITextService>();
             var asciiBytes = new byte[] {104, 101, 108, 108, 111}; /* hello */
             var expected = new byte[] {104, 0, 101, 0, 108, 0, 108, 0, 111, 0}; /*hello*/
@@ -399,18 +433,20 @@ namespace SafeOrbit.Memory
             using var sut = GetSut(textService: textServiceMock.Object);
             var safeBytes = Stubs.Get<ISafeBytes>();
             foreach (var @byte in asciiBytes)
-                safeBytes.Append(@byte);
-            // act
-            sut.Append(safeBytes, Encoding.Ascii);
-            var actual = sut.ToSafeBytes().ToByteArray();
-            // assert
+                await safeBytes.AppendAsync(@byte);
+
+            // Act
+            await sut.AppendAsync(safeBytes, Encoding.Ascii);
+            var actual = await (await sut.ToSafeBytesAsync()).ToByteArrayAsync();
+            
+            // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public void AppendBytes_Utf16BigEndian_BytesAreConverted()
+        public async Task AppendAsyncBytes_Utf16BigEndian_BytesAreConverted()
         {
-            // arrange
+            // Arrange
             var textServiceMock = new Mock<ITextService>();
             var utf16BigEndianBytes = new byte[] {0, 104, 0, 101, 0, 108, 0, 108, 0, 111};
             var expected = new byte[] {104, 0, 101, 0, 108, 0, 108, 0, 111, 0}; /*hello*/
@@ -420,149 +456,169 @@ namespace SafeOrbit.Memory
             using var sut = GetSut(textService: textServiceMock.Object);
             var safeBytes = Stubs.Get<ISafeBytes>();
             foreach (var @byte in utf16BigEndianBytes)
-                safeBytes.Append(@byte);
-            // act
-            sut.Append(safeBytes, Encoding.Utf16BigEndian);
-            var actual = sut.ToSafeBytes().ToByteArray();
+                await safeBytes.AppendAsync(@byte);
+
+            // Act
+            await sut.AppendAsync(safeBytes, Encoding.Utf16BigEndian);
+            var actual = await (await sut.ToSafeBytesAsync()).ToByteArrayAsync();
+
             // assert
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public void AppendBytes_Utf16LittleEndian_BytesAreSame()
+        public async Task AppendAsyncBytes_Utf16LittleEndian_BytesAreSame()
         {
-            // arrange
+            // Arrange
             var textServiceMock = new Mock<ITextService>();
             var expected = new byte[] {104, 0, 101, 0, 108, 0, 108, 0, 111, 0}; /*hello*/
             using var sut = GetSut(textService: textServiceMock.Object);
             var safeBytes = Stubs.Get<ISafeBytes>();
             foreach (var @byte in expected)
-                safeBytes.Append(@byte);
-            // act
-            sut.Append(safeBytes);
-            var actual = sut.ToSafeBytes().ToByteArray();
-            // assert
+                await safeBytes.AppendAsync(@byte);
+           
+            // Act
+            await sut.AppendAsync(safeBytes);
+            var actual = await(await sut.ToSafeBytesAsync()).ToByteArrayAsync();
+
+            // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public void AppendBytes_DisposedObject_ThrowsObjectDisposedException()
+        public async Task AppendAsyncBytes_DisposedObject_ThrowsObjectDisposedException()
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
             var safeBytes = Stubs.Get<ISafeBytes>();
-            safeBytes.Append(55);
+            await safeBytes.AppendAsync(55);
 
             // Act
-            void CallOnDisposedObject() => sut.Append(safeBytes);
+            Task CallOnDisposedObject() => sut.AppendAsync(safeBytes);
+
             // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void AppendLine_DisposedObject_ThrowsObjectDisposedException()
+        public void AppendLineAsync_DisposedObject_ThrowsObjectDisposedException()
         {
             // Arrange
             var sut = GetSut();
             sut.Dispose();
 
             // Act
-            void CallOnDisposedObject() => sut.AppendLine();
+            Task CallOnDisposedObject() => sut.AppendLineAsync();
+
             // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void AppendLine_AppendsUnicodeLineFeed()
+        public async Task AppendLineAsync_AppendsUnicodeLineFeed()
         {
-            //Arrange
+            // Arrange
             const int expected = 0x000A;
             using var sut = GetSut();
-            //Act
-            sut.AppendLine();
-            //Assert
-            var actual = sut.GetAsSafeBytes(0).GetByte(0);
+
+            // Act
+            await sut.AppendLineAsync();
+
+            // Assert
+            var actual = await sut.GetAsSafeBytes(0).GetByteAsync(0);
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public void IsNullOrEmpty_ForDisposedSafeBytesObject_returnsTrue(
+        public async Task IsNullOrEmpty_ForDisposedSafeBytesObject_ReturnsTrue(
             [Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var c = (char) i;
-            sut.Append(c);
+            await sut.AppendAsync(c);
             sut.Dispose();
-            //Act
+            
+            // Act
             var isNull = SafeString.IsNullOrEmpty(sut);
-            //Assert
+            
+            // Assert
             Assert.That(isNull, Is.True);
         }
 
         [Test]
-        public void IsNullOrEmpty_ForClearedInstance_returnsTrue()
+        public async Task IsNullOrEmpty_ForClearedInstance_ReturnsTrue()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append("Hello world");
+            await sut.AppendAsync("Hello world");
             sut.Clear();
-            //Act
+
+            // Act
             var isNull = SafeString.IsNullOrEmpty(sut);
-            //Assert
+            
+            // Assert
             Assert.That(isNull, Is.True);
         }
 
         [Test]
-        public void IsNullOrEmpty_ForNewSafeStringInstance_returnsTrue()
+        public void IsNullOrEmpty_ForNewSafeStringInstance_ReturnsTrue()
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            //Act
+            
+            // Act
             var isEmpty = SafeString.IsNullOrEmpty(sut);
-            //Assert
+            
+            // Assert
             Assert.That(isEmpty, Is.True);
         }
 
         [Test]
-        public void IsNullOrEmpty_ForNullSafeStringObject_returnsTrue()
+        public void IsNullOrEmpty_ForNullSafeStringObject_ReturnsTrue()
         {
-            //Arrange
+            // Arrange
             var nullString = (ISafeString) null;
-            //Act
+            
+            // Act
             var isNull = SafeString.IsNullOrEmpty(nullString);
-            //Assert
+            
+            // Assert
             Assert.That(isNull, Is.True);
         }
 
         [Test]
-        public void IsNullOrEmpty_ForObjectHoldingMultipleBytes_returnsFalse(
+        public async Task IsNullOrEmpty_ForObjectHoldingMultipleBytes_ReturnsFalse(
             [Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             char c1 = (char) i1, c2 = (char) i2, c3 = (char) i3;
-            sut.Append(c1);
-            sut.Append(c2);
-            sut.Append(c3);
-            //Act
+            await sut.AppendAsync(c1);
+            await sut.AppendAsync(c2);
+            await sut.AppendAsync(c3);
+            
+            // Act
             var isNull = SafeString.IsNullOrEmpty(sut);
-            //Assert
+            
+            // Assert
             Assert.That(isNull, Is.False);
         }
 
         [Test]
-        public void IsNullOrEmpty_ForObjectHoldingSingleByte_returnsFalse(
+        public async Task IsNullOrEmpty_ForObjectHoldingSingleByte_ReturnsFalse(
             [Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             var c = (char) i;
-            sut.Append(c);
-            //Act
+            await sut.AppendAsync(c);
+
+            // Act
             var isEmpty = SafeString.IsNullOrEmpty(sut);
-            //Assert
+            
+            // Assert
             Assert.That(isEmpty, Is.False);
         }
 
@@ -570,286 +626,315 @@ namespace SafeOrbit.Memory
         [Test]
         public void Length_ForAFreshInstance_isZero()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            //Act
+
+            // Act
             var length = sut.Length;
-            //Assert
+
+            // Assert
             Assert.That(length, Is.EqualTo(0));
         }
 
         [Test]
-        public void Remove_CountParameterIsLessThanOne_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
+        public async Task Remove_CountParameterIsLessThanOne_ThrowsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             var ch = (char) i;
-            sut.Append(ch);
+            await sut.AppendAsync(ch);
             var index = sut.Length;
 
-            //Act
+            // Act
             void CallWithZeroParameter() => sut.Remove(index, 0);
-
             void CallWithNegativeParameter() => sut.Remove(index, -1);
-            //Assert
+            
+            // Assert
             Assert.That(CallWithZeroParameter, Throws.TypeOf<ArgumentOutOfRangeException>());
             Assert.That(CallWithNegativeParameter, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
-        public void Remove_IndexParameterHigherThanLength_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
+        public async Task Remove_IndexParameterHigherThanLength_ThrowsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             var ch = (char) i;
-            sut.Append(ch);
+            await sut.AppendAsync(ch);
             var index = sut.Length + 1;
 
-            //Act
+            // Act
             void CallOnDisposedObject() => sut.Remove(index);
-            //Assert
+            
+            // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
-        public void Remove_IndexParameterLowerThanZero_throwsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
+        public async Task Remove_IndexParameterLowerThanZero_ThrowsArgumentOutOfRangeException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const int index = -1;
             var c = (char) i;
-            sut.Append(c);
+            await sut.AppendAsync(c);
 
-            //Act
+            // Act
             void CallOnDisposedObject() => sut.Remove(index);
-            //Assert
+            
+            // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         //** Remove() **//
         [Test]
-        public void Remove_OnDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] int i)
+        public void Remove_OnDisposedObject_ThrowsObjectDisposedException([Random(0, 256, 1)] int i)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var c = (char) i;
             sut.Dispose();
 
-            //Act
+            // Act
             void CallOnDisposedObject() => sut.Remove(0, c);
-            //Assert
+            
+            // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
         [TestCase(1)]
         [TestCase(2)]
-        public void Remove_OtherCharacters_DoesNotAffect(int count)
+        public async Task Remove_OtherCharacters_DoesNotAffect(int count)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const int startIndex = 1;
             IList<char> chars = new[] {'t', 'e', 's', 't'}.ToList();
             foreach (var c in chars)
-                sut.Append(c);
+                await sut.AppendAsync(c);
             for (var i = 0; i < count; i++)
                 chars.RemoveAt(startIndex);
-            //Act
+            
+            // Act
             sut.Remove(startIndex, count);
-            //Assert
+            
+            // Assert
             for (var i = 0; i < sut.Length; i++)
             {
-                var actual = sut.GetAsChar(i);
+                var actual = await sut.GetAsCharAsync(i);
                 var expected = chars.ElementAt(i);
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
         [Test]
-        public void Remove_TotalOfIndexAndCountIsHigherThanLength_throwsArgumentOutOfRangeException()
+        public async Task Remove_TotalOfIndexAndCountIsHigherThanLength_ThrowsArgumentOutOfRangeException()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const char ch1 = 't', ch2 = 'e';
-            sut.Append(ch1);
-            sut.Append(ch2);
+            await sut.AppendAsync(ch1);
+            await sut.AppendAsync(ch2);
             var index = sut.Length - 1;
             var count = sut.Length;
 
-            //Act
+            // Act
             void SendBadParameters() => sut.Remove(index, count);
-            //Assert
+            
+            // Assert
             Assert.That(SendBadParameters, Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
         [TestCase(1)]
         [TestCase(2)]
-        public void Remove_WhenRemoved_decreasesLength(int count)
+        public async Task Remove_WhenRemoved_DecreasesLength(int count)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const char ch1 = 't', ch2 = 'e';
-            sut.Append(ch1);
-            sut.Append(ch2);
+            await sut.AppendAsync(ch1);
+            await sut.AppendAsync(ch2);
             var expected = sut.Length - count;
-            //Act
+            
+            // Act
             sut.Remove(0, count);
             var actual = sut.Length;
-            //Assert
+            
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void ShallowClone_AppendingToObject_changesCloned([Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2)
+        public async Task ShallowClone_AppendingToObject_ChangesCloned([Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             char ch1 = (char) i1, ch2 = (char) i2;
-            sut.Append(ch1);
-            //Act
+            await sut.AppendAsync(ch1);
+            
+            // Act
             var clone = sut.ShallowClone();
-            sut.Append(ch2);
+            await sut.AppendAsync(ch2);
             var actual = clone.Length;
             var expected = sut.Length;
-            //Assert
+            
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void ShallowClone_ClonedObjectsToSafeBytes_returnsEqualSafeBytes([Random(0, 256, 1)] int i1,
+        public async Task ShallowClone_ClonedObjectsToSafeBytes_ReturnsEqualSafeBytes([Random(0, 256, 1)] int i1,
             [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             char ch1 = (char) i1, ch2 = (char) i2, ch3 = (char) i3;
-            sut.Append(ch1);
-            sut.Append(ch2);
-            sut.Append(ch3);
-            var expected = sut.ToSafeBytes().ToByteArray();
-            //Act
+            await sut.AppendAsync(ch1);
+            await sut.AppendAsync(ch2);
+            await sut.AppendAsync(ch3);
+            var expected = await (await sut.ToSafeBytesAsync()).ToByteArrayAsync();
+            
+            // Act
             var clone = sut.ShallowClone();
-            var actual = clone.ToSafeBytes().ToByteArray();
+            var actual = await  (await clone.ToSafeBytesAsync()).ToByteArrayAsync();
             var areEqual = expected.SequenceEqual(actual);
-            //Assert
+            
+            // Assert
             Assert.That(areEqual, Is.True);
         }
 
         [Test]
-        public void ShallowClone_ClonedObjectsValue_isEqual([Random(0, 256, 1)] int i1)
+        public async Task ShallowClone_ClonedObjectsValue_IsEqual([Random(0, 256, 1)] int i1)
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             var expected = (char) i1;
-            sut.Append(expected);
+            await sut.AppendAsync(expected);
             var clone = sut.ShallowClone();
-            //Act
-            var actual = clone.GetAsChar(0);
-            //Assert
+
+            // Act
+            var actual = await clone.GetAsCharAsync(0);
+            
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void ShallowClone_OnDisposedObject_ThrowsObjectDisposedException([Random(0, 256, 1)] int i1)
+        public async Task ShallowClone_OnDisposedObject_ThrowsObjectDisposedException([Random(0, 256, 1)] int i1)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            sut.Append((char) i1);
-            //Act
+            await sut.AppendAsync((char) i1);
+            
+            // Act
             sut.Dispose();
-
             void CallOnDisposedObject() => sut.ShallowClone();
+
             //Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
         }
 
         [Test]
-        public void ToSafeBytes_ChangingReturnedResult_OriginalObject()
+        public async Task ToSafeBytesAsync_ChangingReturnedResult_OriginalObject()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const char expected = 'a';
             const int index = 0;
-            sut.Append(expected);
-            //Act
-            var bytes = sut.ToSafeBytes();
-            bytes.Append(5);
-            var actual = sut.GetAsChar(index);
-            //Assert
+            await sut.AppendAsync(expected);
+
+            // Act
+            var bytes = await sut.ToSafeBytesAsync();
+            await bytes.AppendAsync(5);
+            var actual = await sut.GetAsCharAsync(index);
+
+            // Assert
             Assert.That(expected, Is.EqualTo(actual));
         }
 
         [Test]
-        public void ToSafeBytes_DisposingReturnedResult_DoesNotAffectOriginalObject()
+        public async Task ToSafeBytesAsync_DisposingReturnedResult_DoesNotAffectOriginalObject()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
             const char expected = 'a';
             const int index = 0;
-            sut.Append(expected);
-            //Act
-            var bytes = sut.ToSafeBytes();
+            await sut.AppendAsync(expected);
+
+            // Act
+            var bytes = await sut.ToSafeBytesAsync();
             bytes.Dispose();
-            var actual = sut.GetAsChar(index);
-            //Assert
+            var actual = await sut.GetAsCharAsync(index);
+            
+            // Assert
             Assert.That(expected, Is.EqualTo(actual));
         }
 
         [Test]
-        public void ToSafeBytes_ForMultipleChars_returnsEqualBytes()
+        public async Task ToSafeBytesAsync_ForMultipleChars_ReturnsEqualBytes()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            sut.Append('a');
-            sut.Append('b');
-            var charBytes1 = sut.GetAsSafeBytes(0).ToByteArray();
-            var charBytes2 = sut.GetAsSafeBytes(1).ToByteArray();
+            await sut.AppendAsync('a');
+            await sut.AppendAsync('b');
+            var charBytes1 = await sut.GetAsSafeBytes(0).ToByteArrayAsync();
+            var charBytes2 = await sut.GetAsSafeBytes(1).ToByteArrayAsync();
             var expected = charBytes1.Combine(charBytes2);
-            //Act
-            var actual = sut.ToSafeBytes().ToByteArray();
-            //Assert
+
+            // Act
+            var safeBytes = await sut.ToSafeBytesAsync();
+            var actual = await safeBytes.ToByteArrayAsync();
+
+            // Assert
             var areSame = expected.SequenceEqual(actual);
             Assert.That(areSame, Is.True);
         }
 
         [Test]
-        public void ToSafeBytes_ForSingleChar_returnsEqualBytes()
+        public async Task ToSafeBytesAsync_ForSingleChar_ReturnsEqualBytes()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
-            sut.Append('a');
-            var expected = sut.GetAsSafeBytes(0).ToByteArray();
-            //Act
-            var actual = sut.ToSafeBytes().ToByteArray();
-            //Assert
+            await sut.AppendAsync('a');
+            var expected = await sut.GetAsSafeBytes(0).ToByteArrayAsync();
+
+            // Act
+            var safeBytes = await sut.ToSafeBytesAsync();
+            var actual = await safeBytes.ToByteArrayAsync();
+
+            // Assert
             var areSame = expected.SequenceEqual(actual);
             Assert.That(areSame, Is.True);
         }
 
         [Test]
-        public void ToSafeBytes_OnDisposedObject_throwsObjectDisposedException()
+        public async Task ToSafeBytesAsync_OnDisposedObject_ThrowsObjectDisposedException()
         {
             //Arrange
             var sut = GetSut();
-            sut.Append('a');
+            await sut.AppendAsync('a');
+            
             //Act
             sut.Dispose();
+            Task CallOnDisposedObject() => sut.ToSafeBytesAsync();
 
-            void CallOnDisposedObject() => sut.ToSafeBytes();
             //Assert
-            Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+            Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void ToSafeBytes_OnEmptyInstance_throwsInvalidOperationException()
+        public void ToSafeBytesAsync_OnEmptyInstance_ThrowsInvalidOperationException()
         {
-            //Arrange
+            // Arrange
             using var sut = GetSut();
 
-            //Act
-            void CallOnEmptyObject() => sut.ToSafeBytes();
-            //Assert
-            Assert.That(CallOnEmptyObject, Throws.TypeOf<InvalidOperationException>());
+            // Act
+            Task CallOnEmptyObject() => sut.ToSafeBytesAsync();
+
+            // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(CallOnEmptyObject);
         }
     }
 }

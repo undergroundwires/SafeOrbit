@@ -35,12 +35,6 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="IFastEncryptor" />
     public interface IFastEncryptor<TResult, in TInput, in TKey> : IPaddedEncryptor
     {
-        /// <inheritdoc cref="EncryptAsync" />
-        TResult Encrypt(TInput input, TKey key);
-
-        /// <inheritdoc cref="DecryptAsync" />
-        TResult Decrypt(TInput input, TKey key);
-
         /// <summary>
         ///     Encrypts the specified input with the given key and the salt asynchronously.
         /// </summary>

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace SafeOrbit.Tests
@@ -18,7 +19,7 @@ namespace SafeOrbit.Tests
         /// </summary>
         /// <param name="action">The action.</param>
         /// <returns>Total elapsed milliseconds</returns>
-        protected double Measure(Action action, int repeat = 1)
+        protected async Task<double> MeasureAsync(Func<Task> task, int repeat = 1)
         {
             if (repeat <= 0) throw new ArgumentOutOfRangeException(nameof(repeat));
             var results = new Collection<long>();
@@ -28,7 +29,7 @@ namespace SafeOrbit.Tests
                 long elapsedTime;
                 try
                 {
-                    action.Invoke();
+                    await task.Invoke().ConfigureAwait(false);
                 }
                 finally
                 {
@@ -40,6 +41,17 @@ namespace SafeOrbit.Tests
             var average = results.Average();
             Console.WriteLine($"{average} ms");
             return average;
+        }
+
+        protected double Measure(Action action, int repeat = 1)
+        {
+            return MeasureAsync(() =>
+            {
+                action();
+                return Task.FromResult(true);
+            }, repeat)
+                .GetAwaiter()
+                .GetResult();
         }
     }
 }

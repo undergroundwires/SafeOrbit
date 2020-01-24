@@ -24,12 +24,13 @@ namespace SafeOrbit.Fakes
                     (Text.Encoding src, Text.Encoding desc, byte[] bytes) => bytes);
             fake.Setup(x => x.GetString(It.IsAny<byte[]>(), It.IsAny<Text.Encoding>())).Returns(
                 (byte[] bytes, Text.Encoding e) => encoding.GetString(bytes));
-            fake.Setup(x => x.GetSafeString(It.IsAny<byte[]>(), It.IsAny<Text.Encoding>())).Returns(
-                (byte[] bytes, Text.Encoding e) =>
+            fake.Setup(x => x.GetSafeStringAsync(It.IsAny<byte[]>(), It.IsAny<Text.Encoding>())).Returns(
+                async (byte[] bytes, Text.Encoding e) =>
                 {
                     var result = safeStringFactory.Create();
                     var chars = encoding.GetChars(bytes);
-                    foreach (var ch in chars) result.Append(ch);
+                    foreach (var ch in chars)
+                        await result.AppendAsync(ch);
                     return result;
                 });
             return fake.Object;

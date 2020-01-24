@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using SafeOrbit.Library;
 using SafeOrbit.Memory;
 
@@ -22,9 +23,9 @@ namespace SafeOrbit.Text
         private const Encoding DefaultEncoding = Encoding.Utf16LittleEndian;
 
         /// <summary>
-        ///     Safe string factory to create <see cref="ISafeString" /> instances when using <see cref="GetSafeString" /> method.
+        ///     Safe string factory to create <see cref="ISafeString" /> instances when using <see cref="GetSafeStringAsync" /> method.
         /// </summary>
-        /// <seealso cref="GetSafeString" />
+        /// <seealso cref="GetSafeStringAsync" />
         /// <seealso cref="ITextService" />
         private readonly IFactory<ISafeString> _safeStringFactory;
 
@@ -44,13 +45,8 @@ namespace SafeOrbit.Text
         {
             _safeStringFactory = safeStringFactory ?? throw new ArgumentNullException(nameof(safeStringFactory));
         }
-
-        /// <summary>
-        ///     Converts an entire byte array from one encoding to another.
-        /// </summary>
-        /// <param name="sourceEncoding">The encoding format of <paramref name="bytes" /></param>
-        /// <param name="destinationEncoding">The target encoding format.</param>
-        /// <param name="bytes">The bytes to convert.</param>
+        
+        /// <inheritdoc />
         /// <returns>
         ///     An array of type <see cref="byte" /> containing the results of converting <paramref name="bytes" /> from
         ///     <paramref name="sourceEncoding" /> to <paramref name="destinationEncoding" />.
@@ -79,12 +75,7 @@ namespace SafeOrbit.Text
                 bytes);
         }
 
-        /// <summary>
-        ///     Encodes all the characters in the specified string into a sequence of bytes.
-        /// </summary>
-        /// <param name="text">The string containing the characters to encode.</param>
-        /// <param name="encoding">The encoding of the given text.</param>
-        /// <returns>A byte array containing the results of encoding the specified set of characters.</returns>
+        /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="text" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="System.Text.EncoderFallbackException">
         ///     A fallback occurred (see https://msdn.microsoft.com/en-us/library/ms404377(v=vs.110).aspx , Character Encoding in
@@ -101,12 +92,7 @@ namespace SafeOrbit.Text
             return GetEncodingObject(encoding).GetBytes(text);
         }
 
-        /// <summary>
-        ///     Encodes the specified character into a sequence of bytes.
-        /// </summary>
-        /// <param name="char">The character to encode.</param>
-        /// <param name="encoding">The encoding of the given character.</param>
-        /// <returns>A byte array containing the results of encoding the given character.</returns>
+        /// <inheritdoc />
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Throws if
         ///     <paramref name="char" />
@@ -129,13 +115,8 @@ namespace SafeOrbit.Text
         {
             return GetBytes(new[] {@char}, encoding);
         }
-
-        /// <summary>
-        ///     Encodes the characters in the specified character array into a sequence of bytes.
-        /// </summary>
-        /// <param name="chars">The character array containing the characters to encode.</param>
-        /// <param name="encoding">The encoding of the given characters.</param>
-        /// <returns>A byte array containing the encoded representation of the given character array.</returns>
+        
+        /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="chars" /> is <see langword="null" />.</exception>
         /// <exception cref="System.Text.EncoderFallbackException">
         ///     A fallback occurred (see https://msdn.microsoft.com/en-us/library/ms404377(v=vs.110).aspx , Character Encoding in
@@ -153,12 +134,8 @@ namespace SafeOrbit.Text
             return GetEncodingObject(encoding).GetBytes(chars);
         }
 
-        /// <summary>
-        ///     Decodes a sequence of bytes into a string.
-        /// </summary>
-        /// <param name="bytes">The byte array containing the sequence of bytes to decode.</param>
-        /// <param name="encoding">The encoding of the characters in the given byte array.</param>
-        /// <returns>A string that contains the results of decoding the specified sequence of bytes.</returns>
+
+        /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="bytes" /> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentException">The byte array contains invalid encoding code points.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -176,11 +153,8 @@ namespace SafeOrbit.Text
             return GetEncodingObject(encoding).GetString(bytes);
         }
 
-        /// <summary>
-        ///     Decodes all the bytes in the specified byte array into a set of characters.
-        /// </summary>
-        /// <param name="bytes">The byte array containing the sequence of bytes to decode.</param>
-        /// <param name="encoding">The encoding of the characters in the given byte array.</param>
+
+        /// <inheritdoc />
         /// <returns>A character array containing the decoded representation of a given byte array..</returns>
         /// <exception cref="ArgumentNullException"><paramref name="bytes" /> is null or empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -199,12 +173,7 @@ namespace SafeOrbit.Text
         }
 
 
-        /// <summary>
-        ///     Decodes all the bytes in the specified byte array into a <see cref="ISafeString" />.
-        /// </summary>
-        /// <param name="bytes">The byte array containing the sequence of bytes to decode.</param>
-        /// <param name="encoding">The encoding of the characters in the given byte array.</param>
-        /// <returns><see cref="ISafeString" /> instance containing the decoded representation of a given byte array.</returns>
+        /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="bytes" /> is null or empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="encoding" /> must be defined in
@@ -212,11 +181,11 @@ namespace SafeOrbit.Text
         /// </exception>
         /// <exception cref="System.Text.DecoderFallbackException">
         ///     A fallback occurred (see https://msdn.microsoft.com/en-us/library/ms404377(v=vs.110).aspx , Character Encoding in
-        ///     the .NET Framework)-and-<see cref="P:System.Text.Encoding.DecoderFallback" /> is set to
-        ///     <see cref="T:System.Text.DecoderExceptionFallback" />.
+        ///     the .NET Framework)-and-<see cref="System.Text.Encoding.DecoderFallback" /> is set to
+        ///     <see cref="System.Text.DecoderExceptionFallback" />.
         /// </exception>
         /// <seealso cref="_safeStringFactory" />
-        public ISafeString GetSafeString(byte[] bytes, Encoding encoding)
+        public async Task<ISafeString> GetSafeStringAsync(byte[] bytes, Encoding encoding)
         {
             if (bytes == null || !bytes.Any()) throw new ArgumentNullException(nameof(bytes));
             var result = _safeStringFactory.Create();
@@ -226,12 +195,11 @@ namespace SafeOrbit.Text
                 {
                     do
                     {
-                        var ch = (char) streamReader.Read();
-                        result.Append(ch);
+                        var ch = (char)streamReader.Read();
+                        await result.AppendAsync(ch).ConfigureAwait(false);
                     } while (!streamReader.EndOfStream);
                 }
             }
-
             return result;
         }
 
@@ -242,18 +210,14 @@ namespace SafeOrbit.Text
         private System.Text.Encoding GetEncodingObject(Encoding encoding)
         {
             if (!Enum.IsDefined(typeof(Encoding), encoding)) throw new ArgumentOutOfRangeException(nameof(encoding));
-            switch (encoding)
+            return encoding switch
             {
-                case Encoding.Ascii:
-                    return System.Text.Encoding.ASCII;
-                case Encoding.Utf16BigEndian:
-                    return System.Text.Encoding.BigEndianUnicode;
-                case Encoding.Utf16LittleEndian:
-                    return System.Text.Encoding.Unicode;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(encoding),
-                        $"Value must be defined in the {nameof(Encoding)} enum.");
-            }
+                Encoding.Ascii => System.Text.Encoding.ASCII,
+                Encoding.Utf16BigEndian => System.Text.Encoding.BigEndianUnicode,
+                Encoding.Utf16LittleEndian => System.Text.Encoding.Unicode,
+                _ => throw new ArgumentOutOfRangeException(nameof(encoding),
+                    $"Value must be defined in the {nameof(Encoding)} enum.")
+            };
         }
     }
 }

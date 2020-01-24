@@ -14,14 +14,14 @@ namespace SafeOrbit.Fakes
             var fake = new Mock<IByteArrayProtector>();
             const byte xorConstant = 0x53;
             fake.Setup(x => x.BlockSizeInBytes).Returns(blockSize);
-            fake.Setup(x => x.Protect(It.IsAny<byte[]>()))
+            fake.Setup(x => x.ProtectAsync(It.IsAny<byte[]>()))
                 .Callback<byte[]>(bytes =>
                 {
                     if (bytes.Length % blockSize != 0) throw new ArgumentException();
                     for (var i = 0; i < bytes.Length; i++)
                         bytes[i] = (byte) (bytes[i] ^ xorConstant);
                 });
-            fake.Setup(x => x.Unprotect(It.IsAny<byte[]>()))
+            fake.Setup(x => x.UnprotectAsync(It.IsAny<byte[]>()))
                 .Callback<byte[]>(bytes =>
                 {
                     if (bytes.Length % blockSize != 0) throw new ArgumentException();

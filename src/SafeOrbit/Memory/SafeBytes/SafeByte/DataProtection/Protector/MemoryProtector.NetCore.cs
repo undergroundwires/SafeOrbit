@@ -1,5 +1,6 @@
 ﻿#if NETSTANDARD1_6 || NETSTANDARD2_0
 using System;
+using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Encryption.Padding;
 using SafeOrbit.Cryptography.Random;
@@ -34,10 +35,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 
         /// <inheritdoc />
         /// <inheritdoc cref="EnsureParameter" />
-        public void Protect(byte[] userData)
+        public async Task ProtectAsync(byte[] userData)
         {
             this.EnsureParameter(userData);
-            var encryptedBytes = _encryptor.Encrypt(userData, _key);
+            var encryptedBytes = await _encryptor.EncryptAsync(userData, _key)
+                .ConfigureAwait(false);
             SetBytesToByteArray(
                 source: encryptedBytes,
                 target: ref userData);
@@ -45,10 +47,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 
         /// <inheritdoc />
         /// <inheritdoc cref="EnsureParameter" />
-        public void Unprotect(byte[] encryptedData)
+        public async Task UnprotectAsync(byte[] encryptedData)
         {
             this.EnsureParameter(encryptedData);
-            var decryptedBytes = _encryptor.Decrypt(encryptedData, _key);
+            var decryptedBytes = await _encryptor.DecryptAsync(encryptedData, _key)
+                .ConfigureAwait(false);
             SetBytesToByteArray(
                 source: decryptedBytes,
                 target: ref encryptedData);
@@ -64,5 +67,4 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
         }
     }
 }
-
 #endif

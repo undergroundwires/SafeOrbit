@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace SafeOrbit.Memory
@@ -10,13 +11,13 @@ namespace SafeOrbit.Memory
     public class SafeStringTests
     {
         [Test]
-        public void SafeString_Returns_AppendedText()
+        public async Task SafeString_Returns_AppendedText()
         {
             var expected = "test";
             var sut = new SafeString();
-            sut.Append("t");
-            sut.Append("es");
-            sut.Append('t');
+            await sut.AppendAsync("t");
+            await sut.AppendAsync("es");
+            await sut.AppendAsync('t');
             using (var sm = new SafeStringToStringMarshaler(sut))
             {
                 var actual = sm.String;
@@ -25,56 +26,68 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void SafeString_ModifiedByAnotherThread_ReturnsAppendedText()
+        public async Task SafeString_ModifiedByAnotherThread_ModifiesAsExpected()
         {
-            var expected = "test";
+            // Arrange
             var sut = new SafeString();
-            sut.Append("t");
+            await sut.AppendAsync("test");
+
+            // Act
             var thread = new Thread(() =>
             {
-                sut.Append("es");
-                sut.Append('t');
+                sut.Remove(1);
+                sut.Remove(1);
             });
             thread.Start();
             thread.Join();
+
+            // Assert
             using (var sm = new SafeStringToStringMarshaler(sut))
             {
                 var actual = sm.String;
-                Assert.That(actual, Is.EqualTo(expected));
+                Assert.That(actual, Is.EqualTo("tt"));
             }
         }
 
         [Test]
-        public void Equals_TwoStringsWithDifferentLength_ReturnsFalse()
+        public async Task EqualsAsync_TwoStringsWithDifferentLength_ReturnsFalse()
         {
-            // arrange
+            // Arrange
             var sut1 = new SafeString();
-            sut1.Append("hej");
+            await sut1.AppendAsync("hej");
             var sut2 = new SafeString();
-            sut2.Append("sp");
-            // act
-            var equality = sut1.Equals(sut2);
-            var equalityOpposite = sut2.Equals(sut1);
-            // assert
+            await sut2.AppendAsync("sp");
+
+            // Act
+            var equality = await sut1.EqualsAsync(sut2);
+            var equalityOpposite = await sut2.EqualsAsync(sut1);
+
+            // Assert
             Assert.False(equality);
             Assert.False(equalityOpposite);
         }
 
         [Test]
-        public void SafeString_TextCanBeRevealedTwice()
+        public async Task SafeString_TextCanBeRevealedTwice()
         {
+            // Arrange
             const string expected = "test";
             var sut = new SafeString();
-            sut.Append(expected);
-            var revealed = Reveal(sut);
-            var revealedAgain = Reveal(sut);
+            await sut.AppendAsync(expected);
+
+            // Act
+            var revealed = await RevealAsync(sut);
+            var revealedAgain = await RevealAsync(sut);
+
+            // Assert
             Assert.AreEqual(expected, revealed);
             Assert.AreEqual(expected, revealedAgain);
 
-            string Reveal(ISafeString str)
+            static async Task<string> RevealAsync(ISafeString str)
             {
                 var strBuilder = new StringBuilder(str.Length);
-                for (var i = 0; i < str.Length; i++) strBuilder.Append(str.GetAsChar(i));
+                for (var i = 0; i < str.Length; i++)
+                    strBuilder.Append(await str.GetAsCharAsync(i));
                 return strBuilder.ToString();
             }
         }

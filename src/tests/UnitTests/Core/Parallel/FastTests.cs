@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
 using NUnit.Framework;
-using SafeOrbit.Helpers;
 
-namespace SafeOrbit.Core.Helpers
+namespace SafeOrbit.Parallel
 {
     /// <seealso cref="Fast" />
     [TestFixture]

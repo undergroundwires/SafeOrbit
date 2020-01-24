@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
@@ -7,7 +8,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         int BlockSizeInBytes { get; }
         bool IsInitialized { get; }
         bool IsDisposed { get; }
-        void Initialize(byte[] plainBytes);
-        IDecryptedBytesMarshaler RevealDecryptedBytes();
+        Task InitializeAsync(byte[] plainBytes);
+        Task<IDecryptedBytesMarshaler> RevealDecryptedBytesAsync();
     }
 }

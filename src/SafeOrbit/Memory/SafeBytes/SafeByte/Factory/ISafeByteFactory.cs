@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SafeOrbit.Memory.SafeBytesServices.Id;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Factory
@@ -12,24 +13,24 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         /// <summary>
         ///     Initializes this instance.
         /// </summary>
-        void Initialize();
+        Task InitializeAsync();
 
         /// <summary>
         ///     Returns the <see cref="ISafeByte" /> for the specified <see cref="byte" />.
         /// </summary>
         /// <param name="byte">The byte.</param>
-        ISafeByte GetByByte(byte @byte);
+        Task<ISafeByte> GetByByteAsync(byte @byte);
 
         /// <summary>
         ///     Returns the <see cref="ISafeByte" /> for the specified <see cref="ISafeByte.Id" />.
         /// </summary>
         /// <param name="safeByteId">The safe byte identifier.</param>
         /// <seealso cref="IByteIdGenerator" />
-        ISafeByte GetById(int safeByteId);
+        Task<ISafeByte> GetByIdAsync(int safeByteId);
 
         /// <summary>
         ///    Creates <see cref="ISafeByte"/> variant of each byte in given <paramref name="stream"/>
         /// </summary>
-        IEnumerable<ISafeByte> GetByBytes(SafeMemoryStream stream);
+        Task<IEnumerable<ISafeByte>> GetByBytesAsync(SafeMemoryStream stream);
     }
 }

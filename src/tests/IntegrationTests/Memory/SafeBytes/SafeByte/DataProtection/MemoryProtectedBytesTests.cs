@@ -14,12 +14,12 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
     public class MemoryProtectedBytesTests : TestsFor<IMemoryProtectedBytes>
     {
         [Test]
-        public void RevealDecryptedBytes_FromMultipleThreads_DoesNotCorruptData()
+        public void RevealDecryptedBytesAsync_FromMultipleThreads_DoesNotCorruptData()
         {
             // arrange sut
             var sut = GetSut();
             var expected = GetTestBytes(sut.BlockSizeInBytes);
-            sut.Initialize(expected.CopyToNewArray());
+            sut.InitializeAsync(expected.CopyToNewArray());
             // arrange threads
             const int totalThreads = 6;
             const int totalCountPerThread = 100;
@@ -36,7 +36,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
                     while (count < totalCountPerThread)
                     {
                         Console.WriteLine($"Thread {threadId} is running for {count} time.");
-                        using (var firstSession = sut.RevealDecryptedBytes())
+                        using (var firstSession = sut.RevealDecryptedBytesAsync().Result)
                         {
                             var actual = firstSession.PlainBytes.CopyToNewArray();
                             collection.Add(actual);

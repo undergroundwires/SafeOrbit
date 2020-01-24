@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory.SafeBytesServices
@@ -9,15 +10,17 @@ namespace SafeOrbit.Memory.SafeBytesServices
     internal class SafeBytePerformanceTests : TestsFor<ISafeByte>
     {
         [Test]
-        public void Get_Takes_Less_Than_5MS([Random(0, 256, 1)] byte b)
+        public async Task Get_Takes_Less_Than_5MS([Random(0, 256, 1)] byte b)
         {
-            //arrange
+            // Arrange
             const int expectedUpperLimit = 5;
             var sut = GetSut();
-            sut.Set(b);
-            //act
-            var actual = Measure(() => sut.Get());
-            //assert
+            await sut.SetAsync(b);
+            
+            // Act
+            var actual = Measure(() => sut.GetAsync());
+            
+            // Assert
             Assert.That(actual, Is.LessThan(expectedUpperLimit));
         }
 

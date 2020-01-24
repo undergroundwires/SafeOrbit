@@ -49,7 +49,7 @@ namespace SafeOrbit.Cryptography.Random
             var actions = new Action[iterations];
             for (var i = 0; i < iterations; i++)
                 actions[i] = () => RunAction(sut, bufferLength, byteList);
-            Parallel.Invoke(actions);
+            System.Threading.Tasks.Parallel.Invoke(actions);
             Assert.That(byteList.Distinct().Count(), Is.EqualTo(iterations));
         }
 

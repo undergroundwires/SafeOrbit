@@ -1,6 +1,7 @@
 ﻿#if !NETSTANDARD1_6 && !NETSTANDARD2_0
 using System;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
 {
@@ -18,17 +19,19 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector
     {
         public int BlockSizeInBytes => 16;
 
-        public void Protect(byte[] userData)
+        public Task ProtectAsync(byte[] userData)
         {
             EnsureParameter(userData);
             if (userData == null) throw new ArgumentNullException(nameof(userData));
             ProtectedMemory.Protect(userData, MemoryProtectionScope.SameProcess);
+            return Task.FromResult(true);
         }
 
-        public void Unprotect(byte[] encryptedData)
+        public Task UnprotectAsync(byte[] encryptedData)
         {
             EnsureParameter(encryptedData);
             ProtectedMemory.Unprotect(encryptedData, MemoryProtectionScope.SameProcess);
+            return Task.FromResult(true);
         }
     }
 }

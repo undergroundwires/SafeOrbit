@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using SafeOrbit.Parallel;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Helpers
