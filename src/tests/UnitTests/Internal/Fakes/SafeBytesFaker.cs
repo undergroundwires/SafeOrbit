@@ -61,7 +61,7 @@ namespace SafeOrbit.Fakes
             public Task<bool> EqualsAsync(byte[] other)
             {
                 return Task.FromResult(other != null &&
-                       _bytes.ToArray().SequenceEqual(other));
+                       _bytes.AsEnumerable().SequenceEqual(other));
             }
 
             public override int GetHashCode()
@@ -72,7 +72,7 @@ namespace SafeOrbit.Fakes
             public Task<bool> EqualsAsync(ISafeBytes other)
             {
                 return Task.FromResult(other != null &&
-                       _bytes.ToArray().SequenceEqual(TaskContext.RunSync(other.ToByteArrayAsync)));
+                       _bytes.AsEnumerable().SequenceEqual(TaskContext.RunSync(other.ToByteArrayAsync)));
             }
 
             public FakeSafeBytes()

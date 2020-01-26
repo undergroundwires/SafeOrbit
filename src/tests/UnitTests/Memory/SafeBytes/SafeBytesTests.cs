@@ -14,7 +14,8 @@ namespace SafeOrbit.Memory
 {
     /// <seealso cref="SafeBytes" />
     /// <seealso cref="ISafeBytes" />
-    public class SafeBytesTests : TestsFor<ISafeBytes>
+    [TestFixture]
+    public partial class SafeBytesTests : TestsFor<ISafeBytes>
     {
         [Test]
         public void IsNullOrEmpty_ForNullSafeBytesObject_returnsTrue()
@@ -130,189 +131,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task Length_SingleByte_returnsOne()
-        {
-            // Arrange
-            const int expected = 1;
-            using var sut = GetSut();
-            await sut.AppendAsync(5);
-
-            // Act
-            var actual = sut.Length;
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public async Task Length_MultipleBytes_returnsExpected()
-        {
-            // Arrange
-            const int expected = 3;
-            using var sut = GetSut();
-            await sut.AppendAsync(5);
-            await sut.AppendAsync(5);
-            await sut.AppendAsync(5);
-
-            // Act
-            var actual = sut.Length;
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public async Task AppendAsync_PlainByte_AppendsFromFactory()
-        {
-            // Arrange
-            const byte @byte = 55;
-            var expected = new Mock<ISafeByte>();
-            var factoryMock = new Mock<ISafeByteFactory>();
-            factoryMock.Setup(f => f.GetByByteAsync(@byte))
-                .ReturnsAsync(expected.Object);
-            var collection = new Mock<ISafeByteCollection>();
-            collection.Setup(c => c.AppendAsync(expected.Object))
-                .Verifiable();
-            collection.Setup(c => c.AppendAsync(It.IsAny<ISafeByte>()));
-            using var sut = GetSut(collection: collection.Object, factory: factoryMock.Object);
-            
-            // Act
-            await sut.AppendAsync(@byte);
-            
-            // Assert
-            collection.Verify(c => c.AppendAsync(expected.Object));
-        }
-
-        [Test]
-        public async Task AppendAsync_UnknownISafeBytes_Appends()
-        {
-            // Arrange
-            const byte firstByte = 55, secondByte = 77;
-            var expected = new SafeBytesFaker()
-                .Provide();
-            await expected.AppendAsync(firstByte);
-            await expected.AppendAsync(secondByte);
-            var collection = new Mock<ISafeByteCollection>();
-            collection.Setup(c => c.AppendAsync(It.IsAny<ISafeByte>()))
-                .Verifiable();
-            using var sut = GetSut(collection: collection.Object);
-
-            // Act
-            await sut.AppendAsync(expected);
-
-            // Assert
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == firstByte)), Times.Once);
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == secondByte)), Times.Once);
-        }
-
-        [Test]
-        public async Task AppendAsync_SafeBytes_AppendsFromFactory()
-        {
-            // Arrange
-            const byte firstByte = 55, secondByte = 77;
-            var expected = Stubs.Get<ISafeBytes>();
-            await expected.AppendAsync(firstByte);
-            await expected.AppendAsync(secondByte);
-            var collection = new Mock<ISafeByteCollection>();
-            collection.Setup(c => c.AppendAsync(It.IsAny<ISafeByte>()))
-                .Verifiable();
-            using var sut = GetSut(collection: collection.Object);
-
-            // Act
-            await sut.AppendAsync(expected);
-
-            // Assert
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == 55)), Times.Once);
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == 77)), Times.Once);
-        }
-
-        [Test]
-        public void AppendAsyncByte_ForDisposedObject_throwsObjectDisposedException([Random(0, 256, 1)] byte b)
-        {
-            // Arrange
-            var sut = GetSut();
-            sut.Dispose();
-
-            // Act
-            Task AppendingByte() => sut.AppendAsync(b);
-
-            // Assert
-            Assert.That(AppendingByte, Throws.TypeOf<ObjectDisposedException>());
-        }
-
-        [Test]
-        public async Task AppendAsyncByte_ForCleanObject_canAppendSingle()
-        {
-            // Arrange
-            const byte expected = 5;
-            using var sut = GetSut();
-
-            // Act
-            await sut.AppendAsync(expected);
-
-            // Assert
-            var actual = await sut.GetByteAsync(0);
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public async Task AppendAsyncByte_ForCleanObject_canAppendMultiple()
-        {
-            // Arrange
-            byte[] expected = {5, 10, 15, 31, 31};
-            using var sut = GetSut();
-
-            // Act
-            foreach (var @byte in expected)
-                await sut.AppendAsync(@byte);
-
-            // Assert
-            var actual = await sut.ToByteArrayAsync();
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public async Task AppendAsyncSafeBytes_MultipleBytesOnCleanInstance_appendsAsExpected()
-        {
-            // Arrange
-            byte[] expected = {3, 5, 10, 20};
-            using var sut = GetSut();
-            var toAppend = GetSut();
-            foreach (var @byte in expected)
-                await toAppend.AppendAsync(@byte);
-
-            // Act
-            await sut.AppendAsync(toAppend);
-            
-            // Assert
-            var actual = await sut.ToByteArrayAsync();
-            Console.WriteLine($"Actual: ${string.Join(",", actual)}{Environment.NewLine}" +
-                              $"Expected: ${string.Join(",", expected)}");
-            Assert.True(actual.SequenceEqual(expected));
-        }
-
-        [Test]
-        public async Task AppendAsyncSafeBytes_MultipleBytesOnInstanceWithExistingBytes_appendsAsExpected()
-        {
-            // Arrange
-            byte[] expected = {3, 5, 10, 20};
-            using var sut = GetSut();
-            await sut.AppendAsync(3);
-            await sut.AppendAsync(5);
-            var toAppend = GetSut();
-            await toAppend.AppendAsync(10);
-            await toAppend.AppendAsync(20);
-            
-            // Act
-            await sut.AppendAsync(toAppend);
-            
-            // Assert
-            var actual = await sut.ToByteArrayAsync();
-            Assert.True(actual.SequenceEqual(expected));
-        }
-
-        [Test]
-        public void GetByteAsync_OnEmptyInstance_throwsInvalidOperationException()
+        public void GetByteAsync_OnEmptyInstance_ThrowsInvalidOperationException()
         {
             // Arrange
             using var sut = GetSut();
@@ -326,7 +145,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetByteAsync_ForExistingByteAtStart_retrievesAsExpected()
+        public async Task GetByteAsync_ForExistingByteAtStart_RetrievesAsExpected()
         {
             // Arrange
             const byte expected = 55;
@@ -341,7 +160,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetByteAsync_ForExistingByteAtEnd_retrievesAsExpected()
+        public async Task GetByteAsync_ForExistingByteAtEnd_RetrievesAsExpected()
         {
             // Arrange
             const byte expected = 55;
@@ -357,7 +176,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetByteAsync_ForExistingByteInTheMiddle_retrievesAsExpected()
+        public async Task GetByteAsync_ForExistingByteInTheMiddle_RetrievesAsExpected()
         {
             // Arrange
             const byte expected = 55;
@@ -374,7 +193,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task ToByteArrayAsync_ForEmptyInstance_returnsEmptyArray()
+        public async Task ToByteArrayAsync_ForEmptyInstance_ReturnsEmptyArray()
         {
             // Arrange
             using var sut = GetSut();
@@ -388,7 +207,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task ToByteArrayAsync_ForInstanceWithSingleByte_returnsExpected()
+        public async Task ToByteArrayAsync_ForInstanceWithSingleByte_ReturnsExpected()
         {
             // Arrange
             byte[] expected = {5};
@@ -436,7 +255,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task DeepCloneAsync_EmptyInstance_returnsDifferentEmptyInstance()
+        public async Task DeepCloneAsync_EmptyInstance_ReturnsDifferentEmptyInstance()
         {
             // Arrange
             var sut = GetSut();
@@ -466,7 +285,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task DeepCloneAsync_WithExistingBytes_returnsDifferentEqualInstance()
+        public async Task DeepCloneAsync_WithExistingBytes_ReturnsDifferentEqualInstance()
         {
             // Arrange
             var sut = GetSut();
@@ -483,7 +302,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task EqualsAsync_SafeBytes_DifferentLength_returnsFalse()
+        public async Task EqualsAsync_SafeBytes_DifferentLength_ReturnsFalse()
         {
             // Arrange
             var sut = GetSut();
@@ -502,7 +321,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task EqualsAsync_ClearBytes_DifferentLength_returnsFalse()
+        public async Task EqualsAsync_ClearBytes_DifferentLength_ReturnsFalse()
         {
             // Arrange
             using var sut = GetSut();
@@ -517,7 +336,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task EqualsAsync_SafeBytes_SameLengthDifferentBytes_returnsFalse()
+        public async Task EqualsAsync_SafeBytes_SameLengthDifferentBytes_ReturnsFalse()
         {
             // Arrange
             var sut = GetSut();
@@ -537,7 +356,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task EqualsAsync_ClearBytes_SameLengthDifferentBytes_returnsFalse()
+        public async Task EqualsAsync_ClearBytes_SameLengthDifferentBytes_ReturnsFalse()
         {
             // Arrange
             using var sut = GetSut();
@@ -553,7 +372,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task EqualsAsync_SafeBytes_SameBytes_returnsTrue()
+        public async Task EqualsAsync_SafeBytes_SameBytes_ReturnsTrue()
         {
             // Arrange
             var sut = GetSut();
@@ -573,7 +392,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task EqualsAsync_ClearBytes_SameBytes_returnsTrue()
+        public async Task EqualsAsync_ClearBytes_SameBytes_ReturnsTrue()
         {
             // Arrange
             using var sut = GetSut();
@@ -589,7 +408,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void GetHashCode_BothEmpty_returnsSame()
+        public void GetHashCode_BothEmpty_ReturnsSame()
         {
             // Arrange
             using var sut = GetSut();
@@ -604,7 +423,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_SameNonEmptyBytes_returnsSame()
+        public async Task GetHashCode_SameNonEmptyBytes_ReturnsSame()
         {
             // Arrange
             using var sut = GetSut();
@@ -623,7 +442,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_DifferentBytesSameLength_returnsFalse()
+        public async Task GetHashCode_DifferentBytesSameLength_ReturnsFalse()
         {
             // Arrange
             using var sut = GetSut();
@@ -640,7 +459,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_DifferentBytesDifferentLength_returnsFalse()
+        public async Task GetHashCode_DifferentBytesDifferentLength_ReturnsFalse()
         {
             // Arrange
             using var sut = GetSut();
@@ -658,7 +477,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Dispose_AfterInvocation_setsIsDisposedToTrue()
+        public void Dispose_AfterInvocation_SetsIsDisposedToTrue()
         {
             // Arrange
             var sut = GetSut();
@@ -671,7 +490,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Dispose_AfterInvocation_disposesInnerCollection()
+        public void Dispose_AfterInvocation_DisposesInnerCollection()
         {
             // Arrange
             var mock = new Mock<ISafeByteCollection>(MockBehavior.Strict);
@@ -686,7 +505,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void IsDisposed_OnEmptyInstance_returnsFalse()
+        public void IsDisposed_OnEmptyInstance_ReturnsFalse()
         {
             // Arrange & act
             using var sut = GetSut();
@@ -696,7 +515,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task IsDisposed_NonEmptyInstance_returnsFalse()
+        public async Task IsDisposed_NonEmptyInstance_ReturnsFalse()
         {
             // Arrange & act
             using var sut = GetSut();
@@ -708,6 +527,13 @@ namespace SafeOrbit.Memory
         }
 
         protected override ISafeBytes GetSut() => GetSut();
+
+        private static SafeMemoryStream GetStream(params byte[] bytes)
+        {
+            var stream = new SafeMemoryStream();
+            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            return stream;
+        }
 
         private static ISafeBytes GetSut(ISafeByteCollection collection = null, ISafeByteFactory factory = null)
         {
