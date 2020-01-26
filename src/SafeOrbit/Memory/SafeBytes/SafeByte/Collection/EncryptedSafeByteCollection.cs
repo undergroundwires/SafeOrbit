@@ -234,7 +234,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             try
             {
                 return saltedBytes
-                    .Take(encryptedBytes.Length - saltLength)
+                    .Take(saltedBytes.Length - saltLength)
                     .ToArray();
             }
             finally
