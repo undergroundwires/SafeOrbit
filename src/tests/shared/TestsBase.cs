@@ -39,7 +39,7 @@ namespace SafeOrbit.Tests
                 results.Add(elapsedTime);
             }
             var average = results.Average();
-            Console.WriteLine($"{average} ms");
+            Console.WriteLine($"Each run {string.Join(" , ", results)}. Average: {average} ms");
             return average;
         }
 

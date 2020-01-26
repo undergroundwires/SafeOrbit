@@ -230,10 +230,10 @@ namespace SafeOrbit.Memory
         {
             unchecked
             {
-                const int multiplier = 27;
-                var hashCode = 1;
+                const int multiplier = 69;
+                var hashCode = 0x2D2816FE;
                 for (var i = 0; i < Length; i++)
-                    hashCode *= multiplier * _charBytesList[i].GetHashCode();
+                    hashCode *= multiplier + _charBytesList[i].GetHashCode();
                 return hashCode;
             }
         }
@@ -255,8 +255,9 @@ namespace SafeOrbit.Memory
             if (other == null) throw new ArgumentNullException(nameof(other));
             if (other.Length == 0)
                 return Length == 0;
+            if (this.GetHashCode() != other.GetHashCode()) return false;
             // Caution: Don't check length first and then fall out, since that leaks length info
-            var comparisonBit = (uint) Length ^ (uint) other.Length;
+            var comparisonBit = (uint)Length ^ (uint)other.Length;
             for (var i = 0; i < Length && i < other.Length; i++)
             {
                 var ownBytes = GetAsSafeBytes(i);

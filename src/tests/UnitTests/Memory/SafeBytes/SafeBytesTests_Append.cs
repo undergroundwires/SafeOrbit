@@ -15,6 +15,37 @@ namespace SafeOrbit.Memory
     {
 
         [Test]
+        public async Task AppendAsyncByte_CleanInstance_ChangesHashCode()
+        {
+            // Arrange
+            using var sut = GetSut();
+            var oldCode = sut.GetHashCode();
+
+            // Act
+            await sut.AppendAsync(5);
+            var newCode = sut.GetHashCode();
+
+            // Assert
+            Assert.AreNotEqual(oldCode, newCode);
+        }
+
+        [Test]
+        public async Task AppendAsyncByte_InstanceWithBytes_ChangesHashCode()
+        {
+            // Arrange
+            using var sut = GetSut();
+            await sut.AppendManyAsync(GetStream(5, 10, 15, 31, 31));
+            var oldCode = sut.GetHashCode();
+
+            // Act
+            await sut.AppendAsync(5);
+            var newCode = sut.GetHashCode();
+
+            // Assert
+            Assert.AreNotEqual(oldCode, newCode);
+        }
+
+        [Test]
         public async Task AppendAsyncByte_SingleByte_IncreasesLength()
         {
             // Arrange
@@ -136,6 +167,40 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
+        public async Task AppendAsyncISafeBytes_CleanInstance_ChangesHashCode()
+        {
+            // Arrange
+            using var sut = GetSut();
+            var oldCode = sut.GetHashCode();
+            var toAppend = GetSut();
+            await toAppend.AppendAsync(10);
+
+            // Act
+            await sut.AppendAsync(toAppend);
+            var newCode = sut.GetHashCode();
+
+            // Assert
+            Assert.AreNotEqual(oldCode, newCode);
+        }
+
+        [Test]
+        public async Task AppendAsyncISafeBytes_InstanceWithBytes_ChangesHashCode()
+        {
+            // Arrange
+            using var sut = GetSut();
+            var toAppend = GetSut();
+            await toAppend.AppendAsync(10);
+            var oldCode = sut.GetHashCode();
+
+            // Act
+            await sut.AppendAsync(toAppend);
+            var newCode = sut.GetHashCode();
+
+            // Assert
+            Assert.AreNotEqual(oldCode, newCode);
+        }
+
+        [Test]
         public async Task AppendAsyncISafeBytes_MultipleBytesOnCleanInstance_AppendsAsExpected()
         {
             // Arrange
@@ -191,6 +256,7 @@ namespace SafeOrbit.Memory
             var actual = await sut.ToByteArrayAsync();
             Assert.True(actual.SequenceEqual(expected));
         }
+
         [Test]
         public async Task AppendAsyncISafeBytes_SafeBytes_AppendsFromFactory()
         {
@@ -210,6 +276,38 @@ namespace SafeOrbit.Memory
             // Assert
             collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == 55)), Times.Once);
             collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == 77)), Times.Once);
+        }
+
+
+        [Test]
+        public async Task AppendManyAsync_CleanInstance_ChangesHashCode()
+        {
+            // Arrange
+            using var sut = GetSut();
+            var oldCode = sut.GetHashCode();
+
+            // Act
+            await sut.AppendManyAsync(GetStream(31,31));
+            var newCode = sut.GetHashCode();
+
+            // Assert
+            Assert.AreNotEqual(oldCode, newCode);
+        }
+
+        [Test]
+        public async Task AppendManyAsync_InstanceWithBytes_ChangesHashCode()
+        {
+            // Arrange
+            using var sut = GetSut();
+            await sut.AppendManyAsync(GetStream(31, 31));
+            var oldCode = sut.GetHashCode();
+
+            // Act
+            await sut.AppendManyAsync(GetStream(31, 31));
+            var newCode = sut.GetHashCode();
+
+            // Assert
+            Assert.AreNotEqual(oldCode, newCode);
         }
 
         [Test]
@@ -256,6 +354,8 @@ namespace SafeOrbit.Memory
             var actual = await sut.GetByteAsync(0);
             Assert.That(actual, Is.EqualTo(expected));
         }
+
+
 
         [Test]
         public async Task AppendManyAsync_ForCleanObject_CanAppendMultiple()

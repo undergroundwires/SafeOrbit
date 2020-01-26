@@ -13,6 +13,8 @@
   - Adding byte to SafeBytes is now 2100% faster.
     - Adding multiple bytes with AppendMany is 2100% * byte amount faster.
     - SafeString uses SafeBytes internally, and now it's also 2100% faster.
+  - `GetHashCode()` in `SafeString` and `SafeBytes` is faster than light (0 ms) compared to older implementation (6s for 1000 char with a linear increase per char)
+    - The method is also used in equality checks which makes .Equals() much faster.
 - **Added**
   - Encryption
     - Support for padding in Blowfish algorithm.

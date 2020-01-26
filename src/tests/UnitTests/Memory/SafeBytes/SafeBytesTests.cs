@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
-using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Tests;
@@ -288,7 +287,7 @@ namespace SafeOrbit.Memory
         public async Task DeepCloneAsync_WithExistingBytes_ReturnsDifferentEqualInstance()
         {
             // Arrange
-            var sut = GetSut();
+            var sut = GetSut(safeBytesFactory: Stubs.GetFactory(GetSut()));
             await sut.AppendAsync(55);
             await sut.AppendAsync(31);
 
@@ -299,6 +298,23 @@ namespace SafeOrbit.Memory
             Assert.False(ReferenceEquals(sut, clone));
             Assert.True(await sut.EqualsAsync(clone));
             Assert.True(await clone.EqualsAsync(sut));
+        }
+
+        [Test]
+        public async Task DeepCloneAsync_GetHashCode_ReturnsSame()
+        {
+            // Arrange
+            var sut = GetSut(safeBytesFactory: Stubs.GetFactory(GetSut()));
+            await sut.AppendAsync(55);
+            await sut.AppendAsync(31);
+
+            // Act
+            var expected = sut.GetHashCode();
+            var clone = await sut.DeepCloneAsync();
+            var actual = clone.GetHashCode();
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
@@ -442,7 +458,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_DifferentBytesSameLength_ReturnsFalse()
+        public async Task GetHashCode_DifferentBytesSameLength_ReturnsDifferent()
         {
             // Arrange
             using var sut = GetSut();
@@ -459,7 +475,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_DifferentBytesDifferentLength_ReturnsFalse()
+        public async Task GetHashCode_DifferentBytesDifferentLength_ReturnsDifferent()
         {
             // Arrange
             using var sut = GetSut();
@@ -474,6 +490,79 @@ namespace SafeOrbit.Memory
 
             // Assert
             Assert.That(hashSut, Is.Not.EqualTo(hashOther));
+        }
+
+        [Test]
+        public async Task GetHashCode_AppendedByCombinedMethods_ReturnsSame()
+        {
+            // Arrange
+            var bytes = new byte[] {5, 10, 15};
+            using var first = GetSut();
+
+            await first.AppendAsync(bytes[0]);
+
+            var safeBytes = GetSut();
+            await safeBytes.AppendAsync(bytes[1]);
+            await first.AppendAsync(safeBytes);
+
+            var stream = new SafeMemoryStream();
+            stream.Write(new []{bytes[2]}, 0, 1);
+            await first.AppendManyAsync(stream);
+
+            var second = GetSut();
+            stream = new SafeMemoryStream();
+            stream.Write(bytes.CopyToNewArray(), 0 , bytes.Length);
+            await second.AppendManyAsync(stream);
+
+            // Act
+            var hashFirst = first.GetHashCode();
+            var hashSecond = second.GetHashCode();
+
+            // Assert
+            Assert.AreEqual(hashFirst, hashSecond);
+        }
+
+
+        [Test]
+        public async Task GetHashCode_AppendedByByteAndMany_ReturnsSame()
+        {
+            // Arrange
+            using var first = GetSut();
+            await first.AppendAsync(1);
+            await first.AppendAsync(2);
+
+            var second = GetSut();
+            var stream = new SafeMemoryStream();
+            stream.Write(new byte[] { 1, 2 }, 0, 2);
+            await second.AppendManyAsync(stream);
+
+            // Act
+            var hashFirst = first.GetHashCode();
+            var hashSecond = second.GetHashCode();
+
+            // Assert
+            Assert.AreEqual(hashFirst, hashSecond);
+        }
+
+
+        [Test]
+        public async Task GetHashCode_AppendedBySafeBytesByteAndMany_ReturnsSame()
+        {
+            // Arrange
+            using var first = GetSut();
+            await first.AppendAsync(1);
+
+            using var second = GetSut();
+            var safeBytes = GetSut();
+            await safeBytes.AppendAsync(1);
+            await second.AppendAsync(safeBytes);
+
+            // Act
+            var hashFirst = first.GetHashCode();
+            var hashSecond = second.GetHashCode();
+
+            // Assert
+            Assert.AreEqual(hashFirst, hashSecond);
         }
 
         [Test]
@@ -535,11 +624,12 @@ namespace SafeOrbit.Memory
             return stream;
         }
 
-        private static ISafeBytes GetSut(ISafeByteCollection collection = null, ISafeByteFactory factory = null)
+        private static ISafeBytes GetSut(ISafeByteCollection collection = null,
+            ISafeByteFactory factory = null, IFactory<ISafeBytes> safeBytesFactory = null)
         {
             return new SafeBytes(
                 factory ?? Stubs.Get<ISafeByteFactory>(),
-                Stubs.GetFactory<ISafeBytes>(),
+                safeBytesFactory ?? Stubs.GetFactory<ISafeBytes>(),
                 Stubs.GetFactory(collection));
         }
     }

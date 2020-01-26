@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SafeOrbit.Fakes;
+using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory
 {
@@ -166,7 +168,7 @@ namespace SafeOrbit.Memory
             // Arrange
             const char ch1 = 'a', ch2 = 'b';
             const string expected = "ab";
-            using var sut = GetSut();
+            using var sut = GetSut(safeStringFactory: Stubs.GetFactory(GetSut()));
             await sut.AppendAsync(ch1);
             await sut.AppendAsync(ch2);
 
@@ -192,7 +194,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task EqualsAsyncString_WhenHoldingDifferentChars_ReturnsFalse([Random(0, 125, 1)] byte i1,
+        public async Task EqualsAsyncString_WhenHoldingDifferentChars_ReturnsDifferent([Random(0, 125, 1)] byte i1,
             [Random(125, 256, 1)] byte i2)
         {
             // Arrange
@@ -210,7 +212,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void GetHashCode_ForDistinctEmptyInstances_ReturnsTrue()
+        public void GetHashCode_ForDistinctEmptyInstances_ReturnsSame()
         {
             // Arrange
             using var sut = GetSut();
@@ -223,7 +225,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_ForDistinctObjectsHavingSameMultipleChars_ReturnsTrue(
+        public async Task GetHashCode_ForDistinctObjectsHavingSameMultipleChars_ReturnsSame(
             [Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
         {
             // Arrange
@@ -247,7 +249,7 @@ namespace SafeOrbit.Memory
 
         //** GetHashCode() **//
         [Test]
-        public async Task GetHashCode_ForDistinctObjectsHavingSameSingleChar_ReturnsTrue([Random(0, 256, 1)] int i)
+        public async Task GetHashCode_ForDistinctObjectsHavingSameSingleChar_ReturnsSame([Random(0, 256, 1)] int i)
         {
             // Arrange
             using var sut = GetSut();
@@ -265,7 +267,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_ForTwoNonEqualObjects_ReturnsFalse(
+        public async Task GetHashCode_ForTwoNonEqualObjects_ReturnsDifferent(
             [Random(0, 256, 1)] int i1, [Random(0, 256, 1)] int i2, [Random(0, 256, 1)] int i3)
         {
             // Arrange

@@ -15,11 +15,11 @@ namespace SafeOrbit.Memory
     [TestFixture]
     public partial class SafeStringTests
     {
-        private static ISafeString GetSut(ITextService textService = null)
+        private static ISafeString GetSut(ITextService textService = null, IFactory<ISafeString> safeStringFactory = null)
         {
             return new SafeString(
                 textService ?? Stubs.Get<ITextService>(),
-                Stubs.GetFactory<ISafeString>(),
+                safeStringFactory ?? Stubs.GetFactory<ISafeString>(),
                 Stubs.GetFactory<ISafeBytes>());
         }
 
@@ -67,6 +67,22 @@ namespace SafeOrbit.Memory
             
             // Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public async Task DeepCloneAsync_GetHashCode_ReturnsSame()
+        {
+            // Arrange
+            var sut = GetSut(safeStringFactory: Stubs.GetFactory(GetSut()));
+            await sut.AppendAsync("amcuk");
+
+            // Act
+            var expected = sut.GetHashCode();
+            var clone = await sut.DeepCloneAsync();
+            var actual = clone.GetHashCode();
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
@@ -764,6 +780,23 @@ namespace SafeOrbit.Memory
             
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
+        }
+
+
+        [Test]
+        public async Task ShallowClone_GetHashCode_ReturnsSame()
+        {
+            // Arrange
+            var sut = GetSut();
+            await sut.AppendAsync("amcuk");
+
+            // Act
+            var expected = sut.GetHashCode();
+            var clone = sut.ShallowClone();
+            var actual = clone.GetHashCode();
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
