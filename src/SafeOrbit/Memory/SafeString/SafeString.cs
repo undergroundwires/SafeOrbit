@@ -238,16 +238,21 @@ namespace SafeOrbit.Memory
             }
         }
 
-        public async Task<bool> EqualsAsync(string other) //TODO: Better performant implementation
+        public async Task<bool> EqualsAsync(string other)
         {
             if (other == null) throw new ArgumentNullException(nameof(other));
             if (other.Length == 0)
                 return Length == 0;
-            using var ss = _safeStringFactory.Create();
-            await ss.AppendAsync(other)
-                .ConfigureAwait(false);
-            var result = await EqualsAsync(ss).ConfigureAwait(false);
-            return result;
+            var comparisonBit = (uint)Length ^ (uint)other.Length; // Caution: Don't check length first and then fall out, since that leaks length info
+            for (var i = 0; i < Length && i < other.Length; i++)
+            {
+                var @char = other[i];
+                var bytes = _textService.GetBytes(@char, InnerEncoding);
+                var hasSameCharBytes = await GetAsSafeBytes(i).EqualsAsync(bytes)
+                    .ConfigureAwait(false);
+                comparisonBit |= (uint)(hasSameCharBytes ? 0 : 1);
+            }
+            return comparisonBit == 0;
         }
 
         public async Task<bool> EqualsAsync(ISafeString other)
@@ -262,9 +267,9 @@ namespace SafeOrbit.Memory
             {
                 var ownBytes = GetAsSafeBytes(i);
                 var otherBytes = other.GetAsSafeBytes(i);
-                var areSameBytes = await ownBytes.EqualsAsync(otherBytes).ConfigureAwait(false);
-                var flag = (uint)(areSameBytes ? 0 : 1);
-                comparisonBit |= flag;
+                var areSameBytes = await ownBytes.EqualsAsync(otherBytes)
+                    .ConfigureAwait(false);
+                comparisonBit |= (uint)(areSameBytes ? 0 : 1);
             }
             return comparisonBit == 0;
         }

@@ -61,6 +61,51 @@ namespace SafeOrbit.Memory
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+
+        [Test]
+        public async Task EqualsAsync_SafeBytesHoldingSameBytes_ReturnsTrue()
+        {
+            // Arrange
+            using var sut = GetSut();
+            var bytes = new byte[] { 5, 10, 15 };
+            var stream = new SafeMemoryStream();
+            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            await sut.AppendManyAsync(stream);
+
+            using var other = GetSut();
+            stream = new SafeMemoryStream();
+            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            await other.AppendManyAsync(stream);
+
+            // Act
+            var actual = await sut.EqualsAsync(other);
+
+            // Assert
+            Assert.IsTrue(actual);
+        }
+
+        [Test]
+        public async Task EqualsAsync_SafeBytesDifferentSameBytes_ReturnsFalse()
+        {
+            // Arrange
+            using var sut = GetSut();
+            var stream = new SafeMemoryStream();
+            stream.Write(new byte[] { 1, 2, 3 }, 0, 3);
+            await sut.AppendManyAsync(stream);
+
+            using var other = GetSut();
+            stream = new SafeMemoryStream();
+            stream.Write(new byte[] { 4, 5 }, 0, 2);
+            await other.AppendManyAsync(stream);
+
+            // Act
+            var actual = await sut.EqualsAsync(other);
+
+            // Assert
+            Assert.IsFalse(actual);
+        }
+
+
         private static ISafeBytes GetSut() => new SafeBytes();
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
@@ -72,7 +74,7 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
-            //If it's the known SafeBytes then it reveals nothing in the memory
+            // If it's the known SafeBytes then it reveals nothing in the memory
             if (safeBytes is SafeBytes asSafeBytes)
             {
                 var allBytes = await asSafeBytes._safeByteCollection.GetAllAsync()
@@ -82,7 +84,7 @@ namespace SafeOrbit.Memory
                 foreach (var safeByte in allBytes)
                     UpdateHashCode(safeByte);
             }
-            //If it's not, then reveals each byte in memory.
+            // If it's not, then reveals each byte in memory.
             else
             {
                 var plainBytes = await safeBytes.ToByteArrayAsync()
@@ -139,7 +141,7 @@ namespace SafeOrbit.Memory
 
 
         /// <summary>
-        ///     Gets the byte from its real location (skips the arbitrary bytes)
+        ///     Gets the byte from its real location 
         /// </summary>
         internal async Task<ISafeByte> GetAsSafeByteAsync(int position)
         {
@@ -205,50 +207,58 @@ namespace SafeOrbit.Memory
 
         #endregion
 
-        #region Equality
-
-        public async Task<bool> EqualsAsync(byte[] other)  //TODO: Utilize GetAllSafeBytes, getting one by one is so slow
+        public async Task<bool> EqualsAsync(byte[] other)
         {
             if (other == null || !other.Any()) return Length == 0;
-            var comparisonBit = (uint)Length ^ (uint)other.Length;
-            // TODO: Can run in parallel
-            for (var i = 0; i < Length && i < other.Length; i++)
+
+            var otherBytes = GetOtherBytes();
+            var ownBytes = _safeByteCollection.GetAllAsync();
+            await Task.WhenAll(otherBytes, ownBytes)
+                .ConfigureAwait(false);
+
+            return AreEqual(otherBytes.Result, ownBytes.Result);
+            
+            async Task<ISafeByte[]> GetOtherBytes()
             {
-                var existingByte = await GetAsSafeByteAsync(i).ConfigureAwait(false);
-                var result = await existingByte.EqualsAsync(other[i]).ConfigureAwait(false);
-                comparisonBit |= (uint)(result ? 0 : 1);
+                var stream = new SafeMemoryStream();
+                stream.Write(other.CopyToNewArray(), 0, other.Length);
+                var bytes = await _safeByteFactory.GetByBytesAsync(stream).ConfigureAwait(false);
+                return bytes.ToArray();
             }
-            return comparisonBit == 0;
         }
 
-        public async Task<bool> EqualsAsync(ISafeBytes other) //TODO: Utilize GetAllSafeBytes, getting one by one is so slow
+        public async Task<bool> EqualsAsync(ISafeBytes other)
         {
             if (other == null || other.Length == 0) return Length == 0;
             if (this.GetHashCode() != other.GetHashCode())
                 return false;
-            // CAUTION: Don't check length first and then fall out, since that leaks length info during timing attacks
-            var comparisonBit = (uint)Length ^ (uint)other.Length;
-            // TODO: Can run in parallel
-            for (var i = 0; i < Length && i < other.Length; i++)
+
+            var otherBytes = GetOtherBytesAsync();
+            var ownBytes = _safeByteCollection.GetAllAsync();
+            await Task.WhenAll(otherBytes, ownBytes)
+                .ConfigureAwait(false);
+
+            return AreEqual(otherBytes.Result, ownBytes.Result);
+
+            async Task<ISafeByte[]> GetOtherBytesAsync()
             {
-                var existingByte = await GetAsSafeByteAsync(i).ConfigureAwait(false);
-                bool bytesEqual;
                 if (other is SafeBytes safeBytes)
                 {
-                    // No need to reveal the bytes
-                    var otherByte = TaskContext.RunSync(() => safeBytes.GetAsSafeByteAsync(i));
-                    bytesEqual = existingByte.Equals(otherByte);
+                    // If it's the known SafeBytes then it reveals nothing in the memory
+                    var bytes = await safeBytes._safeByteCollection.GetAllAsync()
+                        .ConfigureAwait(false);
+                    return bytes;
                 }
                 else
                 {
-                    var @byte = await other.GetByteAsync(i).ConfigureAwait(false);
-                    bytesEqual = await existingByte.EqualsAsync(@byte).ConfigureAwait(false);
+                    // If it's not, then reveals each byte in memory.
+                    var bytes = await other.ToByteArrayAsync().ConfigureAwait(false);
+                    var stream = new SafeMemoryStream();
+                    stream.Write(bytes, 0 ,bytes.Length);
+                    var safe = await _safeByteFactory.GetByBytesAsync(stream).ConfigureAwait(false);
+                    return safe.ToArray();
                 }
-
-                comparisonBit |= (uint)(bytesEqual ? 0 : 1);
             }
-
-            return comparisonBit == 0;
         }
 
         public override bool Equals(object obj)
@@ -258,6 +268,17 @@ namespace SafeOrbit.Memory
 
         public override int GetHashCode() => _hashcode;
 
+        private static bool AreEqual(IReadOnlyList<ISafeByte> first, IReadOnlyList<ISafeByte> second)
+        {
+            var comparisonBit = (uint)first.Count ^ (uint)second.Count; // Timing attack caution: Don't check length first and then fall out (it leaks length info)
+            for (var i = 0; i < first.Count && i < second.Count; i++)
+            {
+                var result = first[i].Equals(second[i]);
+                comparisonBit |= (uint)(result ? 0 : 1); // Timing attack caution: Do not fallout directly
+            }
+            return comparisonBit == 0;
+        }
+
         private void UpdateHashCode(ISafeByte newByte)
         {
             unchecked
@@ -265,6 +286,5 @@ namespace SafeOrbit.Memory
                 _hashcode *= 31 + newByte.Id;
             }
         }
-        #endregion
     }
 }

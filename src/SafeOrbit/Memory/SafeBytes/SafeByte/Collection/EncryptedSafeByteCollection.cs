@@ -187,7 +187,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         {
             if (_encryptedCollection != null)
                 Array.Clear(_encryptedCollection, 0, _encryptedCollection.Length);
-            TaskContext.RunSync(() => _encryptionKey.ValueAsync()).Dispose(); //TODO: Use DisposablePattern instead
+            TaskContext.RunSync(() => _encryptionKey.ValueAsync()).Dispose(); //TODO: Use IAsyncDisposable instead in C# 8.0
             _isDisposed = true;
             Length = 0;
         }

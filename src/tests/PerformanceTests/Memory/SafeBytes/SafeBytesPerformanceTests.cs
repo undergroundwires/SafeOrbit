@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Tests;
 
@@ -12,7 +13,7 @@ namespace SafeOrbit.Memory
     public class SafeBytesPerformanceTests : TestsFor<ISafeBytes>
     {
         [Test]
-        public async Task AppendManyAsync_SingleMegaByteStream_Takes_Less_Than_5000ms()
+        public async Task AppendManyAsync_SingleMegaByteStream_TakesLessThan5000ms()
         {
             // Arrange
             SafeOrbitCore.Current.StartEarly();
@@ -33,7 +34,7 @@ namespace SafeOrbit.Memory
 
 
         [Test]
-        public async Task ToDeepCloneAsync_SingleMegaByteStream_Takes_Less_Than_5000ms()
+        public async Task ToDeepCloneAsync_SingleMBStream_TakesLessThan5000ms()
         {
             // Arrange
             SafeOrbitCore.Current.StartEarly();
@@ -54,7 +55,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task ToByteArrayAsync_For_1MB_Bytes_Takes_Less_Than_2000ms()
+        public async Task ToByteArrayAsync_1MBBytes_TakesLessThan_000ms()
         {
             // Arrange
             const int expectedHigherLimit = 2000;
@@ -76,7 +77,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task Adding_100_single_bytes_takes_less_than_500ms()
+        public async Task AppendAsync_100SingleBytes_TakesLessThan500ms()
         {
             // Arrange
             SafeOrbitCore.Current.StartEarly();
@@ -95,7 +96,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task GetHashCode_1000Bytes_Takes_Less_Than_10ms()
+        public async Task GetHashCode_1KBBytes_TakesLessThan10ms()
         {
             // Arrange
             const int expectedHigherLimit = 100;
@@ -109,6 +110,57 @@ namespace SafeOrbit.Memory
             {
                 _= sut.GetHashCode();
             },10);
+
+            // Assert
+            Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
+        }
+
+        [Test]
+        public async Task EqualsAsync_10KBSameBytes_TakesLessThan200ms()
+        {
+            // Arrange
+            const int expectedHigherLimit = 200;
+            const int totalBytes = 10000;
+            SafeOrbitCore.Current.StartEarly();
+            var sut = GetSut();
+            var bytes = new byte[totalBytes];
+            new Random().NextBytes(bytes);
+            var stream = new SafeMemoryStream();
+            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            await sut.AppendManyAsync(stream);
+
+            // Act
+            var actualPerformance = await MeasureAsync(
+                () => sut.EqualsAsync(bytes), 5);
+
+            // Assert
+            Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
+        }
+
+        [Test]
+        public async Task EqualsAsync_10KBSameSafeBytes_TakesLessThan200ms()
+        {
+            // Arrange
+            const int expectedHigherLimit = 200;
+            const int totalBytes = 10000;
+            SafeOrbitCore.Current.StartEarly();
+
+            var bytes = new byte[totalBytes];
+            new Random().NextBytes(bytes);            
+            
+            var sut = GetSut();
+            var stream = new SafeMemoryStream();
+            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            await sut.AppendManyAsync(stream);
+           
+            var other = new SafeBytes();
+            stream = new SafeMemoryStream();
+            stream.Write(bytes, 0, bytes.Length);
+            await other.AppendManyAsync(stream);
+
+            // Act
+            var actualPerformance = await MeasureAsync(
+                () => sut.EqualsAsync(other), 5);
 
             // Assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
