@@ -151,17 +151,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 safeBytesIds = await DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes)
                     .ConfigureAwait(false);
             }
+            if (safeBytesIds.IsNullOrEmpty())
+                return new byte[0];
 
-            if (safeBytesIds.IsNullOrEmpty()) return new byte[0];
-
-            var safeBytes = new Collection<ISafeByte>();
-            foreach (var id in safeBytesIds)
-            {
-                var safeByte = await _safeByteFactory.GetByIdAsync(id).ConfigureAwait(false); 
-                safeBytes.Add(safeByte);
-            }
-            var decryptedBytes = await GetAllAndMergeAsync(safeBytes).ConfigureAwait(false);
-            return decryptedBytes;
+            var plainBytes = await ConvertIdsToBytesAsync(safeBytesIds).ConfigureAwait(false);
+            return plainBytes.ToArray();
         }
 
         /// <inheritdoc />
@@ -178,18 +172,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             TaskContext.RunSync(() => _encryptionKey.ValueAsync()).Dispose(); //TODO: Use DisposablePattern instead
             _isDisposed = true;
             Length = 0;
-        }
-
-        private async Task<byte[]> GetAllAndMergeAsync(IEnumerable<ISafeByte> safeBytes)
-        {
-            var buffer = new byte[Length];
-            for(var i = 0; i < Length; i++)
-            {
-                var @byte = await safeBytes.ElementAt(i).GetAsync()
-                    .ConfigureAwait(false);
-                buffer[i] = @byte;
-            }
-            return buffer;
         }
 
         private async Task<ICollection<int>> DecryptAndDeserializeAsync(byte[] encryptedCollection,
@@ -256,6 +238,18 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 if(salted != null)
                     Array.Clear(salted, 0, salted.Length);
             }
+        }
+        private async Task<IEnumerable<byte>> ConvertIdsToBytesAsync(ICollection<int> safeBytesIds)
+        {
+            var uniqueByteIds = safeBytesIds.Distinct().ToList();
+            var uniqueSafeBytes = await
+                _safeByteFactory.GetByIdsAsync(uniqueByteIds)
+                    .ConfigureAwait(false);
+            var revealPlainByte = uniqueSafeBytes.Select(b => b.GetAsync());
+            var uniquePlainBytes = await Task.WhenAll(revealPlainByte).ConfigureAwait(false);
+            var uniqueByteIndexes = safeBytesIds.Select(id => uniqueByteIds.IndexOf(id));
+            var plainBytes = uniqueByteIndexes.Select(i => uniquePlainBytes[i]);
+            return plainBytes;
         }
 
         /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>

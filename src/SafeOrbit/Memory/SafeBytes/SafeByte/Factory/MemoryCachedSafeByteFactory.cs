@@ -109,6 +109,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             return _safeBytesDictionary.Object[safeByteId];
         }
 
+        public async Task<ISafeByte[]> GetByIdsAsync(IEnumerable<int> safeByteIds)
+        {
+            await EnsureInitializedAsync().ConfigureAwait(false);
+            var dictObj = _safeBytesDictionary.Object; // We call getter once so integrity is only checked once for better performance
+            return safeByteIds.Select(id => dictObj[id])
+                .ToArray();
+        }
+
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
         public async Task<IEnumerable<ISafeByte>> GetByBytesAsync(SafeMemoryStream stream) //TODO: To IAsyncEnumerable with C# 8.0

@@ -28,6 +28,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         /// <seealso cref="IByteIdGenerator" />
         Task<ISafeByte> GetByIdAsync(int safeByteId);
 
+
+        /// <summary>
+        ///     Returns the <see cref="ISafeByte" /> instances or the specified list of <see cref="ISafeByte.Id" />s.
+        /// </summary>
+        /// <param name="safeByteIds">Id for each request safe byte </param>
+        /// <seealso cref="IByteIdGenerator" />
+        Task<ISafeByte[]> GetByIdsAsync(IEnumerable<int> safeByteIds);
+
         /// <summary>
         ///    Creates <see cref="ISafeByte"/> variant of each byte in given <paramref name="stream"/>
         /// </summary>

@@ -15,6 +15,7 @@
     - SafeString uses SafeBytes internally, and now it's also 2100% faster.
   - `GetHashCode()` in `SafeString` and `SafeBytes` is faster than light (0 ms) compared to older implementation (6s for 1000 char with a linear increase per char)
     - The method is also used in equality checks which makes .Equals() much faster.
+  - Decrypting all bytes in `SafeBytes` is now 214x faster for 10KB, much faster for bigger sizes (1 MB = 900 ms).
 - **Added**
   - Encryption
     - Support for padding in Blowfish algorithm.
