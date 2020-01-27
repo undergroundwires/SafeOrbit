@@ -1,28 +1,27 @@
-﻿using SafeOrbit.Core.Serialization;
-using SafeOrbit.Cryptography.Encryption;
+﻿using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Encryption.Kdf;
 using SafeOrbit.Cryptography.Encryption.Padding.Factory;
 using SafeOrbit.Cryptography.Encryption.Padding.Padders;
 using SafeOrbit.Cryptography.Hashers;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Memory;
+using SafeOrbit.Memory.InjectionServices.Stampers.Serialization;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Text;
+using SafeOrbit.Memory.SafeStringServices.Text;
 
 namespace SafeOrbit.Library
 {
-    public class FactoryBootstrapper
+    public static class FactoryBootstrapper
     {
         public static void Bootstrap(ISafeContainer safeContainer)
         {
             // Converters
             safeContainer.Register(() => safeContainer, LifeTime.Singleton);
-            ;
             // Hash
             safeContainer.Register<IFastHasher, Murmur32>(() => Murmur32.StaticInstance, LifeTime.Singleton);
             safeContainer.Register<ISafeHasher, Sha512Hasher>(LifeTime.Singleton);

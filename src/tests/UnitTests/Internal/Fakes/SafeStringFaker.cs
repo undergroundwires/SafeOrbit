@@ -3,7 +3,8 @@ using System.Linq;
 using Moq;
 using SafeOrbit.Memory;
 using SafeOrbit.Tests;
-using SafeOrbit.Text;
+using SafeOrbit.Memory.SafeStringServices.Text;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Fakes
 {
@@ -38,19 +39,19 @@ namespace SafeOrbit.Fakes
                     var safeBytes = Stubs.Get<ISafeBytes>();
                     var bytes = System.Text.Encoding.Unicode.GetBytes($"{c}");
                     foreach (var @byte in bytes)
-                        safeBytes.AppendAsync(@byte);
+                        TaskContext.RunSync(() => safeBytes.AppendAsync(@byte));
                     return safeBytes;
                 });
             fake.Setup(x => x.GetAsCharAsync(It.IsAny<int>()))
                 .ReturnsAsync((int i) => chars.ElementAt(i));
             fake.Setup(x => x.Length)
-                .Returns(() => chars.Count());
+                .Returns(() => chars.Count);
             fake.Setup(x => x.IsEmpty)
                 .Returns(() => !chars.Any());
             fake.Setup(x => x.DeepCloneAsync())
                 .ReturnsAsync(() => fake.Object);
-            fake.Setup(x => x.Equals(It.IsAny<string>()))
-                .Returns((string text) => chars.ToArray().SequenceEqual(text.ToCharArray()));
+            fake.Setup(x => x.EqualsAsync(It.IsAny<string>()))
+                .ReturnsAsync((string text) => chars.AsEnumerable().SequenceEqual(text.ToCharArray()));
             fake.Setup(x => x.IsDisposed)
                 .Returns(() => isDisposed);
             fake.Setup(x => x.Dispose())

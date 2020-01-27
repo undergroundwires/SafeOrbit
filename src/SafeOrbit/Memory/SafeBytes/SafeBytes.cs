@@ -8,7 +8,6 @@ using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
-using SafeOrbit.Parallel;
 
 namespace SafeOrbit.Memory
 {
@@ -57,16 +56,6 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="AppendManyAsync"/>
-        public async Task AppendManyAsync(SafeMemoryStream stream)
-        {
-            var safeBytes = await _safeByteFactory.GetByBytesAsync(stream)
-                .ConfigureAwait(false);
-            await AppendManyAsync(safeBytes as ISafeByte[] ?? safeBytes.ToArray())
-                .ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
         /// <inheritdoc cref="AppendAsync(ISafeByte)"/>
         /// <inheritdoc cref="EnsureNotDisposed"/>
         /// <exception cref="ArgumentException">Throws if the argument is empty</exception>
@@ -94,6 +83,16 @@ namespace SafeOrbit.Memory
                 await AppendManyAsync(stream).ConfigureAwait(false);
             }
         }
+        /// <inheritdoc />
+        /// <inheritdoc cref="AppendManyAsync"/>
+        public async Task AppendManyAsync(SafeMemoryStream stream)
+        {
+            var safeBytes = await _safeByteFactory.GetByBytesAsync(stream)
+                .ConfigureAwait(false);
+            await AppendManyAsync(safeBytes as ISafeByte[] ?? safeBytes.ToArray())
+                .ConfigureAwait(false);
+        }
+
 
         /// <inheritdoc />
         /// <exception cref="ArgumentOutOfRangeException">

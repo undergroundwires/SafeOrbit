@@ -2,8 +2,8 @@
 using System.Security.Cryptography;
 using System.Threading;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng;
-using SafeOrbit.Helpers;
 using SafeOrbit.Memory;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
@@ -22,7 +22,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         private static readonly SafeMemoryStream SafeStream = new SafeMemoryStream();
         private static readonly AutoResetEvent PoolFullAre = new AutoResetEvent(false);
         private static readonly ThreadedSeedGenerator MyThreadedSeedGenerator = new ThreadedSeedGenerator();
-
+        
         private int _disposed = IntCondition.False;
 
         static ThreadedSeedGeneratorRng()
@@ -58,9 +58,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                             pos += bytesRead;
                         }
 
-                        if (pos < count)
-                            if (pos < count)
-                                Thread.Sleep(1);
+                        if (pos < count) 
+                            Thread.Sleep(1);
                     }
 
                     return count;
@@ -77,11 +76,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             lock (FifoStreamLock)
             {
                 var availBytesCount = SafeStream.Length;
-                byte[] allBytes;
-                if (availBytesCount > maxLength)
-                    allBytes = new byte[maxLength];
-                else // availBytesCount could be 0, or greater
-                    allBytes = new byte[availBytesCount];
+                var allBytes = availBytesCount > maxLength ? new byte[maxLength] : new byte[availBytesCount];
                 if (availBytesCount > 0)
                     Read(allBytes, 0, allBytes.Length);
                 return allBytes;
@@ -125,13 +120,8 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             if (Interlocked.Exchange(ref _disposed, IntCondition.True) == IntCondition.True)
                 return;
-            PoolFullAre.Set();
-            /*
-             * TODO We need to think about the architecture here, such that we don't have problems disposing static things.
-             * 
-            mainThreadLoopARE.Dispose();
-            myFifoStream.Dispose();
-            */
+            PoolFullAre.Dispose();
+            SafeStream.Dispose();
             base.Dispose(disposing);
         }
 

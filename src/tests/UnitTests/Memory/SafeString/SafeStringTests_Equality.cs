@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SafeOrbit.Fakes;
-using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory
 {

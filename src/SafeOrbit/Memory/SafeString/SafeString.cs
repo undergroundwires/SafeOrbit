@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SafeOrbit.Library;
-using SafeOrbit.Parallel;
-using SafeOrbit.Text;
-using Encoding = SafeOrbit.Text.Encoding;
+using SafeOrbit.Threading;
+using SafeOrbit.Memory.SafeStringServices.Text;
+using Encoding = SafeOrbit.Memory.SafeStringServices.Text.Encoding;
 
 namespace SafeOrbit.Memory
 {
@@ -107,40 +107,20 @@ namespace SafeOrbit.Memory
             _charBytesList.Insert(index, bytes);
         }
 
+        /// <see cref="EnsureNotDisposed"/>
         /// <exception cref="ArgumentNullException"> <paramref name="character" /> is <see langword="null" />. </exception>
-        /// <exception cref="ObjectDisposedException"> SafeString instance is disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="character" /> is null or empty. </exception>
         public async Task InsertAsync(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             EnsureNotDisposed();
             if (position < 0 || position > Length) throw new ArgumentOutOfRangeException(nameof(position));
             if (SafeBytes.IsNullOrEmpty(character)) throw new ArgumentNullException(nameof(character));
-            if (encoding == InnerEncoding)
+            if (encoding != InnerEncoding)
             {
-                _charBytesList.Insert(position, character);
-                return;
+                character = await ConvertEncodingAsync(character, encoding, InnerEncoding)
+                    .ConfigureAwait(false);
             }
-
-            //Convert encoding
-            var buffer = await character.ToByteArrayAsync().ConfigureAwait(false);
-            try
-            {
-                if (encoding != InnerEncoding)
-                    buffer = _textService.Convert(encoding, InnerEncoding, buffer);
-                var safeBytes = _safeBytesFactory.Create();
-                for (var i = 0; i < buffer.Length; i++)
-                {
-                    //Append
-                    await safeBytes.AppendAsync(buffer[i]).ConfigureAwait(false);
-                    buffer[i] = 0x0;
-                }
-
-                _charBytesList.Insert(position, safeBytes);
-            }
-            finally
-            {
-                Array.Clear(buffer, 0, buffer.Length);
-            }
+            _charBytesList.Insert(position, character);
         }
 
         /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
@@ -282,7 +262,8 @@ namespace SafeOrbit.Memory
             var result = _safeStringFactory.Create();
             for (var i = 0; i < Length; i++)
             {
-                var bytes = await GetAsSafeBytes(i).DeepCloneAsync().ConfigureAwait(false);
+                var bytes = await GetAsSafeBytes(i).DeepCloneAsync()
+                    .ConfigureAwait(false);
                 await result.AppendAsync(bytes, InnerEncoding)
                     .ConfigureAwait(false);
             }
@@ -296,7 +277,7 @@ namespace SafeOrbit.Memory
             // The MemberwiseClone method creates a shallow copy by creating a new object,
             // and then copying the nonstatic fields of the current object to the new object.
             // If a field is a value type, a bit - by - bit copy of the field is performed.
-            // If a field is a reference type, the reference is copied but the referred object is not;
+            // If a field is a reference type, the reference is copied but the referred object is not
             // therefore, the original object and its clone refer to the same object.
             // Documentation : https://msdn.microsoft.com/en-us/library/system.object.memberwiseclone.aspx
             return MemberwiseClone() as ISafeString;
@@ -315,6 +296,25 @@ namespace SafeOrbit.Memory
         public override bool Equals(object obj)
         {
             throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
+        }
+
+        private async Task<ISafeBytes> ConvertEncodingAsync(ISafeBytes character, Encoding sourceEncoding, Encoding destinationEncoding)
+        {
+
+            var buffer = await character.ToByteArrayAsync().ConfigureAwait(false);
+            try
+            {
+                buffer = _textService.Convert(sourceEncoding, destinationEncoding, buffer);
+                var safeBytes = _safeBytesFactory.Create();
+                var stream = new SafeMemoryStream();
+                stream.Write(buffer, 0, buffer.Length);
+                await safeBytes.AppendManyAsync(stream).ConfigureAwait(false);
+                return safeBytes;
+            }
+            finally
+            {
+                Array.Clear(buffer, 0, buffer.Length);
+            }
         }
 
         private async Task<char> TransformSafeBytesToCharAsync(ISafeBytes safeBytes, Encoding encoding)

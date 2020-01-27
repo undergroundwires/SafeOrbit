@@ -8,7 +8,7 @@ using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {
@@ -181,6 +181,17 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return clone;
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj switch
+            {
+                ISafeByte sb => Equals(sb),
+                null => false,
+                byte _ => throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead"),
+                _ => throw new ArgumentException("Unknown object type")
+            };
+        }
+
         /// <exception cref="InvalidOperationException">Byte is not set in one of the instances</exception>
         public bool Equals(ISafeByte other)
         {
@@ -216,17 +227,6 @@ namespace SafeOrbit.Memory.SafeBytesServices
             _isDisposed = true;
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj switch
-            {
-                ISafeByte sb => Equals(sb),
-                null => false,
-                byte _ => throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead"),
-                _ => throw new ArgumentException("Unknown object type")
-            };
-        }
-        
 
         /// <summary>
         ///     Returns a hash code for this instance.

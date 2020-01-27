@@ -14,19 +14,19 @@
 
         private long _stateCounter;
         private long _seedCounter;
-        private readonly IDigest digest;
-        private readonly byte[] state;
-        private readonly byte[] seed;
+        private readonly IDigest _digest;
+        private readonly byte[] _state;
+        private readonly byte[] _seed;
 
         public DigestRandomGenerator(
             IDigest digest)
         {
-            this.digest = digest;
+            this._digest = digest;
 
-            this.seed = new byte[digest.GetDigestSize()];
+            this._seed = new byte[digest.GetDigestSize()];
             this._seedCounter = 1;
 
-            this.state = new byte[digest.GetDigestSize()];
+            this._state = new byte[digest.GetDigestSize()];
             this._stateCounter = 1;
         }
 
@@ -36,8 +36,8 @@
             lock (this)
             {
                 DigestUpdate(inSeed);
-                DigestUpdate(seed);
-                DigestDoFinal(seed);
+                DigestUpdate(_seed);
+                DigestDoFinal(_seed);
             }
         }
 
@@ -47,8 +47,8 @@
             lock (this)
             {
                 DigestAddCounter(rSeed);
-                DigestUpdate(seed);
-                DigestDoFinal(seed);
+                DigestUpdate(_seed);
+                DigestDoFinal(_seed);
             }
         }
 
@@ -72,29 +72,29 @@
                 var end = start + len;
                 for (var i = start; i < end; ++i)
                 {
-                    if (stateOff == state.Length)
+                    if (stateOff == _state.Length)
                     {
                         GenerateState();
                         stateOff = 0;
                     }
-                    bytes[i] = state[stateOff++];
+                    bytes[i] = _state[stateOff++];
                 }
             }
         }
 
         private void CycleSeed()
         {
-            DigestUpdate(seed);
+            DigestUpdate(_seed);
             DigestAddCounter(_seedCounter++);
-            DigestDoFinal(seed);
+            DigestDoFinal(_seed);
         }
 
         private void GenerateState()
         {
             DigestAddCounter(_stateCounter++);
-            DigestUpdate(state);
-            DigestUpdate(seed);
-            DigestDoFinal(state);
+            DigestUpdate(_state);
+            DigestUpdate(_seed);
+            DigestDoFinal(_state);
 
             if ((_stateCounter % CycleCount) == 0)
             {
@@ -107,19 +107,19 @@
             var seed = (ulong)seedVal;
             for (int i = 0; i != 8; i++)
             {
-                digest.Update((byte)seed);
+                _digest.Update((byte)seed);
                 seed >>= 8;
             }
         }
 
         private void DigestUpdate(byte[] inSeed)
         {
-            digest.BlockUpdate(inSeed, 0, inSeed.Length);
+            _digest.BlockUpdate(inSeed, 0, inSeed.Length);
         }
 
         private void DigestDoFinal(byte[] result)
         {
-            digest.DoFinal(result, 0);
+            _digest.DoFinal(result, 0);
         }
     }
 }

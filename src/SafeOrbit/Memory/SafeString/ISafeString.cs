@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SafeOrbit.Core;
-using SafeOrbit.Text;
+using SafeOrbit.Common;
+using SafeOrbit.Memory.SafeStringServices.Text;
 
 namespace SafeOrbit.Memory
 {

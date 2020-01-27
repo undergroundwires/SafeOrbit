@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SafeOrbit.Core;
+using SafeOrbit.Common;
 
 namespace SafeOrbit.Memory
 {
@@ -17,13 +17,13 @@ namespace SafeOrbit.Memory
         /// </summary>
         Task AppendAsync(byte @byte);
         /// <summary>
-        ///     Adds the given bytes at the end of the list.
-        /// </summary>
-        Task AppendManyAsync(SafeMemoryStream stream);
-        /// <summary>
         ///     Adds the given encrypted bytes t the end of the list.
         /// </summary>
         Task AppendAsync(ISafeBytes safeBytes);
+        /// <summary>
+        ///     Adds the given bytes at the end of the list.
+        /// </summary>
+        Task AppendManyAsync(SafeMemoryStream stream);
         /// <summary>
         ///     Gets single byte in the safe list
         /// </summary>

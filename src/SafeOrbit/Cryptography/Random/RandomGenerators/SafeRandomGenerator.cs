@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests;
 using SafeOrbit.Extensions;
-using SafeOrbit.Helpers;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
@@ -64,7 +64,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 return;
             var pos = 0;
             var finished = false;
-            while (false == finished)
+            while (!finished)
             {
                 var allByteArraysThatMustBeUnique = new List<byte[]>();
                 var outputs = new List<byte[]>();
@@ -104,7 +104,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                         {
                             // Impossible to get here because foreach() loops over eHasher.HashWrappers and does "hashes.Add" on each
                             // iteration.  And eHasher.HashWrappers was already checked for null and checked for Count < 1
-                            throw new Exception("Impossible Exception # A0B276734D");
+                            throw new ArgumentException("Impossible Exception # A0B276734D");
                         }
                     }
                 }
@@ -178,7 +178,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                     throw new ArgumentException("byteArray.Length != HashLengthInBytes");
                 Array.Copy(byteArrays[0], accumulator, _hashLengthInBytes);
             }
-            else // if (byteArrays.Count > 1)
+            else // byteArrays.Count > 1
             {
                 Array.Clear(accumulator, 0, accumulator.Length); // Should be unnecessary, but just to make sure.
                 foreach (var byteArray in byteArrays)

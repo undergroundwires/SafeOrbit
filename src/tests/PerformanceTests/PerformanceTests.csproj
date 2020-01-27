@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SafeOrbit\SafeOrbit.csproj" />
-    <ProjectReference Include="..\..\tests\Shared\Shared.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />

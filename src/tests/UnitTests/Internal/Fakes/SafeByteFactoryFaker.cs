@@ -5,7 +5,7 @@ using Moq;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes

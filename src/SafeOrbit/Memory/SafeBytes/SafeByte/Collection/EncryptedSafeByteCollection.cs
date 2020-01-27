@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using SafeOrbit.Cryptography.Encryption;
@@ -9,7 +8,7 @@ using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Collection
 {

@@ -3,24 +3,25 @@
 
 <img align="left" src="https://raw.githubusercontent.com/undergroundwires/SafeOrbit/master/docs/img/logo/logo_60x60.png"> 
 
-# **SafeOrbit** - Protect your data and detect injections
+# **SafeOrbit** - Protect your memory in .NET
 
-## SafeOrbit is cryptographic security toolkit for .NET
 [![NuGet Status](https://img.shields.io/nuget/v/SafeOrbit.svg?style=flat)](https://www.nuget.org/packages/SafeOrbit/) ![Build status](https://github.com/undergroundwires/SafeOrbit/workflows/Build%20&%20test/badge.svg) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/undergroundwires/SafeOrbit/issues)
 
- **SafeOrbit** is a security toolset including different high performance algorithms and easy to use classes for advanced memory protection.
+## What
 
-**SafeOrbit**'s primarily focus is [**strong memory protection**](#memory-security). It protects every byte in your application with encryption in transit and at rest. It safeguards your application against memory injections and timing attacks.
+**SafeOrbit** is an advanced [**memory protection**](#memory-security) library with easy to use classes.
 
-* You have [SafeBytes](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes) to protect binaries,
-* [SafeString](https://github.com/undergroundwires/SafeOrbit/wiki/SafeString) to protect strings,
-* injection aware [SafeObject](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject), [SafeContainer](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject) the DI container and [more](https://github.com/undergroundwires/SafeOrbit/wiki) to detect memory injections.
+* Protects your strings in memory while allowing you to securely compare & modify them with [SafeString](https://github.com/undergroundwires/SafeOrbit/wiki/SafeString).
+* Protects your binary data with [SafeBytes](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes).
+* Leverages high performance and secure algorithms for [encryption, hashing and random](#cryptography) in interfaces that makes it much hard to screw up.
+* Anti injection module safeguards your application against memory injections and timing attacks using [SafeObject](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject), [SafeContainer](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject) (injection aware DI container) and [more](https://github.com/undergroundwires/SafeOrbit/wiki).
 
-**SafeOrbit** is **easy to use** as it does not require you to have any knowledge of cryptology to take advantage of high security with simple abstractions that's implemented with security best-practices.
+## Why
 
-**SafeOrbit** provides also bunch of crypto tools to use strong and high performance algorithms for [encryption, hashing and random](#cryptography).
-
-**SafeOrbit** is **performance friendly**. It's up to you to decide for trade-off between speed and more security. Services have `Safe` or `Fast` prefixes. `Fast` classes strive for both performance and security, but `Safe` classes focuses the security over performance. **For example** while [SafeEncryptor](#aes-the-ISafeEncrpytor) uses lots of iterations, salts, and IV, [FastEncryptor](#blowfish-the-IFastEncryptor) uses a faster encryption algorithm without any key deriving function. **Furthermore** most of the classes has a way to disable its protection. They let you change/disable the security level of the protection dynamically to gain more performance.
+* You want to secure strings in memory and modify & compare them without revealing them in memory.
+* You want to take advantage of security best-practices without having any cryptology knowledge.
+* You want to use high-performance algorithms in .NET such as `Murmur32` hashing and `Blowfish` encryption.
+* You do not trust OS generated crypto randoms and want direct access to entropy hashes or non-OS PNRG seeded by them.
 
 ## Want to say thanks? :beer:
 

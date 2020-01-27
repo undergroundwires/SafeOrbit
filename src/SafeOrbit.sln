@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RandomComparisonApp", "test
 		{0AE8A9B2-7434-4A39-82BC-22D53D9D67A1} = {0AE8A9B2-7434-4A39-82BC-22D53D9D67A1}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "tests\Shared\Shared.csproj", "{300DB885-91FF-4FBC-8C57-F9285EB252E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "tests\Common\Common.csproj", "{300DB885-91FF-4FBC-8C57-F9285EB252E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{166C105B-F7FC-4FFD-AE47-E72EB09E8AC4}"
 EndProject

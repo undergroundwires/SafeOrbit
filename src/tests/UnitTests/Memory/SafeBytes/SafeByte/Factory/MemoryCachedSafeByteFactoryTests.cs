@@ -7,7 +7,7 @@ using NUnit.Framework;
 using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices.Id;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 using SafeOrbit.Tests.Cases;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Factory

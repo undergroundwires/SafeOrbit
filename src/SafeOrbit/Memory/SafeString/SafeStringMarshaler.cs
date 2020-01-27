@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using SafeOrbit.Helpers;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Memory
 {
@@ -108,7 +108,6 @@ namespace SafeOrbit.Memory
                     {
                         var currentIndex = i;
                         pInsecureString[i] = TaskContext.RunSync(() => SafeString.GetAsCharAsync(currentIndex));
-                        //TODO: SafeBytes conversion would be more efficient here
                     }
                 }
             }

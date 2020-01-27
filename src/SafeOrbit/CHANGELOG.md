@@ -30,7 +30,7 @@
 - **Changed**
   - ❗ Replaced sync methods with async variants.
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
-  - Renamed "Infrastructure" to "Core"
+  - Namespace changes for better modular structure
   - Refactorings & better documentation.
 - **Fixed**
   - `SafeMemoryStream` ends up in infinite loop while reading when its empty.

@@ -2,8 +2,8 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
-using SafeOrbit.Helpers;
 using SafeOrbit.Memory;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
@@ -68,7 +68,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             private readonly AutoResetEvent _bytesAvailableAre = new AutoResetEvent(false);
             private readonly byte[] _chunk;
             private readonly object _fifoStreamLock = new object();
-            private readonly Thread _mainThread;
             private readonly AutoResetEvent _mainThreadLoopAre = new AutoResetEvent(false);
             private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
             private int _chunkBitIndex;
@@ -78,11 +77,11 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             public ThreadSchedulerRngCore()
             {
                 _chunk = new byte[ChunkSize];
-                _mainThread = new Thread(MainThreadLoop)
+                var mainThread = new Thread(MainThreadLoop)
                 {
                     IsBackground = true // Don't prevent application from dying if it wants to.
                 };
-                _mainThread.Start();
+                mainThread.Start();
             }
 
             public int Read(byte[] buffer, int offset, int count)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
@@ -8,7 +7,6 @@ using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
-using SafeOrbit.Parallel;
 
 namespace SafeOrbit.Memory
 {

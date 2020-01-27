@@ -9,7 +9,7 @@ using SafeOrbit.Exceptions;
 using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Memory.SafeBytesServices.Id
 {

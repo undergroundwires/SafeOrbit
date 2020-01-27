@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Moq;
-using SafeOrbit.Core.Serialization;
+using SafeOrbit.Memory.InjectionServices.Stampers.Serialization;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes
@@ -28,14 +28,12 @@ namespace SafeOrbit.Fakes
             });
             fake.Setup(s => s.Deserialize<object>(It.IsAny<byte[]>())).Returns((byte[] bytes) =>
             {
-                object value;
-                innerValues.TryGetValue(bytes, out value);
+                innerValues.TryGetValue(bytes, out var value);
                 return value;
             });
             fake.Setup(s => s.Deserialize<IEnumerable<int>>(It.IsAny<byte[]>())).Returns((byte[] bytes) =>
             {
-                object value;
-                innerValues.TryGetValue(bytes, out value);
+                innerValues.TryGetValue(bytes, out var value);
                 return value as IEnumerable<int>;
             });
             return fake.Object;

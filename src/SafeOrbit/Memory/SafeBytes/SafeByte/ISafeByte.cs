@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SafeOrbit.Core;
+using SafeOrbit.Common;
 
 namespace SafeOrbit.Memory.SafeBytesServices
 {

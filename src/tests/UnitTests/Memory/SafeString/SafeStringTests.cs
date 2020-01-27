@@ -6,7 +6,7 @@ using Moq;
 using NUnit.Framework;
 using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
-using SafeOrbit.Text;
+using SafeOrbit.Memory.SafeStringServices.Text;
 
 namespace SafeOrbit.Memory
 {

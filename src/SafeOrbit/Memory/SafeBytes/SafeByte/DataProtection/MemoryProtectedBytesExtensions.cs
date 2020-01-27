@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {

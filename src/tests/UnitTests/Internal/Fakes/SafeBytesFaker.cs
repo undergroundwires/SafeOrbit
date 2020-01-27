@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SafeOrbit.Memory;
-using SafeOrbit.Parallel;
+using SafeOrbit.Threading;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes
@@ -17,10 +17,10 @@ namespace SafeOrbit.Fakes
             public int Length => _bytes.Count;
             public bool IsDisposed { get; private set; }
 
-            public async Task AppendManyAsync(SafeMemoryStream bytes)
+            public async Task AppendManyAsync(SafeMemoryStream stream)
             {
                 int byteRead;
-                while ((byteRead = bytes.ReadByte()) != -1)
+                while ((byteRead = stream.ReadByte()) != -1)
                     await AppendAsync((byte)byteRead);
             }
 
@@ -58,12 +58,6 @@ namespace SafeOrbit.Fakes
                 return clone;
             }
 
-            public Task<bool> EqualsAsync(byte[] other)
-            {
-                return Task.FromResult(other != null &&
-                       _bytes.AsEnumerable().SequenceEqual(other));
-            }
-
             public override int GetHashCode()
             {
                 return _bytes.Aggregate(2, (current, b) => current + b);
@@ -73,6 +67,12 @@ namespace SafeOrbit.Fakes
             {
                 return Task.FromResult(other != null &&
                        _bytes.AsEnumerable().SequenceEqual(TaskContext.RunSync(other.ToByteArrayAsync)));
+            }
+
+            public Task<bool> EqualsAsync(byte[] other)
+            {
+                return Task.FromResult(other != null &&
+                                       _bytes.AsEnumerable().SequenceEqual(other));
             }
 
             public FakeSafeBytes()

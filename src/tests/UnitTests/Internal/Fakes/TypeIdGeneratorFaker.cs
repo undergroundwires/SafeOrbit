@@ -1,5 +1,5 @@
 ﻿using System;
-using SafeOrbit.Core.Reflection;
+using SafeOrbit.Memory.InjectionServices.Reflection;
 using SafeOrbit.Tests;
 
 namespace SafeOrbit.Fakes

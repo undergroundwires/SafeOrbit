@@ -5,7 +5,7 @@ using System.Threading;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Digests;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto.Prng;
-using SafeOrbit.Helpers;
+using SafeOrbit.Threading;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
@@ -38,7 +38,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             () => new FastRandomGenerator(SafeRandomGenerator.StaticInstance));
 
         private readonly int _digestSize;
-        private readonly DigestRandomGenerator _myPrng;
+        private readonly DigestRandomGenerator _prng;
         private readonly bool _ownsSafeRandomGenerator;
         private readonly SafeRandomGenerator _safeRandomGenerator;
         private readonly object _stateCounterLockObj = new object();
@@ -135,7 +135,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             if (digest == null) throw new ArgumentNullException(nameof(digest));
             _safeRandomGenerator = safeRng ?? throw new ArgumentNullException(nameof(safeRng));
             _ownsSafeRandomGenerator = ownsSafeRng;
-            _myPrng = new DigestRandomGenerator(digest);
+            _prng = new DigestRandomGenerator(digest);
             _digestSize = digest.GetDigestSize();
             SeedSize = _digestSize;
             Reseed();
@@ -153,13 +153,13 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 var newStateCounter = _stateCounter + 1 + data.Length / _digestSize;
                 if (newStateCounter > MaxStateCounterHard)
                     Reseed(); // Guarantees to reset stateCounter = 0
-                else if (newStateCounter > MaxBytesPerSeedSoft)
-                    if (Interlocked.Exchange(ref _reseedLockInt, ReseedLocked) == ReseedUnlocked)
+                else if (newStateCounter > MaxBytesPerSeedSoft
+                         && Interlocked.Exchange(ref _reseedLockInt, ReseedLocked) == ReseedUnlocked)
                         // If more than one thread race here, let the first one through, and others exit
                         ThreadPool.QueueUserWorkItem(ReseedCallback);
                 // Repeat the addition, instead of using newStateCounter, because the above Reseed() might have changed stateCounter
                 _stateCounter += 1 + data.Length / _digestSize;
-                _myPrng.NextBytes(data);
+                _prng.NextBytes(data);
                 // Internally, DigestRandomGenerator locks all operations, so reseeding cannot occur in the middle of NextBytes()
             }
         }
@@ -209,7 +209,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 _safeRandomGenerator.GetBytes(newSeed);
                 lock (_stateCounterLockObj)
                 {
-                    _myPrng.AddSeedMaterial(newSeed);
+                    _prng.AddSeedMaterial(newSeed);
                     _stateCounter = 0;
                     _reseedLockInt = ReseedUnlocked;
                 }
