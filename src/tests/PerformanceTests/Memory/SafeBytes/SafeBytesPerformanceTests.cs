@@ -31,6 +31,28 @@ namespace SafeOrbit.Memory
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
         }
 
+
+        [Test]
+        public async Task ToDeepCloneAsync_SingleMegaByteStream_Takes_Less_Than_5000ms()
+        {
+            // Arrange
+            SafeOrbitCore.Current.StartEarly();
+            const int expectedHigherLimit = 5000;
+            var sut = GetSut();
+            var bytes = new byte[1000000];
+            new Random().NextBytes(bytes);
+            var stream = new SafeMemoryStream();
+            stream.Write(bytes, 0, bytes.Length);
+            await sut.AppendManyAsync(stream);
+
+            // Act
+            var actualPerformance = await MeasureAsync(() =>
+                sut.DeepCloneAsync());
+
+            // Assert
+            Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
+        }
+
         [Test]
         public async Task ToByteArrayAsync_For_1MB_Bytes_Takes_Less_Than_2000ms()
         {

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
@@ -13,8 +11,7 @@ using SafeOrbit.Parallel;
 namespace SafeOrbit.Memory
 {
     /// <remarks>
-    ///     Wraps <see cref="ISafeByteCollection" />.
-    ///     Adds arbitrary bytes during modifications to avoid having real sequences in the memory.
+    ///     Wraps <see cref="ISafeByteCollection" /> and extends it with more functionality.
     /// </remarks>
     public class SafeBytes : ISafeBytes
     {
@@ -77,21 +74,23 @@ namespace SafeOrbit.Memory
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
             //If it's the known SafeBytes then it reveals nothing in the memory
             if (safeBytes is SafeBytes asSafeBytes)
-                for (var i = 0; i < safeBytes.Length; i++)
-                {
-                    var safeByte = await asSafeBytes.GetAsSafeByteAsync(i)
-                        .ConfigureAwait(false);
-                    await AppendAsync(safeByte).ConfigureAwait(false);
-                }
+            {
+                var allBytes = await asSafeBytes._safeByteCollection.GetAllAsync()
+                    .ConfigureAwait(false);
+                await _safeByteCollection.AppendManyAsync(allBytes)
+                    .ConfigureAwait(false);
+                foreach (var safeByte in allBytes)
+                    UpdateHashCode(safeByte);
+            }
             //If it's not, then reveals each byte in memory.
             else
-                for (var i = 0; i < safeBytes.Length; i++)
-                {
-                    var @byte = await safeBytes.GetByteAsync(i).ConfigureAwait(false);
-                    var safeByte = await _safeByteFactory.GetByByteAsync(@byte)
-                        .ConfigureAwait(false);
-                    await AppendAsync(safeByte).ConfigureAwait(false);
-                }
+            {
+                var plainBytes = await safeBytes.ToByteArrayAsync()
+                    .ConfigureAwait(false);
+                var stream = new SafeMemoryStream();
+                stream.Write(plainBytes, 0, plainBytes.Length);
+                await AppendManyAsync(stream).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc />
@@ -130,24 +129,7 @@ namespace SafeOrbit.Memory
         {
             EnsureNotDisposed();
             var clone = _safeBytesFactory.Create();
-            if (clone is SafeBytes asSafeBytes)
-            {
-                //If it's the known SafeBytes then it reveals nothing in the memory
-                for (var i = 0; i < Length; i++)
-                {
-                    var safeByte = await GetAsSafeByteAsync(i).ConfigureAwait(false);
-                    await asSafeBytes.AppendAsync(safeByte)
-                        .ConfigureAwait(false);
-                }
-                return asSafeBytes;
-            }
-
-            //If it's not, then reveals each byte in memory.
-            for (var i = 0; i < Length; i++)
-            {
-                var @byte = await GetByteAsync(i).ConfigureAwait(false);
-                await clone.AppendAsync(@byte).ConfigureAwait(false);
-            }
+            await clone.AppendAsync(this).ConfigureAwait(false);
             return clone;
         }
         /// <summary>
@@ -212,10 +194,7 @@ namespace SafeOrbit.Memory
             IsDisposed = true;
         }
 
-        ~SafeBytes()
-        {
-            Dispose(false);
-        }
+        ~SafeBytes() => Dispose(false);
 
         // This code added to correctly implement the disposable pattern.
         public void Dispose()

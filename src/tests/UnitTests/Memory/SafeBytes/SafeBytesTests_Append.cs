@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
@@ -7,6 +8,7 @@ using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
+using SafeOrbit.Parallel;
 
 namespace SafeOrbit.Memory
 {
@@ -100,7 +102,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task AppendAsyncByte_UnknownISafeBytes_Appends()
+        public async Task AppendAsyncByte_UnknownISafeBytes_AppendsToInternalCollection()
         {
             // Arrange
             const byte firstByte = 55, secondByte = 77;
@@ -108,17 +110,17 @@ namespace SafeOrbit.Memory
                 .Provide();
             await expected.AppendAsync(firstByte);
             await expected.AppendAsync(secondByte);
-            var collection = new Mock<ISafeByteCollection>();
-            collection.Setup(c => c.AppendAsync(It.IsAny<ISafeByte>()))
-                .Verifiable();
-            using var sut = GetSut(collection: collection.Object);
+            var collection = Stubs.Get<ISafeByteCollection>();
+            using var sut = GetSut(collection: collection);
 
             // Act
             await sut.AppendAsync(expected);
 
             // Assert
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == firstByte)), Times.Once);
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == secondByte)), Times.Once);
+            var actual = await collection.GetAllAsync();
+            Assert.AreEqual(2, actual.Length);
+            Assert.AreEqual(firstByte, actual.ElementAt(0).GetAsync().Result);
+            Assert.AreEqual(secondByte, actual.ElementAt(1).GetAsync().Result);
         }
 
         [Test]
@@ -258,26 +260,25 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task AppendAsyncISafeBytes_SafeBytes_AppendsFromFactory()
+        public async Task AppendAsyncISafeBytes_SafeBytes_AppendsToInternalCollection()
         {
             // Arrange
             const byte firstByte = 55, secondByte = 77;
             var expected = Stubs.Get<ISafeBytes>();
             await expected.AppendAsync(firstByte);
             await expected.AppendAsync(secondByte);
-            var collection = new Mock<ISafeByteCollection>();
-            collection.Setup(c => c.AppendAsync(It.IsAny<ISafeByte>()))
-                .Verifiable();
-            using var sut = GetSut(collection: collection.Object);
+            var collection = Stubs.Get<ISafeByteCollection>();
+            using var sut = GetSut(collection: collection);
 
             // Act
             await sut.AppendAsync(expected);
 
             // Assert
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == 55)), Times.Once);
-            collection.Verify(c => c.AppendAsync(It.Is<ISafeByte>(b => b.GetAsync().Result == 77)), Times.Once);
+            var actual = await collection.GetAllAsync();
+            Assert.AreEqual(2, actual.Length);
+            Assert.AreEqual(firstByte, actual.ElementAt(0).GetAsync().Result);
+            Assert.AreEqual(secondByte, actual.ElementAt(1).GetAsync().Result);
         }
-
 
         [Test]
         public async Task AppendManyAsync_CleanInstance_ChangesHashCode()
@@ -387,6 +388,29 @@ namespace SafeOrbit.Memory
             // Assert
             var actual = await sut.ToByteArrayAsync();
             Assert.True(actual.SequenceEqual(expected));
+        }
+
+
+        [Test]
+        public async Task AppendManyAsync_MultipleBytes_AppendsToInternalCollection()
+        {
+            // Arrange
+            const byte firstByte = 55, secondByte = 77;
+            var expected = Stubs.Get<ISafeBytes>();
+            var stream = new SafeMemoryStream();
+            stream.Write(new byte[]{firstByte, secondByte}, 0, 2);
+            await expected.AppendManyAsync(stream);
+            var collection = Stubs.Get<ISafeByteCollection>();
+            using var sut = GetSut(collection: collection);
+
+            // Act
+            await sut.AppendAsync(expected);
+
+            // Assert
+            var actual = await collection.GetAllAsync();
+            Assert.AreEqual(2, actual.Length);
+            Assert.AreEqual(firstByte, actual.ElementAt(0).GetAsync().Result);
+            Assert.AreEqual(secondByte, actual.ElementAt(1).GetAsync().Result);
         }
     }
 }

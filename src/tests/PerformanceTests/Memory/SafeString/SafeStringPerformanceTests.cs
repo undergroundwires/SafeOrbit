@@ -20,6 +20,26 @@ namespace SafeOrbit.Memory
             // Act
             var actualPerformance = Measure(() =>
             {
+                _ = sut.ToSafeBytesAsync();
+            }, 10);
+
+            // Assert
+            Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
+        }
+
+
+        [Test]
+        public async Task ToSafeBytes_1000Chars_Takes_Less_Than_100ms()
+        {
+            // Arrange
+            const int expectedHigherLimit = 100;
+            SafeOrbitCore.Current.StartEarly();
+            var sut = GetSut();
+            await sut.AppendAsync(new string('m', 1000));
+
+            // Act
+            var actualPerformance = Measure(() =>
+            {
                 _ = sut.GetHashCode();
             }, 10);
 

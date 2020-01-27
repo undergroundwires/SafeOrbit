@@ -140,7 +140,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
 
         /// <inheritdoc />
         /// <inheritdoc cref="EnsureNotDisposed"/>
-        /// <inheritdoc cref="EnsureNotEmpty" />
         public async Task<byte[]> ToDecryptedBytesAsync()
         {
             EnsureNotDisposed();
@@ -156,6 +155,25 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
 
             var plainBytes = await ConvertIdsToBytesAsync(safeBytesIds).ConfigureAwait(false);
             return plainBytes.ToArray();
+        }
+
+        /// <inheritdoc />
+        /// <inheritdoc cref="EnsureNotDisposed"/>
+        public async Task<ISafeByte[]> GetAllAsync()
+        {
+            EnsureNotDisposed();
+            if (this.Length == 0)
+                return new ISafeByte[0];
+
+            ICollection<int> safeByteIds;
+            using (var key = await _encryptionKey.RevealDecryptedBytesAsync().ConfigureAwait(false))
+            {
+                safeByteIds = await DecryptAndDeserializeAsync(_encryptedCollection, key.PlainBytes)
+                    .ConfigureAwait(false);
+            }
+
+            return await _safeByteFactory.GetByIdsAsync(safeByteIds)
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc />

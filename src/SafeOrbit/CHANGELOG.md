@@ -8,14 +8,16 @@
 
 - **Performance** 😲
   - Huge performance improvements.
-  - Most of the public methods are now only async.
-    - If it can be async, it's async.
+  - Most of the public methods are now only async: if it can be async, it's async.
   - Adding byte to SafeBytes is now 2100% faster.
     - Adding multiple bytes with AppendMany is 2100% * byte amount faster.
     - SafeString uses SafeBytes internally, and now it's also 2100% faster.
   - `GetHashCode()` in `SafeString` and `SafeBytes` is faster than light (0 ms) compared to older implementation (6s for 1000 char with a linear increase per char)
     - The method is also used in equality checks which makes .Equals() much faster.
   - Decrypting all bytes in `SafeBytes` is now 214x faster for 10KB, much faster for bigger sizes (1 MB = 900 ms).
+  - `AppendAsync(ISafeBytes)` and `DeepCloneAsync` are optimized in `SafeBytes`
+    - It is much faster (from 170 seconds to 37 ms for 10KB data)
+    - Leads to much faster ToSafeBytes in SafeString
 - **Added**
   - Encryption
     - Support for padding in Blowfish algorithm.
