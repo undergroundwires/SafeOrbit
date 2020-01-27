@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SafeOrbit.Common;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Extensions;
@@ -16,7 +17,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
     ///     An encrypted collection of <see cref="ISafeByte" /> instances.
     /// </summary>
     /// <seealso cref="ISafeByte" />
-    internal class EncryptedSafeByteCollection : ISafeByteCollection
+    internal class EncryptedSafeByteCollection : DisposableBase, ISafeByteCollection
     {
         /// <summary>
         ///     The encryption key to encrypt/decrypt the inner list.
@@ -32,8 +33,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     Encrypted inner collection.
         /// </summary>
         private byte[] _encryptedCollection;
-
-        private bool _isDisposed;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="EncryptedSafeByteCollection" /> class.
@@ -68,8 +67,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         /// <inheritdoc />
+        /// <inheritdoc cref="AppendManyAsync" />
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
         public Task AppendAsync(ISafeByte safeByte)
         {
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
@@ -77,11 +76,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         /// <inheritdoc />
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed" />
         /// <exception cref="ArgumentNullException"><paramref name="safeBytes" /> is <see langword="null" />.</exception>
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
         public async Task AppendManyAsync(IEnumerable<ISafeByte> safeBytes)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
             var bytes = safeBytes as ISafeByte[] ?? safeBytes.ToArray();
             if (!bytes.Any())  return;
@@ -103,16 +102,16 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         /// <inheritdoc />
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed" />
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index" /> is lower than zero or higher/equals to the <see cref="Length" />. </exception>
         /// <exception cref="InvalidOperationException"> <see cref="EncryptedSafeByteCollection" /> instance is empty. </exception>
-        /// <exception cref="ObjectDisposedException"> <see cref="EncryptedSafeByteCollection" /> instance is disposed </exception>
         /// <seealso cref="ISafeByte" />
         public async Task<ISafeByte> GetAsync(int index)
         {
             if (index < 0 && index >= Length)
                 throw new ArgumentOutOfRangeException(nameof(index), index,
                     $"Must be non-negative than zero and lower than length {Length}");
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureNotEmpty();
             ICollection<int> list = default;
             try
@@ -138,10 +137,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="EnsureNotDisposed"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed" />
+        /// <inheritdoc cref="EnsureNotEmpty" />
         public async Task<byte[]> ToDecryptedBytesAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureNotEmpty();
             ICollection<int> safeBytesIds;
             using (var key = await _encryptionKey.RevealDecryptedBytesAsync().ConfigureAwait(false))
@@ -157,10 +157,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="EnsureNotDisposed"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed" />
         public async Task<ISafeByte[]> GetAllAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (this.Length == 0)
                 return new ISafeByte[0];
 
@@ -178,19 +178,15 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// <inheritdoc />
         public int Length { get; private set; }
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        protected override void DisposeManagedResources()
         {
             if (_encryptedCollection != null)
                 Array.Clear(_encryptedCollection, 0, _encryptedCollection.Length);
-            TaskContext.RunSync(() => _encryptionKey.ValueAsync()).Dispose(); //TODO: Use IAsyncDisposable instead in C# 8.0
-            _isDisposed = true;
+            if(_encryptionKey != null)
+                TaskContext.RunSync(() => _encryptionKey.ValueAsync()).Dispose(); //TODO: Use IAsyncDisposable instead in C# 8.0
             Length = 0;
         }
-
+        
         private async Task<ICollection<int>> DecryptAndDeserializeAsync(byte[] encryptedCollection,
             byte[] encryptionKey)
         {
@@ -267,12 +263,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var uniqueByteIndexes = safeBytesIds.Select(id => uniqueByteIds.IndexOf(id));
             var plainBytes = uniqueByteIndexes.Select(i => uniquePlainBytes[i]);
             return plainBytes;
-        }
-
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is disposed</exception>
-        private void EnsureNotDisposed()
-        {
-            if (_isDisposed) throw new ObjectDisposedException(nameof(EncryptedSafeByteCollection));
         }
 
         /// <exception cref="InvalidOperationException">Throws if the <see cref="EncryptedSafeByteCollection" /> instance is empty.</exception>

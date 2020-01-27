@@ -21,12 +21,14 @@ namespace SafeOrbit.Memory
         [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.SafeObjectProtectionModeCases))]
         public void Constructor_Sets_ProtectionMode(SafeObjectProtectionMode mode)
         {
-            //arrange
+            // Arrange
             var expected = mode;
-            //act
+
+            // Act
             var sut = GetSut(protectionMode: expected);
             var actual = sut.CurrentProtectionMode;
-            //assert
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -42,29 +44,54 @@ namespace SafeOrbit.Memory
         [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_Sets_AlertChannel(InjectionAlertChannel alertChannel)
         {
-            //arrange
+            // Arrange
             var expected = alertChannel;
-            //act
+
+            // Act
             var sut = GetSut(channel: expected);
             var actual = sut.AlertChannel;
-            //assert
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void Constructor_Sets_IsReadOnly()
+        public void Ctor_NoIsReadOnlyValue_DefaultsToFalse()
         {
+            // Arrange
             var modifiableSut = GetSut();
+
+            // Act
+            var actual = modifiableSut.IsReadOnly;
+
+            // Assert
+            Assert.That(actual, Is.False);
+        }
+
+
+        [Test]
+        public void Ctor_IsReadOnly_SetsToTrue()
+        {
+            // Arrange
             var nonModifiableSut = GetSut(isReadOnly: true);
-            Assert.That(modifiableSut.IsReadOnly, Is.False);
-            Assert.That(nonModifiableSut.IsReadOnly, Is.True);
+
+            // Act
+            var actual = nonModifiableSut.IsReadOnly;
+
+            // Assert
+            Assert.That(actual, Is.True);
         }
 
         [Test]
         public void Constructor_WithoutInitialObject_CreatesANewInstance()
         {
+            // Arrange
             var sut = GetSut();
+
+            // Act
             var newInstance = sut.Object;
+
+            // Assert
             Assert.That(newInstance, Is.Not.Null);
             Assert.That(newInstance, Is.InstanceOf<TestObject>());
         }
@@ -72,20 +99,29 @@ namespace SafeOrbit.Memory
         [Test]
         public void Constructor_InitialValueIsNotNull_NotifiesInnerInjectionDetector()
         {
+            // Arrange
             var mockInjProtector = new Mock<IInjectionDetector>();
             var initialObject = new TestObject();
-            var sut = GetSut(
+
+            // Act
+            _ = GetSut(
                 injectionDetector: mockInjProtector.Object,
                 initialObject: initialObject);
+
+            // Assert
             mockInjProtector.Verify(p => p.NotifyChanges(initialObject), Times.Once);
         }
 
         [Test]
         public void Constructor_InitialValueIsNull_NotifiesInnerInjectionDetector()
         {
+            // Arrange
             var mockInjProtector = new Mock<IInjectionDetector>();
-            var sut = GetSut(
-                injectionDetector: mockInjProtector.Object);
+
+            // Act
+            _ = GetSut(injectionDetector: mockInjProtector.Object);
+
+            // Assert
             mockInjProtector.Verify(p => p.NotifyChanges(It.IsAny<TestObject>()), Times.Once);
         }
 
@@ -94,13 +130,15 @@ namespace SafeOrbit.Memory
         public void Constructor_Sets_Inner_InjectionDetectorSettings_From_ProtectionMode(
             SafeObjectProtectionMode protectionMode, bool scanState, bool scanCode)
         {
-            //arrange
+            // Arrange
             var injectionDetector = Mock.Of<IInjectionDetector>();
             injectionDetector.ScanCode = !scanCode;
             injectionDetector.ScanState = !scanState;
-            //act
-            var sut = GetSut(protectionMode: protectionMode, injectionDetector: injectionDetector);
-            //assert
+
+            // Act
+            _ = GetSut(protectionMode: protectionMode, injectionDetector: injectionDetector);
+
+            // Assert
             Assert.That(injectionDetector.ScanState, Is.EqualTo(scanState));
             Assert.That(injectionDetector.ScanCode, Is.EqualTo(scanCode));
         }
@@ -109,25 +147,29 @@ namespace SafeOrbit.Memory
         [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Constructor_Sets_InnerInjectionDetectorsAlertChannel(InjectionAlertChannel alertChannel)
         {
-            //arrange
+            // Arrange
             var expected = alertChannel;
             var sut = GetSut(channel: expected);
-            //arrange
+
+            // Act
             var actual = sut.AlertChannel;
-            //assert
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
         public void MakeReadOnly_Sets_IsReadOnly_Property_To_True()
         {
-            //arrange
+            // Arrange
             const bool expected = true;
             var initialObject = new TestObject();
             var sut = GetSut(isReadOnly: false, initialObject: initialObject);
-            //act
+
+            // Act
             sut.MakeReadOnly();
-            //assert
+
+            // Assert
             Assert.That(sut.IsReadOnly, Is.EqualTo(expected));
         }
 
@@ -136,14 +178,16 @@ namespace SafeOrbit.Memory
         public void SetProtectionMode_Sets_Inner_InjectionDetectorSettings(SafeObjectProtectionMode protectionMode,
             bool scanState, bool scanCode)
         {
-            //arrange
+            // Arrange
             var injectionDetector = Mock.Of<IInjectionDetector>();
             injectionDetector.ScanCode = !scanCode;
             injectionDetector.ScanState = !scanState;
-            //act
+
+            // Act
             var sut = GetSut(protectionMode: protectionMode, injectionDetector: injectionDetector);
             sut.SetProtectionMode(protectionMode);
-            //assert
+
+            // Assert
             Assert.That(injectionDetector.ScanState, Is.EqualTo(scanState));
             Assert.That(injectionDetector.ScanCode, Is.EqualTo(scanCode));
         }
@@ -151,12 +195,17 @@ namespace SafeOrbit.Memory
         [Test]
         public void CanAlert_ForNonProtectedMode_returnsFalse()
         {
-            var expected = false;
+            // Arrange
+            const bool expected = false;
             var injectionDetector = new Mock<IInjectionDetector>();
             injectionDetector.Setup(d => d.CanAlert).Returns(true);
-            var nonProtectedMode = SafeObjectProtectionMode.NoProtection;
+            const SafeObjectProtectionMode nonProtectedMode = SafeObjectProtectionMode.NoProtection;
             var sut = GetSut(protectionMode: nonProtectedMode, injectionDetector: injectionDetector.Object);
+
+            // Act
             var actual = sut.CanAlert;
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -164,14 +213,16 @@ namespace SafeOrbit.Memory
         [TestCaseSource(typeof(SafeObjectCases), nameof(SafeObjectCases.AlertingProtectionModes))]
         public void CanAlert_ForProtectModes_returnsTrue(SafeObjectProtectionMode protectionMode)
         {
-            //arrange
-            var expected = true;
+            // Arrange
+            const bool expected = true;
             var injectionDetector = new Mock<IInjectionDetector>();
             injectionDetector.Setup(d => d.CanAlert).Returns(true);
-            //act
+
+            // Act
             var sut = GetSut(protectionMode: protectionMode, injectionDetector: injectionDetector.Object);
             var actual = sut.CanAlert;
-            //assert
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -179,13 +230,15 @@ namespace SafeOrbit.Memory
         [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void AlertChannel_Sets_InnerInjectionDetectorChannel(InjectionAlertChannel alertChannel)
         {
-            //arrange
+            // Arrange
             var expected = alertChannel;
             var injectionDetector = new Mock<IInjectionDetector>();
             var sut = GetSut(injectionDetector: injectionDetector.Object);
-            //act
+
+            // Act
             sut.AlertChannel = expected;
-            //assert
+
+            // Assert
             injectionDetector.VerifySet(
                 detector => detector.AlertChannel = expected
             );
@@ -198,33 +251,40 @@ namespace SafeOrbit.Memory
             //arrange
             var expected = alertChannel;
             var injectionDetector = new Mock<IInjectionDetector>();
+            injectionDetector.SetupGet(detector => detector.AlertChannel)
+                .Returns(expected);
             var sut = GetSut(injectionDetector: injectionDetector.Object);
+
             //act
-            var temp = sut.AlertChannel;
+            var actual = sut.AlertChannel;
+
             //assert
-            injectionDetector.VerifyGet(
-                detector => detector.AlertChannel);
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
         public void Object_AfterCreatedWithInitialObject_returnsInitialObject()
         {
-            //arrange
+            // Arrange
             var expected = new TestObject();
             var sut = GetSut(expected);
-            //act
+
+            // Act
             var actual = sut.Object;
-            //assert
+
+            // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
         public void Object_ChangingItsValueAndVerifyingFromDifferentThreads_IsThreadSafe()
         {
+            // Arrange
             var failed = false;
             var sut = GetSut();
-            var iterations = 100;
-            // threads interact with some object - either 
+            const int iterations = 100;
+
+            // Act
             var thread1 = new Thread(() =>
             {
                 for (var i = 0; i < iterations; i++)
@@ -247,21 +307,28 @@ namespace SafeOrbit.Memory
             thread2.Start();
             thread1.Join();
             thread2.Join();
+
+            // Assert
             Assert.IsFalse(failed, "code was thread safe");
         }
 
         [Test]
         public void Object_WhenRetrieving_IfChangesAreVerified_returnsChangedObject()
         {
+            // Arrange
             var sut = GetSut();
+
+            // Act
             sut.ApplyChanges(obj => obj.TestProperty = "change_without_verify");
+
+            // Assert
             Assert.That(sut.Object.TestProperty, Is.EqualTo("change_without_verify"));
         }
 
         [Test]
         public void Object_WhenRetrieving_IfObjectChangedWithoutVerify_alertsInjection()
         {
-            //arrange
+            // Arrange
             var initialObject = new TestObject();
             var detectorMock = new Mock<IInjectionDetector>();
             detectorMock.Setup(c => c.CanAlert).Returns(true);
@@ -269,17 +336,18 @@ namespace SafeOrbit.Memory
                 protectionMode: SafeObjectProtectionMode.StateAndCode,
                 injectionDetector: detectorMock.Object,
                 initialObject: initialObject);
-            //act
+            // Act
             initialObject.TestInt += 1;
-            var dummy = sut.Object;
-            //assert
+            _ = sut.Object;
+
+            // Assert
             detectorMock.Verify(detector => detector.AlertUnnotifiedChanges(initialObject));
         }
 
         [Test]
         public void Object_WhenRetrieving_IfObjectChangedWithoutVerify_InjectionDetectorCanNotAlert_doesNotAlert()
         {
-            //arrange
+            // Arrange
             var initialObject = new TestObject();
             var detectorMock = new Mock<IInjectionDetector>();
             detectorMock.Setup(c => c.CanAlert).Returns(false);
@@ -287,10 +355,12 @@ namespace SafeOrbit.Memory
                 protectionMode: SafeObjectProtectionMode.StateAndCode,
                 injectionDetector: detectorMock.Object,
                 initialObject: initialObject);
-            //act
+
+            // Act
             initialObject.TestInt += 1;
-            var dummy = sut.Object;
-            //assert
+            _ = sut.Object;
+
+            // Assert
             detectorMock.Verify(detector => detector.AlertUnnotifiedChanges(initialObject), Times.Never);
         }
 
@@ -299,28 +369,31 @@ namespace SafeOrbit.Memory
         [Test]
         public void ApplyChanges_IfObjectIsNotModifiable_throwsReadOnlyAccessForbiddenException()
         {
-            //arrange
+            // Arrange
             var initialObject = new TestObject();
             var sut = GetSut(initialObject);
             sut.MakeReadOnly();
 
-            //act
+            // Act
             void CallVerifyChanges() => sut.ApplyChanges(a => { });
-            //assert
+
+            // Assert
             Assert.That(CallVerifyChanges, Throws.TypeOf<ReadOnlyAccessForbiddenException>());
         }
 
         [Test]
         public void ApplyChanges_ForInnerInjectionDetector_InvokesNotifyChanges()
         {
-            //arrange
+            // Arrange
             var detectorMock = new Mock<IInjectionDetector>();
             var sut = GetSut(injectionDetector: detectorMock.Object);
             detectorMock.Reset();
             var testObj = sut.Object;
-            //act
+
+            // Act
             sut.ApplyChanges(obj => obj.TestInt = 5);
-            //assert
+
+            // Assert
             detectorMock.Verify(detector => detector.NotifyChanges(It.Is<TestObject>(t => t == testObj)),
                 Times.Once);
         }
@@ -328,19 +401,21 @@ namespace SafeOrbit.Memory
         [Test]
         public void ApplyChanges_ChangesTheObject()
         {
-            //arrange
+            // Arrange
             var expectedInt = 10;
             var expectedString = "after";
             var testObj = new TestObject {TestInt = 5, TestProperty = "before"};
             var sut = GetSut(initialObject: testObj);
-            //act
+
+            // Act
             sut.ApplyChanges(obj =>
             {
                 obj.TestInt = expectedInt;
                 obj.TestProperty = expectedString;
             });
             var actual = sut.Object;
-            //assert
+
+            // Assert
             Assert.That(actual.TestInt, Is.EqualTo(expectedInt));
             Assert.That(actual.TestProperty, Is.EqualTo(expectedString));
         }
@@ -350,16 +425,18 @@ namespace SafeOrbit.Memory
         public void SetProtectionMode_From_NonStateProtection_To_StateProtection_NotifiesInnerInjectionDetector(
             SafeObjectProtectionMode from, SafeObjectProtectionMode to)
         {
-            //arrange
+            // Arrange
             var detectorMock = new Mock<IInjectionDetector>();
             detectorMock.SetupProperty(d => d.ScanState);
             var sut = GetSut(protectionMode: from,
                 injectionDetector: detectorMock.Object);
             var obj = sut.Object;
             detectorMock.Invocations.Clear();
-            //act
+
+            //  Act
             sut.SetProtectionMode(to);
-            //assert
+
+            // Assert
             detectorMock.Verify(d => d.NotifyChanges(obj), Times.Once);
         }
 
@@ -368,15 +445,17 @@ namespace SafeOrbit.Memory
         public void SetProtectionMode_From_StateProtection_To_NonStateProtection_DoesNotNotifyInnerInjectionDetector(
             SafeObjectProtectionMode from, SafeObjectProtectionMode to)
         {
-            //arrange
+            // Arrange
             var detectorMock = new Mock<IInjectionDetector>();
             var sut = GetSut(protectionMode: from,
                 injectionDetector: detectorMock.Object);
             var obj = sut.Object;
             detectorMock.Invocations.Clear();
-            //act
+
+            // Act
             sut.SetProtectionMode(to);
-            //assert
+
+            // Assert
             detectorMock.Verify(d => d.NotifyChanges(obj), Times.Never);
         }
 

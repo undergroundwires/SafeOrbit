@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SafeOrbit.Common;
 using SafeOrbit.Library;
 using SafeOrbit.Threading;
 using SafeOrbit.Memory.SafeStringServices.Text;
@@ -10,7 +11,7 @@ using Encoding = SafeOrbit.Memory.SafeStringServices.Text.Encoding;
 
 namespace SafeOrbit.Memory
 {
-    public class SafeString : ISafeString
+    public class SafeString : DisposableBase, ISafeString
     {
         private const Encoding InnerEncoding = Encoding.Utf16LittleEndian;
         private const byte LineFeed = 0x000A; //http://www.fileformat.info/info/unicode/char/000A/index.htm
@@ -41,21 +42,19 @@ namespace SafeOrbit.Memory
 
         public int Length => _charBytesList == null || IsDisposed ? 0 : _charBytesList.Count;
         public bool IsEmpty => Length == 0;
-        /// <inheritdoc />
-        public bool IsDisposed { get; private set; }
 
         /// <inheritdoc />
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public Task AppendAsync(char ch) => InsertAsync(Length, ch);
 
         /// <inheritdoc />
         /// <param name="text">Non-safe <see cref="T:System.String" /> that's already revealed in the memory</param>
         /// <exception cref="T:System.ArgumentNullException"> <paramref name="text" /> is <see langword="null" />.</exception>
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task AppendAsync(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (text.Length == 0)
                 return;
             foreach (var ch in text)
@@ -67,18 +66,18 @@ namespace SafeOrbit.Memory
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="character" /> is <see langword="null" />. </exception>
         /// <exception cref="ArgumentOutOfRangeException">If position is less than zero or higher than the length.  </exception>
-        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public Task AppendAsync(ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
         {
             return InsertAsync(Length, character, encoding);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="safeString" /> is <see langword="null" />. </exception>
-        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed. </exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task AppendAsync(ISafeString safeString)
         {
             if (safeString == null) throw new ArgumentNullException(nameof(safeString));
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             for (var i = 0; i < safeString.Length; i++)
             {
                 var @byte = await safeString.GetAsSafeBytes(i).DeepCloneAsync().ConfigureAwait(false);
@@ -87,32 +86,32 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="ObjectDisposedException">Throws if the SafeString instance is disposed</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task AppendLineAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             var safeBytes = _safeBytesFactory.Create();
             await safeBytes.AppendAsync(LineFeed).ConfigureAwait(false);
             await AppendAsync(safeBytes, InnerEncoding).ConfigureAwait(false);
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="ISafeBytes" /> instance is disposed</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> is not a valid index.</exception>
         public async Task InsertAsync(int index, char character)
         {
             if (index < 0 || index > Length) throw new ArgumentOutOfRangeException(nameof(index));
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             var bytes = await TransformCharToSafeBytesAsync(character, InnerEncoding)
                 .ConfigureAwait(false);
             _charBytesList.Insert(index, bytes);
         }
 
-        /// <see cref="EnsureNotDisposed"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentNullException"> <paramref name="character" /> is <see langword="null" />. </exception>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="character" /> is null or empty. </exception>
         public async Task InsertAsync(int position, ISafeBytes character, Encoding encoding = Encoding.Utf16LittleEndian)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (position < 0 || position > Length) throw new ArgumentOutOfRangeException(nameof(position));
             if (SafeBytes.IsNullOrEmpty(character)) throw new ArgumentNullException(nameof(character));
             if (encoding != InnerEncoding)
@@ -123,19 +122,19 @@ namespace SafeOrbit.Memory
             _charBytesList.Insert(position, character);
         }
 
-        /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index" /> is not a valid index. </exception>
         public ISafeBytes GetAsSafeBytes(int index)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureNotEmpty();
             if (index < 0 || index >= Length) throw new ArgumentOutOfRangeException(nameof(index));
             var result = _charBytesList.ElementAt(index);
             return result;
         }
 
-        /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="index" /> is less than zero, higher than/equals to the
@@ -143,7 +142,7 @@ namespace SafeOrbit.Memory
         /// </exception>
         public async Task<char> GetAsCharAsync(int index)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureNotEmpty();
             if (index < 0 || index >= Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
@@ -159,11 +158,11 @@ namespace SafeOrbit.Memory
         ///     <p><paramref name="count" /> is less than one.</p>
         ///     <p>The total of <paramref name="startIndex" /> and <paramref name="count" /> is higher than length.</p>
         /// </exception>
-        /// <exception cref="ObjectDisposedException">The <see cref="SafeString" /> instance is disposed.</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException"> The <see cref="SafeString" /> instance is empty. </exception>
         public void Remove(int startIndex, int count = 1)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureNotEmpty();
             if (startIndex < 0 || startIndex >= Length)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -181,20 +180,20 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public void Clear()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             for (var i = 0; i < Length; i++)
                 Remove(i);
             _charBytesList.Clear();
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException">Throws if the <see cref="SafeString" /> instance is empty.</exception>
         public async Task<ISafeBytes> ToSafeBytesAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureNotEmpty();
             var safeBytes = _safeBytesFactory.Create();
             foreach (var charBytes in _charBytesList)
@@ -206,8 +205,10 @@ namespace SafeOrbit.Memory
             return safeBytes;
         }
 
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public override int GetHashCode()
         {
+            ThrowIfDisposed();
             unchecked
             {
                 const int multiplier = 69;
@@ -218,8 +219,17 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <exception cref="NotSupportedException"> Use <see cref="EqualsAsync(string)"/> or <see cref="EqualsAsync(ISafeString)"/> instead. </exception>
+        public override bool Equals(object obj)
+        {
+            throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
+        }
+
+        /// <exception cref="ArgumentNullException"> <paramref name="other" /> is <see langword="null" />. </exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<bool> EqualsAsync(string other)
         {
+            ThrowIfDisposed();
             if (other == null) throw new ArgumentNullException(nameof(other));
             if (other.Length == 0)
                 return Length == 0;
@@ -235,8 +245,11 @@ namespace SafeOrbit.Memory
             return comparisonBit == 0;
         }
 
+        /// <exception cref="ArgumentNullException"> <paramref name="other" /> is <see langword="null" />. </exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<bool> EqualsAsync(ISafeString other)
         {
+            ThrowIfDisposed();
             if (other == null) throw new ArgumentNullException(nameof(other));
             if (other.Length == 0)
                 return Length == 0;
@@ -255,10 +268,10 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="ObjectDisposedException"> Throws if the <see cref="SafeString" /> instance is disposed </exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<ISafeString> DeepCloneAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             var result = _safeStringFactory.Create();
             for (var i = 0; i < Length; i++)
             {
@@ -270,10 +283,10 @@ namespace SafeOrbit.Memory
             return result;
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
         public ISafeString ShallowClone()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             // The MemberwiseClone method creates a shallow copy by creating a new object,
             // and then copying the nonstatic fields of the current object to the new object.
             // If a field is a value type, a bit - by - bit copy of the field is performed.
@@ -283,19 +296,15 @@ namespace SafeOrbit.Memory
             return MemberwiseClone() as ISafeString;
         }
 
-        /// <inheritdoc cref="Clear" />
-        public void Dispose()
-        {
-            Clear();
-            IsDisposed = true;
-        }
 
         public static bool IsNullOrEmpty(ISafeString safeString)
             => safeString == null || safeString.IsDisposed || safeString.IsEmpty;
 
-        public override bool Equals(object obj)
+        protected override void DisposeManagedResources()
         {
-            throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
+            foreach(var safeBytes in _charBytesList)
+                safeBytes?.Dispose();
+            this._charBytesList.Clear();
         }
 
         private async Task<ISafeBytes> ConvertEncodingAsync(ISafeBytes character, Encoding sourceEncoding, Encoding destinationEncoding)
@@ -341,13 +350,6 @@ namespace SafeOrbit.Memory
             await safeBytes.AppendManyAsync(stream).ConfigureAwait(false);
 
             return safeBytes;
-        }
-
-        /// <exception cref="ObjectDisposedException">Throws if the <see cref="SafeString" /> instance is disposed.</exception>
-        private void EnsureNotDisposed()
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException(nameof(SafeString));
         }
 
         /// <exception cref="InvalidOperationException">Throws if the <see cref="SafeString" /> instance is empty.</exception>

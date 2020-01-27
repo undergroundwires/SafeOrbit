@@ -1,11 +1,11 @@
 ﻿using System;
+using SafeOrbit.Common;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
-    public class DecryptedBytesMarshaler : IDecryptedBytesMarshaler
+    public class DecryptedBytesMarshaler : DisposableBase, IDecryptedBytesMarshaler
     {
         private readonly byte[] _plainBytes;
-        private volatile bool _isDisposed;
 
         /// <exception cref="ArgumentException">Throws if the <paramref name="decryptedBytes" /> is empty.</exception>
         /// <exception cref="ArgumentNullException">Throws if the <paramref name="decryptedBytes" /> is null.</exception>
@@ -22,23 +22,15 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         {
             get
             {
-                EnsureNotDisposed();
+                ThrowIfDisposed();
                 return _plainBytes;
             }
         }
 
-        /// <exception cref="ObjectDisposedException">If object is already disposed</exception>
-        public void Dispose()
+        protected override void DisposeManagedResources()
         {
-            EnsureNotDisposed();
-            Array.Clear(PlainBytes, 0, PlainBytes.Length);
-            _isDisposed = true;
-        }
-
-        private void EnsureNotDisposed()
-        {
-            if (_isDisposed)
-                throw new ObjectDisposedException(nameof(DecryptedBytesMarshaler));
+            if(PlainBytes != null)
+                Array.Clear(PlainBytes, 0, PlainBytes.Length);
         }
     }
 }

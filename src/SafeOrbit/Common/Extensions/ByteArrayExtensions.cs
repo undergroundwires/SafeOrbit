@@ -10,7 +10,7 @@ namespace SafeOrbit.Extensions
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="byteArray" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="byteArrays" /> is <see langword="null" />.</exception>
-        /// <exception cref="OverflowException">The sum of byte array length larger than <see cref="F:System.Int32.MaxValue" />.</exception>
+        /// <exception cref="OverflowException">The sum of byte array length larger than <see cref="int.MaxValue" />.</exception>
         public static byte[] Combine(this byte[] byteArray, params byte[][] byteArrays)
         {
             if (byteArray == null) throw new ArgumentNullException(nameof(byteArray));

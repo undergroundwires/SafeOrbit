@@ -1,10 +1,10 @@
-﻿namespace SafeOrbit.Cryptography.Random.RandomGenerators
+﻿using System;
+
+namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
-    internal interface IHashAlgorithmWrapper
+    internal interface IHashAlgorithmWrapper : IDisposable
     {
         int HashSizeInBits { get; }
-
         byte[] ComputeHash(byte[] data);
-        void Dispose();
     }
 }

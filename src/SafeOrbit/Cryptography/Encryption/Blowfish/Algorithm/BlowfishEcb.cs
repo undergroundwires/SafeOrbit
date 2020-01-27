@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using SafeOrbit.Common;
 using SafeOrbit.Cryptography.Encryption.Blowfish.Algorithm;
 using SafeOrbit.Cryptography.Encryption.Blowfish.Algorithm.SubkeyArrays;
 using SafeOrbit.Exceptions;
@@ -15,7 +16,7 @@ namespace SafeOrbit.Cryptography.Encryption
     /// <seealso cref="CipherMode.ECB" />
     /// <seealso cref="BlowfishCbc" />
     /// <seealso cref="BlowfishEncryptor" />
-    public class BlowfishEcb : ICryptoTransform
+    public class BlowfishEcb : DisposableBase, ICryptoTransform
     {
         /// <summary>
         ///     Standard is 16
@@ -59,37 +60,15 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <value><c>true</c> if for encryption;  <c>false</c> if for decryption.</value>
         public bool ForEncryption { get; }
 
-        public void Dispose()
-        {
-            if (_key != null)
-                Array.Clear(_key, 0, _key.Length);
-            if (_sArray != null)
-            {
-                foreach (var array in _sArray)
-                {
-                    if (array == null) continue;
-                    Array.Clear(array, 0, array.Length);
-                }
-
-                Array.Clear(_sArray, 0, _sArray.Length);
-            }
-
-            if (_pArray != null)
-                Array.Clear(_pArray, 0, _pArray.Length);
-        }
-
         /// <summary>
         ///     Encrypt/decrypts the block.
         /// </summary>
-        /// <param name="inputBuffer">The input buffer.</param>
-        /// <param name="inputOffset">The input offset.</param>
-        /// <param name="inputCount">The input count.</param>
-        /// <param name="outputBuffer">The output buffer.</param>
-        /// <param name="outputOffset">The output offset.</param>
         /// <returns>The length of the processed bytes.</returns>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public virtual int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer,
             int outputOffset)
         {
+            this.ThrowIfDisposed();
             if (inputCount == 0) return 0;
             var block = new byte[inputCount];
             Buffer.BlockCopy(inputBuffer, inputOffset, block, 0, inputCount);
@@ -104,12 +83,11 @@ namespace SafeOrbit.Cryptography.Encryption
         /// <summary>
         ///     Transforms the final block.
         /// </summary>
-        /// <param name="inputBuffer">The input buffer.</param>
-        /// <param name="inputOffset">The input offset.</param>
-        /// <param name="inputCount">The input count.</param>
-        /// <returns>System.Byte[].</returns>
+        /// <returns>The length of the processed bytes.</returns>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public virtual byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
         {
+            this.ThrowIfDisposed();
             var outputLength = OutputBlockSize;
             var inputLength = InputBlockSize;
             var resultLen = inputCount % outputLength == 0
@@ -215,6 +193,25 @@ namespace SafeOrbit.Cryptography.Encryption
             SetBlock(block);
             Decipher();
             GetBlock(ref block);
+        }
+
+
+        protected override void DisposeManagedResources()
+        {
+            if (_key != null)
+                Array.Clear(_key, 0, _key.Length);
+            if (_sArray != null)
+            {
+                foreach (var array in _sArray)
+                {
+                    if (array == null) continue;
+                    Array.Clear(array, 0, array.Length);
+                }
+
+                Array.Clear(_sArray, 0, _sArray.Length);
+            }
+            if (_pArray != null)
+                Array.Clear(_pArray, 0, _pArray.Length);
         }
 
         /// <summary>

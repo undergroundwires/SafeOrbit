@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SafeOrbit.Common;
 using SafeOrbit.Cryptography.Encryption;
 using SafeOrbit.Cryptography.Random;
 using SafeOrbit.Exceptions;
@@ -20,7 +21,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
     /// <seealso cref="ISafeBytes" />
     /// <seealso cref="ISafeByteFactory" />
     /// <seealso cref="MemoryCachedSafeByteFactory" />
-    internal sealed class SafeByte : ISafeByte
+    internal sealed class SafeByte : DisposableBase, ISafeByte
     {
         private readonly IByteIdGenerator _byteIdGenerator;
         private readonly IMemoryProtectedBytes _encryptedByte;
@@ -30,7 +31,6 @@ namespace SafeOrbit.Memory.SafeBytesServices
 
         private int _encryptedByteLength;
         private int _id;
-        private volatile bool _isDisposed;
         private int _realBytePosition;
 
         /// <summary>
@@ -91,24 +91,20 @@ namespace SafeOrbit.Memory.SafeBytesServices
             get
             {
                 EnsureByteIsSet();
-                EnsureNotDisposed();
+                ThrowIfDisposed();
                 return _id;
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether any byte is set on this instance.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if the byte is set; otherwise, <c>false</c>.
-        /// </value>
+        /// <inheritdoc />
         public bool IsByteSet { get; private set; }
 
-        /// <exception cref="ObjectDisposedException">If object is disposed</exception>
-        /// <exception cref="InvalidOperationException">Thrown when byte is already set</exception>
+        /// <inheritdoc />
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
+        /// <inheritdoc cref="EnsureByteIsNotSet"/>
         public async Task SetAsync(byte b)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureByteIsNotSet();
             // Generate ID
             _id = await _byteIdGenerator.GenerateAsync(b)
@@ -119,11 +115,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
         }
 
         /// <inheritdoc />
-        /// <exception cref="InvalidOperationException">Thrown when byte is not set</exception>
-        /// <exception cref="ObjectDisposedException">If object is disposed</exception>
+        /// <inheritdoc cref="EnsureByteIsSet"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<byte> GetAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureByteIsSet();
             byte[] byteBuffer = null;
             try
@@ -157,18 +153,12 @@ namespace SafeOrbit.Memory.SafeBytesServices
             }
         }
 
-        /// <summary>
-        ///     Deeply clone the object.
-        /// </summary>
-        /// <returns>
-        ///     Cloned object.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">Thrown when byte is not set</exception>
-        /// <exception cref="ObjectDisposedException">If object is disposed</exception>
+        /// <inheritdoc cref="EnsureByteIsSet"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public ISafeByte DeepClone()
         {
             EnsureByteIsSet();
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             var clone = new SafeByte(
                 id: _id,
                 realBytePosition: _realBytePosition,
@@ -192,10 +182,11 @@ namespace SafeOrbit.Memory.SafeBytesServices
             };
         }
 
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException">Byte is not set in one of the instances</exception>
         public bool Equals(ISafeByte other)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (other == null)
                 return false;
             if (!other.IsByteSet || !IsByteSet)
@@ -205,40 +196,32 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return false;
         }
 
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <inheritdoc cref="EnsureByteIsSet"/>
-        /// <inheritdoc cref="EnsureNotDisposed"/>
         public async Task<bool> EqualsAsync(byte other)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureByteIsSet();
             var otherId = await _byteIdGenerator.GenerateAsync(other)
                 .ConfigureAwait(false);
             return AreIdsSame(Id, otherId);
         }
 
-        public void Dispose()
+        protected override void DisposeUnmanagedResources()
         {
-            EnsureNotDisposed();
-            _encryptionKey.Dispose();
-            _encryptedByte.Dispose();
+            _encryptionKey?.Dispose();
+            _encryptedByte?.Dispose();
             _id = 0;
             _encryptedByteLength = 0;
             _realBytePosition = 0;
-            _isDisposed = true;
         }
 
-
-        /// <summary>
-        ///     Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        ///     Unique hash code based on the byte it is holding, suitable for use in hashing algorithms and data structures like a
-        ///     hash table.
-        /// </returns>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
+        /// <inheritdoc cref="EnsureByteIsSet"/>
         public override int GetHashCode()
         {
             EnsureByteIsSet();
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             return _id;
         }
 
@@ -322,13 +305,6 @@ namespace SafeOrbit.Memory.SafeBytesServices
             result |= (uint) id ^
                       (uint) other; // Protects against timing attacks, see: https://security.stackexchange.com/questions/83660/simple-string-comparisons-not-secure-against-timing-attacks 
             return result == 0;
-        }
-
-        /// <exception cref="ObjectDisposedException">Object id isposed</exception>
-        private void EnsureNotDisposed()
-        {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().Name);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using SafeOrbit.Common;
 using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices;
@@ -14,7 +15,7 @@ namespace SafeOrbit.Memory
     /// <remarks>
     ///     Wraps <see cref="ISafeByteCollection" /> and extends it with more functionality.
     /// </remarks>
-    public class SafeBytes : ISafeBytes
+    public class SafeBytes : DisposableBase, ISafeBytes
     {
         private int _hashcode = 0x2001D81A;
 
@@ -43,8 +44,6 @@ namespace SafeOrbit.Memory
         /// <inheritdoc />
         public int Length => _safeByteCollection?.Length ?? 0;
 
-        public bool IsDisposed { get; private set; }
-
         /// <inheritdoc />
         /// <inheritdoc cref="AppendAsync(ISafeByte)"/>
         public async Task AppendAsync(byte @byte)
@@ -56,12 +55,11 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <inheritdoc cref="AppendAsync(ISafeByte)"/>
-        /// <inheritdoc cref="EnsureNotDisposed"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentException">Throws if the argument is empty</exception>
         public async Task AppendAsync(ISafeBytes safeBytes)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (safeBytes.Length == 0) throw new ArgumentException($"{nameof(safeBytes)} is empty.");
             // If it's the known SafeBytes then it reveals nothing in the memory
             if (safeBytes is SafeBytes asSafeBytes)
@@ -84,7 +82,7 @@ namespace SafeOrbit.Memory
             }
         }
         /// <inheritdoc />
-        /// <inheritdoc cref="AppendManyAsync"/>
+        /// <inheritdoc cref="AppendManyAsync(ISafeByte[])"/>
         public async Task AppendManyAsync(SafeMemoryStream stream)
         {
             var safeBytes = await _safeByteFactory.GetByBytesAsync(stream)
@@ -95,15 +93,15 @@ namespace SafeOrbit.Memory
 
 
         /// <inheritdoc />
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Throws if the position is lower than 0 or greater than/equals to the
         ///     length
         /// </exception>
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
         /// <exception cref="InvalidOperationException">Throws if the SafeBytes instance is empty.</exception>
         public async Task<byte> GetByteAsync(int position)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             EnsureNotEmpty();
             if (position < 0 && position >= Length) throw new ArgumentOutOfRangeException(nameof(position));
             var safeByte = await GetAsSafeByteAsync(position)
@@ -113,11 +111,12 @@ namespace SafeOrbit.Memory
             return @byte;
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException">Throws if the SafeBytes instance is empty.</exception>
         public async Task<byte[]> ToByteArrayAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (Length == 0)
                 return new byte[0];
             var decryptedBytes = await _safeByteCollection.ToDecryptedBytesAsync()
@@ -125,10 +124,10 @@ namespace SafeOrbit.Memory
             return decryptedBytes;
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<ISafeBytes> DeepCloneAsync()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             var clone = _safeBytesFactory.Create();
             await clone.AppendAsync(this).ConfigureAwait(false);
             return clone;
@@ -150,22 +149,22 @@ namespace SafeOrbit.Memory
                 .ConfigureAwait(false);
         }
 
-        /// <inheritdoc cref="EnsureNotDisposed"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentNullException"><paramref name="safeByte" /> is <see langword="null" />.</exception>
         private async Task AppendAsync(ISafeByte safeByte)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (safeByte == null) throw new ArgumentNullException(nameof(safeByte));
             await _safeByteCollection.AppendAsync(safeByte)
                 .ConfigureAwait(false);
             UpdateHashCode(safeByte);
         }
 
-        /// <inheritdoc cref="EnsureNotDisposed"/>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentNullException"><paramref name="safeBytes" /> is <see langword="null" />.</exception>
         private async Task AppendManyAsync(ISafeByte[] safeBytes)
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             if (safeBytes == null) throw new ArgumentNullException(nameof(safeBytes));
             await _safeByteCollection.AppendManyAsync(safeBytes)
                 .ConfigureAwait(false);
@@ -173,41 +172,16 @@ namespace SafeOrbit.Memory
                 UpdateHashCode(@byte);
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the SafeBytes instance is disposed</exception>
-        private void EnsureNotDisposed()
-        {
-            if (IsDisposed) throw new ObjectDisposedException(nameof(SafeBytes));
-        }
-
-        /// <exception cref="InvalidOperationException">Throws if the SafeBytes instance is empty.</exception>
+        /// <exception cref="InvalidOperationException">Throws if the <see cref="SafeBytes"/> instance is empty.</exception>
         private void EnsureNotEmpty()
         {
             if (Length == 0) throw new InvalidOperationException($"{nameof(SafeBytes)} is empty");
         }
 
-        #region IDisposable
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (IsDisposed) return; //skip redundant calls
-            if (disposing)
-                _safeByteCollection.Dispose();
-            IsDisposed = true;
-        }
-
-        ~SafeBytes() => Dispose(false);
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
-
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<bool> EqualsAsync(byte[] other)
         {
+            ThrowIfDisposed();
             if (other == null || !other.Any()) return Length == 0;
 
             var otherBytes = GetOtherBytes();
@@ -226,8 +200,10 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<bool> EqualsAsync(ISafeBytes other)
         {
+            ThrowIfDisposed();
             if (other == null || other.Length == 0) return Length == 0;
             if (this.GetHashCode() != other.GetHashCode())
                 return false;
@@ -260,12 +236,18 @@ namespace SafeOrbit.Memory
             }
         }
 
+        /// <exception cref="NotSupportedException">Use <see cref="EqualsAsync(byte[])"/> or <see cref="EqualsAsync(ISafeBytes)"/> instead</exception>
         public override bool Equals(object obj)
         {
             throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
         }
 
         public override int GetHashCode() => _hashcode;
+
+        protected override void DisposeManagedResources()
+        {
+            _safeByteCollection?.Dispose();
+        }
 
         private static bool AreEqual(IReadOnlyList<ISafeByte> first, IReadOnlyList<ISafeByte> second)
         {

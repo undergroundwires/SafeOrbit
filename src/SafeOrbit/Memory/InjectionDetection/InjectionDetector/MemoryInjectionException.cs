@@ -46,16 +46,18 @@ namespace SafeOrbit.Exceptions
             InjectionType = injectionType;
         }
 
-        public InjectionType InjectionType { get; set; }
-        public object InjectedObject { get; set; }
-        public DateTimeOffset DetectionTime { get; set; }
-
 #if !NETSTANDARD1_6
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public MemoryInjectionException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
 
+        public InjectionType InjectionType { get; set; }
+        public object InjectedObject { get; set; }
+        public DateTimeOffset DetectionTime { get; set; }
+
+#if !NETSTANDARD1_6
         protected override void ConfigureSerialize(ISerializationContext serializationContext)
         {
             serializationContext.Add(() => InjectionType);

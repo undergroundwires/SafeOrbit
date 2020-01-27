@@ -92,7 +92,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task String_AfterSettingSafeStringToDisposedObject_ReturnsStringOfSafeString()
+        public async Task String_SettingStringToDisposedObject_Throws() 
         {
             // Arrange
             var sut = GetSut();
@@ -103,11 +103,10 @@ namespace SafeOrbit.Memory
                 await safeString.AppendAsync(ch);
             
             // Act
-            sut.SafeString = safeString;
-            var actual = sut.String;
+            void SettingSafeString() => sut.SafeString = safeString;
             
             // Assert
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Throws<ObjectDisposedException>(SettingSafeString);
         }
 
         private static SafeStringToStringMarshaler GetSut() => new SafeStringToStringMarshaler();

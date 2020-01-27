@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace SafeOrbit.Helpers
 {
-    public class RuntimeHelper
+    public static class RuntimeHelper
     {
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="action" /> or <paramref name="cleanup" /> is

@@ -570,7 +570,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         }
 
         [Test]
-        public void Dispose_CalledTwice_ThrowsException()
+        public void Dispose_CalledTwice_DoesNotThrow()  // The object must not throw an exception if its Dispose method is called multiple times https://docs.microsoft.com/en-us/dotnet/api/system.idisposable.dispose?view=netframework-4.8
         {
             // Arrange
             var sut = GetSut();
@@ -580,9 +580,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
             void Dispose() => sut.Dispose();
 
             // Assert
-            Assert.Throws<ObjectDisposedException>(Dispose);
+            Assert.DoesNotThrow(Dispose);
         }
-
 
         private static ISafeByte GetSut(IMemoryProtectedBytes encryptedByte = null,
             IMemoryProtectedBytes encryptionKey = null)

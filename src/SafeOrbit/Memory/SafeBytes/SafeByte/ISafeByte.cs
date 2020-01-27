@@ -9,6 +9,13 @@ namespace SafeOrbit.Memory.SafeBytesServices
         IDeepCloneable<ISafeByte>
     {
         int Id { get; }
+
+        /// <summary>
+        ///     Gets a value indicating whether any byte is set on this instance.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if the byte is set; otherwise, <c>false</c>.
+        /// </value>
         bool IsByteSet { get; }
         Task SetAsync(byte b);
         /// <summary>

@@ -24,14 +24,18 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 
         public bool IsDisposed { get; private set; }
 
+        /// <exception cref="ObjectDisposedException"><see cref="SystemRng"/> instance is disposed</exception>
         public override void GetBytes(byte[] data)
         {
+            if (this.IsDisposed) throw new ObjectDisposedException(GetType().Name);
             _systemRngProvider.GetBytes(data);
         }
 
 #if !NETSTANDARD1_6
+        /// <exception cref="ObjectDisposedException"><see cref="SystemRng"/> instance is disposed</exception>
         public override void GetNonZeroBytes(byte[] data)
         {
+            if (this.IsDisposed) throw new ObjectDisposedException(GetType().Name);
             _systemRngProvider.GetNonZeroBytes(data);
         }
 #endif
@@ -39,7 +43,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed) return;
-            _systemRngProvider.Dispose();
+            if (disposing)
+            {
+                _systemRngProvider?.Dispose();
+            }
             base.Dispose(disposing);
             IsDisposed = true;
         }

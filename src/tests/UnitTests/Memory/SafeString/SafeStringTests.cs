@@ -202,7 +202,7 @@ namespace SafeOrbit.Memory
 
         //** Dispose() **//
         [Test]
-        public void Dispose_DisposingTwice_ThrowsObjectDisposedException()
+        public void Dispose_DisposingTwice_DoesNotThrow()   // The object must not throw an exception if its Dispose method is called multiple times https://docs.microsoft.com/en-us/dotnet/api/system.idisposable.dispose?view=netframework-4.8
         {
             // Arrange
             var sut = GetSut();
@@ -212,7 +212,7 @@ namespace SafeOrbit.Memory
             void DisposeAgain() => sut.Dispose();
             
             // Assert
-            Assert.That(DisposeAgain, Throws.TypeOf<ObjectDisposedException>());
+            Assert.DoesNotThrow(DisposeAgain);
         }
 
         [Test]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using SafeOrbit.Common;
 using SafeOrbit.Memory.InjectionServices;
 using SafeOrbit.Memory.InjectionServices.Reflection;
 using SafeOrbit.Memory.InjectionServices.Stampers;
@@ -17,7 +18,7 @@ namespace SafeOrbit.Memory.Injection
     /// <seealso cref="IInjectionDetector" />
     /// <seealso cref="IDisposable" />
     /// <seealso cref="ISafeObject{TObject}" />
-    public class InjectionDetector : IInjectionDetector
+    public class InjectionDetector : DisposableBase, IInjectionDetector
     {
         private static readonly ConcurrentDictionary<string, IStamp<int>> CodeStampsDictionary =
             new ConcurrentDictionary<string, IStamp<int>>(); //static for caching as types always must be the same.
@@ -85,14 +86,17 @@ namespace SafeOrbit.Memory.Injection
         public bool ScanCode { get; set; }
 
         /// <inheritdoc />
+        /// <inheritdoc cref= "DisposableBase.ThrowIfDisposed" />
         /// <summary>
         ///     Saves the state and/or the code  of the object.
-        ///     Use <see cref="M:SafeOrbit.Memory.Injection.InjectionDetector.AlertUnnotifiedChanges(System.Object)" /> method to
+        ///     Use <see cref="AlertUnnotifiedChanges(object)" /> method to
         ///     check if the state has been injected.
         /// </summary>
         /// <param name="object">Object that this instance scans/tracks.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
         public void NotifyChanges(object @object)
         {
+            this.ThrowIfDisposed();
             if (@object == null) throw new ArgumentNullException(nameof(@object));
             if (ScanState)
                 SaveStateStamp(@object);
@@ -101,15 +105,17 @@ namespace SafeOrbit.Memory.Injection
         }
 
         /// <inheritdoc />
+        /// <inheritdoc cref= "DisposableBase.ThrowIfDisposed" />
         /// <exception cref="ArgumentNullException"><paramref name="object" /> is <see langword="NULL" /></exception>
         /// <seealso cref="IAlerts" />
         public void AlertUnnotifiedChanges(object @object)
         {
             if (@object == null) throw new ArgumentNullException(nameof(@object));
-            //get validation results
+            this.ThrowIfDisposed();
+            // Get validation results
             var isStateValid = !ScanState || IsStateValid(@object);
             var isCodeValid = !ScanCode || IsCodeValid(@object);
-            //alert
+            // Alert
             if (isStateValid && isCodeValid) return;
             if (!CanAlert) return;
             var message = new InjectionMessage(!isStateValid, !isCodeValid, @object);
@@ -180,25 +186,9 @@ namespace SafeOrbit.Memory.Injection
 
         #endregion
 
-        #region [IDisposable]
-
-        private bool _isDisposed;
-
-        protected virtual void Dispose(bool disposing)
+        protected override void DisposeUnmanagedResources()
         {
-            if (_isDisposed) return;
             _lastStateStamp = null;
-            _isDisposed = true;
         }
-
-        ~InjectionDetector() => Dispose(false);
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
     }
 }

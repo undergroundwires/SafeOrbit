@@ -54,14 +54,13 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         }
 
         public static SafeRandomGenerator StaticInstance => StaticInstanceLazy.Value;
-        ~SafeRandomGenerator() => Dispose(false);
 
+        /// <inheritdoc cref="ThrowIfDisposed"/>
+        /// <exception cref="ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
         public override void GetBytes(byte[] data)
         {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-            if (data.Length == 0)
-                return;
+            if (data == null)  throw new ArgumentNullException(nameof(data));
+            if (data.Length == 0)  return;
             var pos = 0;
             var finished = false;
             while (!finished)
@@ -139,8 +138,11 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         }
 
 #if !NETSTANDARD1_6
+        /// <inheritdoc cref="ThrowIfDisposed"/>
+        /// <exception cref="ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
         public override void GetNonZeroBytes(byte[] data)
         {
+            this.ThrowIfDisposed();
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (data.Length == 0) return;
@@ -210,30 +212,25 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             if (Interlocked.Exchange(ref _isDisposed, IntCondition.True) == IntCondition.True)
                 return;
-            if (_entropyHashers != null)
+            if (disposing)
             {
-                var myHashers = _entropyHashers;
-                _entropyHashers = null;
-                try
-                {
-                    foreach (var hasher in myHashers)
-                        try
-                        {
-                            hasher.Dispose();
-                        }
-                        catch
-                        {
-                            /* Swallow */
-                        }
-                }
-                catch
-                {
-                    /* Swallow */
-                }
+                foreach (var hasher in _entropyHashers.EmptyIfNull()) 
+                    hasher?.Dispose();
             }
-
             base.Dispose(disposing);
         }
+
+        /// <exception cref="ObjectDisposedException"><see cref="SafeRandomGenerator"/> instance is disposed</exception>
+        private void ThrowIfDisposed()
+        {
+#if !NETSTANDARD1_6
+            if (Thread.VolatileRead(ref this._isDisposed) == IntCondition.True)
+#else
+            if (this._isDisposed == IntCondition.True)
+#endif
+                throw new ObjectDisposedException(GetType().Name);
+        }
+
 
         private static IEnumerable<IEntropyHasher> GetEntropyHashers()
         {

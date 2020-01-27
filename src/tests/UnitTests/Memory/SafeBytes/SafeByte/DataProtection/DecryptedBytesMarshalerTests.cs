@@ -53,7 +53,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         }
 
         [Test]
-        public void Dispose_AlreadyDisposed_Throws()
+        public void Dispose_AlreadyDisposed_DoesNotThrow() // The object must not throw an exception if its Dispose method is called multiple times https://docs.microsoft.com/en-us/dotnet/api/system.idisposable.dispose?view=netframework-4.8
         {
             // Arrange
             var expected = new byte[] {5, 10, 15, 25};
@@ -64,7 +64,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             void DisposeAgain() => sut.Dispose();
 
             // Assert
-            Assert.Throws<ObjectDisposedException>(DisposeAgain);
+            Assert.DoesNotThrow(DisposeAgain);
         }
 
         [Test]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using SafeOrbit.Common;
 using SafeOrbit.Cryptography.Random.RandomGenerators.Crypto;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
@@ -8,7 +9,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     ///     HashAlgorithmWrapper is an abstraction wrapper class, to contain either .NET
     ///     <see cref="HashAlgorithm" /> or <see cref="IDigest" /> and make the user agnostic.
     /// </summary>
-    internal class HashAlgorithmWrapper : IHashAlgorithmWrapper
+    internal class HashAlgorithmWrapper : DisposableBase, IHashAlgorithmWrapper
     {
         protected ComputeHashDelegate ComputeHashDelegateInstance;
         protected object HashAlgorithmObject;
@@ -29,10 +30,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 
         public int HashSizeInBits { get; protected set; }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
 
         /// <inheritdoc cref="ComputeHashDelegateInstance" />
         public byte[] ComputeHash(byte[] data) => ComputeHashDelegateInstance(data);
@@ -47,23 +44,21 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             return output;
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected override void DisposeManagedResources()
         {
-            lock (this)
+            switch (HashAlgorithmObject)
             {
-                if (HashAlgorithmObject == null)
+                case null:
                     return;
-                if (HashAlgorithmObject is IDisposable disposable)
+                case IDisposable disposable:
                     disposable.Dispose();
-                else if (HashAlgorithmObject is IDigest digest)
+                    break;
+                case IDigest digest:
                     digest.Reset();
-                HashAlgorithmObject = null;
+                    break;
             }
-        }
 
-        ~HashAlgorithmWrapper()
-        {
-            Dispose(false);
+            HashAlgorithmObject = null;
         }
 
         protected delegate byte[] ComputeHashDelegate(byte[] data);

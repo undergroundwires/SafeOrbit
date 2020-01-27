@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using SafeOrbit.Common;
 using SafeOrbit.Helpers;
 using SafeOrbit.Threading;
 
@@ -26,7 +27,7 @@ namespace SafeOrbit.Memory
     ///           }
     ///     </code>
     /// </example>
-    public class SafeStringToStringMarshaler : ISafeStringToStringMarshaler
+    public class SafeStringToStringMarshaler : DisposableBase, ISafeStringToStringMarshaler
     {
         private GCHandle _gch;
         private ISafeString _safeString;
@@ -55,7 +56,7 @@ namespace SafeOrbit.Memory
 
         /// <inheritdoc />
         /// <exception cref="T:System.ArgumentNullException" accessor="set"><paramref name="value" /> is <see langword="null" />.</exception>
-        /// <exception cref="T:System.ObjectDisposedException" accessor="set">Throws when <paramref name="value" /> is disposed.</exception>
+        /// <exception cref="ObjectDisposedException" accessor="set"><paramref name="value" /> is disposed or <see cref="SafeStringToStringMarshaler"/> instance is disposed</exception>
         public ISafeString SafeString
         {
             get => _safeString;
@@ -63,6 +64,7 @@ namespace SafeOrbit.Memory
             {
                 if (value == null) throw new ArgumentNullException(nameof(SafeString));
                 if (value.IsDisposed) throw new ObjectDisposedException(nameof(SafeString));
+                this.ThrowIfDisposed();
                 _safeString = value;
                 UpdateStringValue();
             }
@@ -71,7 +73,10 @@ namespace SafeOrbit.Memory
         /// <inheritdoc />
         public string String { get; protected set; }
 
-        public void Dispose() => Deallocate();
+        protected override void DisposeUnmanagedResources()
+        {
+            this.Deallocate();
+        }
 
         /// <summary>
         ///     Updates the string value from previously set SafeString.
@@ -113,8 +118,11 @@ namespace SafeOrbit.Memory
             }
         }
 
+
         internal void Deallocate()
         {
+            if (String == null)
+                return;
             if (_gch.IsAllocated)
                 unsafe
                 {
@@ -127,6 +135,7 @@ namespace SafeOrbit.Memory
                     // Free the handle so the garbage collector
                     // can dispose of it properly.
                     _gch.Free();
+                    String = null;
                 }
         }
     }

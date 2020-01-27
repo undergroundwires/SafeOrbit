@@ -1,6 +1,6 @@
 ﻿namespace SafeOrbit.Library
 {
-    internal class InternalsVisibleTo
+    internal static class InternalsVisibleTo
     {
 #if DEBUG
         public const string ToUnitTests = "UnitTests";

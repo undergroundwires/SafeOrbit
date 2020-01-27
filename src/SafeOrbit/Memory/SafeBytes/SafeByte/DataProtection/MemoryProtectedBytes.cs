@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using SafeOrbit.Common;
 using SafeOrbit.Extensions;
 using SafeOrbit.Library;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 
 namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
 {
-    public class MemoryProtectedBytes : IMemoryProtectedBytes
+    public class MemoryProtectedBytes : DisposableBase, IMemoryProtectedBytes
     {
         private readonly IByteArrayProtector _protector;
         private byte[] _encryptedBytes;
@@ -27,17 +28,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             _encryptedBytes = encryptedBytes;
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
-        public void Dispose()
-        {
-            EnsureNotDisposed();
-            IsDisposed = true;
-            if (_encryptedBytes != null)
-                Array.Clear(_encryptedBytes, 0, _encryptedBytes.Length);
-        }
-
-        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
-        /// <exception cref="InvalidOperationException">Throws if the instance is already initialized.</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
+        /// <exception cref="InvalidOperationException">Already initialized.</exception>
         /// <exception cref="ArgumentException">Throws if the <paramref name="plainBytes" /> is empty.</exception>
         /// <exception cref="ArgumentNullException">Throws if the <paramref name="plainBytes" /> is null.</exception>
         /// <exception cref="CryptographicException">
@@ -52,38 +44,47 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
             if (plainBytes.Length % BlockSizeInBytes != 0)
                 throw new CryptographicException(
                     $"Block size is {BlockSizeInBytes}, but plain bytes have {plainBytes.Length}. Maybe pad the bytes?");
-            if (IsInitialized) throw new InvalidOperationException("Already initialized");
-            EnsureNotDisposed();
-            _encryptedBytes = plainBytes;
-            await _protector.ProtectAsync(_encryptedBytes).ConfigureAwait(false);
+            if(IsInitialized) throw new InvalidOperationException("Already initialized");
+            ThrowIfDisposed();
+            var encryptedBytes = plainBytes;
+            await _protector.ProtectAsync(encryptedBytes).ConfigureAwait(false);
+            _encryptedBytes = encryptedBytes;
         }
 
         public int BlockSizeInBytes => _protector.BlockSizeInBytes;
         public bool IsInitialized => _encryptedBytes != null;
-        public bool IsDisposed { get; private set; }
-
-        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
-        /// <exception cref="InvalidOperationException">Throws if the instance is not yet initialized.</exception>
+        
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
+        /// <inheritdoc cref="ThrowIfNotInitialized"/>
         public async Task<IDecryptedBytesMarshaler> RevealDecryptedBytesAsync()
         {
-            if (!IsInitialized) throw new InvalidOperationException("Not yet initialized");
-            EnsureNotDisposed();
+            ThrowIfNotInitialized();
+            ThrowIfDisposed();
             var decryptedBytes = _encryptedBytes.CopyToNewArray();
             await _protector.UnprotectAsync(decryptedBytes).ConfigureAwait(false);
             return new DecryptedBytesMarshaler(decryptedBytes);
         }
 
-        /// <exception cref="ObjectDisposedException">Throws if the instance is already disposed</exception>
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
+        /// <inheritdoc cref="ThrowIfNotInitialized"/>
         public IMemoryProtectedBytes DeepClone()
         {
-            EnsureNotDisposed();
+            ThrowIfDisposed();
             var bytes = IsInitialized ? _encryptedBytes.CopyToNewArray() : null;
             return new MemoryProtectedBytes(_protector, bytes);
         }
 
-        private void EnsureNotDisposed()
+        protected override void DisposeManagedResources()
         {
-            if (IsDisposed) throw new ObjectDisposedException(GetType().Name);
+            if (_encryptedBytes != null)
+                Array.Clear(_encryptedBytes, 0, _encryptedBytes.Length);
+        }
+
+        /// <exception cref="InvalidOperationException"><see cref="MemoryProtectedBytes"/> insance is not yet initialized.</exception>
+        private void ThrowIfNotInitialized()
+        {
+            if (!IsInitialized)
+                throw new InvalidOperationException("Not yet initialized");
         }
     }
 }

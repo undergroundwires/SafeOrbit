@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
+using SafeOrbit.Common;
 using SafeOrbit.Memory;
 using SafeOrbit.Threading;
 
@@ -26,6 +27,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         /// </summary>
         /// <param name="data">The data.</param>
         /// <exception cref="CryptographicException">Failed to return requested number of bytes</exception>
+        /// <exception cref="ObjectDisposedException">Throws if the instance is disposed.</exception>
         public override void GetBytes(byte[] data)
         {
             if (Core.Read(data, 0, data.Length) != data.Length)
@@ -50,17 +52,16 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             }
         }
 #endif
-
-        ~ThreadSchedulerRng()
+        protected override void Dispose(bool disposing)
         {
-            Dispose(false);
+           if(disposing)
+               Core?.Dispose();
         }
-
         /// <summary>
         ///     By putting the core into its own class, it makes it easy for us to create a single instance of it, referenced
         ///     by a static member of ThreadSchedulerRNG, without any difficulty of finalizing or disposing etc.
         /// </summary>
-        private class ThreadSchedulerRngCore
+        private class ThreadSchedulerRngCore : DisposableBase
         {
             private const int MaxPoolSize = 4096;
 
@@ -72,7 +73,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             private readonly SafeMemoryStream _safeStream = new SafeMemoryStream();
             private int _chunkBitIndex;
             private int _chunkByteIndex;
-            private int _disposed = IntCondition.False;
 
             public ThreadSchedulerRngCore()
             {
@@ -84,8 +84,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 mainThread.Start();
             }
 
+            /// <see cref="DisposableBase.ThrowIfDisposed"/>
             public int Read(byte[] buffer, int offset, int count)
             {
+                this.ThrowIfDisposed();
                 var pos = offset;
                 try
                 {
@@ -112,68 +114,61 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                         return count;
                     }
                 }
-                catch
+                catch(Exception e)
                 {
-                    if (_disposed == IntCondition.True)
-                        throw new IOException($"{nameof(Read)}() interrupted by {nameof(Dispose)}()");
+                    if (IsDisposed)
+                    {
+                        throw new IOException($"{nameof(Read)}() interrupted by {nameof(Dispose)}()", e);
+                    }
                     throw;
                 }
             }
 
             private void MainThreadLoop()
             {
-                try
-                {
-                    while (_disposed == IntCondition.False)
-                        if (_safeStream.Length < MaxPoolSize)
+                while (!IsDisposed)
+                    if (_safeStream.Length < MaxPoolSize)
+                    {
+                        // While running in this tight loop, consumes approx 0% cpu time.  Cannot even measure with Task Manager
+
+                        /* With 10m ticks per second, and Thread.Sleep() precision of 1ms, it means Ticks is 10,000 times more precise than
+                         * the sleep wakeup timer.  This means there could exist as much as 14 bits of entropy in every thread wakeup cycle,
+                         * but realistically that's completely unrealistic.  I ran this 64*1024 times, and benchmarked each bit individually.
+                         * The estimated entropy bits per bit of Ticks sample is very near 1 bit for each of the first 8 bits, and quickly
+                         * deteriorates after that.
+                         * 
+                         * Surprisingly, the LSB #0 and LSB #1 demonstrated the *least* entropy within the first 8 bits, but it was still
+                         * 0.987 bits per bit, which could be within sampling noise.  Bits 9, 10, and beyond very clearly demonstrated a
+                         * degradation in terms of entropy quality.
+                         * 
+                         * The estimated sum total of all entropy in all 64 bits is about 14 bits of entropy per sample, which is just 
+                         * coincidentally the same as the difference in precision described above.
+                         * 
+                         * Based on superstition, I would not attempt to extract anywhere near 14 bits per sample, not even 8 bits. But since 
+                         * the first 8 bits all measured to be very close to 1 bit per bit, I am comfortable extracting at least 2 or 4 bits.
+                         * 
+                         * To be ultra-conservative, I'll extract only a single bit each time, and it will be a mixture of all 64 bits.  Which
+                         * means, as long as *any* bit is unknown to an adversary, or the sum total of the adversary's uncertainty over all 64
+                         * bits > 50%, then the adversary will have at best 50% chance of guessing the output bit, which means it is 1 bit of
+                         * good solid entropy.  In other words, by mashing all ~8-14 bits of entrpoy into a single bit, the resultant bit
+                         * should be a really good quality entropy bit.
+                         */
+
+                        var ticks = DateTime.Now.Ticks;
+                        byte newBit = 0;
+                        for (var i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
                         {
-                            // While running in this tight loop, consumes approx 0% cpu time.  Cannot even measure with Task Manager
-
-                            /* With 10m ticks per second, and Thread.Sleep() precision of 1ms, it means Ticks is 10,000 times more precise than
-                             * the sleep wakeup timer.  This means there could exist as much as 14 bits of entropy in every thread wakeup cycle,
-                             * but realistically that's completely unrealistic.  I ran this 64*1024 times, and benchmarked each bit individually.
-                             * The estimated entropy bits per bit of Ticks sample is very near 1 bit for each of the first 8 bits, and quickly
-                             * deteriorates after that.
-                             * 
-                             * Surprisingly, the LSB #0 and LSB #1 demonstrated the *least* entropy within the first 8 bits, but it was still
-                             * 0.987 bits per bit, which could be within sampling noise.  Bits 9, 10, and beyond very clearly demonstrated a
-                             * degradation in terms of entropy quality.
-                             * 
-                             * The estimated sum total of all entropy in all 64 bits is about 14 bits of entropy per sample, which is just 
-                             * coincidentally the same as the difference in precision described above.
-                             * 
-                             * Based on superstition, I would not attempt to extract anywhere near 14 bits per sample, not even 8 bits. But since 
-                             * the first 8 bits all measured to be very close to 1 bit per bit, I am comfortable extracting at least 2 or 4 bits.
-                             * 
-                             * To be ultra-conservative, I'll extract only a single bit each time, and it will be a mixture of all 64 bits.  Which
-                             * means, as long as *any* bit is unknown to an adversary, or the sum total of the adversary's uncertainty over all 64
-                             * bits > 50%, then the adversary will have at best 50% chance of guessing the output bit, which means it is 1 bit of
-                             * good solid entropy.  In other words, by mashing all ~8-14 bits of entrpoy into a single bit, the resultant bit
-                             * should be a really good quality entropy bit.
-                             */
-
-                            var ticks = DateTime.Now.Ticks;
-                            byte newBit = 0;
-                            for (var i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
-                            {
-                                newBit ^= (byte) (ticks % 2);
-                                ticks >>= 1;
-                            }
-
-                            GotBit(newBit);
-                            Thread.Sleep(1);
+                            newBit ^= (byte) (ticks % 2);
+                            ticks >>= 1;
                         }
-                        else
-                        {
-                            _mainThreadLoopAre.WaitOne();
-                        }
-                }
-                catch
-                {
-                    if (_disposed == IntCondition.False
-                    ) // If we caught an exception after being disposed, just swallow it.
-                        throw;
-                }
+
+                        GotBit(newBit);
+                        Thread.Sleep(1);
+                    }
+                    else
+                    {
+                        _mainThreadLoopAre.WaitOne();
+                    }
             }
 
             private void GotBit(byte bitByte)
@@ -198,18 +193,14 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 }
             }
 
-            private void Dispose()
+            protected override void DisposeManagedResources()
             {
-                if (Interlocked.Exchange(ref _disposed, IntCondition.True) == IntCondition.True)
-                    return;
-                _mainThreadLoopAre.Set();
-                _mainThreadLoopAre.Dispose();
-                _bytesAvailableAre.Set();
-                _bytesAvailableAre.Dispose();
-                _safeStream.Dispose();
+                _mainThreadLoopAre?.Set();
+                _mainThreadLoopAre?.Dispose();
+                _bytesAvailableAre?.Set();
+                _bytesAvailableAre?.Dispose();
+                _safeStream?.Dispose();
             }
-
-            ~ThreadSchedulerRngCore() => Dispose();
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using SafeOrbit.Common;
+using SafeOrbit.Extensions;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
-    internal sealed class EntropyHasher : IEntropyHasher
+    internal sealed class EntropyHasher : DisposableBase, IEntropyHasher
     {
         /// <exception cref="ArgumentNullException"><paramref name="hashWrapper" /> is <see langword="null" />.</exception>
         public EntropyHasher(RandomNumberGenerator rng, IHashAlgorithmWrapper hashWrapper)
@@ -24,47 +26,11 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         public RandomNumberGenerator Rng { get; private set; }
         public IReadOnlyCollection<IHashAlgorithmWrapper> HashWrappers { get; private set; }
 
-        public void Dispose()
+        protected override void DisposeManagedResources()
         {
-            lock (this)
-            {
-                if (Rng != null)
-                {
-                    try
-                    {
-                        Rng.Dispose();
-                    }
-                    catch
-                    {
-                        /* Continue cleanup */
-                    }
-
-                    Rng = null;
-                }
-
-                if (HashWrappers == null)
-                    return;
-                try
-                {
-                    foreach (var hashWrapper in HashWrappers)
-                        try
-                        {
-                            hashWrapper.Dispose();
-                        }
-                        catch
-                        {
-                            /* Continue cleanup */
-                        }
-                }
-                catch
-                {
-                    /* Continue cleanup */
-                }
-
-                HashWrappers = null;
-            }
+            Rng?.Dispose();
+            foreach(var hashWrapper in HashWrappers.EmptyIfNull())
+                hashWrapper?.Dispose();
         }
-
-        ~EntropyHasher() => Dispose();
     }
 }

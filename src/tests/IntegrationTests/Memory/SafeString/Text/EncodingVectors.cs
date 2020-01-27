@@ -10,7 +10,7 @@ namespace SafeOrbit.Memory.SafeStringServices.Text
     ///     System.Text.Encoding.ASCII.GetBytes("ABC0000").Dump();)
     ///     2016-07-12
     /// </summary>
-    public class EncodingVectors
+    public static class EncodingVectors
     {
         private static readonly string[] Strings =
         {

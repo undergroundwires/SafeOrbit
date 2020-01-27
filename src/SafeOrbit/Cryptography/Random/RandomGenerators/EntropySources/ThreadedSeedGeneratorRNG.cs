@@ -61,7 +61,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                         if (pos < count) 
                             Thread.Sleep(1);
                     }
-
                     return count;
                 }
             }
@@ -71,27 +70,19 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             }
         }
 
-        public static byte[] GetAvailableBytes(int maxLength)
-        {
-            lock (FifoStreamLock)
-            {
-                var availBytesCount = SafeStream.Length;
-                var allBytes = availBytesCount > maxLength ? new byte[maxLength] : new byte[availBytesCount];
-                if (availBytesCount > 0)
-                    Read(allBytes, 0, allBytes.Length);
-                return allBytes;
-            }
-        }
-
+        /// <inheritdoc cref="ThrowIfDisposed"/>
         public override void GetBytes(byte[] data)
         {
+            this.ThrowIfDisposed();
             if (Read(data, 0, data.Length) != data.Length)
                 throw new CryptographicException("Failed to return requested number of bytes");
         }
 
 #if !NETSTANDARD1_6
+        /// <inheritdoc cref="ThrowIfDisposed"/>
         public override void GetNonZeroBytes(byte[] data)
         {
+            this.ThrowIfDisposed();
             var offset = 0;
             while (offset < data.Length)
             {
@@ -120,9 +111,24 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             if (Interlocked.Exchange(ref _disposed, IntCondition.True) == IntCondition.True)
                 return;
-            PoolFullAre.Dispose();
-            SafeStream.Dispose();
+            if (disposing)
+            {
+                PoolFullAre?.Dispose();
+                SafeStream?.Dispose();
+
+            }
             base.Dispose(disposing);
+        }
+
+        /// <exception cref="ObjectDisposedException"><see cref="ThreadedSeedGeneratorRng"/> instance is disposed</exception>
+        private void ThrowIfDisposed()
+        {
+#if !NETSTANDARD1_6
+            if (Thread.VolatileRead(ref this._disposed) == IntCondition.True)
+#else
+            if(this._disposed == IntCondition.True)
+#endif
+                throw new ObjectDisposedException(GetType().Name);
         }
 
         private static void MainThreadLoop()

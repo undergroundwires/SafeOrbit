@@ -69,7 +69,7 @@ namespace SafeOrbit.Memory
     {
         private readonly IInjectionDetector _injectionDetector;
         private readonly object _syncRoot = new object();
-        private TObject _object;
+        private readonly TObject _object;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SafeObject{TObject}" /> class using default
@@ -281,35 +281,20 @@ namespace SafeOrbit.Memory
         }
 
         #region [IDisposable]
-
-        private bool _isDisposed; // To detect redundant calls
-
+        private bool _isDisposed;
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed) return;
             if (disposing)
                 _injectionDetector.Dispose();
-            //unmanaged resources
-            lock (_syncRoot)
-            {
-                _object = null;
-            }
-
             _isDisposed = true;
         }
-
-        ~SafeObject()
-        {
-            Dispose(false);
-        }
-
-        // This code added to correctly implement the disposable pattern.
+        ~SafeObject() => Dispose(false);
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
         #endregion
     }
 }

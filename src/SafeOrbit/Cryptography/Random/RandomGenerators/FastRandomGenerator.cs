@@ -142,10 +142,12 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         }
 
         public static FastRandomGenerator StaticInstance => StaticInstanceLazy.Value;
-        ~FastRandomGenerator() => Dispose(false);
 
+        /// <inheritdoc cref="ThrowIfDisposed"/>
+        /// <exception cref="ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
         public override void GetBytes(byte[] data)
         {
+            ThrowIfDisposed();
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (data.Length == 0) return;
             lock (_stateCounterLockObj)
@@ -165,9 +167,12 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         }
 
 #if !NETSTANDARD1_6
+        /// <inheritdoc cref="ThrowIfDisposed"/>
+        /// <exception cref="ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
         public override void GetNonZeroBytes(byte[] data)
         {
             // Apparently, the reason for GetNonZeroBytes to exist, is sometimes people generate null-terminated salt strings.
+            ThrowIfDisposed();
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (data.Length == 0) return;
             var pos = 0;
@@ -198,9 +203,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
 
         private void Reseed()
         {
-            // If we were already disposed, it's nice to skip any attempt at GetBytes, etc.
-            if (_isDisposed == IntCondition.True)
-                return;
             // Even though we just checked to see if we're disposed, somebody could call Dispose() while I'm in the middle
             // of the following code block.
             try
@@ -226,9 +228,22 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
         {
             if (Interlocked.Exchange(ref _isDisposed, IntCondition.True) == IntCondition.True)
                 return;
-            if (_ownsSafeRandomGenerator)
-                _safeRandomGenerator.Dispose();
+            if(disposing && _ownsSafeRandomGenerator)
+            { 
+                _safeRandomGenerator?.Dispose();
+            }
             base.Dispose(disposing);
+        }
+
+        /// <exception cref="ObjectDisposedException"><see cref="FastRandomGenerator"/> instance is disposed</exception>
+        private void ThrowIfDisposed()
+        {
+#if !NETSTANDARD1_6
+            if (Thread.VolatileRead(ref this._isDisposed) == IntCondition.True)
+#else
+            if (this._isDisposed == IntCondition.True)
+#endif
+                throw new ObjectDisposedException(GetType().Name);
         }
     }
 }
