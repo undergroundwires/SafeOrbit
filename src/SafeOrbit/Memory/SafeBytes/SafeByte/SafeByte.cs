@@ -117,7 +117,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         /// <inheritdoc />
         /// <inheritdoc cref="EnsureByteIsSet"/>
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
-        public async Task<byte> GetAsync()
+        public async Task<byte> RevealDecryptedByteAsync()
         {
             ThrowIfDisposed();
             EnsureByteIsSet();
@@ -228,7 +228,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
         public override string ToString()
         {
 #if DEBUG
-            return $"(DEBUG) InnerByte = {TaskContext.RunSync(GetAsync)}";
+            return $"(DEBUG) InnerByte = {TaskContext.RunSync(RevealDecryptedByteAsync)}";
 #else
             return "";
 #endif

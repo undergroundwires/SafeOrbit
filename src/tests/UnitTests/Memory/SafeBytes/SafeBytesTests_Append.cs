@@ -118,8 +118,8 @@ namespace SafeOrbit.Memory
             // Assert
             var actual = await collection.GetAllAsync();
             Assert.AreEqual(2, actual.Length);
-            Assert.AreEqual(firstByte, actual.ElementAt(0).GetAsync().Result);
-            Assert.AreEqual(secondByte, actual.ElementAt(1).GetAsync().Result);
+            Assert.AreEqual(firstByte, actual.ElementAt(0).RevealDecryptedByteAsync().Result);
+            Assert.AreEqual(secondByte, actual.ElementAt(1).RevealDecryptedByteAsync().Result);
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(expected);
 
             // Assert
-            var actual = await sut.GetByteAsync(0);
+            var actual = await sut.RevealDecryptedByteAsync(0);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -163,7 +163,7 @@ namespace SafeOrbit.Memory
                 await sut.AppendAsync(@byte);
 
             // Assert
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -215,7 +215,7 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(toAppend);
 
             // Assert
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             Console.WriteLine($"Actual: ${string.Join(",", actual)}{Environment.NewLine}" +
                               $"Expected: ${string.Join(",", expected)}");
             Assert.True(actual.SequenceEqual(expected));
@@ -254,7 +254,7 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(toAppend);
 
             // Assert
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             Assert.True(actual.SequenceEqual(expected));
         }
 
@@ -275,8 +275,8 @@ namespace SafeOrbit.Memory
             // Assert
             var actual = await collection.GetAllAsync();
             Assert.AreEqual(2, actual.Length);
-            Assert.AreEqual(firstByte, actual.ElementAt(0).GetAsync().Result);
-            Assert.AreEqual(secondByte, actual.ElementAt(1).GetAsync().Result);
+            Assert.AreEqual(firstByte, actual.ElementAt(0).RevealDecryptedByteAsync().Result);
+            Assert.AreEqual(secondByte, actual.ElementAt(1).RevealDecryptedByteAsync().Result);
         }
 
         [Test]
@@ -351,7 +351,7 @@ namespace SafeOrbit.Memory
             await sut.AppendManyAsync(new SafeMemoryStream(new []{ expected }));
 
             // Assert
-            var actual = await sut.GetByteAsync(0);
+            var actual = await sut.RevealDecryptedByteAsync(0);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -368,7 +368,7 @@ namespace SafeOrbit.Memory
             await sut.AppendManyAsync(new SafeMemoryStream(expected.CopyToNewArray()));
 
             // Assert
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -385,7 +385,7 @@ namespace SafeOrbit.Memory
             await sut.AppendManyAsync(new SafeMemoryStream(new byte[]{10,20}));
 
             // Assert
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             Assert.True(actual.SequenceEqual(expected));
         }
 
@@ -407,8 +407,8 @@ namespace SafeOrbit.Memory
             // Assert
             var actual = await collection.GetAllAsync();
             Assert.AreEqual(2, actual.Length);
-            Assert.AreEqual(firstByte, actual.ElementAt(0).GetAsync().Result);
-            Assert.AreEqual(secondByte, actual.ElementAt(1).GetAsync().Result);
+            Assert.AreEqual(firstByte, actual.ElementAt(0).RevealDecryptedByteAsync().Result);
+            Assert.AreEqual(secondByte, actual.ElementAt(1).RevealDecryptedByteAsync().Result);
         }
     }
 }

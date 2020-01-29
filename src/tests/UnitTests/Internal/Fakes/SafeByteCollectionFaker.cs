@@ -25,12 +25,12 @@ namespace SafeOrbit.Fakes
                 .ReturnsAsync((int index) => list[index]);
             fake.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(() => list.ToArray());
-            fake.Setup(x => x.ToDecryptedBytesAsync()).Returns(
+            fake.Setup(x => x.RevealDecryptedBytesAsync()).Returns(
                 async () =>
                 {
                     var result = new Collection<byte>();
                     foreach(var safeByte in list)
-                        result.Add(await safeByte.GetAsync());
+                        result.Add(await safeByte.RevealDecryptedByteAsync());
                     return result.ToArray();
                 });
             fake.Setup(x => x.Dispose()).Callback(() => list.Clear());

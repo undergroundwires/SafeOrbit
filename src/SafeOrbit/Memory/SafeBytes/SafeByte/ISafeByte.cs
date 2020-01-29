@@ -21,6 +21,6 @@ namespace SafeOrbit.Memory.SafeBytesServices
         /// <summary>
         ///     Decrypts and returns the byte that this <see cref="SafeByte" /> instance represents.
         /// </summary>
-        Task<byte> GetAsync();
+        Task<byte> RevealDecryptedByteAsync();
     }
 }

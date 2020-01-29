@@ -140,7 +140,7 @@ namespace SafeOrbit.Memory
         ///     <paramref name="index" /> is less than zero, higher than/equals to the
         ///     length.
         /// </exception>
-        public async Task<char> GetAsCharAsync(int index)
+        public async Task<char> RevealDecryptedCharAsync(int index)
         {
             ThrowIfDisposed();
             EnsureNotEmpty();
@@ -310,7 +310,7 @@ namespace SafeOrbit.Memory
         private async Task<ISafeBytes> ConvertEncodingAsync(ISafeBytes character, Encoding sourceEncoding, Encoding destinationEncoding)
         {
 
-            var buffer = await character.ToByteArrayAsync().ConfigureAwait(false);
+            var buffer = await character.RevealDecryptedBytesAsync().ConfigureAwait(false);
             try
             {
                 buffer = _textService.Convert(sourceEncoding, destinationEncoding, buffer);
@@ -328,7 +328,7 @@ namespace SafeOrbit.Memory
 
         private async Task<char> TransformSafeBytesToCharAsync(ISafeBytes safeBytes, Encoding encoding)
         {
-            var byteBuffer = await safeBytes.ToByteArrayAsync().ConfigureAwait(false);
+            var byteBuffer = await safeBytes.RevealDecryptedBytesAsync().ConfigureAwait(false);
             try
             {
                 return _textService.GetChars(byteBuffer, encoding).First();
@@ -364,7 +364,7 @@ namespace SafeOrbit.Memory
         {
             var sb = new StringBuilder();
             for (var i = 0; i < Length; i++)
-                sb.Append(TaskContext.RunSync(() => GetAsCharAsync(i)));
+                sb.Append(TaskContext.RunSync(() => RevealDecryptedCharAsync(i)));
             return sb.ToString();
         }
 #endif

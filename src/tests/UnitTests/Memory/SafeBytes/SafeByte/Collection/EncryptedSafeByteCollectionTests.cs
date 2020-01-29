@@ -56,7 +56,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(await GetSafeByteAsync(expected));
 
             // Act
-            var actual = await (await sut.GetAsync(0)).GetAsync();
+            var actual = await (await sut.GetAsync(0)).RevealDecryptedByteAsync();
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -73,8 +73,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(await GetSafeByteAsync(expectedAt2));
 
             // Act
-            var actualAt1 = await (await sut.GetAsync(1)).GetAsync();
-            var actualAt2 = await (await sut.GetAsync(2)).GetAsync();
+            var actualAt1 = await (await sut.GetAsync(1)).RevealDecryptedByteAsync();
+            var actualAt2 = await (await sut.GetAsync(2)).RevealDecryptedByteAsync();
 
             // Assert
             Assert.AreEqual(expectedAt1, actualAt1);
@@ -252,9 +252,9 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(await GetSafeByteAsync(byteAt2));
 
             // Act
-            var actualAt0 = await (await sut.GetAsync(0)).GetAsync();
-            var actualAt1 = await (await sut.GetAsync(1)).GetAsync();
-            var actualAt2 = await (await sut.GetAsync(2)).GetAsync();
+            var actualAt0 = await (await sut.GetAsync(0)).RevealDecryptedByteAsync();
+            var actualAt1 = await (await sut.GetAsync(1)).RevealDecryptedByteAsync();
+            var actualAt2 = await (await sut.GetAsync(2)).RevealDecryptedByteAsync();
 
             // Assert
             Assert.AreEqual(byteAt0, actualAt0);
@@ -308,7 +308,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(expected);
             
             // Act
-            _ = await sut.ToDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with ToDecryptedBytes
+            _ = await sut.RevealDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with ToDecryptedBytes
             var actual = await sut.GetAsync(0);
             
             // Assert
@@ -411,7 +411,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(expected);
 
             // Act
-            await sut.ToDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with ToDecryptedBytes
+            await sut.RevealDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with ToDecryptedBytes
             var actual = (await sut.GetAllAsync()).SingleOrDefault();
 
             // Assert
@@ -476,7 +476,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public async Task ToDecryptedBytesAsync_ForInstanceHoldingMultipleBytes_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b1,
+        public async Task RevealDecryptedBytesAsync_ForInstanceHoldingMultipleBytes_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b1,
             [Random(0, 256, 1)] byte b2, [Random(0, 256, 1)] byte b3)
         {
             // Arrange
@@ -487,14 +487,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(await GetSafeByteAsync(b3));
             
             // Act
-            var byteArray = await sut.ToDecryptedBytesAsync();
+            var byteArray = await sut.RevealDecryptedBytesAsync();
             
             // Assert
             CollectionAssert.AreEqual(byteArray, bytes);
         }
 
         [Test]
-        public async Task ToDecryptedBytesAsync_ForInstanceHoldingSingleByte_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b)
+        public async Task RevealDecryptedBytesAsync_ForInstanceHoldingSingleByte_returnsTheArrayOfBytes([Random(0, 256, 1)] byte b)
         {
             // Arrange
             var bytes = new[] {b};
@@ -502,14 +502,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(await GetSafeByteAsync(b));
             
             // Act
-            var byteArray = await sut.ToDecryptedBytesAsync();
+            var byteArray = await sut.RevealDecryptedBytesAsync();
             
             // Assert
             CollectionAssert.AreEqual(byteArray, bytes);
         }
 
         [Test]
-        public async Task ToDecryptedBytesAsync_OnDisposedObject_throwsObjectDisposedException()
+        public async Task RevealDecryptedBytesAsync_OnDisposedObject_throwsObjectDisposedException()
         {
             // Arrange
             var sut = GetSut();
@@ -517,20 +517,20 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             
             // Act
             sut.Dispose();
-            async Task CallingOnDisposedObject() => await sut.ToDecryptedBytesAsync();
+            async Task CallingOnDisposedObject() => await sut.RevealDecryptedBytesAsync();
 
             // Assert
             Assert.ThrowsAsync<ObjectDisposedException>(CallingOnDisposedObject);
         }
 
         [Test]
-        public void ToDecryptedBytesAsync_OnEmptyInstance_throwsInvalidOperationException()
+        public void RevealDecryptedBytesAsync_OnEmptyInstance_throwsInvalidOperationException()
         {
             // Arrange
             var sut = GetSut();
 
             // Act
-            Task CallingOnEmptyInstance() => sut.ToDecryptedBytesAsync();
+            Task CallingOnEmptyInstance() => sut.RevealDecryptedBytesAsync();
             
             // Assert
             Assert.ThrowsAsync<InvalidOperationException>(CallingOnEmptyInstance);
@@ -538,7 +538,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public async Task ToDecryptedBytesAsync_ForMultipleBytes_returnsAsExpected()
+        public async Task RevealDecryptedBytesAsync_ForMultipleBytes_returnsAsExpected()
         {
             // Arrange
             var expected = new byte[] {5, 10, 15};
@@ -547,14 +547,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 await sut.AppendAsync(await GetSafeByteAsync(@byte));
             
             // Act
-            var actual = await sut.ToDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             
             //Assert
             Assert.True(expected.SequenceEqual(actual));
         }
 
         [Test]
-        public async Task ToDecryptedBytesAsync_ForSingleByte_returnsAsExpected()
+        public async Task RevealDecryptedBytesAsync_ForSingleByte_returnsAsExpected()
         {
             // Arrange
             var expected = new byte[] {5};
@@ -562,14 +562,14 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             await sut.AppendAsync(await GetSafeByteAsync(5));
 
             // Act
-            var actual = await sut.ToDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
             Assert.True(expected.SequenceEqual(actual));
         }
 
         [Test]
-        public async Task ToDecryptedBytesAsync_CalledMultipleTimes_returnsExpected()
+        public async Task RevealDecryptedBytesAsync_CalledMultipleTimes_returnsExpected()
         {
             // Arrange
             var expected = new byte[] {5, 10, 15};
@@ -578,8 +578,8 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
                 await sut.AppendAsync(await GetSafeByteAsync(@byte));
 
             // Act
-            var actual = await sut.ToDecryptedBytesAsync();
-            var second = await sut.ToDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
+            var second = await sut.RevealDecryptedBytesAsync();
 
             //Assert
             Assert.True(expected.SequenceEqual(actual));
@@ -587,7 +587,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         }
 
         [Test]
-        public async Task ToDecryptedBytesAsync_CalledAgainAfterModifications_returnsExpected()
+        public async Task RevealDecryptedBytesAsync_CalledAgainAfterModifications_returnsExpected()
         {
             // Arrange
             var raw = new byte[] {5, 10, 15};
@@ -597,10 +597,10 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var modifications = new byte[] {10, 15, 30};
             
             // Act
-            await sut.ToDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with Append
+            await sut.RevealDecryptedBytesAsync(); // Calling once first to test the encryption/decryption harmony with Append
             foreach (var @byte in modifications)
                 await sut.AppendAsync(await GetSafeByteAsync(@byte));
-            var afterModifications = await sut.ToDecryptedBytesAsync();
+            var afterModifications = await sut.RevealDecryptedBytesAsync();
             
             // Assert
             var expected = raw.Concat(modifications).ToArray();

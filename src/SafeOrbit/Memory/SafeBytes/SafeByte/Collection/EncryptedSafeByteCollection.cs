@@ -139,7 +139,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         /// <inheritdoc />
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed" />
         /// <inheritdoc cref="EnsureNotEmpty" />
-        public async Task<byte[]> ToDecryptedBytesAsync()
+        public async Task<byte[]> RevealDecryptedBytesAsync()
         {
             ThrowIfDisposed();
             EnsureNotEmpty();
@@ -258,7 +258,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
             var uniqueSafeBytes = await
                 _safeByteFactory.GetByIdsAsync(uniqueByteIds)
                     .ConfigureAwait(false);
-            var revealPlainByte = uniqueSafeBytes.Select(b => b.GetAsync());
+            var revealPlainByte = uniqueSafeBytes.Select(b => b.RevealDecryptedByteAsync());
             var uniquePlainBytes = await Task.WhenAll(revealPlainByte).ConfigureAwait(false);
             var uniqueByteIndexes = safeBytesIds.Select(id => uniqueByteIds.IndexOf(id));
             var plainBytes = uniqueByteIndexes.Select(i => uniquePlainBytes[i]);

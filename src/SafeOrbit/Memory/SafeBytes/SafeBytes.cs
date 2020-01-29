@@ -74,7 +74,7 @@ namespace SafeOrbit.Memory
             // If it's not, then reveals each byte in memory.
             else
             {
-                var plainBytes = await safeBytes.ToByteArrayAsync()
+                var plainBytes = await safeBytes.RevealDecryptedBytesAsync()
                     .ConfigureAwait(false);
                 var stream = new SafeMemoryStream(plainBytes);
                 await AppendManyAsync(stream).ConfigureAwait(false);
@@ -98,14 +98,14 @@ namespace SafeOrbit.Memory
         ///     length
         /// </exception>
         /// <exception cref="InvalidOperationException">Throws if the SafeBytes instance is empty.</exception>
-        public async Task<byte> GetByteAsync(int position)
+        public async Task<byte> RevealDecryptedByteAsync(int position)
         {
             ThrowIfDisposed();
             EnsureNotEmpty();
             if (position < 0 && position >= Length) throw new ArgumentOutOfRangeException(nameof(position));
             var safeByte = await GetAsSafeByteAsync(position)
                 .ConfigureAwait(false);
-            var @byte = await safeByte.GetAsync()
+            var @byte = await safeByte.RevealDecryptedByteAsync()
                 .ConfigureAwait(false);
             return @byte;
         }
@@ -113,12 +113,12 @@ namespace SafeOrbit.Memory
 
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException">Throws if the SafeBytes instance is empty.</exception>
-        public async Task<byte[]> ToByteArrayAsync()
+        public async Task<byte[]> RevealDecryptedBytesAsync()
         {
             ThrowIfDisposed();
             if (Length == 0)
                 return new byte[0];
-            var decryptedBytes = await _safeByteCollection.ToDecryptedBytesAsync()
+            var decryptedBytes = await _safeByteCollection.RevealDecryptedBytesAsync()
                 .ConfigureAwait(false);
             return decryptedBytes;
         }
@@ -225,7 +225,7 @@ namespace SafeOrbit.Memory
                 else
                 {
                     // If it's not, then reveals each byte in memory.
-                    var bytes = await other.ToByteArrayAsync().ConfigureAwait(false);
+                    var bytes = await other.RevealDecryptedBytesAsync().ConfigureAwait(false);
                     var stream = new SafeMemoryStream(bytes);
                     var safe = await _safeByteFactory.GetByBytesAsync(stream)
                         .ConfigureAwait(false);

@@ -18,7 +18,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             await sut.SetAsync(b);
             
             // Act
-            var actual = Measure(() => sut.GetAsync());
+            var actual = Measure(() => sut.RevealDecryptedByteAsync());
             
             // Assert
             Assert.That(actual, Is.LessThan(expectedUpperLimit));

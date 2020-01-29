@@ -87,7 +87,7 @@ namespace SafeOrbit.Memory
             {
                 var strBuilder = new StringBuilder(str.Length);
                 for (var i = 0; i < str.Length; i++)
-                    strBuilder.Append(await str.GetAsCharAsync(i));
+                    strBuilder.Append(await str.RevealDecryptedCharAsync(i));
                 return strBuilder.ToString();
             }
         }

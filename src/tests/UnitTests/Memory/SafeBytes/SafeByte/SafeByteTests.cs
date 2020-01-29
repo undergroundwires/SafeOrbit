@@ -68,8 +68,8 @@ namespace SafeOrbit.Memory.SafeBytesServices
             var cloned = sut.DeepClone();
 
             // Act
-            var byteBack = await sut.GetAsync();
-            var byteBackFromClone = await cloned.GetAsync();
+            var byteBack = await sut.RevealDecryptedByteAsync();
+            var byteBackFromClone = await cloned.RevealDecryptedByteAsync();
 
             // Assert
             Assert.That(byteBack, Is.EqualTo(byteBackFromClone));
@@ -385,27 +385,27 @@ namespace SafeOrbit.Memory.SafeBytesServices
         //** Get() **//
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public async Task GetAsync_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
+        public async Task RevealDecryptedByteAsync_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
         {
             // Arrange
             using var sut = GetSut();
 
             // Act
             await sut.SetAsync(expected);
-            var actual = await sut.GetAsync();
+            var actual = await sut.RevealDecryptedByteAsync();
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void GetAsync_WhenCalledForNotSetObject_throwsInvalidOperationException()
+        public void RevealDecryptedByteAsync_WhenCalledForNotSetObject_throwsInvalidOperationException()
         {
             // Arrange
             using var sut = GetSut();
 
             // Act
-            Task CallGet() => sut.GetAsync();
+            Task CallGet() => sut.RevealDecryptedByteAsync();
 
             // Assert
             Assert.ThrowsAsync<InvalidOperationException>(CallGet);
@@ -413,7 +413,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
 
 
         [Test]
-        public async Task GetAsync_ObjectIsDisposed_ThrowsException()
+        public async Task RevealDecryptedByteAsync_ObjectIsDisposed_ThrowsException()
         {
             // Arrange
             var sut = GetSut();
@@ -421,7 +421,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             sut.Dispose();
 
             // Act
-            Task CallGet() => sut.GetAsync();
+            Task CallGet() => sut.RevealDecryptedByteAsync();
 
             // Assert
             Assert.ThrowsAsync<ObjectDisposedException>(CallGet);

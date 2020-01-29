@@ -13,7 +13,7 @@ namespace SafeOrbit.Memory
     public class SafeBytesTests
     {
         [Test]
-        public async Task GetByteAsync_SingleByteAppended_ReturnsExpected()
+        public async Task RevealDecryptedByteAsync_SingleByteAppended_ReturnsExpected()
         {
             // Arrange
             const byte expected = 31;
@@ -21,7 +21,7 @@ namespace SafeOrbit.Memory
             
             // Act
             await sut.AppendAsync(expected);
-            var actual = await sut.GetByteAsync(0);
+            var actual = await sut.RevealDecryptedByteAsync(0);
             
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
@@ -37,7 +37,7 @@ namespace SafeOrbit.Memory
             
             // Act
             await sut.AppendManyAsync(stream);
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
             CollectionAssert.AreEqual(expected, actual);
@@ -54,7 +54,7 @@ namespace SafeOrbit.Memory
             // Act
             foreach (var @byte in expected)
                 await sut.AppendAsync(@byte);
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));

@@ -22,7 +22,7 @@ namespace SafeOrbit.Fakes
                 .Callback<string>(x => chars.AddRange(x));
             fake.Setup(x => x.AppendAsync(It.IsAny<ISafeBytes>(), It.IsAny<Encoding>()))
                 .Callback<ISafeBytes, Encoding>(
-                    async (c, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString((await c.ToByteArrayAsync()))));
+                    async (c, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString((await c.RevealDecryptedBytesAsync()))));
             fake.Setup(x => x.ToSafeBytesAsync())
                 .Returns(async () =>
                 {
@@ -42,7 +42,7 @@ namespace SafeOrbit.Fakes
                         TaskContext.RunSync(() => safeBytes.AppendAsync(@byte));
                     return safeBytes;
                 });
-            fake.Setup(x => x.GetAsCharAsync(It.IsAny<int>()))
+            fake.Setup(x => x.RevealDecryptedCharAsync(It.IsAny<int>()))
                 .ReturnsAsync((int i) => chars.ElementAt(i));
             fake.Setup(x => x.Length)
                 .Returns(() => chars.Count);

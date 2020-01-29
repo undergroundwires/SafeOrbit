@@ -33,6 +33,7 @@
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
   - Namespace changes for better modular structure
   - Refactorings & better documentation.
+  - Renamed decrypting methods in `SafeBytes`, `SafeByte` and `SafeString` with *RevealDecrypted* prefix.
 - **Fixed**
   - `SafeMemoryStream` ends up in infinite loop while reading when its empty.
 

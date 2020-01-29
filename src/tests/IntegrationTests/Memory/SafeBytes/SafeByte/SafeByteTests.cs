@@ -12,14 +12,14 @@ namespace SafeOrbit.Memory.SafeBytesServices
     {
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public async Task GetAsync_ReturnsThePreviouslySetByte_returnsTrue(byte expected)
+        public async Task RevealDecryptedByteAsync_ReturnsThePreviouslySetByte_ReturnsTrue(byte expected)
         {
             // Arrange
             var sut = GetSut();
 
             // Act
             await sut.SetAsync(expected);
-            var actual = await sut.GetAsync();
+            var actual = await sut.RevealDecryptedByteAsync();
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));

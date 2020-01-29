@@ -26,7 +26,7 @@ namespace SafeOrbit.Fakes
 
             public async Task AppendAsync(ISafeBytes safeBytes)
             {
-                _bytes.AddRange(await safeBytes.ToByteArrayAsync());
+                _bytes.AddRange(await safeBytes.RevealDecryptedBytesAsync());
             }
 
             public Task AppendAsync(byte b)
@@ -35,7 +35,7 @@ namespace SafeOrbit.Fakes
                 return Task.FromResult(true);
             }
 
-            public Task<byte> GetByteAsync(int position)
+            public Task<byte> RevealDecryptedByteAsync(int position)
             {
                 return Task.FromResult(_bytes.ElementAt(position));
             }
@@ -45,7 +45,7 @@ namespace SafeOrbit.Fakes
                 IsDisposed = true;
             }
 
-            public Task<byte[]> ToByteArrayAsync()
+            public Task<byte[]> RevealDecryptedBytesAsync()
             {
                 return Task.FromResult(_bytes.ToArray());
             }
@@ -66,7 +66,7 @@ namespace SafeOrbit.Fakes
             public Task<bool> EqualsAsync(ISafeBytes other)
             {
                 return Task.FromResult(other != null &&
-                       _bytes.AsEnumerable().SequenceEqual(TaskContext.RunSync(other.ToByteArrayAsync)));
+                       _bytes.AsEnumerable().SequenceEqual(TaskContext.RunSync(other.RevealDecryptedBytesAsync)));
             }
 
             public Task<bool> EqualsAsync(byte[] other)

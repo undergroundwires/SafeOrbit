@@ -38,7 +38,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var safeByte = await sut.GetByIdAsync(byteId);
 
             // Assert
-            var actual = await safeByte.GetAsync();
+            var actual = await safeByte.RevealDecryptedByteAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -131,7 +131,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var safeBytes = await sut.GetByIdsAsync(byteIds);
 
             // Assert
-            var actual = safeBytes.Select(safeByte => TaskContext.RunSync(safeByte.GetAsync)).ToArray();
+            var actual = safeBytes.Select(safeByte => TaskContext.RunSync(safeByte.RevealDecryptedByteAsync)).ToArray();
             CollectionAssert.AreEqual(expected, actual);
         }
 
@@ -184,7 +184,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var safeByte = await sut.GetByByteAsync(expected);
 
             // Assert
-            var actual = await safeByte.GetAsync();
+            var actual = await safeByte.RevealDecryptedByteAsync();
             Assert.That(actual, Is.EqualTo(expected));
         }
 

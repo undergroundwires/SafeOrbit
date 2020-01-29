@@ -67,7 +67,7 @@ namespace SafeOrbit.Memory
 
             // Act
             var actualPerformance = await MeasureAsync(
-                () => sut.ToByteArrayAsync(), 5);
+                () => sut.RevealDecryptedBytesAsync(), 5);
 
             // Assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));

@@ -129,6 +129,18 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 while (!IsDisposed)
                     if (_safeStream.Length < MaxPoolSize)
                     {
+                        var ticks = DateTime.Now.Ticks;
+                        byte newBit = 0;
+                        for (var i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
+                        {
+                            newBit ^= (byte) (ticks % 2);
+                            ticks >>= 1;
+                        }
+
+                        SaveBit(newBit);
+                        Thread.Sleep(1);
+
+
                         // While running in this tight loop, consumes approx 0% cpu time.  Cannot even measure with Task Manager
 
                         /* With 10m ticks per second, and Thread.Sleep() precision of 1ms, it means Ticks is 10,000 times more precise than
@@ -150,20 +162,9 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                          * To be ultra-conservative, I'll extract only a single bit each time, and it will be a mixture of all 64 bits.  Which
                          * means, as long as *any* bit is unknown to an adversary, or the sum total of the adversary's uncertainty over all 64
                          * bits > 50%, then the adversary will have at best 50% chance of guessing the output bit, which means it is 1 bit of
-                         * good solid entropy.  In other words, by mashing all ~8-14 bits of entrpoy into a single bit, the resultant bit
+                         * good solid entropy.  In other words, by mashing all ~8-14 bits of entropy into a single bit, the resultant bit
                          * should be a really good quality entropy bit.
                          */
-
-                        var ticks = DateTime.Now.Ticks;
-                        byte newBit = 0;
-                        for (var i = 0; i < 64; i++) // Mix all 64 bits together to produce a single output bit
-                        {
-                            newBit ^= (byte) (ticks % 2);
-                            ticks >>= 1;
-                        }
-
-                        GotBit(newBit);
-                        Thread.Sleep(1);
                     }
                     else
                     {
@@ -171,7 +172,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                     }
             }
 
-            private void GotBit(byte bitByte)
+            private void SaveBit(byte bitByte)
             {
                 if (bitByte > 1)
                     throw new ArgumentOutOfRangeException(nameof(bitByte),

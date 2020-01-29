@@ -29,8 +29,8 @@ namespace SafeOrbit.Memory
         /// </summary>
         /// <param name="position">Index of the byte</param>
         /// <returns>Byte from the array</returns>
-        Task<byte> GetByteAsync(int position);
+        Task<byte> RevealDecryptedByteAsync(int position);
         int GetHashCode();
-        Task<byte[]> ToByteArrayAsync();
+        Task<byte[]> RevealDecryptedBytesAsync();
     }
 }

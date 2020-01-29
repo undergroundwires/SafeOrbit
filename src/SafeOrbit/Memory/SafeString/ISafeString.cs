@@ -19,7 +19,7 @@ namespace SafeOrbit.Memory
         int Length { get; }
 
         Task<ISafeBytes> ToSafeBytesAsync();
-        Task<char> GetAsCharAsync(int index);
+        Task<char> RevealDecryptedCharAsync(int index);
         ISafeBytes GetAsSafeBytes(int index);
 
         /// <summary>

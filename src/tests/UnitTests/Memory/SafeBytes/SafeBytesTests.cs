@@ -130,21 +130,21 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void GetByteAsync_OnEmptyInstance_ThrowsInvalidOperationException()
+        public void RevealDecryptedByteAsync_OnEmptyInstance_ThrowsInvalidOperationException()
         {
             // Arrange
             using var sut = GetSut();
             const int position = 0;
 
             // Act
-            Task CallingOnEmptyInstance() => sut.GetByteAsync(position);
+            Task CallingOnEmptyInstance() => sut.RevealDecryptedByteAsync(position);
             
             // Assert
             Assert.ThrowsAsync<InvalidOperationException>(CallingOnEmptyInstance);
         }
 
         [Test]
-        public async Task GetByteAsync_ForExistingByteAtStart_RetrievesAsExpected()
+        public async Task RevealDecryptedByteAsync_ForExistingByteAtStart_RetrievesAsExpected()
         {
             // Arrange
             const byte expected = 55;
@@ -152,14 +152,14 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(expected);
             
             // Act
-            var actual = await sut.GetByteAsync(0);
+            var actual = await sut.RevealDecryptedByteAsync(0);
             
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public async Task GetByteAsync_ForExistingByteAtEnd_RetrievesAsExpected()
+        public async Task RevealDecryptedByteAsync_ForExistingByteAtEnd_RetrievesAsExpected()
         {
             // Arrange
             const byte expected = 55;
@@ -168,14 +168,14 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(expected);
 
             // Act
-            var actual = await sut.GetByteAsync(1);
+            var actual = await sut.RevealDecryptedByteAsync(1);
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public async Task GetByteAsync_ForExistingByteInTheMiddle_RetrievesAsExpected()
+        public async Task RevealDecryptedByteAsync_ForExistingByteInTheMiddle_RetrievesAsExpected()
         {
             // Arrange
             const byte expected = 55;
@@ -185,7 +185,7 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(31);
 
             // Act
-            var actual = await sut.GetByteAsync(1);
+            var actual = await sut.RevealDecryptedByteAsync(1);
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
@@ -198,7 +198,7 @@ namespace SafeOrbit.Memory
             using var sut = GetSut();
             
             // Act
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             
             // Assert
             Assert.That(actual, Is.Not.Null);
@@ -214,7 +214,7 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(5);
 
             // Act
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
             Assert.That(actual.SequenceEqual(expected));
@@ -230,7 +230,7 @@ namespace SafeOrbit.Memory
             // Act
             foreach (var @byte in expected)
                 await sut.AppendAsync(@byte);
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
             Assert.That(actual.SequenceEqual(expected));
@@ -246,7 +246,7 @@ namespace SafeOrbit.Memory
 
             // Act
             await sut.AppendManyAsync(stream);
-            var actual = await sut.ToByteArrayAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
             CollectionAssert.AreEqual(expected, actual);

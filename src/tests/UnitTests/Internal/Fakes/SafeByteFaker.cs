@@ -14,7 +14,7 @@ namespace SafeOrbit.Fakes
             var isSet = false;
             var b = new byte();
             fake.Setup(x => x.SetAsync(It.IsAny<byte>())).Callback<byte>(x => b = x);
-            fake.Setup(x => x.GetAsync()).ReturnsAsync(() =>
+            fake.Setup(x => x.RevealDecryptedByteAsync()).ReturnsAsync(() =>
             {
                 isSet = true;
                 return b;

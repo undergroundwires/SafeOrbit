@@ -112,7 +112,7 @@ namespace SafeOrbit.Memory
                     for (var i = 0; i < SafeString.Length; i++)
                     {
                         var currentIndex = i;
-                        pInsecureString[i] = TaskContext.RunSync(() => SafeString.GetAsCharAsync(currentIndex));
+                        pInsecureString[i] = TaskContext.RunSync(() => SafeString.RevealDecryptedCharAsync(currentIndex));
                     }
                 }
             }

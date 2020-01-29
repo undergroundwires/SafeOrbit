@@ -41,7 +41,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Collection
         ///     Returns all of the real byte values that <see cref="ISafeByteCollection" /> holds.
         ///     CAUTION: Reveals all protected data in memory. Use with <see cref="SafeMemoryStream" />.
         /// </summary>
-        Task<byte[]> ToDecryptedBytesAsync();
+        Task<byte[]> RevealDecryptedBytesAsync();
 
         /// <summary>
         ///     Gets list of all <see cref="ISafeByte" /> instances.
