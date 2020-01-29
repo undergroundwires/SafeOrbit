@@ -21,8 +21,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             var bytes = new byte[1000000];
             new Random().NextBytes(bytes);
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes, 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes);
 
             // Act
             var actualPerformance = await MeasureAsync(() =>
@@ -42,8 +41,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             var bytes = new byte[1000000];
             new Random().NextBytes(bytes);
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes, 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes);
             await sut.AppendManyAsync(stream);
 
             // Act
@@ -64,8 +62,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             var bytes = new byte[totalBytes];
             new Random().NextBytes(bytes);
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes, 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes);
             await sut.AppendManyAsync(stream);
 
             // Act
@@ -125,8 +122,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             var bytes = new byte[totalBytes];
             new Random().NextBytes(bytes);
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes.CopyToNewArray());
             await sut.AppendManyAsync(stream);
 
             // Act
@@ -149,13 +145,11 @@ namespace SafeOrbit.Memory
             new Random().NextBytes(bytes);            
             
             var sut = GetSut();
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes.CopyToNewArray());
             await sut.AppendManyAsync(stream);
            
             var other = new SafeBytes();
-            stream = new SafeMemoryStream();
-            stream.Write(bytes, 0, bytes.Length);
+            stream = new SafeMemoryStream(bytes);
             await other.AppendManyAsync(stream);
 
             // Act

@@ -33,8 +33,7 @@ namespace SafeOrbit.Memory
             // Arrange
             using var sut = GetSut();
             var expected = new byte[] {5, 10, 15};
-            using var stream = new SafeMemoryStream();
-            stream.Write(expected.CopyToNewArray(), 0, expected.Length);
+            using var stream = new SafeMemoryStream(expected.CopyToNewArray());
             
             // Act
             await sut.AppendManyAsync(stream);
@@ -68,13 +67,11 @@ namespace SafeOrbit.Memory
             // Arrange
             using var sut = GetSut();
             var bytes = new byte[] { 5, 10, 15 };
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes.CopyToNewArray());
             await sut.AppendManyAsync(stream);
 
             using var other = GetSut();
-            stream = new SafeMemoryStream();
-            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
+            stream = new SafeMemoryStream(bytes.CopyToNewArray());
             await other.AppendManyAsync(stream);
 
             // Act
@@ -89,13 +86,11 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             using var sut = GetSut();
-            var stream = new SafeMemoryStream();
-            stream.Write(new byte[] { 1, 2, 3 }, 0, 3);
+            var stream = new SafeMemoryStream(new byte[] { 1, 2, 3 });
             await sut.AppendManyAsync(stream);
 
             using var other = GetSut();
-            stream = new SafeMemoryStream();
-            stream.Write(new byte[] { 4, 5 }, 0, 2);
+            stream = new SafeMemoryStream(new byte[] { 4, 5 });
             await other.AppendManyAsync(stream);
 
             // Act

@@ -315,9 +315,9 @@ namespace SafeOrbit.Memory
             {
                 buffer = _textService.Convert(sourceEncoding, destinationEncoding, buffer);
                 var safeBytes = _safeBytesFactory.Create();
-                var stream = new SafeMemoryStream();
-                stream.Write(buffer, 0, buffer.Length);
-                await safeBytes.AppendManyAsync(stream).ConfigureAwait(false);
+                var stream = new SafeMemoryStream(buffer);
+                await safeBytes.AppendManyAsync(stream)
+                    .ConfigureAwait(false);
                 return safeBytes;
             }
             finally

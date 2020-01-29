@@ -27,6 +27,7 @@
     - Support for padding in Blowfish algorithm.
     - Both fast & safe (AES + Blowfish) supports setting padding mode.
   - `AppendMany()` to append multiple bytes to `SafeBytes`
+  - Added constructor that writes the given binary to `SafeMemoryStream`
 - **Changed**
   - ❗ Replaced sync methods with async variants.
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.

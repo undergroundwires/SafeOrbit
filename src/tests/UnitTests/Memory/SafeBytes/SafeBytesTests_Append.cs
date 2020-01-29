@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
 using SafeOrbit.Memory.SafeBytesServices;
 using SafeOrbit.Memory.SafeBytesServices.Collection;
@@ -34,7 +35,7 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             using var sut = GetSut();
-            await sut.AppendManyAsync(GetStream(5, 10, 15, 31, 31));
+            await sut.AppendManyAsync(new SafeMemoryStream(new byte[]{5, 10, 15, 31, 31}));
             var oldCode = sut.GetHashCode();
 
             // Act
@@ -286,7 +287,7 @@ namespace SafeOrbit.Memory
             var oldCode = sut.GetHashCode();
 
             // Act
-            await sut.AppendManyAsync(GetStream(31,31));
+            await sut.AppendManyAsync(new SafeMemoryStream(new byte[] { 31, 31 }));
             var newCode = sut.GetHashCode();
 
             // Assert
@@ -298,11 +299,11 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             using var sut = GetSut();
-            await sut.AppendManyAsync(GetStream(31, 31));
+            await sut.AppendManyAsync(new SafeMemoryStream(new byte[] { 31, 31 }));
             var oldCode = sut.GetHashCode();
 
             // Act
-            await sut.AppendManyAsync(GetStream(31, 31));
+            await sut.AppendManyAsync(new SafeMemoryStream(new byte[] { 31, 31 }));
             var newCode = sut.GetHashCode();
 
             // Assert
@@ -317,7 +318,7 @@ namespace SafeOrbit.Memory
             sut.Dispose();
 
             // Act
-            Task AppendManyAsync() => sut.AppendManyAsync(GetStream(31));
+            Task AppendManyAsync() => sut.AppendManyAsync(new SafeMemoryStream(new byte[] { 31 }));
 
             // Assert
             Assert.That(AppendManyAsync, Throws.TypeOf<ObjectDisposedException>());
@@ -331,7 +332,7 @@ namespace SafeOrbit.Memory
             using var sut = GetSut();
 
             // Act
-            await sut.AppendManyAsync(GetStream(31, 69, 48));
+            await sut.AppendManyAsync(new SafeMemoryStream(new byte[]{ 31, 69, 48 }));
             var actual = sut.Length;
 
             // Assert
@@ -347,7 +348,7 @@ namespace SafeOrbit.Memory
 
 
             // Act
-            await sut.AppendManyAsync(GetStream(expected));
+            await sut.AppendManyAsync(new SafeMemoryStream(new []{ expected }));
 
             // Assert
             var actual = await sut.GetByteAsync(0);
@@ -364,7 +365,7 @@ namespace SafeOrbit.Memory
             using var sut = GetSut();
 
             // Act
-            await sut.AppendManyAsync(GetStream(expected));
+            await sut.AppendManyAsync(new SafeMemoryStream(expected.CopyToNewArray()));
 
             // Assert
             var actual = await sut.ToByteArrayAsync();
@@ -381,7 +382,7 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(5);
 
             // Act
-            await sut.AppendManyAsync(GetStream(10, 20));
+            await sut.AppendManyAsync(new SafeMemoryStream(new byte[]{10,20}));
 
             // Assert
             var actual = await sut.ToByteArrayAsync();
@@ -395,8 +396,7 @@ namespace SafeOrbit.Memory
             // Arrange
             const byte firstByte = 55, secondByte = 77;
             var expected = Stubs.Get<ISafeBytes>();
-            var stream = new SafeMemoryStream();
-            stream.Write(new byte[]{firstByte, secondByte}, 0, 2);
+            var stream = new SafeMemoryStream(new [] { firstByte, secondByte });
             await expected.AppendManyAsync(stream);
             var collection = Stubs.Get<ISafeByteCollection>();
             using var sut = GetSut(collection: collection);

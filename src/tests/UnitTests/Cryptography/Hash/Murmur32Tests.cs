@@ -17,13 +17,14 @@ namespace SafeOrbit.Cryptography.Hashers
         protected override Murmur32 GetSut() => new Murmur32();
 
         [Test]
-        public void ComputeBytesFast_VerifyTheVerificationKey_returnsTrue()
+        public void ComputeBytesFast_VerifyTheVerificationKey_ReturnsTrue()
         {
-            //Arrange
+            // Arrange
             var verificationKey =
                 0xB0F57EE3; //https://github.com/rurban/smhasher/blob/8542a35b4d682f6c80754668cff32069a70eecc0/main.cpp
             var sut = GetSut();
-            //Act
+          
+            // Act
             int result;
             //http://stackoverflow.com/questions/14747343/murmurhash3-test-vectors
             using (var stream = new MemoryStream())
@@ -47,19 +48,20 @@ namespace SafeOrbit.Cryptography.Hashers
 #endif
             }
 
-            //Assert
+            // Assert
             Assert.That(result, Is.EqualTo((int) verificationKey));
         }
 
         [Test]
         [TestCase(0xCC9E2D51, new byte[] {0x22, 0x90, 0x63, 0xfa})]
-        public void ComputeBytesFast_ForSameSeed_FromDifferentInstances_returnsSame(uint seed, byte[] bytes)
+        public void ComputeBytesFast_ForSameSeed_FromDifferentInstances_ReturnsSame(uint seed, byte[] bytes)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
             var expected = sut.ComputeFast(bytes, seed);
             var hashes = new List<int>();
-            //act
+
+            // Act
             for (var i = 0; i < 20; i++)
             {
                 var differentInstance = GetSut();
@@ -73,15 +75,16 @@ namespace SafeOrbit.Cryptography.Hashers
 
         [Test]
         [TestCase(0xCC9E2D51, new byte[] {0x22, 0x90, 0x63, 0xfa})]
-        public void ComputeBytesFast_ForSameSeed_FromDifferentInstancesAndThreads_returnsSame(uint seed, byte[] bytes)
+        public void ComputeBytesFast_ForSameSeed_FromDifferentInstancesAndThreads_ReturnsSame(uint seed, byte[] bytes)
         {
-            //Arrange
-            var totalTests = 20;
+            // Arrange
+            const int totalTests = 20;
             var sut = GetSut();
             var expected = sut.ComputeFast(bytes, seed);
             var threads = new Thread[totalTests];
             var hashes = new ConcurrentBag<int>();
-            //act
+
+            // Act
             for (var i = 0; i < totalTests; i++)
             {
                 threads[i] = new Thread(() =>
@@ -94,21 +97,24 @@ namespace SafeOrbit.Cryptography.Hashers
             }
 
             for (var i = 0; i < totalTests; i++) threads[i].Join();
+
             //Assert
             Assert.That(hashes, Has.All.EqualTo(expected));
         }
 
         [Test]
         [TestCase(0xCC9E2D51, 0xE6546B64, new byte[] {0x22, 0x90, 0x63, 0xfa})]
-        public void ComputeBytesFast_ResultsForTheSameBytesWithDifferentSeeds_areDifferent(uint seed1, uint seed2,
+        public void ComputeBytesFast_ResultsForTheSameBytesWithDifferentSeeds_AreDifferent(uint seed1, uint seed2,
             byte[] bytes)
         {
-            //Arrange
+            // Arrange
             var sut = GetSut();
-            //Act
+
+            // Act
             var hash1 = sut.ComputeFast(bytes, seed1);
             var hash2 = sut.ComputeFast(bytes, seed2);
-            //Assert
+
+            // Assert
             Assert.That(hash1, Is.Not.EqualTo(hash2));
         }
     }

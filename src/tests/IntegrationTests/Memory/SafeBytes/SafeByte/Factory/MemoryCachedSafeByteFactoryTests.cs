@@ -62,8 +62,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var expected = new Collection<byte>();
             for (var i = 0; i < 256; i++)
                 expected.Add((byte) i);
-            var stream = new SafeMemoryStream();
-            stream.Write(expected.ToArray(), 0, expected.Count);
+            var stream = new SafeMemoryStream(expected.ToArray());
 
             // Act
             var safeBytes = await _sut.GetByBytesAsync(stream);

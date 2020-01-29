@@ -242,8 +242,7 @@ namespace SafeOrbit.Memory
             // Arrange
             byte[] expected = { 5, 10, 15 };
             using var sut = GetSut();
-            var stream = new SafeMemoryStream();
-            stream.Write(expected.CopyToNewArray(), 0, expected.Length);
+            var stream = new SafeMemoryStream(expected.CopyToNewArray());
 
             // Act
             await sut.AppendManyAsync(stream);
@@ -505,13 +504,11 @@ namespace SafeOrbit.Memory
             await safeBytes.AppendAsync(bytes[1]);
             await first.AppendAsync(safeBytes);
 
-            var stream = new SafeMemoryStream();
-            stream.Write(new []{bytes[2]}, 0, 1);
+            var stream = new SafeMemoryStream(new[] { bytes[2] });
             await first.AppendManyAsync(stream);
 
             var second = GetSut();
-            stream = new SafeMemoryStream();
-            stream.Write(bytes.CopyToNewArray(), 0 , bytes.Length);
+            stream = new SafeMemoryStream(bytes);
             await second.AppendManyAsync(stream);
 
             // Act
@@ -532,8 +529,7 @@ namespace SafeOrbit.Memory
             await first.AppendAsync(2);
 
             var second = GetSut();
-            var stream = new SafeMemoryStream();
-            stream.Write(new byte[] { 1, 2 }, 0, 2);
+            var stream = new SafeMemoryStream(new byte[] { 1, 2 });
             await second.AppendManyAsync(stream);
 
             // Act
@@ -616,13 +612,6 @@ namespace SafeOrbit.Memory
         }
 
         protected override ISafeBytes GetSut() => GetSut();
-
-        private static SafeMemoryStream GetStream(params byte[] bytes)
-        {
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
-            return stream;
-        }
 
         private static ISafeBytes GetSut(ISafeByteCollection collection = null,
             ISafeByteFactory factory = null, IFactory<ISafeBytes> safeBytesFactory = null)

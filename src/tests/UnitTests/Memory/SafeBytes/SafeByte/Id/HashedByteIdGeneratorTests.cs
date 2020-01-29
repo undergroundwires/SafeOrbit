@@ -46,8 +46,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             for (var i = 0; i < 256; i++) sequence.Returns(i); //starts returning unique
             var salt = Stubs.Get<IMemoryProtectedBytes>();
             var sut = GetSut(mockHasher.Object, sessionSalt: salt);
-            var dummyStream = new SafeMemoryStream();
-            dummyStream.Write(new byte[5], 0,5);
+            var dummyStream = new SafeMemoryStream(new byte[5]);
 
             // Act
             _ = await sut.GenerateManyAsync(dummyStream); // Will trigger lazy initialization
@@ -114,8 +113,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             var sut = GetSut();
             const int expected = 55;
             var input = new byte[expected];
-            var stream = new SafeMemoryStream();
-            stream.Write(input, 0, input.Length);
+            var stream = new SafeMemoryStream(input);
 
             //Act
             var actual = (await sut.GenerateManyAsync(stream)).Count();

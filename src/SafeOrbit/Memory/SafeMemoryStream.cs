@@ -6,10 +6,11 @@ using System.Threading;
 namespace SafeOrbit.Memory
 {
     /// <summary>
-    ///     Creates a stream with no backing store (ephemeral memory). The buffer will be deleted after it's read or written.
+    ///     Creates a stream with no backing store (ephemeral memory).
+    ///     The buffer will be deleted after it's read or written in FIFO order.
     /// </summary>
     /// <seealso cref="Stream" />
-    /// <seealso cref="SafeMemoryStream.Read(byte[], int,int)" />
+    /// <seealso cref="Read(byte[], int,int)" />
     public class SafeMemoryStream : Stream
     {
         private readonly AutoResetEvent _flushAutoResetEvent = new AutoResetEvent(false);
@@ -20,38 +21,37 @@ namespace SafeOrbit.Memory
         private byte[] _currentBlock;
         private int _currentBlockPosition;
         private long _length;
+
         public override bool CanRead => true;
         public override bool CanSeek => false;
         public override bool CanWrite => !_closed;
         public override long Length => _length;
 
-        /// <exception cref="NotSupportedException" accessor="set">
-        ///     <see cref="Position" /> is not supported for
-        ///     <see cref="SafeMemoryStream" />.
-        /// </exception>
-        /// <exception cref="NotSupportedException" accessor="get">
-        ///     <see cref="Position" /> is not supported for
-        ///     <see cref="SafeMemoryStream" />.
-        /// </exception>
+        /// <exception cref="NotSupportedException" accessor="set"> <see cref="Position" /> is not supported for <see cref="SafeMemoryStream" />. </exception>
+        /// <exception cref="NotSupportedException" accessor="get"> <see cref="Position" /> is not supported for <see cref="SafeMemoryStream" />. </exception>
         public override long Position
         {
             get => throw new NotSupportedException();
             set => throw new NotSupportedException();
         }
 
+        public SafeMemoryStream()  {  }
+
+        /// <summary>
+        ///     Writes given bytes to the stream and clears the given <paramref name="bytes"/>
+        /// </summary>
+        public SafeMemoryStream(byte[] bytes)
+        {
+            Write(bytes, 0, bytes.Length);
+        }
+
         /// <exception cref="NotSupportedException">
         ///     <see cref="Seek" /> is not supported for <see cref="SafeMemoryStream" />
         /// </exception>
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotSupportedException();
-        }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
         /// <exception cref="NotSupportedException">This method is not supported on a <see cref="SafeMemoryStream" /></exception>
-        public override void SetLength(long value)
-        {
-            throw new NotSupportedException();
-        }
+        public override void SetLength(long value) => throw new NotSupportedException();
 
         /// <exception cref="AbandonedMutexException">
         ///     The wait completed because a thread exited without releasing a mutex. This
@@ -74,9 +74,9 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
         /// <exception cref="ArgumentException">Condition.</exception>
-        public override void Write(byte[] buffer, int offset, int count)
+        public sealed override void Write(byte[] buffer, int offset, int count)
         {
-            EnsureReadOrWriteParameters(buffer, offset, count);
+            ThrowIfInvalid(buffer, offset, count);
             if (_closed) throw new ArgumentException(nameof(_closed));
             var newBytes = new byte[count];
             Array.Copy(buffer, offset, newBytes, 0, count);
@@ -96,7 +96,7 @@ namespace SafeOrbit.Memory
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            EnsureReadOrWriteParameters(buffer, offset, count);
+            ThrowIfInvalid(buffer, offset, count);
             if (_closed || _length == 0)
                 return 0;
             var finalPosition = offset + count;
@@ -135,7 +135,6 @@ namespace SafeOrbit.Memory
                     _currentBlockPosition = 0;
                 }
             }
-
             _flushAutoResetEvent.Set();
             _length -= bytesRead;
             return bytesRead;
@@ -159,12 +158,13 @@ namespace SafeOrbit.Memory
                 _readerAutoResetEvent?.Set();
                 _readerAutoResetEvent?.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">When <paramref name="buffer" />'s length is out of range.</exception>
-        public void EnsureReadOrWriteParameters(byte[] buffer, int offset, int count)
+        private static void ThrowIfInvalid(byte[] buffer, int offset, int count)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
             var finalPosition = offset + count;

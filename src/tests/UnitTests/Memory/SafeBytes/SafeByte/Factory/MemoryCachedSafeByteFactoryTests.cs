@@ -124,8 +124,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             // Arrange
             var sut = _sut;
             var expected = new byte[] {1, 2, 3, 4, 5};
-            var stream = new SafeMemoryStream();
-            stream.Write(expected.CopyToNewArray(), 0, expected.Length);
+            var stream = new SafeMemoryStream(expected.CopyToNewArray());
             var byteIds = await Stubs.Get<IByteIdGenerator>().GenerateManyAsync(stream);
 
             // Act
@@ -198,8 +197,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         {
             // Arrange
             var bytes = new byte[] { 1, 2, 3, 4, 5 };
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes, 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes);
 
             const int byteId = 1;
             var hasherMock = new Mock<IByteIdGenerator>();
@@ -245,8 +243,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         {
             // Arrange
             var mock = GetMock();
-            var stream = new SafeMemoryStream();
-            stream.Write(new byte[]{1,2,3,4,5}, 0, 5);
+            var stream = new SafeMemoryStream(new byte[] { 1, 2, 3, 4, 5 });
             var sut = mock.Object;
 
             // Act
@@ -266,8 +263,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             // Arrange
             var expected = new [] {10, 20, 30, 40, 50};
             var bytes = new byte[] { 1, 2, 3, 4, 5 };
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes, 0, bytes.Length);
+            var stream = new SafeMemoryStream(bytes);
 
             var hasherMock = new Mock<IByteIdGenerator>();
             hasherMock.Setup(b => b.GenerateManyAsync(stream))

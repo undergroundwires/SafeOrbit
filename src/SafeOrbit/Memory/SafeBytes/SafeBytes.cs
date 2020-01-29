@@ -76,8 +76,7 @@ namespace SafeOrbit.Memory
             {
                 var plainBytes = await safeBytes.ToByteArrayAsync()
                     .ConfigureAwait(false);
-                var stream = new SafeMemoryStream();
-                stream.Write(plainBytes, 0, plainBytes.Length);
+                var stream = new SafeMemoryStream(plainBytes);
                 await AppendManyAsync(stream).ConfigureAwait(false);
             }
         }
@@ -193,8 +192,7 @@ namespace SafeOrbit.Memory
             
             async Task<ISafeByte[]> GetOtherBytes()
             {
-                var stream = new SafeMemoryStream();
-                stream.Write(other.CopyToNewArray(), 0, other.Length);
+                var stream = new SafeMemoryStream(other.CopyToNewArray());
                 var bytes = await _safeByteFactory.GetByBytesAsync(stream).ConfigureAwait(false);
                 return bytes.ToArray();
             }
@@ -228,9 +226,9 @@ namespace SafeOrbit.Memory
                 {
                     // If it's not, then reveals each byte in memory.
                     var bytes = await other.ToByteArrayAsync().ConfigureAwait(false);
-                    var stream = new SafeMemoryStream();
-                    stream.Write(bytes, 0 ,bytes.Length);
-                    var safe = await _safeByteFactory.GetByBytesAsync(stream).ConfigureAwait(false);
+                    var stream = new SafeMemoryStream(bytes);
+                    var safe = await _safeByteFactory.GetByBytesAsync(stream)
+                        .ConfigureAwait(false);
                     return safe.ToArray();
                 }
             }

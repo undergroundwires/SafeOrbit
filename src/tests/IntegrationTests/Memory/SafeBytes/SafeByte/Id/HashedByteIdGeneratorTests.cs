@@ -12,7 +12,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
     internal class HashedByteIdGeneratorTests : TestsFor<HashedByteIdGenerator>
     {
         [Test]
-        public async Task GenerateAsync_ResultForAllPossibleBytes_areUnique()
+        public async Task GenerateAsync_ResultForAllPossibleBytes_AreUnique()
         {
             // Arrange
             var sut = GetSut();
@@ -29,7 +29,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         }
 
         [Test]
-        public async Task GenerateAsync_SameInstanceForSameBytes_givesSameResults([Random(0, 256, 1)] byte b)
+        public async Task GenerateAsync_SameInstanceForSameBytes_GivesSameResults([Random(0, 256, 1)] byte b)
         {
             // Arrange
             var sut = GetSut();
@@ -44,7 +44,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.DifferentBytePairs))]
-        public async Task GenerateAsync_ForDifferentBytes_areNotEqual(byte b1, byte b2)
+        public async Task GenerateAsync_ForDifferentBytes_AreNotEqual(byte b1, byte b2)
         {
             // Arrange
             var sut = GetSut();
@@ -58,40 +58,34 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
         }
 
         [Test]
-        public async Task GenerateManyAsync_SameInstanceForSameBytes_givesSameResults()
+        public async Task GenerateManyAsync_SameInstanceForSameBytes_GivesSameResults()
         {
             // Arrange
             var bytes = new byte[] {1, 2, 3, 4, 5};
             var sut = GetSut();
 
             // Act
-            var expected = await sut.GenerateManyAsync(GetStream(bytes));
-            var actual = await sut.GenerateManyAsync(GetStream(bytes));
+            var expected = await sut.GenerateManyAsync( new SafeMemoryStream(bytes.CopyToNewArray()));
+            var actual = await sut.GenerateManyAsync(new SafeMemoryStream(bytes.CopyToNewArray()));
 
             // Assert
             CollectionAssert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task GenerateManyAsync_ForDifferentBytes_areNotEqual()
+        public async Task GenerateManyAsync_ForDifferentBytes_AreNotEqual()
         {
             // Arrange
             var sut = GetSut();
 
             // Act
-            var results = await sut.GenerateManyAsync(GetStream(new byte[] { 1,2,3,4,5 }));
-            var differentResults = await sut.GenerateManyAsync(GetStream(new byte[] { 6,7,8,9,10 }));
+            var results = await sut.GenerateManyAsync( new SafeMemoryStream(new byte[] { 1,2,3,4,5 }));
+            var differentResults = await sut.GenerateManyAsync(new SafeMemoryStream(new byte[] { 6,7,8,9,10 }));
 
             // Assert
             Assert.True(results.All(@byte => !differentResults.Contains(@byte)));
         }
 
         protected override HashedByteIdGenerator GetSut() => new HashedByteIdGenerator();
-        private static SafeMemoryStream GetStream(byte[] bytes)
-        {
-            var stream = new SafeMemoryStream();
-            stream.Write(bytes.CopyToNewArray(), 0, bytes.Length);
-            return stream;
-        }
     }
 }
