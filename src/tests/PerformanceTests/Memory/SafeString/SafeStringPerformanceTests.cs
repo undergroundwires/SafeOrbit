@@ -9,7 +9,7 @@ namespace SafeOrbit.Memory
     public class SafeStringPerformanceTests : TestsFor<ISafeString>
     {
         [Test]
-        public async Task GetHashCode_1000Chars_Takes_Less_Than_100ms()
+        public async Task GetHashCode_1000Chars_TakesLessThan100ms()
         {
             // Arrange
             const int expectedHigherLimit = 100;
@@ -29,7 +29,7 @@ namespace SafeOrbit.Memory
 
 
         [Test]
-        public async Task ToSafeBytes_1000Chars_Takes_Less_Than_100ms()
+        public async Task ToSafeBytes_1000Chars_TakesLessThan100ms()
         {
             // Arrange
             const int expectedHigherLimit = 100;
@@ -42,6 +42,48 @@ namespace SafeOrbit.Memory
             {
                 _ = sut.GetHashCode();
             }, 10);
+
+            // Assert
+            Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
+        }
+
+        [Test]
+        public async Task EqualsAsync_Same1000CharsString_TakesLessThan5000ms()
+        {
+            // Arrange
+            const int expectedHigherLimit = 5000;
+            var expected = new string('m', 1000);
+            SafeOrbitCore.Current.StartEarly();
+            var sut = GetSut();
+            await sut.AppendAsync(expected);
+
+            // Act
+            var actualPerformance = await MeasureAsync(async () =>
+            {
+                _ = await sut.EqualsAsync(expected);
+            }, 3);
+
+            // Assert
+            Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
+        }
+
+        [Test]
+        public async Task EqualsAsync_Same1000CharsISafeString_TakesLessThan5000ms()
+        {
+            // Arrange
+            const int expectedHigherLimit = 5000;
+            var expectedStr = new string('m', 1000);
+            SafeOrbitCore.Current.StartEarly();
+            var sut = GetSut();
+            await sut.AppendAsync(expectedStr);
+            var other = GetSut();
+            await other.AppendAsync(expectedStr);
+
+            // Act
+            var actualPerformance = await MeasureAsync(async () =>
+            {
+                _ = await sut.EqualsAsync(other);
+            }, 3);
 
             // Assert
             Assert.That(actualPerformance, Is.LessThanOrEqualTo(expectedHigherLimit));
