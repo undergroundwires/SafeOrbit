@@ -14,7 +14,7 @@ namespace SafeOrbit.Memory
 {
     public class SafeString : DisposableBase, ISafeString
     {
-        private const Encoding InnerEncoding = Encoding.Utf16LittleEndian;
+        public const Encoding InnerEncoding = Encoding.Utf16LittleEndian;
         private const byte LineFeed = 0x000A; //http://www.fileformat.info/info/unicode/char/000A/index.htm
         private readonly IList<ISafeBytes> _charBytesList;
         private readonly IFactory<ISafeBytes> _safeBytesFactory;
