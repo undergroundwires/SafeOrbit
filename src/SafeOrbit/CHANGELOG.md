@@ -22,20 +22,23 @@
 	- `SafeBytes.EqualsAsync(bytes)` for 100 KB; before: 93032ms, after: 20ms
 	- `SafeBytes.EqualsAsync(ISafeBytes)` for 100 KB before: 183346ms, after: 15ms
     - `SafeString.EqualsAsync` gains huge performance from inner byte equality, also it does not encrypt & decrypt plain strings anymore.
+- **Fixed**
+  - `SafeMemoryStream` ends up in infinite loop while reading when its empty.
 - **Added**
   - Encryption
     - Support for padding in Blowfish algorithm.
     - Both fast & safe (AES + Blowfish) supports setting padding mode.
   - `AppendMany()` to append multiple bytes to `SafeBytes`
   - Added constructor that writes the given binary to `SafeMemoryStream`
+  - Added `RevealDecryptedBytesAsync` in `SafeString`
 - **Changed**
   - ❗ Replaced sync methods with async variants.
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
   - Namespace changes for better modular structure
   - Refactorings & better documentation.
   - Renamed decrypting methods in `SafeBytes`, `SafeByte` and `SafeString` with *RevealDecrypted* prefix.
-- **Fixed**
-  - `SafeMemoryStream` ends up in infinite loop while reading when its empty.
+- **Removed**
+  - - SafeString.ToSafeBytesAsync is removed because of its inefficiency.
 
 ## [0.3.1] - 2019-12-24
 

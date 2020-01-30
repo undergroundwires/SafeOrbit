@@ -11,18 +11,21 @@ namespace SafeOrbit.Memory
     public class SafeStringTests
     {
         [Test]
-        public async Task SafeString_Returns_AppendedText()
+        public async Task SafeString_MultipleCharsAdded_MarshalsToExpected()
         {
-            var expected = "test";
+            // Arrange
+            const string expected = "test";
             var sut = new SafeString();
+
+            // Act
             await sut.AppendAsync("t");
             await sut.AppendAsync("es");
             await sut.AppendAsync('t');
-            using (var sm = new SafeStringToStringMarshaler(sut))
-            {
-                var actual = sm.String;
-                Assert.That(actual, Is.EqualTo(expected));
-            }
+
+            // Assert
+            using var sm = new SafeStringToStringMarshaler(sut);
+            var actual = sm.String;
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -42,11 +45,9 @@ namespace SafeOrbit.Memory
             thread.Join();
 
             // Assert
-            using (var sm = new SafeStringToStringMarshaler(sut))
-            {
-                var actual = sm.String;
-                Assert.That(actual, Is.EqualTo("tt"));
-            }
+            using var sm = new SafeStringToStringMarshaler(sut);
+            var actual = sm.String;
+            Assert.That(actual, Is.EqualTo("tt"));
         }
 
         [Test]
@@ -90,6 +91,22 @@ namespace SafeOrbit.Memory
                     strBuilder.Append(await str.RevealDecryptedCharAsync(i));
                 return strBuilder.ToString();
             }
+        }
+
+        [Test]
+        public async Task RevalDecryptedBytesAsync_AppendedUnicodeString_ReturnsExpected()
+        {
+            // Arrange
+            const string str = "hello";
+            var expected = new byte[] {104, 0, 101, 0, 108, 0, 108, 0, 111, 0};
+            var sut = new SafeString();
+            await sut.AppendAsync(str);
+
+            // Act
+            var actual = await sut.RevealDecryptedBytesAsync();
+
+            // Assert
+            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }

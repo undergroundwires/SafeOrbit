@@ -23,15 +23,8 @@ namespace SafeOrbit.Fakes
             fake.Setup(x => x.AppendAsync(It.IsAny<ISafeBytes>(), It.IsAny<Encoding>()))
                 .Callback<ISafeBytes, Encoding>(
                     async (c, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString((await c.RevealDecryptedBytesAsync()))));
-            fake.Setup(x => x.ToSafeBytesAsync())
-                .Returns(async () =>
-                {
-                    var safeBytes = Stubs.Get<ISafeBytes>();
-                    var bytes = System.Text.Encoding.Unicode.GetBytes(new string(chars.ToArray()));
-                    foreach (var @byte in bytes)
-                        await safeBytes.AppendAsync(@byte);
-                    return safeBytes;
-                });
+            fake.Setup(x => x.RevealDecryptedBytesAsync())
+                .ReturnsAsync(System.Text.Encoding.Unicode.GetBytes(new string(chars.ToArray())));
             fake.Setup(x => x.GetAsSafeBytes(It.IsAny<int>()))
                 .Returns((int i) =>
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -121,6 +122,32 @@ namespace SafeOrbit.Memory
             }
             _charBytesList.Insert(position, character);
         }
+        public static Task ForEachAsync<T>(IEnumerable<T> source, int degreeOfParalellism, Func<T, Task> action)
+        {
+            return Task.WhenAll(Partitioner.Create(source).GetPartitions(degreeOfParalellism).Select(partition => Task.Run(async () =>
+            {
+                using (partition)
+                    while (partition.MoveNext())
+                        await action(partition.Current);
+            })));
+        }
+        public async Task<byte[]> RevealDecryptedBytesAsync()
+        {
+            ThrowIfDisposed();
+            if (IsEmpty) return new byte[0];
+            var tasks = new Task<byte[]>[_charBytesList.Count];
+            for (var i = 0; i < tasks.Length; i++)
+                tasks[i] = _charBytesList[i].RevealDecryptedBytesAsync();
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+            var result = new byte[_charBytesList.Select(l => l.Length).Sum()];
+            var currentByteCount = 0;
+            foreach (var block in tasks.Select(t=> t.Result))
+            {
+                Buffer.BlockCopy(block, 0, result, currentByteCount, block.Length);
+                currentByteCount += block.Length;
+            }
+            return result;
+        }
 
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
@@ -188,23 +215,7 @@ namespace SafeOrbit.Memory
                 Remove(i);
             _charBytesList.Clear();
         }
-
-        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
-        /// <exception cref="InvalidOperationException">Throws if the <see cref="SafeString" /> instance is empty.</exception>
-        public async Task<ISafeBytes> ToSafeBytesAsync()
-        {
-            ThrowIfDisposed();
-            EnsureNotEmpty();
-            var safeBytes = _safeBytesFactory.Create();
-            foreach (var charBytes in _charBytesList)
-            {
-                var @byte = await charBytes.DeepCloneAsync().ConfigureAwait(false);
-                await safeBytes.AppendAsync(@byte)
-                    .ConfigureAwait(false);
-            }
-            return safeBytes;
-        }
-
+        
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public override int GetHashCode()
         {

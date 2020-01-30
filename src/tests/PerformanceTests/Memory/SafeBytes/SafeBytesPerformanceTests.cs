@@ -53,7 +53,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task ToByteArrayAsync_1MBBytes_TakesLessThan_000ms()
+        public async Task ToByteArrayAsync_1MBBytes_TakesLessThan_2000ms()
         {
             // Arrange
             const int expectedHigherLimit = 2000;

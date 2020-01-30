@@ -128,11 +128,11 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(ch1);
             await sut.AppendAsync(ch2);
             await sut.AppendAsync(ch3);
-            var expected = await  (await sut.ToSafeBytesAsync()).RevealDecryptedBytesAsync();
-            
+            var expected = await sut.RevealDecryptedBytesAsync();
+
             // Act
             var clone = await sut.DeepCloneAsync();
-            var actual = await (await clone.ToSafeBytesAsync()).RevealDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             var areEqual = expected.SequenceEqual(actual);
             
             // Assert
@@ -453,8 +453,8 @@ namespace SafeOrbit.Memory
 
             // Act
             await sut.AppendAsync(safeBytes, Encoding.Ascii);
-            var actual = await (await sut.ToSafeBytesAsync()).RevealDecryptedBytesAsync();
-            
+            var actual = await sut.RevealDecryptedBytesAsync();
+
             // Assert
             Assert.AreEqual(expected, actual);
         }
@@ -476,7 +476,7 @@ namespace SafeOrbit.Memory
 
             // Act
             await sut.AppendAsync(safeBytes, Encoding.Utf16BigEndian);
-            var actual = await (await sut.ToSafeBytesAsync()).RevealDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // assert
             Assert.AreEqual(expected, actual);
@@ -495,7 +495,7 @@ namespace SafeOrbit.Memory
            
             // Act
             await sut.AppendAsync(safeBytes);
-            var actual = await(await sut.ToSafeBytesAsync()).RevealDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -827,11 +827,11 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync(ch1);
             await sut.AppendAsync(ch2);
             await sut.AppendAsync(ch3);
-            var expected = await (await sut.ToSafeBytesAsync()).RevealDecryptedBytesAsync();
-            
+            var expected = await sut.RevealDecryptedBytesAsync();
+
             // Act
             var clone = sut.ShallowClone();
-            var actual = await  (await clone.ToSafeBytesAsync()).RevealDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
             var areEqual = expected.SequenceEqual(actual);
             
             // Assert
@@ -870,43 +870,7 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task ToSafeBytesAsync_ChangingReturnedResult_OriginalObject()
-        {
-            // Arrange
-            using var sut = GetSut();
-            const char expected = 'a';
-            const int index = 0;
-            await sut.AppendAsync(expected);
-
-            // Act
-            var bytes = await sut.ToSafeBytesAsync();
-            await bytes.AppendAsync(5);
-            var actual = await sut.RevealDecryptedCharAsync(index);
-
-            // Assert
-            Assert.That(expected, Is.EqualTo(actual));
-        }
-
-        [Test]
-        public async Task ToSafeBytesAsync_DisposingReturnedResult_DoesNotAffectOriginalObject()
-        {
-            // Arrange
-            using var sut = GetSut();
-            const char expected = 'a';
-            const int index = 0;
-            await sut.AppendAsync(expected);
-
-            // Act
-            var bytes = await sut.ToSafeBytesAsync();
-            bytes.Dispose();
-            var actual = await sut.RevealDecryptedCharAsync(index);
-            
-            // Assert
-            Assert.That(expected, Is.EqualTo(actual));
-        }
-
-        [Test]
-        public async Task ToSafeBytesAsync_ForMultipleChars_ReturnsEqualBytes()
+        public async Task RevealDecryptedBytesAsync_ForMultipleChars_ReturnsEqualBytes()
         {
             // Arrange
             using var sut = GetSut();
@@ -917,16 +881,14 @@ namespace SafeOrbit.Memory
             var expected = charBytes1.Combine(charBytes2);
 
             // Act
-            var safeBytes = await sut.ToSafeBytesAsync();
-            var actual = await safeBytes.RevealDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
-            var areSame = expected.SequenceEqual(actual);
-            Assert.That(areSame, Is.True);
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task ToSafeBytesAsync_ForSingleChar_ReturnsEqualBytes()
+        public async Task RevealDecryptedBytesAsync_ForSingleChar_ReturnsEqualBytes()
         {
             // Arrange
             using var sut = GetSut();
@@ -934,16 +896,14 @@ namespace SafeOrbit.Memory
             var expected = await sut.GetAsSafeBytes(0).RevealDecryptedBytesAsync();
 
             // Act
-            var safeBytes = await sut.ToSafeBytesAsync();
-            var actual = await safeBytes.RevealDecryptedBytesAsync();
+            var actual = await sut.RevealDecryptedBytesAsync();
 
             // Assert
-            var areSame = expected.SequenceEqual(actual);
-            Assert.That(areSame, Is.True);
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task ToSafeBytesAsync_OnDisposedObject_ThrowsObjectDisposedException()
+        public async Task RevealDecryptedBytesAsync_OnDisposedObject_ThrowsObjectDisposedException()
         {
             //Arrange
             var sut = GetSut();
@@ -951,23 +911,25 @@ namespace SafeOrbit.Memory
             
             //Act
             sut.Dispose();
-            Task CallOnDisposedObject() => sut.ToSafeBytesAsync();
+            Task CallOnDisposedObject() => sut.RevealDecryptedBytesAsync();
 
             //Assert
             Assert.ThrowsAsync<ObjectDisposedException>(CallOnDisposedObject);
         }
 
         [Test]
-        public void ToSafeBytesAsync_OnEmptyInstance_ThrowsInvalidOperationException()
+        public async Task RevealDecryptedBytesAsync_OnEmptyInstance_ReturnsEmptyBytes()
         {
             // Arrange
             using var sut = GetSut();
 
             // Act
-            Task CallOnEmptyObject() => sut.ToSafeBytesAsync();
+            var value = await sut.RevealDecryptedBytesAsync();
 
             // Assert
-            Assert.ThrowsAsync<InvalidOperationException>(CallOnEmptyObject);
+            Assert.NotNull(value);
+            Assert.AreEqual(0, value.Length);
         }
+
     }
 }
