@@ -124,22 +124,6 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
         }
 
         [Test]
-        public void Dispose_InitializedInstance_ClearsAllBytes()
-        {
-            // Arrange
-            const int expected = 5;
-            var protector = new Mock<IByteArrayProtector>();
-            protector.SetupGet(p => p.BlockSizeInBytes).Returns(expected);
-            using var sut = GetSut(protector: protector.Object);
-
-            // Act
-            var actual = sut.BlockSizeInBytes;
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
         public void Dispose_NotInitializedInstance_DoesNotThrow()
         {
             // Arrange
