@@ -41,6 +41,13 @@ namespace SafeOrbit.Memory
             _safeByteCollection = safeByteCollectionFactory.Create();
         }
 
+        /// <summary>
+        ///     Indicates whether the specified <see cref="ISafeBytes"/> is null or holds zero bytes.
+        /// </summary>
+        /// <param name="safeBytes">The string to test.</param>
+        /// <returns><see langword="true" /> if the value parameter is <see langword="null" /> or holds zero bytes; otherwise, <see langword="false" />.</returns>
+        public static bool IsNullOrEmpty(IReadOnlySafeBytes safeBytes) => safeBytes == null || safeBytes.Length == 0;
+
         /// <inheritdoc />
         public int Length => _safeByteCollection?.Length ?? 0;
 
@@ -131,11 +138,6 @@ namespace SafeOrbit.Memory
             await clone.AppendAsync(this).ConfigureAwait(false);
             return clone;
         }
-        /// <summary>
-        ///     Indicates whether the specified SafeBytes object is null or holds zero bytes.
-        /// </summary>
-        public static bool IsNullOrEmpty(ISafeBytes safeBytes) => safeBytes == null || safeBytes.Length == 0;
-
 
         /// <summary>
         ///     Gets the byte from its real location 
@@ -199,7 +201,7 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
-        public async Task<bool> EqualsAsync(ISafeBytes other)
+        public async Task<bool> EqualsAsync(IReadOnlySafeBytes other)
         {
             ThrowIfDisposed();
             if (other == null || other.Length == 0) return Length == 0;
@@ -240,6 +242,7 @@ namespace SafeOrbit.Memory
             throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
         }
 
+        /// <inheritdoc cref="IReadOnlySafeBytes.GetHashCode" />
         public override int GetHashCode() => _hashcode;
 
         protected override void DisposeManagedResources()

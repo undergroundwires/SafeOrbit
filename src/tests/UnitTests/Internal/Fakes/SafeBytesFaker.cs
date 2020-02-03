@@ -63,7 +63,7 @@ namespace SafeOrbit.Fakes
                 return _bytes.Aggregate(2, (current, b) => current + b);
             }
 
-            public Task<bool> EqualsAsync(ISafeBytes other)
+            public Task<bool> EqualsAsync(IReadOnlySafeBytes other)
             {
                 return Task.FromResult(other != null &&
                        _bytes.AsEnumerable().SequenceEqual(TaskContext.RunSync(other.RevealDecryptedBytesAsync)));

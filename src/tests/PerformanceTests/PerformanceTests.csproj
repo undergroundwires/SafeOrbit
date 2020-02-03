@@ -5,6 +5,9 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\SafeOrbit\SafeOrbit.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>

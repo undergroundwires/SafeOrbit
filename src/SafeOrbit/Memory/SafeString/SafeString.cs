@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,7 +40,18 @@ namespace SafeOrbit.Memory
             _charBytesList = new List<ISafeBytes>();
         }
 
+        /// <summary>
+        /// Indicates whether the specified <see cref="ISafeString"/> is null or an empty string ("").
+        /// </summary>
+        /// <param name="safeString">The string to test.</param>
+        /// <returns><see langword="true" /> if the value parameter is <see langword="null" /> or an empty string (""); otherwise, <see langword="false" />.</returns>
+        public static bool IsNullOrEmpty(IReadOnlySafeString safeString)
+            => safeString == null || safeString.IsEmpty;
+
+        /// <inheritdoc />
         public int Length => _charBytesList == null || IsDisposed ? 0 : _charBytesList.Count;
+
+        /// <inheritdoc />
         public bool IsEmpty => Length == 0;
 
         /// <inheritdoc />
@@ -73,8 +83,10 @@ namespace SafeOrbit.Memory
             return InsertAsync(Length, character, encoding);
         }
 
-        /// <exception cref="ArgumentNullException"><paramref name="safeString" /> is <see langword="null" />. </exception>
+
+        /// <inheritdoc />
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
+        /// <exception cref="ArgumentNullException"><paramref name="safeString" /> is <see langword="null" />. </exception>
         public async Task AppendAsync(ISafeString safeString)
         {
             if (safeString == null) throw new ArgumentNullException(nameof(safeString));
@@ -96,6 +108,7 @@ namespace SafeOrbit.Memory
             await AppendAsync(safeBytes, InnerEncoding).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> is not a valid index.</exception>
         public async Task InsertAsync(int index, char character)
@@ -107,6 +120,7 @@ namespace SafeOrbit.Memory
             _charBytesList.Insert(index, bytes);
         }
 
+        /// <inheritdoc />
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="ArgumentNullException"> <paramref name="character" /> is <see langword="null" />. </exception>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="character" /> is null or empty. </exception>
@@ -122,15 +136,8 @@ namespace SafeOrbit.Memory
             }
             _charBytesList.Insert(position, character);
         }
-        public static Task ForEachAsync<T>(IEnumerable<T> source, int degreeOfParalellism, Func<T, Task> action)
-        {
-            return Task.WhenAll(Partitioner.Create(source).GetPartitions(degreeOfParalellism).Select(partition => Task.Run(async () =>
-            {
-                using (partition)
-                    while (partition.MoveNext())
-                        await action(partition.Current);
-            })));
-        }
+
+        /// <inheritdoc />
         public async Task<byte[]> RevealDecryptedBytesAsync()
         {
             ThrowIfDisposed();
@@ -149,10 +156,11 @@ namespace SafeOrbit.Memory
             return result;
         }
 
+        /// <inheritdoc />
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index" /> is not a valid index. </exception>
-        public ISafeBytes GetAsSafeBytes(int index)
+        public IReadOnlySafeBytes GetAsSafeBytes(int index)
         {
             ThrowIfDisposed();
             EnsureNotEmpty();
@@ -161,6 +169,7 @@ namespace SafeOrbit.Memory
             return result;
         }
 
+        /// <inheritdoc />
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         /// <exception cref="InvalidOperationException"><see cref="SafeString" /> instance is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -215,7 +224,8 @@ namespace SafeOrbit.Memory
                 Remove(i);
             _charBytesList.Clear();
         }
-        
+
+        /// <inheritdoc cref="IReadOnlySafeString.GetHashCode" />
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public override int GetHashCode()
         {
@@ -236,6 +246,7 @@ namespace SafeOrbit.Memory
             throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");
         }
 
+        /// <inheritdoc />
         /// <exception cref="ArgumentNullException"> <paramref name="other" /> is <see langword="null" />. </exception>
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<bool> EqualsAsync(string other)
@@ -256,9 +267,10 @@ namespace SafeOrbit.Memory
             return comparisonBit == 0;
         }
 
+        /// <inheritdoc />
         /// <exception cref="ArgumentNullException"> <paramref name="other" /> is <see langword="null" />. </exception>
         /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
-        public async Task<bool> EqualsAsync(ISafeString other)
+        public async Task<bool> EqualsAsync(IReadOnlySafeString other)
         {
             ThrowIfDisposed();
             if (other == null) throw new ArgumentNullException(nameof(other));
@@ -294,6 +306,7 @@ namespace SafeOrbit.Memory
             return result;
         }
 
+        /// <inheritdoc />
         /// <exception cref="ObjectDisposedException"><see cref="SafeString" /> instance is disposed.</exception>
         public ISafeString ShallowClone()
         {
@@ -308,9 +321,6 @@ namespace SafeOrbit.Memory
         }
 
 
-        public static bool IsNullOrEmpty(ISafeString safeString)
-            => safeString == null || safeString.IsDisposed || safeString.IsEmpty;
-
         protected override void DisposeManagedResources()
         {
             foreach(var safeBytes in _charBytesList)
@@ -318,7 +328,7 @@ namespace SafeOrbit.Memory
             this._charBytesList.Clear();
         }
 
-        private async Task<ISafeBytes> ConvertEncodingAsync(ISafeBytes character, Encoding sourceEncoding, Encoding destinationEncoding)
+        private async Task<ISafeBytes> ConvertEncodingAsync(IReadOnlySafeBytes character, Encoding sourceEncoding, Encoding destinationEncoding)
         {
 
             var buffer = await character.RevealDecryptedBytesAsync().ConfigureAwait(false);
@@ -337,7 +347,7 @@ namespace SafeOrbit.Memory
             }
         }
 
-        private async Task<char> TransformSafeBytesToCharAsync(ISafeBytes safeBytes, Encoding encoding)
+        private async Task<char> TransformSafeBytesToCharAsync(IReadOnlySafeBytes safeBytes, Encoding encoding)
         {
             var byteBuffer = await safeBytes.RevealDecryptedBytesAsync().ConfigureAwait(false);
             try
