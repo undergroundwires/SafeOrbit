@@ -51,9 +51,6 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             IsDisposed = true;
         }
 
-        ~SystemRng()
-        {
-            Dispose(false);
-        }
+        ~SystemRng() => Dispose(false);
     }
 }

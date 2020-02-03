@@ -4,33 +4,31 @@ using System.Security.Cryptography;
 using System.Threading;
 using SafeOrbit.Common;
 using SafeOrbit.Memory;
-using SafeOrbit.Threading;
 
 namespace SafeOrbit.Cryptography.Random.RandomGenerators
 {
     /// <inheritdoc />
-    /// <summary>
-    ///     In a multitasking OS, each individual thread never knows when it's going to be granted execution time,
-    ///     as many processes and threads compete for CPU cycles.  The granularity of time to wake up from sleep is
-    ///     something like +/- a few ms, while the granularity of DateTime.Now is Ticks, 10million per second.  Although
-    ///     the OS scheduler is surely deterministic, there should be a fair amount of entropy in the least significant
-    ///     bits of DateTime.Now.Ticks upon thread waking.  But since the OS scheduler is surely deterministic, it is
-    ///     not recommended to use ThreadSchedulerRNG as your only entropy source.  It is recommended to use this
+    /// <summary>It is recommended to use this
     ///     class ONLY in addition to other entropy sources.
     /// </summary>
+    /// <remarks>
+    ///     In a multitasking OS, each individual thread never knows when it's going to be granted execution time,
+    ///     as many processes and threads compete for CPU cycles.  The granularity of time to wake up from sleep is
+    ///     something like +/- a few ms, while the granularity of <see cref="DateTime.Now"/> is <seealso cref="DateTime.Ticks"/>,
+    ///     10million per second. Although the OS scheduler is surely deterministic, there should be a fair amount of entropy in
+    ///     the least significant bits of <see cref="DateTime.Ticks"/> of <see cref="DateTime.Now"/> upon thread waking.
+    ///     But since the OS scheduler is surely deterministic, this entropy source should not be used as the only source but
+    ///     ONLY in addition to other entropy sources.
+    /// </remarks>
     public sealed class ThreadSchedulerRng : RandomNumberGenerator
     {
-        private static readonly ThreadSchedulerRngCore Core = new ThreadSchedulerRngCore();
+        private readonly ThreadSchedulerRngCore _core = new ThreadSchedulerRngCore();
 
-        /// <summary>
-        ///     Gets the bytes.
-        /// </summary>
-        /// <param name="data">The data.</param>
         /// <exception cref="CryptographicException">Failed to return requested number of bytes</exception>
         /// <exception cref="ObjectDisposedException">Throws if the instance is disposed.</exception>
         public override void GetBytes(byte[] data)
         {
-            if (Core.Read(data, 0, data.Length) != data.Length)
+            if (_core.Read(data, 0, data.Length) != data.Length)
                 throw new CryptographicException("Failed to return requested number of bytes");
         }
 
@@ -41,21 +39,22 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             while (offset < data.Length)
             {
                 var newBytes = new byte[data.Length - offset];
-                if (Core.Read(newBytes, 0, newBytes.Length) != newBytes.Length)
+                if (_core.Read(newBytes, 0, newBytes.Length) != newBytes.Length)
                     throw new CryptographicException("Failed to return requested number of bytes");
-                for (var i = 0; i < newBytes.Length; i++)
-                    if (newBytes[i] != 0)
-                    {
-                        data[offset] = newBytes[i];
-                        offset++;
-                    }
+                foreach (var newByte in newBytes)
+                {
+                    if (newByte == 0)
+                        continue;
+                    data[offset] = newByte;
+                    offset++;
+                }
             }
         }
 #endif
         protected override void Dispose(bool disposing)
         {
            if(disposing)
-               Core?.Dispose();
+               _core?.Dispose();
         }
         /// <summary>
         ///     By putting the core into its own class, it makes it easy for us to create a single instance of it, referenced
@@ -124,6 +123,9 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 }
             }
 
+            /// <remarks>
+            ///     While running in this tight loop, consumes approx 0% cpu time.  Cannot even measure with Task Manager
+            /// </remarks>
             private void MainThreadLoop()
             {
                 while (!IsDisposed)
@@ -136,14 +138,10 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                             newBit ^= (byte) (ticks % 2);
                             ticks >>= 1;
                         }
-
                         SaveBit(newBit);
                         Thread.Sleep(1);
-
-
-                        // While running in this tight loop, consumes approx 0% cpu time.  Cannot even measure with Task Manager
-
-                        /* With 10m ticks per second, and Thread.Sleep() precision of 1ms, it means Ticks is 10,000 times more precise than
+                        /*
+                         * With 10m ticks per second, and Thread.Sleep() precision of 1ms, it means Ticks is 10,000 times more precise than
                          * the sleep wakeup timer.  This means there could exist as much as 14 bits of entropy in every thread wakeup cycle,
                          * but realistically that's completely unrealistic.  I ran this 64*1024 times, and benchmarked each bit individually.
                          * The estimated entropy bits per bit of Ticks sample is very near 1 bit for each of the first 8 bits, and quickly
@@ -181,17 +179,15 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
                 if (bitByte == 1)
                     _chunk[_chunkByteIndex]++; // By incrementing, we are setting the lsb to 1.
                 _chunkBitIndex++;
-                if (_chunkBitIndex > 7)
-                {
-                    _chunkBitIndex = 0;
-                    _chunkByteIndex++;
-                    if (_chunkByteIndex >= ChunkSize)
-                    {
-                        _safeStream.Write(_chunk, 0, ChunkSize);
-                        _bytesAvailableAre.Set();
-                        _chunkByteIndex = 0;
-                    }
-                }
+                if (_chunkBitIndex <= 7)
+                    return;
+                _chunkBitIndex = 0;
+                _chunkByteIndex++;
+                if (_chunkByteIndex < ChunkSize)
+                    return;
+                _safeStream.Write(_chunk, 0, ChunkSize);
+                _bytesAvailableAre.Set();
+                _chunkByteIndex = 0;
             }
 
             protected override void DisposeManagedResources()

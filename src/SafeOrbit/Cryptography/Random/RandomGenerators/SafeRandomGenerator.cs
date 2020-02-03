@@ -37,7 +37,7 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
     {
         private static readonly Lazy<SafeRandomGenerator> StaticInstanceLazy = new Lazy<SafeRandomGenerator>();
         private readonly int _hashLengthInBytes;
-        private IReadOnlyCollection<IEntropyHasher> _entropyHashers;
+        private readonly IReadOnlyCollection<IEntropyHasher> _entropyHashers;
 
         private int
             _isDisposed = IntCondition.False; // Interlocked cannot handle bools. So using int as if it were bool.
@@ -195,11 +195,11 @@ namespace SafeOrbit.Cryptography.Random.RandomGenerators
             return accumulator;
         }
 
-        private bool CompareByteArrays(byte[] first, byte[] second)
+        private bool CompareByteArrays(IReadOnlyList<byte> first, IReadOnlyList<byte> second)
         {
             if (first == null || second == null)
                 throw new CryptographicException("null byte array in allByteArraysThatMustBeUnique");
-            if (first.Length != _hashLengthInBytes || second.Length != _hashLengthInBytes)
+            if (first.Count != _hashLengthInBytes || second.Count != _hashLengthInBytes)
                 throw new CryptographicException("byte array in allByteArraysThatMustBeUnique with wrong length");
             for (var i = 0; i < _hashLengthInBytes; i++)
                 if (first[i] != second[i])
