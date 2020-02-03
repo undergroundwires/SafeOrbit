@@ -12,6 +12,7 @@ using SafeOrbit.Memory.SafeBytesServices.DataProtection;
 using SafeOrbit.Memory.SafeBytesServices.DataProtection.Protector;
 using SafeOrbit.Memory.SafeBytesServices.Factory;
 using SafeOrbit.Memory.SafeBytesServices.Id;
+using SafeOrbit.Memory.SafeStringServices;
 using SafeOrbit.Memory.SafeStringServices.Text;
 
 namespace SafeOrbit.Library
@@ -52,6 +53,7 @@ namespace SafeOrbit.Library
             safeContainer.Register<ISafeString, SafeString>();
             safeContainer.Register<IFactory<ISafeString>, SafeContainerWrapper<ISafeString>>();
             safeContainer.Register<ISafeStringToStringMarshaler, SafeStringToStringMarshaler>();
+            safeContainer.Register<IFactory<ISafeStringToStringMarshaler>, SafeContainerWrapper<ISafeStringToStringMarshaler>>();
             // Random
             safeContainer.Register<IFastRandom, FastRandom>(LifeTime.Singleton);
             safeContainer.Register<ISafeRandom, SafeRandom>(LifeTime.Singleton);

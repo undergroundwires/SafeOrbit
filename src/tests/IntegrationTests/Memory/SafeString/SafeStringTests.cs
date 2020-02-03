@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SafeOrbit.Memory.SafeStringServices;
 
 namespace SafeOrbit.Memory
 {
@@ -23,8 +24,7 @@ namespace SafeOrbit.Memory
             await sut.AppendAsync('t');
 
             // Assert
-            using var sm = new SafeStringToStringMarshaler(sut);
-            var actual = sm.String;
+            var actual = (await sut.RevealDecryptedStringAsync()).String;
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -45,8 +45,7 @@ namespace SafeOrbit.Memory
             thread.Join();
 
             // Assert
-            using var sm = new SafeStringToStringMarshaler(sut);
-            var actual = sm.String;
+            var actual = (await sut.RevealDecryptedStringAsync()).String;
             Assert.That(actual, Is.EqualTo("tt"));
         }
 

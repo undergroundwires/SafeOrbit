@@ -207,7 +207,7 @@ namespace SafeOrbit.Memory.SafeBytesServices
             return AreIdsSame(Id, otherId);
         }
 
-        protected override void DisposeUnmanagedResources()
+        protected override void DisposeManagedResources()
         {
             _encryptionKey?.Dispose();
             _encryptedByte?.Dispose();

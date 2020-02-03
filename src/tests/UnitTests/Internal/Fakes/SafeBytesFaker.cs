@@ -29,9 +29,9 @@ namespace SafeOrbit.Fakes
                 _bytes.AddRange(await safeBytes.RevealDecryptedBytesAsync());
             }
 
-            public Task AppendAsync(byte b)
+            public Task AppendAsync(byte @byte)
             {
-                _bytes.Add(b);
+                _bytes.Add(@byte);
                 return Task.FromResult(true);
             }
 

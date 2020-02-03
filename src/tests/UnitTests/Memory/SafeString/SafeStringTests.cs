@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SafeOrbit.Extensions;
 using SafeOrbit.Fakes;
+using SafeOrbit.Memory.SafeStringServices;
 using SafeOrbit.Memory.SafeStringServices.Text;
 
 namespace SafeOrbit.Memory
@@ -15,12 +17,15 @@ namespace SafeOrbit.Memory
     [TestFixture]
     public partial class SafeStringTests
     {
-        private static ISafeString GetSut(ITextService textService = null, IFactory<ISafeString> safeStringFactory = null)
+        private static ISafeString GetSut(ITextService textService = null,
+            IFactory<ISafeString> safeStringFactory = null,
+            ISafeStringToStringMarshaler marshaler = null)
         {
             return new SafeString(
                 textService ?? Stubs.Get<ITextService>(),
                 safeStringFactory ?? Stubs.GetFactory<ISafeString>(),
-                Stubs.GetFactory<ISafeBytes>());
+                Stubs.GetFactory<ISafeBytes>(),
+                marshaler ?? Stubs.Get<ISafeStringToStringMarshaler>());
         }
 
         [Test]
@@ -831,7 +836,7 @@ namespace SafeOrbit.Memory
 
             // Act
             var clone = sut.ShallowClone();
-            var actual = await sut.RevealDecryptedBytesAsync();
+            var actual = await clone.RevealDecryptedBytesAsync();
             var areEqual = expected.SequenceEqual(actual);
             
             // Assert
@@ -867,6 +872,28 @@ namespace SafeOrbit.Memory
 
             //Assert
             Assert.That(CallOnDisposedObject, Throws.TypeOf<ObjectDisposedException>());
+        }
+
+        [Test]
+        public async Task RevealDecryptedStringAsync_InnerMarshaler_MarshalsItself()
+        {
+            // Arrange
+            var marshaled = new Collection<IReadOnlySafeString>();
+            var marshalerMock = new Mock<ISafeStringToStringMarshaler>();
+            marshalerMock.Setup(m => m.MarshalAsync(It.IsAny<IReadOnlySafeString>()))
+                .ReturnsAsync((IReadOnlySafeString text) =>
+                {
+                    marshaled.Add(text);
+                    return null;
+                });
+            using var sut = GetSut(marshaler: marshalerMock.Object);
+
+            // Act
+            _ = await sut.RevealDecryptedStringAsync();
+
+            // Assert
+            Assert.AreEqual(1, marshaled.Count);
+            Assert.True(ReferenceEquals(sut, marshaled[0]));
         }
 
         [Test]

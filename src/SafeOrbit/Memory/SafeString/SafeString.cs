@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SafeOrbit.Common;
 using SafeOrbit.Library;
+using SafeOrbit.Memory.SafeStringServices;
 using SafeOrbit.Threading;
 using SafeOrbit.Memory.SafeStringServices.Text;
 using Encoding = SafeOrbit.Memory.SafeStringServices.Text.Encoding;
@@ -18,6 +19,7 @@ namespace SafeOrbit.Memory
         private readonly IList<ISafeBytes> _charBytesList;
         private readonly IFactory<ISafeBytes> _safeBytesFactory;
         private readonly IFactory<ISafeString> _safeStringFactory;
+        private readonly ISafeStringToStringMarshaler _marshaler;
         private readonly ITextService _textService;
 
         /// <summary>
@@ -25,18 +27,21 @@ namespace SafeOrbit.Memory
         /// </summary>
         public SafeString() : this(SafeOrbitCore.Current.Factory.Get<ITextService>(),
             SafeContainerWrapper<ISafeString>.Wrap(),
-            SafeContainerWrapper<ISafeBytes>.Wrap())
+            SafeContainerWrapper<ISafeBytes>.Wrap(),
+            SafeOrbitCore.Current.Factory.Get<ISafeStringToStringMarshaler>())
         {
         }
 
         internal SafeString(
             ITextService textService,
             IFactory<ISafeString> safeStringFactory,
-            IFactory<ISafeBytes> safeBytesFactory)
+            IFactory<ISafeBytes> safeBytesFactory,
+            ISafeStringToStringMarshaler marshaler)
         {
             _textService = textService ?? throw new ArgumentNullException(nameof(textService));
             _safeStringFactory = safeStringFactory ?? throw new ArgumentNullException(nameof(safeStringFactory));
             _safeBytesFactory = safeBytesFactory ?? throw new ArgumentNullException(nameof(safeBytesFactory));
+            _marshaler = marshaler ?? throw new ArgumentNullException(nameof(marshaler));
             _charBytesList = new List<ISafeBytes>();
         }
 
@@ -138,6 +143,7 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
         public async Task<byte[]> RevealDecryptedBytesAsync()
         {
             ThrowIfDisposed();
@@ -154,6 +160,16 @@ namespace SafeOrbit.Memory
                 currentByteCount += block.Length;
             }
             return result;
+        }
+
+        /// <inheritdoc />
+        /// <inheritdoc cref="DisposableBase.ThrowIfDisposed"/>
+        public async Task<IDisposableString> RevealDecryptedStringAsync()
+        {
+            ThrowIfDisposed();
+            var @string = await _marshaler.MarshalAsync(this)
+                .ConfigureAwait(false);
+            return @string;
         }
 
         /// <inheritdoc />

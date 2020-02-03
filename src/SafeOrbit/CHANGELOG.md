@@ -39,6 +39,7 @@
   - Namespace changes for better modular structure
   - Refactorings & better documentation.
   - Renamed decrypting methods in `SafeBytes`, `SafeByte` and `SafeString` with *RevealDecrypted* prefix.
+  - Simplified revealing SafeString, now its through `RevealDecryptedStringAsync` on `SafeString`.
 - **Removed**
   - `SafeString.ToSafeBytesAsync` is removed because of its inefficiency.
 

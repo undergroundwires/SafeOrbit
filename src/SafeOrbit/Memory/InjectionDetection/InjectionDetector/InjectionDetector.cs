@@ -186,7 +186,7 @@ namespace SafeOrbit.Memory.Injection
 
         #endregion
 
-        protected override void DisposeUnmanagedResources()
+        protected override void DisposeManagedResources()
         {
             _lastStateStamp = null;
         }
