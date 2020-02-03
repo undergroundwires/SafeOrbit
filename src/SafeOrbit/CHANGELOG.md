@@ -24,6 +24,7 @@
     - `SafeString.EqualsAsync` gains huge performance from inner byte equality, also it does not encrypt & decrypt plain strings anymore.
 - **Fixed**
   - `SafeMemoryStream` ends up in infinite loop while reading when its empty.
+  - Cannot change `AlertChannel` on `SafeContainer`
 - **Added**
   - Encryption
     - Support for padding in Blowfish algorithm.
@@ -38,7 +39,7 @@
   - Refactorings & better documentation.
   - Renamed decrypting methods in `SafeBytes`, `SafeByte` and `SafeString` with *RevealDecrypted* prefix.
 - **Removed**
-  - - SafeString.ToSafeBytesAsync is removed because of its inefficiency.
+  - `SafeString.ToSafeBytesAsync` is removed because of its inefficiency.
 
 ## [0.3.1] - 2019-12-24
 

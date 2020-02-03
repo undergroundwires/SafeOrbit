@@ -1,5 +1,9 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.ObjectModel;
+using NUnit.Framework;
 using SafeOrbit.Exceptions;
+using SafeOrbit.Library;
+using SafeOrbit.Memory.Injection;
+using SafeOrbit.Memory.InjectionServices;
 
 namespace SafeOrbit.Memory
 {
@@ -10,23 +14,45 @@ namespace SafeOrbit.Memory
     public class SafeObjectTests
     {
         [Test]
-        public void SafeObject_Object_WhenPropertyChangedAfterVerifiedChanges_throwsMemoryInjectionException()
+        public void SafeObject_PropertyChangedAfterVerifiedChanges_ThrowsMemoryInjectionException()
         {
-            //arrange
-            var expected = "PropertyData";
+            // Arrange
+            SafeOrbitCore.Current.AlertChannel = InjectionAlertChannel.ThrowException;
+            const string expected = "PropertyData";
             var sut = new SafeObject<TestClass>();
             sut.ApplyChanges(
-                obj => obj.Class = new TestClass {Property = expected}
+                obj => obj.Class = new TestClass { Property = expected }
             );
             sut.Object.Class.Property = $"{expected}_changed";
-            //act
-            TestDelegate callingGetter = () =>
-            {
-                var temp = sut.Object;
-            };
-            //assert
-            Assert.That(callingGetter, Throws.TypeOf<MemoryInjectionException>());
+
+            // Act
+            void CallGetter() => _ = sut.Object;
+
+            // Assert
+            Assert.Throws<MemoryInjectionException>(CallGetter);
         }
+
+        [Test]
+        public void SafeObject_PropertyChangedAfterVerifiedChanges_RaisesLibraryInjectedEvent()
+        {
+            // Arrange
+            var events = new Collection<IInjectionMessage>();
+            SafeOrbitCore.Current.AlertChannel = InjectionAlertChannel.RaiseEvent;
+            SafeOrbitCore.Current.LibraryInjected += (sender, args) => events.Add(args);
+            const string expected = "PropertyData";
+            var sut = new SafeObject<TestClass>();
+            sut.ApplyChanges(
+                obj => obj.Class = new TestClass { Property = expected }
+            );
+            sut.Object.Class.Property = $"{expected}_changed";
+
+            // Act
+            _ = sut.Object;
+
+            // Assert
+            Assert.AreEqual(1, events.Count);
+        }
+
 
         private class TestClass
         {

@@ -207,6 +207,23 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
+        public void AlertChannel_VerifiedInstance_ChangeItself()
+        {
+            // Arrange
+            const InjectionAlertChannel expected = InjectionAlertChannel.DebugFail;
+            var sut = GetSut();
+            sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
+            sut.Verify();
+
+            // Act
+            sut.AlertChannel = expected;
+
+            // Assert
+            var actual = sut.AlertChannel;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public void Get_ForNonRegisteredInterface_ThrowsKeyNotFoundException()
         {
             // Arrange

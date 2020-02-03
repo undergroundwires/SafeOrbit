@@ -68,7 +68,7 @@ namespace SafeOrbit.Memory
             _safeObjectFactory = safeObjectFactory ?? throw new ArgumentNullException(nameof(safeObjectFactory));
             _alertChannel = alertChannel;
             ChangeProtectionMode(new ProtectionChangeContext<SafeContainerProtectionMode>(protectionMode));
-            SetAlertChannelInternal(alertChannel);
+            UpdateAlertChannel(alertChannel);
         }
 
         /// <inheritdoc />
@@ -135,7 +135,7 @@ namespace SafeOrbit.Memory
             _instanceValidator.ValidateAll(instanceProviders);
 #endif
             _isVerified = true;
-            _typeInstancesSafe.MakeReadOnly();
+            // _typeInstancesSafe.MakeReadOnly(); even though it's desired, it blocks settings AlertChannel later on.
         }
 
 
@@ -171,7 +171,7 @@ namespace SafeOrbit.Memory
             set
             {
                 if (_alertChannel == value) return;
-                SetAlertChannelInternal(value);
+                UpdateAlertChannel(value);
             }
         }
 
@@ -205,7 +205,7 @@ namespace SafeOrbit.Memory
             return result;
         }
 
-        private void SetAlertChannelInternal(InjectionAlertChannel value)
+        private void UpdateAlertChannel(InjectionAlertChannel value)
         {
             if (!Enum.IsDefined(typeof(InjectionAlertChannel), value))
                 throw new ArgumentOutOfRangeException(nameof(value),
