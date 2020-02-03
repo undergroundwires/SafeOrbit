@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SafeOrbit.Library.Build;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.Injection;
@@ -24,7 +25,7 @@ namespace SafeOrbit.Library
         ///     Loads the necessary data early on. For better performance, it's highly recommended to start the
         ///     application early in your application start.
         /// </summary>
-        void StartEarly();
+        Task StartEarlyAsync();
 
         event EventHandler<IInjectionMessage> LibraryInjected;
     }

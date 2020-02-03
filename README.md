@@ -130,7 +130,7 @@ Supported :
 
 ## Speed up
 
-* **For better performance**, it's **highly recommended** to start the application early in your application start with `SafeOrbitCore.Current.StartEarly();`.
+* **For better performance**, it's **highly recommended** to start the application early in your application start with `SafeOrbitCore.Current.StartEarlyAsync();`.
 
 * Memory injection is enabled as default.
   * It provides self security on client side applications, but on a protected server disabling the memory injection for more performance is recommended. [Read more on wiki](https://github.com/undergroundwires/SafeOrbit/wiki/Library-settings#change-security-settings).

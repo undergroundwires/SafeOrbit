@@ -16,7 +16,7 @@ namespace SafeOrbit.Memory
         public async Task AppendManyAsync_SingleMegaByteStream_TakesLessThan5000ms()
         {
             // Arrange
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             const int expectedHigherLimit = 5000;
             var sut = GetSut();
             var bytes = new byte[1000000];
@@ -36,7 +36,7 @@ namespace SafeOrbit.Memory
         public async Task ToDeepCloneAsync_SingleMBStream_TakesLessThan5000ms()
         {
             // Arrange
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             const int expectedHigherLimit = 5000;
             var sut = GetSut();
             var bytes = new byte[1000000];
@@ -58,7 +58,7 @@ namespace SafeOrbit.Memory
             // Arrange
             const int expectedHigherLimit = 2000;
             const int totalBytes = 1000000;
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             var bytes = new byte[totalBytes];
             new Random().NextBytes(bytes);
@@ -77,7 +77,7 @@ namespace SafeOrbit.Memory
         public async Task AppendAsync_100SingleBytes_TakesLessThan500ms()
         {
             // Arrange
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             const int expectedHigherLimit = 500;
 
@@ -97,7 +97,7 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             const int expectedHigherLimit = 100;
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             for (var i = 0; i < 1000; i++)
                 await sut.AppendAsync((byte)i);
@@ -118,7 +118,7 @@ namespace SafeOrbit.Memory
             // Arrange
             const int expectedHigherLimit = 200;
             const int totalBytes = 10000;
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             var bytes = new byte[totalBytes];
             new Random().NextBytes(bytes);
@@ -139,7 +139,7 @@ namespace SafeOrbit.Memory
             // Arrange
             const int expectedHigherLimit = 200;
             const int totalBytes = 10000;
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
 
             var bytes = new byte[totalBytes];
             new Random().NextBytes(bytes);            

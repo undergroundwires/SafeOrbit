@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SafeOrbit.Library.Build;
 using SafeOrbit.Memory;
 using SafeOrbit.Memory.Injection;
@@ -33,31 +34,31 @@ namespace SafeOrbit.Library
         /// </summary>
         public static SafeOrbitCore Current => CurrentLazy.Value;
 
-
+        /// <inheritdoc />
         public InjectionAlertChannel AlertChannel
         {
             get => Factory.AlertChannel;
             set => Factory.AlertChannel = value;
         }
 
+        /// <inheritdoc />
         public bool CanAlert => Factory.CanAlert;
+
+        /// <inheritdoc />
         public event EventHandler<IInjectionMessage> LibraryInjected;
 
+        /// <inheritdoc />
         public ISafeContainer Factory { get; }
 
+        /// <inheritdoc />
         public IBuildInfo BuildInfo => new BuildInfo();
 
-
-        public void StartEarly()
+        /// <inheritdoc />
+        public async Task StartEarlyAsync()
         {
-            /* Initializes FastRandomGenerator, that initializes SafeRandomGnerator and needed entropy sources :
-                - ThreadSchedulerRng
-                - ThreadedSeedGeneratorRng
-                - SystemRng
-            We could instantiate each of these individually but FastRandomGenerator will initializes all of them as default.
-        */
             var factory = Factory.Get<ISafeByteFactory>();
-            factory.InitializeAsync();
+            await factory.InitializeAsync() // Here we also initialize the session salt, random generators, entropy collectors.
+                .ConfigureAwait(false);
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             const int expectedHigherLimit = 100;
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             await sut.AppendAsync(new string('m', 1000));
 
@@ -33,7 +33,7 @@ namespace SafeOrbit.Memory
         {
             // Arrange
             const int expectedHigherLimit = 5000;
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             await sut.AppendAsync(new string('m', 1000));
 
@@ -53,7 +53,7 @@ namespace SafeOrbit.Memory
             // Arrange
             const int expectedHigherLimit = 5000;
             var expected = new string('m', 1000);
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             await sut.AppendAsync(expected);
 
@@ -73,7 +73,7 @@ namespace SafeOrbit.Memory
             // Arrange
             const int expectedHigherLimit = 5000;
             var expectedStr = new string('m', 1000);
-            SafeOrbitCore.Current.StartEarly();
+            await SafeOrbitCore.Current.StartEarlyAsync();
             var sut = GetSut();
             await sut.AppendAsync(expectedStr);
             var other = GetSut();
