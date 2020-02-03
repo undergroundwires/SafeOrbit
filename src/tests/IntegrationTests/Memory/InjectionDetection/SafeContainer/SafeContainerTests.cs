@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using SafeOrbit.Memory.InjectionServices;
+using SafeOrbit.Tests;
 
 namespace SafeOrbit.Memory
 {
@@ -6,20 +8,23 @@ namespace SafeOrbit.Memory
     /// <seealso cref="ISafeContainer" />
     /// <seealso cref="SafeContainerProtectionMode" />
     [TestFixture]
-    public class SafeContainerTests
+    public class SafeContainerTests : TestsFor<SafeContainer>
     {
-        private static ISafeContainer GetSut() => new SafeContainer();
-
         [Test]
         public void Get_AfterDisablingProtection_ReturnsInstance()
         {
+            // Arrange
             var from = SafeContainerProtectionMode.NonProtection;
             var to = SafeContainerProtectionMode.FullProtection;
             var sut = new SafeContainer(from);
             sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
             sut.Verify();
+
+            // Act
             var actual = sut.Get<IInstanceTestClass>();
             sut.SetProtectionMode(to);
+
+            // Assert
             var expected = sut.Get<IInstanceTestClass>();
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -27,32 +32,39 @@ namespace SafeOrbit.Memory
         [Test]
         public void Get_AfterEnablingProtection_ReturnsInstance()
         {
+            // Arrange
             var from = SafeContainerProtectionMode.FullProtection;
             var to = SafeContainerProtectionMode.NonProtection;
             var sut = new SafeContainer(from);
             sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
             sut.Verify();
+
+            // Act
             var actual = sut.Get<IInstanceTestClass>();
             sut.SetProtectionMode(to);
+
+            // Assert
             var expected = sut.Get<IInstanceTestClass>();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void Get_ForSingletonRegistration_returnsSameInstance()
+        public void Get_ForSingletonRegistration_ReturnsSameInstance()
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
             sut.Register<IInstanceTestClass, InstanceTestClass>(LifeTime.Singleton);
             sut.Verify();
-            //act
+
+            // Act
             var instance = sut.Get<IInstanceTestClass>();
             var instance1 = sut.Get<IInstanceTestClass>();
             var instance2 = sut.Get<IInstanceTestClass>();
             var instance3 = sut.Get<IInstanceTestClass>();
             var instance4 = sut.Get<IInstanceTestClass>();
             var instance5 = sut.Get<IInstanceTestClass>();
-            //assert
+
+            // Assert
             Assert.That(instance1, Is.EqualTo(instance));
             Assert.That(instance2, Is.EqualTo(instance));
             Assert.That(instance3, Is.EqualTo(instance));
@@ -61,48 +73,56 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public void Get_ForTransientRegistration_returnsDifferentInstances()
+        public void Get_ForTransientRegistration_ReturnsDifferentInstances()
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
             sut.Register<IInstanceTestClass, InstanceTestClass>();
             sut.Verify();
-            //act
+
+            // Act
             var instance1 = sut.Get<IInstanceTestClass>();
             var instance2 = sut.Get<IInstanceTestClass>();
             var instance3 = sut.Get<IInstanceTestClass>();
-            //assert
+
+            // Assert
             Assert.That(instance1, Is.Not.EqualTo(instance2));
             Assert.That(instance1, Is.Not.EqualTo(instance3));
             Assert.That(instance2, Is.Not.EqualTo(instance3));
         }
 
         [Test]
-        public void NonTypedCustomFuncRegistration_returnsResultFromFunc()
+        public void NonTypedCustomFuncRegistration_ReturnsResultFromFunc()
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
             var expected = new InstanceTestClass(88);
             sut.Register(() => expected);
             sut.Verify();
-            //act
+
+            // Act
             var actual = sut.Get<InstanceTestClass>();
-            //assert
+
+            // Assert
             Assert.That(expected, Is.EqualTo(actual));
         }
 
         [Test]
-        public void TypedCustomFuncRegistration_returnsResultFromFunc()
+        public void TypedCustomFuncRegistration_ReturnsResultFromFunc()
         {
-            //arrange
+            // Arrange
             var sut = GetSut();
             var expected = new InstanceTestClass(88);
             sut.Register<IInstanceTestClass, InstanceTestClass>(() => expected);
             sut.Verify();
-            //act
+
+            // Act
             var actual = sut.Get<IInstanceTestClass>();
-            //assert
+
+            // Assert
             Assert.That(expected, Is.EqualTo(actual));
         }
+
+        protected override SafeContainer GetSut() => new SafeContainer();
     }
 }

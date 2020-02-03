@@ -79,7 +79,7 @@ namespace SafeOrbit.Memory
             var sut = GetSut();
             const string plainText = "testString";
             var safeString = Stubs.Get<ISafeString>();
-            foreach (var ch in plainText.ToCharArray())
+            foreach (var ch in plainText)
                 await safeString.AppendAsync(ch);
             
             // Act

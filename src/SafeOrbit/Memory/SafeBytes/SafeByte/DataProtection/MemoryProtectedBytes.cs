@@ -80,7 +80,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.DataProtection
                 Array.Clear(_encryptedBytes, 0, _encryptedBytes.Length);
         }
 
-        /// <exception cref="InvalidOperationException"><see cref="MemoryProtectedBytes"/> insance is not yet initialized.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="MemoryProtectedBytes"/> instance is not yet initialized.</exception>
         private void ThrowIfNotInitialized()
         {
             if (!IsInitialized)

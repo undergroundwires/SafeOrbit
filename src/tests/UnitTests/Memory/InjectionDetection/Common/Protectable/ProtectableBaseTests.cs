@@ -21,13 +21,15 @@ namespace SafeOrbit.Memory.InjectionServices.Protectable
             var testCases = GetProtectionModeTestCases();
             foreach (var testCase in testCases)
             {
-                //arrange
+                // Arrange
                 var sut = (IProtectable<TProtectionMode>) testCase.Arguments[0];
                 var expected = (TProtectionMode) testCase.Arguments[1];
-                //act
+
+                // Act
                 sut.SetProtectionMode(expected);
                 var actual = sut.CurrentProtectionMode;
-                //assert
+
+                // Assert
                 Assert.That(actual, Is.EqualTo(expected));
             }
         }
