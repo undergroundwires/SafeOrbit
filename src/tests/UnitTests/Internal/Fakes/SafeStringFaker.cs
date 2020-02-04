@@ -22,9 +22,9 @@ namespace SafeOrbit.Fakes
                 .Callback<string>(x => chars.AddRange(x));
             fake.Setup(x => x.AppendAsync(It.IsAny<ISafeBytes>(), It.IsAny<Encoding>()))
                 .Callback<ISafeBytes, Encoding>(
-                    async (c, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString((await c.RevealDecryptedBytesAsync()))));
+                    (bytes, e) => chars.AddRange(System.Text.Encoding.Unicode.GetString(TaskContext.RunSync(bytes.RevealDecryptedBytesAsync))));
             fake.Setup(x => x.RevealDecryptedBytesAsync())
-                .ReturnsAsync(System.Text.Encoding.Unicode.GetBytes(new string(chars.ToArray())));
+                .ReturnsAsync(() => System.Text.Encoding.Unicode.GetBytes(new string(chars.ToArray())));
             fake.Setup(x => x.GetAsSafeBytes(It.IsAny<int>()))
                 .Returns((int i) =>
                 {

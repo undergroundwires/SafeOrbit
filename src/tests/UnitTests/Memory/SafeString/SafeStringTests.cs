@@ -125,23 +125,19 @@ namespace SafeOrbit.Memory
         }
 
         [Test]
-        public async Task DeepCloneAsync_ClonedObjectsToSafeBytes_ReturnsEqualSafeBytes()
+        public async Task DeepCloneAsync_RevealedDecryptedBytes_AreEqual()
         {
             // Arrange
             using var sut = GetSut();
-            char ch1 = 'k', ch2 = 'u', ch3 = 'k';
-            await sut.AppendAsync(ch1);
-            await sut.AppendAsync(ch2);
-            await sut.AppendAsync(ch3);
+            await sut.AppendAsync("abc");
             var expected = await sut.RevealDecryptedBytesAsync();
 
             // Act
             var clone = await sut.DeepCloneAsync();
             var actual = await clone.RevealDecryptedBytesAsync();
-            var areEqual = expected.SequenceEqual(actual);
             
             // Assert
-            Assert.That(areEqual, Is.True);
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [Test]
