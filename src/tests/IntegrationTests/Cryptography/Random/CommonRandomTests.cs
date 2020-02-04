@@ -35,7 +35,7 @@ namespace SafeOrbit.Cryptography.Random
                 thread.Start();
             foreach (var thread in threads)
                 thread.Join();
-            Assert.That(byteList.Distinct().Count(), Is.EqualTo(totalThreads));
+            Assert.That(byteList.Distinct().Count(), Is.EqualTo(totalThreads * 2));
         }
 
         [Test]
@@ -49,8 +49,8 @@ namespace SafeOrbit.Cryptography.Random
             var actions = new Action[iterations];
             for (var i = 0; i < iterations; i++)
                 actions[i] = () => RunAction(sut, bufferLength, byteList);
-            System.Threading.Tasks.Parallel.Invoke(actions);
-            Assert.That(byteList.Distinct().Count(), Is.EqualTo(iterations));
+            Parallel.Invoke(actions);
+            Assert.That(byteList.Distinct().Count(), Is.EqualTo(iterations * 2));
         }
 
         private void RunAction(TRandom existingInstance, int bufferLength, IProducerConsumerCollection<byte[]> byteList)
