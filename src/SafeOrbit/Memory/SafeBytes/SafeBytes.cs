@@ -236,7 +236,7 @@ namespace SafeOrbit.Memory
             }
         }
 
-        /// <exception cref="NotSupportedException">Use <see cref="EqualsAsync(byte[])"/> or <see cref="EqualsAsync(ISafeBytes)"/> instead</exception>
+        /// <exception cref="NotSupportedException">Use <see cref="EqualsAsync(byte[])"/> or <see cref="EqualsAsync(IReadOnlySafeBytes)"/> instead</exception>
         public override bool Equals(object obj)
         {
             throw new NotSupportedException($"Use {nameof(EqualsAsync)} instead");

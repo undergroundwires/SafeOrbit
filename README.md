@@ -13,8 +13,8 @@
 
 * Protects your strings in memory while allowing you to securely compare & modify them with [SafeString](https://github.com/undergroundwires/SafeOrbit/wiki/SafeString).
 * Protects your binary data with [SafeBytes](https://github.com/undergroundwires/SafeOrbit/wiki/SafeBytes).
-* Leverages high performance and secure algorithms for [encryption, hashing and random](#cryptography) in interfaces that makes it much hard to screw up.
 * Anti injection module safeguards your application against memory injections and timing attacks using [SafeObject](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject), [SafeContainer](https://github.com/undergroundwires/SafeOrbit/wiki/SafeObject) (injection aware DI container) and [more](https://github.com/undergroundwires/SafeOrbit/wiki).
+* Leverages high performance and secure algorithms for [encryption, hashing and random](#cryptography) in interfaces that makes it much hard to screw up.
 
 ## Why
 

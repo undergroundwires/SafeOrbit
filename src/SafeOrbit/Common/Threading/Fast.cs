@@ -6,7 +6,7 @@ namespace SafeOrbit.Threading
     public static class Fast
     {
         /// <summary>
-        ///     Runs fast for-each using <see cref="Parallel" /> and <see cref="Partitioner" />
+        ///     Runs fast for-each using <see cref="System.Threading.Tasks.Parallel" /> and <see cref="Partitioner" />
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="endIndex">The end index.</param>

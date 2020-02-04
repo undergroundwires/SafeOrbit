@@ -15,7 +15,7 @@ namespace SafeOrbit.Memory
         int Length { get; }
         
         /// <summary>
-        ///     Gets decrypted single byte at given <see cref="position"/> in the safe list
+        ///     Gets decrypted single byte at given <paramref name="position"/> in the safe list
         /// </summary>
         /// <param name="position">Index of the byte</param>
         /// <returns>Byte from the array</returns>

@@ -9,7 +9,7 @@ namespace SafeOrbit.Memory
     public interface ISafeBytes : IReadOnlySafeBytes, IDisposable
     {
         /// <summary>
-        ///     Adds the byte <paramref name="@byte"/> to the end of the list.
+        ///     Adds the byte <paramref name="byte"/> to the end of the list.
         /// </summary>
         Task AppendAsync(byte @byte);
         /// <summary>

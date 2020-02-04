@@ -137,7 +137,7 @@ namespace SafeOrbit.Memory
 
             // Act
             var clone = await sut.DeepCloneAsync();
-            var actual = await sut.RevealDecryptedBytesAsync();
+            var actual = await clone.RevealDecryptedBytesAsync();
             var areEqual = expected.SequenceEqual(actual);
             
             // Assert
