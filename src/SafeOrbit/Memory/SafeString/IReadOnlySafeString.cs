@@ -39,7 +39,7 @@ namespace SafeOrbit.Memory
         /// </summary>
         /// <example>
         ///     <code>
-        ///           using(var secret = safeString.RevealDecryptedString())
+        ///           using(var secret = await safeString.RevealDecryptedStringAsync())
         ///           {
         ///             // Use secret.String here.  While in the 'using' block, the string is accessible
         ///             // but pinned in memory.  When the 'using' block terminates, the string is zeroed

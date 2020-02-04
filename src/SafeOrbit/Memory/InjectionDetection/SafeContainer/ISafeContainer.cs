@@ -9,7 +9,6 @@ namespace SafeOrbit.Memory
     ///     <p>It abstracts strategies for different protection modes</p>
     /// </summary>
     /// <seealso cref="SafeContainerProtectionMode" />
-    /// <seealso cref="SafeContainerProtectionMode" />
     public interface ISafeContainer :
         IAlerts,
         IProtectable<SafeContainerProtectionMode>,
