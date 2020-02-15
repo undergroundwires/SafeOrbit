@@ -24,7 +24,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
 
         [Test]
         [TestCaseSource(typeof(ByteCases), nameof(ByteCases.AllBytes))]
-        public async Task GetByByteAsync_ReturnsRightByte([Random(0, 256, 1)] byte b)
+        public async Task GetByByteAsync_ReturnsRightByte(byte b)
         {
             // Arrange
             var expected = b;
@@ -61,7 +61,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             // Arrange
             var expected = new Collection<byte>();
             for (var i = 0; i < 256; i++)
-                expected.Add((byte) i);
+                expected.Add((byte)i);
             var stream = new SafeMemoryStream(expected.ToArray());
 
             // Act
