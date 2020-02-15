@@ -1,6 +1,6 @@
 ﻿namespace SafeOrbit.Tests.Cases
 {
-    public class ByteCases
+    public static class ByteCases
     {
         public static byte[] AllBytes =
         {

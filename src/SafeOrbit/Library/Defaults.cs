@@ -7,7 +7,7 @@ namespace SafeOrbit
     /// <summary>
     ///     Default settings for SafeOrbit classes.
     /// </summary>
-    internal class Defaults
+    internal static class Defaults
     {
         //SafeObject
         public const SafeObjectProtectionMode ObjectProtectionMode = SafeObjectProtectionMode.StateAndCode;
