@@ -54,7 +54,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Id
             var expected = await sut.GenerateAsync(b2);
 
             // Assert
-            Assert.AreNotEqual(actual, expected);
+            Assert.AreNotEqual(expected, actual);
         }
 
         [Test]
