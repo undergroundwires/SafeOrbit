@@ -138,12 +138,11 @@ namespace SafeOrbit.Memory
             // _typeInstancesSafe.MakeReadOnly(); even though it's desired, it blocks settings AlertChannel later on.
         }
 
-
         /// <inheritdoc />
-        /// <exception cref="T:System.ArgumentException"><see cref="M:SafeOrbit.Memory.SafeContainer.Verify" /> is not called.</exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="T:SafeOrbit.Exceptions.MemoryInjectionException">If the object has been changed after last stamp.</exception>
-        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">
+        /// <exception cref="ArgumentException"><see cref="SafeContainer.Verify" /> is not called.</exception>
+        /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
+        /// <exception cref="MemoryInjectionException">If the object has been changed after last stamp.</exception>
+        /// <exception cref="KeyNotFoundException">
         ///     If the <paramref name="serviceType" /> is not
         ///     registered.
         /// </exception>
@@ -187,7 +186,6 @@ namespace SafeOrbit.Memory
                 throw new ArgumentException($"{typeof(TComponent).FullName} is already registered.");
             _typeInstancesSafe.ApplyChanges(dic => { dic.Add(key, instance); });
         }
-
 
         private ISafeObject<Dictionary<string, IInstanceProvider>> CreateInnerDictionary(
             SafeContainerProtectionMode protectionMode, InjectionAlertChannel alertChannel,
@@ -235,8 +233,7 @@ namespace SafeOrbit.Memory
                 newDictionary.Values.ForEach(instance => instance.SetProtectionMode(innerInstanceProtection));
                 _typeInstancesSafe.Dispose();
             }
-
-            //re-create inner safe object
+            // Re-create inner safe object
             _typeInstancesSafe = CreateInnerDictionary(context.NewValue, AlertChannel, newDictionary);
         }
 
@@ -255,9 +252,7 @@ namespace SafeOrbit.Memory
         {
             return protectionMode switch
             {
-                SafeContainerProtectionMode.FullProtection =>
-                SafeObjectProtectionMode.JustState //no need to protect type of the dictionary
-                ,
+                SafeContainerProtectionMode.FullProtection => SafeObjectProtectionMode.JustState, // No need to protect type of the dictionary
                 SafeContainerProtectionMode.NonProtection => SafeObjectProtectionMode.NoProtection,
                 _ => throw new ArgumentOutOfRangeException(nameof(protectionMode), protectionMode, null)
             };
