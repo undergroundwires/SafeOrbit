@@ -26,7 +26,7 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
         /// </exception>
         public void Alert(IInjectionMessage info)
         {
-            throw new MemoryInjectionException(info.InjectionType, info.InjectedObject, info.InjectionDetectionTime);
+            throw new MemoryInjectionException(info);
         }
     }
 }

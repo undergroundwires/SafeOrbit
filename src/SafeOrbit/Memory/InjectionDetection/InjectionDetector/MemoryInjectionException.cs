@@ -1,6 +1,7 @@
 using System;
 using SafeOrbit.Exceptions.SerializableException;
 using SafeOrbit.Memory;
+using SafeOrbit.Memory.Injection;
 #if !NETSTANDARD1_6
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -18,13 +19,12 @@ namespace SafeOrbit.Exceptions
 #endif
     public class MemoryInjectionException : SafeOrbitException
     {
-        public MemoryInjectionException(InjectionType injectionType, object injectedObject,
-            DateTimeOffset injectionTime)
-            : base($"¨The object is injected by {injectionType}")
+        public MemoryInjectionException(IInjectionMessage message)
+            : base(message.ToString())
         {
-            InjectionType = injectionType;
-            InjectedObject = injectedObject;
-            DetectionTime = injectionTime;
+            InjectionType = message.InjectionType;
+            InjectedObject = message.InjectedObject;
+            DetectionTime = message.InjectionDetectionTime;
         }
 
         public MemoryInjectionException(string message, Exception inner) : base(message, inner)

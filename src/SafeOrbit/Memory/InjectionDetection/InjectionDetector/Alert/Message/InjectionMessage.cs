@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace SafeOrbit.Memory.Injection
 {
@@ -15,17 +16,20 @@ namespace SafeOrbit.Memory.Injection
         public object InjectedObject { get; }
         public DateTimeOffset InjectionDetectionTime { get; }
 
-        private InjectionType GetInjectionType(bool isStateInjected, bool isCodeInjected)
+        public override string ToString()
+        {
+            return $"{nameof(InjectionType)} = \"{InjectionType}\", " +
+                   $"{nameof(InjectionDetectionTime)} = \"{InjectionDetectionTime}\", " +
+                   $"Injected object type = \"{InjectedObject?.GetType().Name ?? "null"}";
+        }
+
+        private static InjectionType GetInjectionType(bool isStateInjected, bool isCodeInjected)
         {
             if (isStateInjected && isCodeInjected) return InjectionType.CodeAndVariableInjection;
             if (isStateInjected) return InjectionType.VariableInjection;
             if (isCodeInjected) return InjectionType.CodeInjection;
             throw new ArgumentException("There is no injection : Neither state or code is injected.");
         }
-
-        public override string ToString() =>
-            $"{nameof(InjectionType)} = \"{InjectionType}\", {nameof(InjectionDetectionTime)} = \"{InjectionDetectionTime.ToLocalTime()}\"";
-
 
         #region Equality
         public override int GetHashCode()

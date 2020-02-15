@@ -9,9 +9,7 @@ namespace SafeOrbit.Memory.InjectionServices.Alerters
 
         public void Alert(IInjectionMessage info)
         {
-            Debug.Write(
-                $"An object has been infected by {info.InjectionType} at {info.InjectionDetectionTime.ToLocalTime()}");
-            Debug.Write(info);
+            Debug.Write(info.ToString());
         }
 
         public static IAlerter GetInstance() => new DebugWriteAlerter();

@@ -33,6 +33,7 @@
   - Added constructor that writes the given binary to `SafeMemoryStream`
   - Added `RevealDecryptedBytesAsync` in `SafeString`
   - Added immutable interfaces `IReadOnlySafeString` and `IReadOnlySafeBytes`
+  - Injection message includes the type of the injected objects.
 - **Changed**
   - ❗ Replaced sync methods with async variants.
   - Simplified builds: targets only `netstandard2.0`, `netstandard1.6` and `NET4.5`.
@@ -107,7 +108,8 @@
 
 ## All releases
 
-- [Unreleased] : https://github.com/undergroundwires/SafeOrbit/compare/0.3.1...HEAD
+- [Unreleased] : https://github.com/undergroundwires/SafeOrbit/compare/0.4.0...HEAD
+- [0.4.0] : https://github.com/undergroundwires/SafeOrbit/compare/0.4.0...0.3.1
 - [0.3.1] : https://github.com/undergroundwires/SafeOrbit/compare/0.3.1...0.3.0
 - [0.3.0] : https://github.com/undergroundwires/SafeOrbit/compare/0.2.2...0.3.0
 - [0.2.2] : https://github.com/undergroundwires/SafeOrbit/compare/0.2.1...0.2.2
