@@ -158,7 +158,7 @@ namespace SafeOrbit.Memory
         }
 
         /// <inheritdoc />
-        /// <exception cref="ReadOnlyAccessForbiddenException">
+        /// <exception cref="WriteAccessDeniedException">
         ///     This instance of <typeparamref name="TObject" /> is marked as
         ///     ReadOnly.
         /// </exception>
@@ -222,13 +222,13 @@ namespace SafeOrbit.Memory
             return _object;
         }
 
-        /// <exception cref="ReadOnlyAccessForbiddenException">
+        /// <exception cref="WriteAccessDeniedException">
         ///     This instance of <typeparamref name="TObject" /> is marked as read only.
         /// </exception>
         private void ThrowIfReadOnly()
         {
             if (IsReadOnly)
-                throw new ReadOnlyAccessForbiddenException(
+                throw new WriteAccessDeniedException(
                     $"This instance of {typeof(TObject).Name} is marked as ReadOnly. You cannot apply changes into a ReadOnly instance.");
         }
 

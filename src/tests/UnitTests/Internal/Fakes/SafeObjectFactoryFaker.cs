@@ -26,7 +26,7 @@ namespace SafeOrbit.Fakes
                     (Action<T> action) =>
                     {
                         if(isReadOnly)
-                            throw new ReadOnlyAccessForbiddenException($"{nameof(ISafeObject<T>.MakeReadOnly)} is called");
+                            throw new WriteAccessDeniedException($"{nameof(ISafeObject<T>.MakeReadOnly)} is called");
                         action.Invoke(obj);
                     });
                 mock.SetupGet(m => m.Object).Returns(obj);

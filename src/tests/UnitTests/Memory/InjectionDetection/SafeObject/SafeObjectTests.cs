@@ -365,9 +365,9 @@ namespace SafeOrbit.Memory
         }
 
 
-        /// <seealso cref="ReadOnlyAccessForbiddenException" />
+        /// <seealso cref="WriteAccessDeniedException" />
         [Test]
-        public void ApplyChanges_IfObjectIsNotModifiable_throwsReadOnlyAccessForbiddenException()
+        public void ApplyChanges_ObjectIsNotModifiable_Throws()
         {
             // Arrange
             var initialObject = new TestObject();
@@ -378,7 +378,7 @@ namespace SafeOrbit.Memory
             void CallVerifyChanges() => sut.ApplyChanges(a => { });
 
             // Assert
-            Assert.That(CallVerifyChanges, Throws.TypeOf<ReadOnlyAccessForbiddenException>());
+            Assert.That(CallVerifyChanges, Throws.TypeOf<WriteAccessDeniedException>());
         }
 
         [Test]
