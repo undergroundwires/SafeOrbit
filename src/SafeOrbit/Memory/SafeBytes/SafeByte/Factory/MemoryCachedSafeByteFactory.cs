@@ -20,7 +20,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
     {
         public const SafeObjectProtectionMode DefaultInnerDictionaryProtection = SafeObjectProtectionMode.JustState;
 
-        private readonly SemaphoreSlim _slim = new SemaphoreSlim(1, 1); // Max 1 thread can access the lock
+        private readonly SemaphoreSlim _initializationSlim = new SemaphoreSlim(1, 1); // Max 1 thread can access the lock
         private readonly IByteIdGenerator _byteIdGenerator;
         private readonly IFactory<ISafeByte> _safeByteFactory;
         private readonly ISafeObjectFactory _safeObjectFactory;
@@ -67,11 +67,11 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
         /// </remarks>
         public virtual async Task InitializeAsync()
         {
-            if (_isCached) return;
-            await _slim.WaitAsync().ConfigureAwait(false);
+            await _initializationSlim.WaitAsync().ConfigureAwait(false);
             try
             {
-                //Allocate place
+                if (_isCached) return;
+                // Allocate place
                 var safeBytes = await GetAllSafeBytesAsync().ConfigureAwait(false);
                 var dictionary = safeBytes.ToDictionary(safeByte => safeByte.Id);
                 var settings = new InitialSafeObjectSettings
@@ -88,7 +88,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             }
             finally
             {
-                _slim.Release();
+                _initializationSlim.Release();
             }
         }
 
@@ -98,7 +98,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             await EnsureInitializedAsync().ConfigureAwait(false);
             var id = await _byteIdGenerator
                 .GenerateAsync(@byte) //Do not skip or cache this step to minimize the amount of time for ids to be seen.
-                .ConfigureAwait(false); 
+                .ConfigureAwait(false);
             return _safeBytesDictionary.Object[id];
         }
 
@@ -135,7 +135,7 @@ namespace SafeOrbit.Memory.SafeBytesServices.Factory
             var safeBytes = new ISafeByte[totalBytes];
             for (var i = 0; i < totalBytes; i++)
             {
-                var @byte = (byte) i;
+                var @byte = (byte)i;
                 var safeByte = _safeByteFactory.Create();
                 await safeByte.SetAsync(@byte).ConfigureAwait(false);
                 safeBytes[i] = safeByte;
