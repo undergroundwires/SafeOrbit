@@ -21,8 +21,8 @@
         {
             new byte[] {0, 1}, new byte[] {0, 255}, new byte[] {255, 53},
             new byte[] {53, 255}, new byte[] {60, 41}, new byte[] {67, 19}, new byte[] {230, 140}, new byte[] {17, 88},
-            new byte[] {10, 58}, new byte[] {50, 166}, new byte[] {227, 71}, new byte[] {133, 134}, new byte[] {0, 1},
-            new byte[] {0, 1}, new byte[] {202, 2}, new byte[] {22, 222}, new byte[] {152, 99}
+            new byte[] {10, 58}, new byte[] {50, 166}, new byte[] {227, 71}, new byte[] {133, 134},
+            new byte[] {202, 2}, new byte[] {22, 222}, new byte[] {152, 99}
         };
 
         public static object[] ByteArray32Length =
