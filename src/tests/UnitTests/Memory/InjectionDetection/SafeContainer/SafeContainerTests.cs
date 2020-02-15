@@ -19,8 +19,6 @@ namespace SafeOrbit.Memory
     [TestFixture]
     public class SafeContainerTests : ProtectableBaseTests<SafeContainerProtectionMode>
     {
-        //TODO: Test inner instance validator call with a stub
-
         [Test]
         [TestCaseSource(typeof(SafeContainerCases), nameof(SafeContainerCases.ProtectionModes))]
         public void Constructor_Sets_ProtectionMode(SafeContainerProtectionMode mode)
@@ -267,7 +265,7 @@ namespace SafeOrbit.Memory
             // Act
             Assert.That(GetWithoutVerify, Throws.ArgumentException);
         }
-
+        
         [Test]
         [TestCaseSource(typeof(InjectionCases), nameof(InjectionCases.InjectionAlertChannelCases))]
         public void Register_GetsInstanceProvider_With_CurrentAlertChannel(InjectionAlertChannel alertChannel)
