@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCore" Version="1.8.5" />
-    <PackageReference Include="SharpCompress" Version="0.24.0" />
+    <PackageReference Include="SharpCompress" Version="0.29.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\SafeOrbit\SafeOrbit.csproj" />
